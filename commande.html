@@ -1,34 +1,22 @@
 <!DOCTYPE html>
 <html lang="fr">
-
 <head>
-
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
 <title>Préparer ma commande | Idée Gourmande</title>
-
 <link rel="stylesheet" href="css/style.css">
-
 </head>
-
-
 <body>
 
-
 <header>
-
 <div class="top-banner">
 🚚 Commandes préparées artisanalement à Genève – Livraison congelée pour préserver toute la qualité de nos produits.
 </div>
 
-
 <nav>
-
 <div class="logo">
 <img src="images/logo.svg" alt="Idée Gourmande">
 </div>
-
 
 <ul>
 <li><a href="index.html">Accueil</a></li>
@@ -37,267 +25,149 @@
 <li><a href="commande.html">Commander</a></li>
 <li><a href="contact.html">Contact</a></li>
 </ul>
-
 </nav>
-
 </header>
 
-
-
 <section class="presentation">
-
-<h1>
-Préparer ma commande
-</h1>
-
-<p>
-Sélectionnez vos produits et préparez votre commande artisanale.
-</p>
-
+<h1>Préparer ma commande</h1>
+<p>Sélectionnez vos produits, les saveurs souhaitées et les quantités.</p>
 </section>
 
+<section class="commande-grid">
 
-
-
-<section class="valeurs">
-
-
-<div>
-
-<h3>
-🦆 Foie gras de canard au torchon
-</h3>
-
-<p>
-Gelée de figues au vin de messe
-</p>
-
-<p>
-<strong>200 g – 35.00 CHF</strong>
-</p>
-
-<input 
-type="number"
-id="foieFigues"
-value="0"
-min="0"
-onchange="calculerTotal()">
-
+<div class="commande-card">
+<img src="images/foie-gras-figues.jpg" alt="Foie gras figues">
+<h3>Foie gras – Figues</h3>
+<p>200 g – 35.00 CHF</p>
+<label>Quantité</label>
+<input type="number" id="foieFigues" value="0" min="0" onchange="calculerTotal()">
 </div>
 
-
-
-<div>
-
-<h3>
-🦆 Foie gras de canard au torchon
-</h3>
-
-<p>
-Piment d'Espelette & Porto Calem
-</p>
-
-<p>
-<strong>200 g – 35.00 CHF</strong>
-</p>
-
-<input 
-type="number"
-id="foiePiment"
-value="0"
-min="0"
-onchange="calculerTotal()">
-
+<div class="commande-card">
+<img src="images/foie-gras-piment.jpg" alt="Foie gras piment">
+<h3>Foie gras – Piment & Porto</h3>
+<p>200 g – 35.00 CHF</p>
+<label>Quantité</label>
+<input type="number" id="foiePiment" value="0" min="0" onchange="calculerTotal()">
 </div>
 
+<div class="commande-card">
+<img src="images/magret-fume.jpg" alt="Magret fumé">
+<h3>Magret fumé et séché</h3>
 
+<label>Saveur</label>
+<select id="magretSaveur">
+<option>Herbes de Provence</option>
+<option>Piment d'Espelette</option>
+</select>
 
-<div>
+<p>25.00 CHF</p>
 
-<h3>
-🥩 Magret de canard fumé et séché
-</h3>
-
-<p>
-Herbes de Provence ou Piment d'Espelette
-</p>
-
-<p>
-<strong>25.00 CHF</strong>
-</p>
-
-<input 
-type="number"
-id="magret"
-value="0"
-min="0"
-onchange="calculerTotal()">
-
+<label>Quantité</label>
+<input type="number" id="magret" value="0" min="0" onchange="calculerTotal()">
 </div>
 
+<div class="commande-card">
+<img src="images/saumon-fume.jpg" alt="Saumon fumé">
+<h3>Cœur de saumon fumé</h3>
 
+<label>Saveur</label>
+<select id="saumonSaveur">
+<option>Aneth</option>
+<option>Piment d'Espelette</option>
+</select>
 
-<div>
+<p>8.00 CHF / 100 g</p>
 
-<h3>
-🐟 Cœur de saumon fumé
-</h3>
-
-<p>
-Aneth ou Piment d'Espelette
-</p>
-
-<p>
-<strong>8.00 CHF / 100 g</strong>
-</p>
-
-<input 
-type="number"
+<label>Poids en grammes</label>
+<input type="number"
 id="saumon"
 value="0"
 min="0"
+step="100"
+placeholder="Ex. 200"
 onchange="calculerTotal()">
+
+<small>Le prix est calculé automatiquement selon le poids.</small>
+</div>
+
+</section>
+
+<section class="panier-section">
+
+<div class="panier-card">
+
+<h2>🛒 Votre panier</h2>
+
+<div id="recapCommande">
+Aucun produit sélectionné.
+</div>
+
+<div class="total-box">
+<span>Total</span>
+<strong id="total">0.00 CHF</strong>
+</div>
 
 </div>
 
-
 </section>
-
-
-
-
 
 <section class="presentation">
 
-<h2>
-Votre panier
-</h2>
+<h2>Vos coordonnées</h2>
 
-<p id="total">
-Total : 0.00 CHF
+<form class="commande-form">
+
+<div class="form-grid">
+
+<div>
+<label>Nom et prénom</label>
+<input type="text" placeholder="Votre nom" required>
+</div>
+
+<div>
+<label>Téléphone</label>
+<input type="tel" placeholder="079 xxx xx xx">
+</div>
+
+<div class="full-width">
+<label>Adresse e-mail</label>
+<input type="email" placeholder="votre@email.ch" required>
+</div>
+
+<div class="full-width">
+<label>Adresse de livraison</label>
+<textarea rows="4" placeholder="Rue, N°, NPA, Ville"></textarea>
+</div>
+
+<div class="full-width">
+<label>Commentaire</label>
+<textarea rows="3" placeholder="Date souhaitée, instructions, cadeau, etc."></textarea>
+</div>
+
+</div>
+
+<div class="paiement-box">
+<h3>💳 Paiement TWINT</h3>
+<p>Merci d'effectuer le paiement avant validation de la commande.</p>
+<div class="twint-number">079 592 78 82</div>
+<p class="confirmation">
+La commande sera confirmée après vérification du paiement.
 </p>
+</div>
 
-
-</section>
-
-
-
-
-
-<section class="presentation">
-
-
-<h2>
-Vos coordonnées
-</h2>
-
-
-
-<form>
-
-
-<label>
-Nom et prénom
-</label>
-
-<br>
-
-<input 
-type="text"
-placeholder="Votre nom"
-required>
-
-
-<br><br>
-
-
-<label>
-Adresse e-mail
-</label>
-
-<br>
-
-<input 
-type="email"
-placeholder="Votre e-mail"
-required>
-
-
-<br><br>
-
-
-<label>
-Téléphone
-</label>
-
-<br>
-
-<input 
-type="tel"
-placeholder="Votre téléphone">
-
-
-<br><br>
-
-
-<label>
-Adresse de livraison
-</label>
-
-<br>
-
-<textarea 
-placeholder="Votre adresse">
-</textarea>
-
-
-<br><br>
-
-
-
-<h3>
-💳 Paiement
-</h3>
-
-
-<p>
-TWINT : <strong>079 592 78 82</strong>
-</p>
-
-
-<p>
-La commande sera validée après confirmation du paiement.
-</p>
-
-
-
-<button class="btn" type="submit">
+<button class="btn btn-large" type="submit">
 Envoyer ma commande
 </button>
 
-
 </form>
-
 
 </section>
 
-
-
-
-
 <footer>
-
-<p>
-© Idée Gourmande - Genève
-</p>
-
+<p>© Idée Gourmande - Genève • <a href="mentions-legales.html">Mentions légales</a></p>
 </footer>
 
-
-
 <script src="js/commande.js"></script>
-
-
 </body>
-
 </html>
