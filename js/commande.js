@@ -1,7 +1,7 @@
 // ==================================
 // IDÉE GOURMANDE
-// Panier Version 3
-// Gestion des variantes produits
+// Panier Version 4
+// Produits indépendants
 // ==================================
 
 
@@ -13,14 +13,18 @@ function calculerTotal() {
     // =========================
 
     const foieFigues =
-        parseInt(document.getElementById("foieFigues").value) || 0;
+        Number(document.getElementById("foieFigues").value) || 0;
 
     const foiePiment =
-        parseInt(document.getElementById("foiePiment").value) || 0;
+        Number(document.getElementById("foiePiment").value) || 0;
 
 
-    const prixFoieFigues = foieFigues * 35;
-    const prixFoiePiment = foiePiment * 35;
+    const prixFoieFigues =
+        foieFigues * 35;
+
+    const prixFoiePiment =
+        foiePiment * 35;
+
 
 
 
@@ -29,14 +33,18 @@ function calculerTotal() {
     // =========================
 
     const magretHerbes =
-        parseInt(document.getElementById("magretHerbes").value) || 0;
+        Number(document.getElementById("magretHerbes").value) || 0;
 
     const magretPiment =
-        parseInt(document.getElementById("magretPiment").value) || 0;
+        Number(document.getElementById("magretPiment").value) || 0;
 
 
-    const prixMagretHerbes = magretHerbes * 25;
-    const prixMagretPiment = magretPiment * 25;
+    const prixMagretHerbes =
+        magretHerbes * 25;
+
+    const prixMagretPiment =
+        magretPiment * 25;
+
 
 
 
@@ -45,10 +53,10 @@ function calculerTotal() {
     // =========================
 
     const saumonAneth =
-        parseInt(document.getElementById("saumonAneth").value) || 0;
+        Number(document.getElementById("saumonAneth").value) || 0;
 
     const saumonPiment =
-        parseInt(document.getElementById("saumonPiment").value) || 0;
+        Number(document.getElementById("saumonPiment").value) || 0;
 
 
     const prixSaumonAneth =
@@ -60,8 +68,9 @@ function calculerTotal() {
 
 
 
+
     // =========================
-    // TOTAL GENERAL
+    // TOTAL
     // =========================
 
     const total =
@@ -81,8 +90,10 @@ function calculerTotal() {
 
 
 
+
+
     // =========================
-    // RECAPITULATIF PANIER
+    // PANIER
     // =========================
 
     let recap = "";
@@ -115,8 +126,6 @@ function calculerTotal() {
 
 
 
-
-
     if (magretHerbes > 0) {
 
         recap +=
@@ -127,8 +136,6 @@ function calculerTotal() {
         + " CHF<br>";
 
     }
-
-
 
 
 
@@ -145,9 +152,6 @@ function calculerTotal() {
 
 
 
-
-
-
     if (saumonAneth > 0) {
 
         recap +=
@@ -161,8 +165,6 @@ function calculerTotal() {
 
 
 
-
-
     if (saumonPiment > 0) {
 
         recap +=
@@ -173,8 +175,6 @@ function calculerTotal() {
         + " CHF<br>";
 
     }
-
-
 
 
 
@@ -195,7 +195,7 @@ function calculerTotal() {
 
 
 
-// Calcul automatique au chargement
+// Calcul dès l'ouverture de la page
 
 document.addEventListener(
     "DOMContentLoaded",
