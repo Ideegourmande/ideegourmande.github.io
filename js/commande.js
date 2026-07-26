@@ -6,8 +6,8 @@
 function calculerTotal() {
 
     // Quantités
-    const qFigues = parseInt(document.getElementById('foieFigues').value) || 0;
-    const qPiment = parseInt(document.getElementById('foiePiment').value) || 0;
+    const qFoieGras = parseInt(document.getElementById('foieGras').value) || 0;
+    const foieGrasSaveur = document.getElementById('foieGrasSaveur').value;
     const qMagret = parseInt(document.getElementById('magret').value) || 0;
     const grammesSaumon = parseInt(document.getElementById('saumon').value) || 0;
 
@@ -16,12 +16,11 @@ function calculerTotal() {
     const saumonSaveur = document.getElementById('saumonSaveur').value;
 
     // Calculs
-    const foieFigues = qFigues * 35;
-    const foiePiment = qPiment * 35;
+    const foieGras = qFoieGras * 35;
     const magret = qMagret * 25;
     const saumon = (grammesSaumon / 100) * 8;
 
-    const total = foieFigues + foiePiment + magret + saumon;
+    const total = foieGras + magret + saumon;
 
     // Affichage du total
     document.getElementById('total').innerText =
@@ -30,12 +29,8 @@ function calculerTotal() {
     // Récapitulatif
     let recap = '';
 
-    if (qFigues > 0) {
-        recap += `• Foie gras Figues × ${qFigues} — ${foieFigues.toFixed(2)} CHF<br>`;
-    }
-
-    if (qPiment > 0) {
-        recap += `• Foie gras Piment & Porto × ${qPiment} — ${foiePiment.toFixed(2)} CHF<br>`;
+    if (qFoieGras > 0) {
+    recap += `• Foie gras (${foieGrasSaveur}) × ${qFoieGras} — ${foieGras.toFixed(2)} CHF<br>`;
     }
 
     if (qMagret > 0) {
