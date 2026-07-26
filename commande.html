@@ -451,7 +451,7 @@ Vos coordonnées
 
 
 
-<form class="commande-form">
+<form class="commande-form" onsubmit="envoyerCommande(event)">
 
 
 
@@ -468,6 +468,7 @@ Nom et prénom
 
 <input
 type="text"
+id="nom"
 placeholder="Votre nom"
 required>
 
@@ -486,6 +487,7 @@ Téléphone
 
 <input
 type="tel"
+id="telephone"
 placeholder="079 xxx xx xx">
 
 </div>
@@ -503,6 +505,7 @@ Adresse e-mail
 
 <input
 type="email"
+id="email"
 placeholder="votre@email.ch"
 required>
 
@@ -520,6 +523,7 @@ Adresse de livraison
 
 
 <textarea
+id="adresse"
 rows="4"
 placeholder="Rue, numéro, NPA, ville">
 </textarea>
@@ -538,6 +542,7 @@ Commentaire
 
 
 <textarea
+id="commentaire"
 rows="3"
 placeholder="Date souhaitée, instructions particulières...">
 </textarea>
