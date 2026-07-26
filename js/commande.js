@@ -1,75 +1,203 @@
 // ==================================
 // IDÉE GOURMANDE
-// Panier Version 2
+// Panier Version 3
+// Gestion des variantes produits
 // ==================================
+
 
 function calculerTotal() {
 
-    // ----- Foie gras -----
-    const qFoieGras = parseInt(document.getElementById("foieGras").value) || 0;
-    const foieGrasSaveur = document.getElementById("foieGrasSaveur").value;
 
-    // ----- Magret -----
-    const qMagret = parseInt(document.getElementById("magret").value) || 0;
-    const magretSaveur = document.getElementById("magretSaveur").value;
+    // =========================
+    // FOIE GRAS
+    // =========================
 
-    // ----- Saumon -----
-    const grammesSaumon = parseInt(document.getElementById("saumon").value) || 0;
-    const saumonSaveur = document.getElementById("saumonSaveur").value;
+    const foieFigues =
+        parseInt(document.getElementById("foieFigues").value) || 0;
 
-    // ----- Calcul des prix -----
-    const foieGras = qFoieGras * 35;
-    const magret = qMagret * 25;
-    const saumon = (grammesSaumon / 100) * 8;
+    const foiePiment =
+        parseInt(document.getElementById("foiePiment").value) || 0;
 
-    const total = foieGras + magret + saumon;
 
-    // ----- Affichage du total -----
+    const prixFoieFigues = foieFigues * 35;
+    const prixFoiePiment = foiePiment * 35;
+
+
+
+    // =========================
+    // MAGRET
+    // =========================
+
+    const magretHerbes =
+        parseInt(document.getElementById("magretHerbes").value) || 0;
+
+    const magretPiment =
+        parseInt(document.getElementById("magretPiment").value) || 0;
+
+
+    const prixMagretHerbes = magretHerbes * 25;
+    const prixMagretPiment = magretPiment * 25;
+
+
+
+    // =========================
+    // SAUMON
+    // =========================
+
+    const saumonAneth =
+        parseInt(document.getElementById("saumonAneth").value) || 0;
+
+    const saumonPiment =
+        parseInt(document.getElementById("saumonPiment").value) || 0;
+
+
+    const prixSaumonAneth =
+        (saumonAneth / 100) * 8;
+
+    const prixSaumonPiment =
+        (saumonPiment / 100) * 8;
+
+
+
+
+    // =========================
+    // TOTAL GENERAL
+    // =========================
+
+    const total =
+        prixFoieFigues +
+        prixFoiePiment +
+        prixMagretHerbes +
+        prixMagretPiment +
+        prixSaumonAneth +
+        prixSaumonPiment;
+
+
+
     document.getElementById("total").innerHTML =
         total.toFixed(2) + " CHF";
 
-    // ----- Récapitulatif -----
+
+
+
+
+    // =========================
+    // RECAPITULATIF PANIER
+    // =========================
+
     let recap = "";
 
-    if (qFoieGras > 0) {
+
+
+    if (foieFigues > 0) {
+
         recap +=
-            "• Foie gras (" +
-            foieGrasSaveur +
-            ") × " +
-            qFoieGras +
-            " — " +
-            foieGras.toFixed(2) +
-            " CHF<br>";
+        "• Foie gras - Gelée de figues au vin de messe × "
+        + foieFigues
+        + " — "
+        + prixFoieFigues.toFixed(2)
+        + " CHF<br>";
+
     }
 
-    if (qMagret > 0) {
+
+
+    if (foiePiment > 0) {
+
         recap +=
-            "• Magret (" +
-            magretSaveur +
-            ") × " +
-            qMagret +
-            " — " +
-            magret.toFixed(2) +
-            " CHF<br>";
+        "• Foie gras - Piment d'Espelette & Porto Calem × "
+        + foiePiment
+        + " — "
+        + prixFoiePiment.toFixed(2)
+        + " CHF<br>";
+
     }
 
-    if (grammesSaumon > 0) {
+
+
+
+
+    if (magretHerbes > 0) {
+
         recap +=
-            "• Cœur de saumon (" +
-            saumonSaveur +
-            ") — " +
-            grammesSaumon +
-            " g — " +
-            saumon.toFixed(2) +
-            " CHF<br>";
+        "• Magret fumé - Herbes de Provence × "
+        + magretHerbes
+        + " — "
+        + prixMagretHerbes.toFixed(2)
+        + " CHF<br>";
+
     }
+
+
+
+
+
+    if (magretPiment > 0) {
+
+        recap +=
+        "• Magret fumé - Piment d'Espelette × "
+        + magretPiment
+        + " — "
+        + prixMagretPiment.toFixed(2)
+        + " CHF<br>";
+
+    }
+
+
+
+
+
+
+    if (saumonAneth > 0) {
+
+        recap +=
+        "• Cœur de saumon fumé - Aneth "
+        + saumonAneth
+        + " g — "
+        + prixSaumonAneth.toFixed(2)
+        + " CHF<br>";
+
+    }
+
+
+
+
+
+    if (saumonPiment > 0) {
+
+        recap +=
+        "• Cœur de saumon fumé - Piment d'Espelette "
+        + saumonPiment
+        + " g — "
+        + prixSaumonPiment.toFixed(2)
+        + " CHF<br>";
+
+    }
+
+
+
+
 
     if (recap === "") {
+
         recap = "Aucun produit sélectionné.";
+
     }
 
+
+
     document.getElementById("recapCommande").innerHTML = recap;
+
+
 }
 
-// Lancement automatique au chargement de la page
-document.addEventListener("DOMContentLoaded", calculerTotal);
+
+
+
+
+// Calcul automatique au chargement
+
+document.addEventListener(
+    "DOMContentLoaded",
+    calculerTotal
+);
