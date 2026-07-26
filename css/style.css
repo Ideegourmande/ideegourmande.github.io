@@ -1,0 +1,266 @@
+/* ==================================
+   IDÉE GOURMANDE
+   Identité visuelle épicerie fine
+   ================================== */
+
+
+/* ---------- Base ---------- */
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: "Georgia", serif;
+    background-color: #f8f4eb;
+    color: #292929;
+    line-height: 1.6;
+}
+
+
+/* ---------- Bandeau livraison ---------- */
+
+.top-banner {
+    background-color: #879b7b;
+    color: white;
+    text-align: center;
+    padding: 12px;
+    font-size: 0.95rem;
+    letter-spacing: 0.3px;
+}
+
+
+/* ---------- Navigation ---------- */
+
+nav {
+    background-color: #f8f4eb;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px 8%;
+    border-bottom: 1px solid #d4af37;
+}
+
+
+.logo img {
+    width: 110px;
+}
+
+
+nav ul {
+    list-style: none;
+    display: flex;
+    gap: 30px;
+}
+
+
+nav ul li a {
+    text-decoration: none;
+    color: #292929;
+    font-weight: bold;
+    transition: 0.3s;
+}
+
+
+nav ul li a:hover {
+    color: #b08d2c;
+}
+
+
+/* ---------- Hero ---------- */
+
+.hero {
+    min-height: 600px;
+    background:
+    linear-gradient(
+    rgba(0,0,0,0.45),
+    rgba(0,0,0,0.45)
+    ),
+    url("../images/hero.jpg");
+
+    background-size: cover;
+    background-position: center;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    text-align: center;
+    color: white;
+}
+
+
+.hero-content {
+    max-width: 700px;
+    padding: 30px;
+}
+
+
+.hero h1 {
+    font-size: 4rem;
+    margin-bottom: 15px;
+}
+
+
+.hero h2 {
+    font-size: 2rem;
+    color: #e2c46d;
+    margin-bottom: 20px;
+}
+
+
+.hero p {
+    font-size: 1.2rem;
+    margin-bottom: 35px;
+}
+
+
+/* ---------- Boutons ---------- */
+
+.btn {
+
+    display: inline-block;
+
+    background-color: #b08d2c;
+
+    color: white;
+
+    padding: 14px 35px;
+
+    text-decoration: none;
+
+    border-radius: 30px;
+
+    font-weight: bold;
+
+    transition: 0.3s;
+}
+
+
+.btn:hover {
+
+    background-color: #8c6d1f;
+
+}
+
+
+/* ---------- Valeurs ---------- */
+
+
+.valeurs {
+
+    display: grid;
+
+    grid-template-columns: repeat(3,1fr);
+
+    gap: 30px;
+
+    padding: 70px 8%;
+
+    text-align: center;
+
+}
+
+
+.valeurs div {
+
+    background-color: white;
+
+    padding: 35px;
+
+    border-radius: 15px;
+
+    box-shadow: 0 5px 20px rgba(0,0,0,0.08);
+
+}
+
+
+.valeurs h3 {
+
+    color: #879b7b;
+
+    margin-bottom: 15px;
+
+}
+
+
+
+/* ---------- Présentation ---------- */
+
+
+.presentation {
+
+    text-align: center;
+
+    padding: 70px 15%;
+
+}
+
+
+.presentation h2 {
+
+    font-size: 2.5rem;
+
+    color: #879b7b;
+
+    margin-bottom: 25px;
+
+}
+
+
+/* ---------- Footer ---------- */
+
+
+footer {
+
+    background-color: #292929;
+
+    color: white;
+
+    text-align: center;
+
+    padding: 25px;
+
+}
+
+
+
+/* ---------- Responsive mobile ---------- */
+
+
+@media(max-width:900px){
+
+    nav {
+
+        flex-direction: column;
+
+        gap:20px;
+
+    }
+
+
+    nav ul {
+
+        flex-direction: column;
+
+        text-align:center;
+
+    }
+
+
+    .hero h1 {
+
+        font-size:2.5rem;
+
+    }
+
+
+    .valeurs {
+
+        grid-template-columns:1fr;
+
+    }
+
+}
