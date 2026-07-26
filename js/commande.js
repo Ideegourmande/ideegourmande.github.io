@@ -364,6 +364,12 @@ ${commentaire}
 
     window.location.href = mailto;
 
+setTimeout(function(){
+
+    window.location.href = "confirmation.html";
+
+}, 1500);
+
 
 }
 
