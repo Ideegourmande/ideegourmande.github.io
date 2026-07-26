@@ -1,1 +1,303 @@
+<!DOCTYPE html>
+<html lang="fr">
 
+<head>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Préparer ma commande | Idée Gourmande</title>
+
+<link rel="stylesheet" href="css/style.css">
+
+</head>
+
+
+<body>
+
+
+<header>
+
+<div class="top-banner">
+🚚 Commandes préparées artisanalement à Genève – Livraison congelée pour préserver toute la qualité de nos produits.
+</div>
+
+
+<nav>
+
+<div class="logo">
+<img src="images/logo.svg" alt="Idée Gourmande">
+</div>
+
+
+<ul>
+<li><a href="index.html">Accueil</a></li>
+<li><a href="savoir-faire.html">Notre savoir-faire</a></li>
+<li><a href="produits.html">Nos produits</a></li>
+<li><a href="commande.html">Commander</a></li>
+<li><a href="contact.html">Contact</a></li>
+</ul>
+
+</nav>
+
+</header>
+
+
+
+<section class="presentation">
+
+<h1>
+Préparer ma commande
+</h1>
+
+<p>
+Sélectionnez vos produits et préparez votre commande artisanale.
+</p>
+
+</section>
+
+
+
+
+<section class="valeurs">
+
+
+<div>
+
+<h3>
+🦆 Foie gras de canard au torchon
+</h3>
+
+<p>
+Gelée de figues au vin de messe
+</p>
+
+<p>
+<strong>200 g – 35.00 CHF</strong>
+</p>
+
+<input 
+type="number"
+id="foieFigues"
+value="0"
+min="0"
+onchange="calculerTotal()">
+
+</div>
+
+
+
+<div>
+
+<h3>
+🦆 Foie gras de canard au torchon
+</h3>
+
+<p>
+Piment d'Espelette & Porto Calem
+</p>
+
+<p>
+<strong>200 g – 35.00 CHF</strong>
+</p>
+
+<input 
+type="number"
+id="foiePiment"
+value="0"
+min="0"
+onchange="calculerTotal()">
+
+</div>
+
+
+
+<div>
+
+<h3>
+🥩 Magret de canard fumé et séché
+</h3>
+
+<p>
+Herbes de Provence ou Piment d'Espelette
+</p>
+
+<p>
+<strong>25.00 CHF</strong>
+</p>
+
+<input 
+type="number"
+id="magret"
+value="0"
+min="0"
+onchange="calculerTotal()">
+
+</div>
+
+
+
+<div>
+
+<h3>
+🐟 Cœur de saumon fumé
+</h3>
+
+<p>
+Aneth ou Piment d'Espelette
+</p>
+
+<p>
+<strong>8.00 CHF / 100 g</strong>
+</p>
+
+<input 
+type="number"
+id="saumon"
+value="0"
+min="0"
+onchange="calculerTotal()">
+
+</div>
+
+
+</section>
+
+
+
+
+
+<section class="presentation">
+
+<h2>
+Votre panier
+</h2>
+
+<p id="total">
+Total : 0.00 CHF
+</p>
+
+
+</section>
+
+
+
+
+
+<section class="presentation">
+
+
+<h2>
+Vos coordonnées
+</h2>
+
+
+
+<form>
+
+
+<label>
+Nom et prénom
+</label>
+
+<br>
+
+<input 
+type="text"
+placeholder="Votre nom"
+required>
+
+
+<br><br>
+
+
+<label>
+Adresse e-mail
+</label>
+
+<br>
+
+<input 
+type="email"
+placeholder="Votre e-mail"
+required>
+
+
+<br><br>
+
+
+<label>
+Téléphone
+</label>
+
+<br>
+
+<input 
+type="tel"
+placeholder="Votre téléphone">
+
+
+<br><br>
+
+
+<label>
+Adresse de livraison
+</label>
+
+<br>
+
+<textarea 
+placeholder="Votre adresse">
+</textarea>
+
+
+<br><br>
+
+
+
+<h3>
+💳 Paiement
+</h3>
+
+
+<p>
+TWINT : <strong>079 592 78 82</strong>
+</p>
+
+
+<p>
+La commande sera validée après confirmation du paiement.
+</p>
+
+
+
+<button class="btn" type="submit">
+Envoyer ma commande
+</button>
+
+
+</form>
+
+
+</section>
+
+
+
+
+
+<footer>
+
+<p>
+© Idée Gourmande - Genève
+</p>
+
+</footer>
+
+
+
+<script src="js/commande.js"></script>
+
+
+</body>
+
+</html>
