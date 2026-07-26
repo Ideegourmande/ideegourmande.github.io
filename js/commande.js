@@ -1,31 +1,57 @@
 // ==================================
-// IDÉE GOURMANDE
-// Calcul automatique du panier
+// IDÉE GOURMANDE – Version 2
+// Panier professionnel avec récapitulatif
 // ==================================
-
 
 function calculerTotal() {
 
+    // Quantités
+    const qFigues = parseInt(document.getElementById('foieFigues').value) || 0;
+    const qPiment = parseInt(document.getElementById('foiePiment').value) || 0;
+    const qMagret = parseInt(document.getElementById('magret').value) || 0;
+    const grammesSaumon = parseInt(document.getElementById('saumon').value) || 0;
 
-    let foieFigues = document.getElementById("foieFigues").value * 35;
+    // Saveurs
+    const magretSaveur = document.getElementById('magretSaveur').value;
+    const saumonSaveur = document.getElementById('saumonSaveur').value;
 
-    let foiePiment = document.getElementById("foiePiment").value * 35;
+    // Calculs
+    const foieFigues = qFigues * 35;
+    const foiePiment = qPiment * 35;
+    const magret = qMagret * 25;
+    const saumon = (grammesSaumon / 100) * 8;
 
-    let magret = document.getElementById("magret").value * 25;
+    const total = foieFigues + foiePiment + magret + saumon;
 
-    let saumon = document.getElementById("saumon").value * 8;
+    // Affichage du total
+    document.getElementById('total').innerText =
+        total.toFixed(2) + ' CHF';
 
+    // Récapitulatif
+    let recap = '';
 
+    if (qFigues > 0) {
+        recap += `• Foie gras Figues × ${qFigues} — ${foieFigues.toFixed(2)} CHF<br>`;
+    }
 
-    let total = 
-        foieFigues +
-        foiePiment +
-        magret +
-        saumon;
+    if (qPiment > 0) {
+        recap += `• Foie gras Piment & Porto × ${qPiment} — ${foiePiment.toFixed(2)} CHF<br>`;
+    }
 
+    if (qMagret > 0) {
+        recap += `• Magret (${magretSaveur}) × ${qMagret} — ${magret.toFixed(2)} CHF<br>`;
+    }
 
+    if (grammesSaumon > 0) {
+        recap += `• Saumon (${saumonSaveur}) — ${grammesSaumon} g — ${saumon.toFixed(2)} CHF<br>`;
+    }
 
-    document.getElementById("total").innerHTML =
-        "Total : " + total.toFixed(2) + " CHF";
+    if (recap === '') {
+        recap = 'Aucun produit sélectionné.';
+    }
 
+    document.getElementById('recapCommande').innerHTML = recap;
 }
+
+// Initialisation au chargement
+document.addEventListener('DOMContentLoaded', calculerTotal);
