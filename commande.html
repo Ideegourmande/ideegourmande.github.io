@@ -12,6 +12,7 @@
 
 </head>
 
+
 <body>
 
 
@@ -30,16 +31,20 @@
 
 
 <ul>
+
 <li><a href="index.html">Accueil</a></li>
 <li><a href="savoir-faire.html">Notre savoir-faire</a></li>
 <li><a href="produits.html">Nos produits</a></li>
 <li><a href="commande.html">Commander</a></li>
 <li><a href="contact.html">Contact</a></li>
+
 </ul>
 
 </nav>
 
 </header>
+
+
 
 
 
@@ -50,10 +55,12 @@ Préparer ma commande
 </h1>
 
 <p>
-Sélectionnez vos produits, choisissez vos saveurs et préparez votre commande.
+Choisissez vos recettes et indiquez les quantités souhaitées.
 </p>
 
 </section>
+
+
 
 
 
@@ -62,14 +69,18 @@ Sélectionnez vos produits, choisissez vos saveurs et préparez votre commande.
 
 
 
+
+
 <!-- =========================
-FOIE GRAS
+FOIE GRAS FIGUES
 ========================= -->
+
 
 <div class="commande-card">
 
+
 <img src="images/foie-gras-figues.jpg"
-alt="Foie gras de canard au torchon">
+alt="Foie gras figues">
 
 
 <h3>
@@ -78,28 +89,15 @@ alt="Foie gras de canard au torchon">
 
 
 <p>
-<strong>
-200 g – 35.00 CHF
-</strong>
+Gelée de figues au vin de messe
 </p>
 
 
-<label>
-Recette
-</label>
-
-
-<select id="foieGrasSaveur" onchange="calculerTotal()">
-
-<option>
-Gelée de figues au vin de messe
-</option>
-
-<option>
-Piment d'Espelette & Porto Calem
-</option>
-
-</select>
+<p>
+<strong>
+200 g - 35.00 CHF
+</strong>
+</p>
 
 
 <label>
@@ -109,10 +107,11 @@ Quantité
 
 <input
 type="number"
-id="foieGras"
+id="foieFigues"
 value="0"
 min="0"
-onchange="calculerTotal()">
+oninput="calculerTotal()">
+
 
 
 </div>
@@ -121,20 +120,80 @@ onchange="calculerTotal()">
 
 
 
+
+
 <!-- =========================
-MAGRET
+FOIE GRAS PIMENT
 ========================= -->
+
+
+<div class="commande-card">
+
+
+<img src="images/foie-gras-piment.jpg"
+alt="Foie gras piment">
+
+
+<h3>
+🦆 Foie gras de canard au torchon
+</h3>
+
+
+<p>
+Piment d'Espelette & Porto Calem
+</p>
+
+
+<p>
+<strong>
+200 g - 35.00 CHF
+</strong>
+</p>
+
+
+<label>
+Quantité
+</label>
+
+
+<input
+type="number"
+id="foiePiment"
+value="0"
+min="0"
+oninput="calculerTotal()">
+
+
+
+</div>
+
+
+
+
+
+
+
+
+<!-- =========================
+MAGRET HERBES
+========================= -->
+
 
 <div class="commande-card">
 
 
 <img src="images/magret-fume.jpg"
-alt="Magret de canard fumé">
+alt="Magret fumé">
 
 
 <h3>
 🥩 Magret de canard fumé et séché
 </h3>
+
+
+<p>
+Herbes de Provence
+</p>
 
 
 <p>
@@ -145,34 +204,16 @@ alt="Magret de canard fumé">
 
 
 <label>
-Saveur
-</label>
-
-
-<select id="magretSaveur" onchange="calculerTotal()">
-
-<option>
-Herbes de Provence
-</option>
-
-<option>
-Piment d'Espelette
-</option>
-
-</select>
-
-
-<label>
 Quantité
 </label>
 
 
 <input
 type="number"
-id="magret"
+id="magretHerbes"
 value="0"
 min="0"
-onchange="calculerTotal()">
+oninput="calculerTotal()">
 
 
 
@@ -182,9 +223,56 @@ onchange="calculerTotal()">
 
 
 
+
+
 <!-- =========================
-SAUMON
+MAGRET PIMENT
 ========================= -->
+
+
+<div class="commande-card">
+
+
+<img src="images/magret-fume.jpg"
+alt="Magret piment">
+
+
+<h3>
+🥩 Magret de canard fumé et séché
+</h3>
+
+
+<p>
+Piment d'Espelette
+</p>
+
+
+<p>
+<strong>
+25.00 CHF
+</strong>
+</p>
+
+
+<label>
+Quantité
+</label>
+
+
+<input
+type="number"
+id="magretPiment"
+value="0"
+min="0"
+oninput="calculerTotal()">
+
+
+
+</div>
+<!-- =========================
+SAUMON ANETH
+========================= -->
+
 
 <div class="commande-card">
 
@@ -199,28 +287,15 @@ alt="Cœur de saumon fumé">
 
 
 <p>
+Aneth
+</p>
+
+
+<p>
 <strong>
 8.00 CHF / 100 g
 </strong>
 </p>
-
-
-<label>
-Saveur
-</label>
-
-
-<select id="saumonSaveur" onchange="calculerTotal()">
-
-<option>
-Aneth
-</option>
-
-<option>
-Piment d'Espelette
-</option>
-
-</select>
 
 
 <label>
@@ -230,18 +305,66 @@ Poids en grammes
 
 <input
 type="number"
-id="saumon"
+id="saumonAneth"
 value="0"
 min="0"
 step="100"
 placeholder="Exemple : 200"
-onchange="calculerTotal()">
+oninput="calculerTotal()">
 
 
 
-<small>
-Le prix est calculé automatiquement selon le poids.
-</small>
+</div>
+
+
+
+
+
+
+
+<!-- =========================
+SAUMON PIMENT
+========================= -->
+
+
+<div class="commande-card">
+
+
+<img src="images/saumon-fume.jpg"
+alt="Cœur de saumon fumé piment">
+
+
+<h3>
+🐟 Cœur de saumon fumé
+</h3>
+
+
+<p>
+Piment d'Espelette
+</p>
+
+
+<p>
+<strong>
+8.00 CHF / 100 g
+</strong>
+</p>
+
+
+<label>
+Poids en grammes
+</label>
+
+
+<input
+type="number"
+id="saumonPiment"
+value="0"
+min="0"
+step="100"
+placeholder="Exemple : 200"
+oninput="calculerTotal()">
+
 
 
 </div>
@@ -249,17 +372,29 @@ Le prix est calculé automatiquement selon le poids.
 
 
 </section>
+
+
+
+
+
+
+
+
 <!-- =========================
 PANIER
 ========================= -->
 
+
 <section class="panier-section">
 
+
 <div class="panier-card">
+
 
 <h2>
 🛒 Votre panier
 </h2>
+
 
 
 <div id="recapCommande">
@@ -270,7 +405,9 @@ Aucun produit sélectionné.
 
 
 
+
 <div class="total-box">
+
 
 <span>
 Total
@@ -282,12 +419,20 @@ Total
 </strong>
 
 
+
 </div>
 
 
+
 </div>
+
 
 </section>
+
+
+
+
+
 
 
 
@@ -320,6 +465,7 @@ Vos coordonnées
 Nom et prénom
 </label>
 
+
 <input
 type="text"
 placeholder="Votre nom"
@@ -337,6 +483,7 @@ required>
 Téléphone
 </label>
 
+
 <input
 type="tel"
 placeholder="079 xxx xx xx">
@@ -352,6 +499,7 @@ placeholder="079 xxx xx xx">
 <label>
 Adresse e-mail
 </label>
+
 
 <input
 type="email"
@@ -370,6 +518,7 @@ required>
 Adresse de livraison
 </label>
 
+
 <textarea
 rows="4"
 placeholder="Rue, numéro, NPA, ville">
@@ -384,8 +533,9 @@ placeholder="Rue, numéro, NPA, ville">
 <div class="full-width">
 
 <label>
-Message ou commentaire
+Commentaire
 </label>
+
 
 <textarea
 rows="3"
@@ -397,6 +547,8 @@ placeholder="Date souhaitée, instructions particulières...">
 
 
 </div>
+
+
 
 
 
@@ -417,8 +569,9 @@ PAIEMENT TWINT
 
 
 <p>
-Merci d'effectuer le paiement avant validation de votre commande.
+Merci d'effectuer le paiement avant validation de la commande.
 </p>
+
 
 
 <div class="twint-number">
@@ -446,7 +599,6 @@ J'ai effectué le paiement TWINT.
 La commande sera confirmée après vérification du paiement.
 
 </p>
-
 
 
 </div>
@@ -478,6 +630,9 @@ Envoyer ma commande
 
 
 
+
+
+
 <!-- =========================
 FOOTER
 ========================= -->
@@ -487,9 +642,7 @@ FOOTER
 
 
 <p>
-
 © Idée Gourmande - Genève
-
 </p>
 
 
@@ -514,8 +667,9 @@ Mentions légales
 
 
 
-<script src="js/commande.js"></script>
 
+
+<script src="js/commande.js"></script>
 
 
 </body>
