@@ -50,9 +50,24 @@ Tableau de bord
 </h1>
 
 
-<button onclick="deconnexion()">
+
+<button 
+class="btn"
+onclick="deconnexion()">
+
 🚪 Déconnexion
+
 </button>
+
+
+<a 
+href="archives.html"
+class="btn">
+
+📂 Voir les archives
+
+</a>
+
 
 
 </section>
@@ -166,122 +181,11 @@ Chargement...
 
 
 
+<script src="js/pdfcommande.js"></script>
+
 <script src="js/admin.js"></script>
 
 
 </body>
 
 </html>
-/* ==================================
-ADMINISTRATION
-================================== */
-
-
-.stats {
-
-display:grid;
-
-grid-template-columns:repeat(3,1fr);
-
-gap:25px;
-
-padding:40px 8%;
-
-}
-
-
-
-.stat-card {
-
-background:white;
-
-padding:30px;
-
-border-radius:20px;
-
-box-shadow:var(--ombre);
-
-text-align:center;
-
-}
-
-
-
-.stat-card h3 {
-
-color:var(--vert);
-
-}
-
-
-
-.stat-card strong {
-
-font-size:2rem;
-
-color:var(--or-fonce);
-
-}
-
-
-
-.commande-admin {
-
-background:white;
-
-padding:25px;
-
-margin-top:25px;
-
-border-radius:20px;
-
-box-shadow:var(--ombre);
-
-}
-
-
-
-.commande-admin h3 {
-
-color:var(--vert);
-
-}
-
-
-
-.commande-admin select {
-
-max-width:250px;
-
-}
-
-
-
-#rechercheCommande {
-
-margin-bottom:25px;
-
-}
-
-
-
-
-
-@media(max-width:900px){
-
-
-.stats {
-
-grid-template-columns:1fr;
-
-}
-
-
-.commande-admin {
-
-padding:18px;
-
-}
-
-
-}
