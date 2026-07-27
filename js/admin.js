@@ -1,7 +1,7 @@
 // ==================================
 // IDÉE GOURMANDE
 // Administration commandes
-// Version 1.4
+// Version 1.5
 // ==================================
 
 
@@ -27,6 +27,26 @@ return [];
 }
 
 
+// ==================================
+// CHARGEMENT DES ARCHIVES
+// ==================================
+
+function obtenirArchives(){
+
+try{
+
+return JSON.parse(
+localStorage.getItem("commandesArchivees")
+) || [];
+
+}
+catch(e){
+
+return [];
+
+}
+
+}
 
 
 // ==================================
@@ -35,30 +55,25 @@ return [];
 
 function afficherCommandes(){
 
-
 afficherListeCommandes(
 obtenirCommandes()
 );
 
-
 }
-
-
 
 
 
 function afficherListeCommandes(commandes){
 
-
 const zone =
 document.getElementById("listeCommandes");
 
 
-
 if(!zone){
-return;
-}
 
+return;
+
+}
 
 
 if(commandes.length === 0){
@@ -71,13 +86,10 @@ return;
 }
 
 
-
 let html = "";
 
 
-
 commandes.forEach(function(cmd,index){
-
 
 
 html += `
@@ -90,19 +102,16 @@ html += `
 </h3>
 
 
-
 <p>
 <strong>Date :</strong><br>
-${cmd.date}
+${cmd.date || "-"}
 </p>
-
 
 
 <p>
 <strong>Client :</strong><br>
-${cmd.client}
+${cmd.client || "-"}
 </p>
-
 
 
 <p>
@@ -111,19 +120,16 @@ ${cmd.telephone || "-"}
 </p>
 
 
-
 <p>
 <strong>Email :</strong><br>
-${cmd.email}
+${cmd.email || "-"}
 </p>
-
 
 
 <p>
 <strong>Adresse :</strong><br>
-${cmd.adresse}
+${cmd.adresse || "-"}
 </p>
-
 
 
 <p>
@@ -133,10 +139,9 @@ ${(cmd.produits || "")
 </p>
 
 
-
 <p>
 <strong>Total :</strong>
-${cmd.total} CHF
+${cmd.total || 0} CHF
 </p>
 
 
@@ -175,9 +180,7 @@ Livrée
 
 </select>
 
-
 </p>
-
 
 
 
@@ -188,6 +191,9 @@ onclick="imprimerCommande(${index})">
 🖨 Imprimer PDF
 
 </button>
+
+
+
 <button
 class="btn"
 onclick="renvoyerEmail(${index})">
@@ -195,6 +201,22 @@ onclick="renvoyerEmail(${index})">
 📧 Renvoyer email
 
 </button>
+
+
+
+${cmd.statut==="Livrée" ? `
+
+<button
+class="btn"
+onclick="archiverCommande(${index})">
+
+📁 Archiver
+
+</button>
+
+` : ""}
+
+
 
 <button
 class="btn"
@@ -222,18 +244,14 @@ zone.innerHTML = html;
 
 
 
-
-
 // ==================================
 // CHANGER STATUT
 // ==================================
 
 function changerStatut(index,valeur){
 
-
 let commandes =
 obtenirCommandes();
-
 
 
 if(commandes[index]){
@@ -246,7 +264,10 @@ localStorage.setItem(
 "commandes",
 JSON.stringify(commandes)
 );
+
+
 afficherCommandes();
+
 afficherStatistiques();
 
 }
@@ -254,6 +275,66 @@ afficherStatistiques();
 }
 
 
+
+// ==================================
+// ARCHIVER COMMANDE
+// ==================================
+
+function archiverCommande(index){
+
+let commandes =
+obtenirCommandes();
+
+
+let archives =
+obtenirArchives();
+
+
+let cmd =
+commandes[index];
+
+
+if(!cmd){
+
+return;
+
+}
+
+
+if(!confirm(
+"Archiver cette commande ?"
+)){
+
+return;
+
+}
+
+
+archives.push(cmd);
+
+
+commandes.splice(index,1);
+
+
+
+localStorage.setItem(
+"commandesArchivees",
+JSON.stringify(archives)
+);
+
+
+localStorage.setItem(
+"commandes",
+JSON.stringify(commandes)
+);
+
+
+afficherCommandes();
+
+afficherStatistiques();
+
+
+}
 
 
 
@@ -273,21 +354,17 @@ return;
 }
 
 
-
 let commandes =
 obtenirCommandes();
 
 
-
 commandes.splice(index,1);
-
 
 
 localStorage.setItem(
 "commandes",
 JSON.stringify(commandes)
 );
-
 
 
 afficherCommandes();
@@ -298,6 +375,123 @@ afficherStatistiques();
 }
 
 
+
+// ==================================
+// IMPRIMER PDF
+// ==================================
+
+function imprimerCommande(index){
+
+let commandes =
+obtenirCommandes();
+
+
+let cmd =
+commandes[index];
+
+
+if(!cmd){
+
+return;
+
+}
+
+
+genererPDFCommande({
+
+nom: cmd.client,
+
+email: cmd.email,
+
+adresse: cmd.adresse,
+
+recap: cmd.produits || "",
+
+total: cmd.total
+
+});
+
+
+}
+
+
+
+// ==================================
+// EMAIL CLIENT
+// ==================================
+
+function renvoyerEmail(index){
+
+
+let commandes =
+obtenirCommandes();
+
+
+let cmd =
+commandes[index];
+
+
+if(!cmd){
+
+return;
+
+}
+
+
+if(!cmd.email){
+
+alert(
+"Cette commande n'a pas d'adresse email."
+);
+
+return;
+
+}
+
+
+
+let sujet =
+"Votre commande Idée Gourmande";
+
+
+let message =
+
+"Bonjour " +
+cmd.client +
+",\n\n" +
+
+"Nous vous confirmons le rappel de votre commande :\n\n" +
+
+(cmd.produits || "") +
+
+"\n\nTotal : " +
+
+cmd.total +
+
+" CHF\n\n" +
+
+"Merci pour votre confiance.\n\n" +
+
+"L'équipe Idée Gourmande";
+
+
+
+window.location.href =
+
+"mailto:" +
+
+cmd.email +
+
+"?subject=" +
+
+encodeURIComponent(sujet) +
+
+"&body=" +
+
+encodeURIComponent(message);
+
+
+}
 
 
 
@@ -310,7 +504,6 @@ function afficherStatistiques(){
 
 let commandes =
 obtenirCommandes();
-
 
 
 let nb =
@@ -334,9 +527,7 @@ commandes.length;
 }
 
 
-
 let total = 0;
-
 
 
 commandes.forEach(function(cmd){
@@ -344,7 +535,6 @@ commandes.forEach(function(cmd){
 total += Number(cmd.total) || 0;
 
 });
-
 
 
 if(ca){
@@ -361,9 +551,7 @@ new Date()
 .toLocaleDateString("fr-FR");
 
 
-
 let compteur = 0;
-
 
 
 commandes.forEach(function(cmd){
@@ -378,9 +566,7 @@ compteur++;
 
 }
 
-
 });
-
 
 
 if(jour){
@@ -395,10 +581,8 @@ compteur;
 
 
 
-
-
 // ==================================
-// RECHERCHE COMMANDES
+// RECHERCHE
 // ==================================
 
 function rechercherCommande(){
@@ -410,16 +594,15 @@ document.getElementById(
 );
 
 
-
 if(!champ){
-return;
-}
 
+return;
+
+}
 
 
 let recherche =
 champ.value.toLowerCase();
-
 
 
 let commandes =
@@ -437,6 +620,7 @@ return (
 .toLowerCase()
 .includes(recherche)
 
+
 ||
 
 (cmd.email || "")
@@ -449,75 +633,11 @@ return (
 });
 
 
-
 afficherListeCommandes(filtre);
 
 
 }
 
-
-// ==================================
-// RENVOYER EMAIL CLIENT
-// ==================================
-
-function renvoyerEmail(index){
-
-let commandes =
-obtenirCommandes();
-
-
-let cmd =
-commandes[index];
-
-
-if(!cmd){
-
-return;
-
-}
-if(!cmd.email){
-
-alert(
-"Cette commande n'a pas d'adresse email."
-);
-
-return;
-
-}
-
-let sujet =
-"Votre commande Idée Gourmande";
-
-
-let message =
-
-"Bonjour " + cmd.client + ",\n\n" +
-
-"Voici le rappel de votre commande :\n\n" +
-
-(cmd.produits || "") +
-
-"\n\nTotal : " +
-
-cmd.total +
-
-" CHF\n\n" +
-
-"Merci pour votre confiance.\n\n" +
-
-"Idée Gourmande";
-
-
-window.location.href =
-"mailto:" +
-cmd.email +
-"?subject=" +
-encodeURIComponent(sujet) +
-"&body=" +
-encodeURIComponent(message);
-
-
-}
 
 
 // ==================================
@@ -532,14 +652,11 @@ localStorage.removeItem(
 );
 
 
-
 window.location.href =
 "admin-login.html";
 
 
 }
-
-
 
 
 
