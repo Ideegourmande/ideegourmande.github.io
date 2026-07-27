@@ -204,11 +204,8 @@ afficherCommandes
 );
 function deconnexion(){
 
-localStorage.removeItem(
-"adminConnecte"
-);
+localStorage.removeItem("adminConnecte");
 
-window.location.href =
-"admin-login.html";
+window.location.href="admin-login.html";
 
 }
