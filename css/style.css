@@ -13,8 +13,7 @@
     --fond: #f8f4eb;
     --blanc: #ffffff;
     --texte: #292929;
-    --ombre: 0 8px 25px rgba(0,0,0,.10);
-    --transition: .25s ease;
+    --ombre: 0 8px 25px rgba(0,0,0,0.10);
     --rayon: 16px;
 }
 
@@ -27,12 +26,14 @@
     box-sizing: border-box;
 }
 
+
 body {
-    font-family: "Georgia", serif;
+    font-family: Georgia, serif;
     background: var(--fond);
     color: var(--texte);
     line-height: 1.6;
 }
+
 
 img {
     max-width: 100%;
@@ -47,24 +48,27 @@ img {
     color: white;
     text-align: center;
     padding: 12px;
-    font-size: .95rem;
 }
 
 
 /* ---------- Navigation ---------- */
 
 nav {
-    background: var(--fond);
     display: flex;
     justify-content: space-between;
     align-items: center;
+
     padding: 20px 8%;
+
+    background: var(--fond);
     border-bottom: 1px solid var(--or);
 }
+
 
 .logo img {
     width: 110px;
 }
+
 
 nav ul {
     list-style: none;
@@ -72,14 +76,15 @@ nav ul {
     gap: 30px;
 }
 
-nav ul li a {
-    text-decoration: none;
+
+nav a {
     color: var(--texte);
+    text-decoration: none;
     font-weight: bold;
-    transition: var(--transition);
 }
 
-nav ul li a:hover {
+
+nav a:hover {
     color: var(--or-fonce);
 }
 
@@ -87,7 +92,9 @@ nav ul li a:hover {
 /* ---------- Hero ---------- */
 
 .hero {
+
     min-height: 600px;
+
     background:
     linear-gradient(
         rgba(0,0,0,.45),
@@ -95,103 +102,140 @@ nav ul li a:hover {
     ),
     url("../images/hero.jpg");
 
+
     background-size: cover;
     background-position: center;
+
 
     display: flex;
     justify-content: center;
     align-items: center;
 
     text-align: center;
-    color: white;
+    color:white;
+
 }
+
 
 .hero-content {
-    max-width: 700px;
-    padding: 30px;
+
+    max-width:700px;
+    padding:30px;
+
 }
+
 
 .hero h1 {
-    font-size: 4rem;
-    margin-bottom: 15px;
+
+    font-size:4rem;
+    margin-bottom:15px;
+
 }
+
 
 .hero h2 {
-    color: #e2c46d;
-    font-size: 2rem;
-    margin-bottom: 20px;
+
+    color:#e2c46d;
+    font-size:2rem;
+    margin-bottom:20px;
+
 }
 
+
 .hero p {
-    font-size: 1.2rem;
-    margin-bottom: 35px;
+
+    font-size:1.2rem;
+    margin-bottom:35px;
+
 }
 
 
 /* ---------- Boutons ---------- */
 
+
 .btn,
 button {
-    display: inline-block;
-    background: var(--or-fonce);
-    color: white;
 
-    padding: 14px 35px;
+    background:var(--or-fonce);
+    color:white;
 
-    border: none;
-    border-radius: 30px;
+    padding:14px 35px;
 
-    text-decoration: none;
-    font-weight: bold;
+    border:none;
+    border-radius:30px;
 
-    cursor: pointer;
+    text-decoration:none;
+    font-weight:bold;
 
-    transition: var(--transition);
+    cursor:pointer;
+
+    display:inline-block;
+
 }
+
 
 .btn:hover,
 button:hover {
-    background: #8c6d1f;
-    transform: translateY(-2px);
+
+    background:#8c6d1f;
+
 }
 
 
 /* ---------- Valeurs ---------- */
 
-.valeurs {
-    display: grid;
-    grid-template-columns: repeat(3,1fr);
-    gap: 30px;
 
-    padding: 70px 8%;
-    text-align: center;
+.valeurs {
+
+    display:grid;
+    grid-template-columns:repeat(3,1fr);
+
+    gap:30px;
+
+    padding:70px 8%;
+
+    text-align:center;
+
 }
+
 
 .valeurs div {
-    background: var(--blanc);
-    padding: 35px;
 
-    border-radius: var(--rayon);
-    box-shadow: var(--ombre);
+    background:white;
+
+    padding:35px;
+
+    border-radius:var(--rayon);
+
+    box-shadow:var(--ombre);
+
 }
 
+
 .valeurs h3 {
-    color: var(--vert);
-    margin-bottom: 15px;
+
+    color:var(--vert);
+
 }
 
 
 /* ---------- Présentation ---------- */
 
+
 .presentation {
-    text-align: center;
-    padding: 70px 15%;
+
+    text-align:center;
+
+    padding:70px 15%;
+
 }
 
+
 .presentation h2 {
-    font-size: 2.5rem;
-    color: var(--vert);
-    margin-bottom: 25px;
+
+    color:var(--vert);
+    font-size:2.5rem;
+
 }
 
 
@@ -199,79 +243,85 @@ button:hover {
    PRODUITS
 ================================== */
 
+
 .produits {
-    display: grid;
-    grid-template-columns: repeat(4,1fr);
-    gap: 30px;
 
-    padding: 50px 8%;
+    display:grid;
+
+    grid-template-columns:repeat(4,1fr);
+
+    gap:30px;
+
+    padding:50px 8%;
+
 }
 
 
-.produit,
-.carte-produit,
-.product-card {
 
-    background: var(--blanc);
+.produit {
 
-    border-radius: var(--rayon);
+    background:white;
 
-    overflow: hidden;
+    border-radius:var(--rayon);
 
-    box-shadow: var(--ombre);
+    overflow:hidden;
 
-    display: flex;
-    flex-direction: column;
+    box-shadow:var(--ombre);
 
-    transition: var(--transition);
+    transition:.3s;
+
 }
 
 
-.produit:hover,
-.carte-produit:hover,
-.product-card:hover {
 
-    transform: translateY(-6px);
+.produit:hover {
+
+    transform:translateY(-6px);
+
 }
 
 
-.produit img,
-.carte-produit img,
-.product-card img {
+
+.produit img {
 
     width:100%;
+
     height:250px;
 
     object-fit:cover;
+
 }
 
 
-.produit h3,
-.carte-produit h3,
-.product-card h3 {
+
+.produit h3 {
 
     color:var(--vert);
-    margin:18px;
+
+    margin:20px;
+
 }
 
 
-.produit p,
-.carte-produit p,
-.product-card p {
 
-    margin:0 18px 15px;
-    flex-grow:1;
+.produit p {
+
+    margin:0 20px 20px;
+
 }
+
 
 
 .prix {
 
-    margin:0 18px 20px;
-
     color:var(--or-fonce);
 
     font-size:1.3rem;
+
     font-weight:bold;
+
+    margin:20px;
+
 }
 
 
@@ -279,59 +329,67 @@ button:hover {
    COMMANDE
 ================================== */
 
+
 .commande-grid {
 
     display:grid;
-    grid-template-columns:
-    repeat(auto-fit,minmax(260px,1fr));
+
+    grid-template-columns:repeat(auto-fit,minmax(260px,1fr));
 
     gap:30px;
 
-    padding:20px 8% 60px;
+    padding:50px 8%;
+
 }
+
 
 
 .commande-card {
 
     background:white;
 
-    padding:22px;
+    padding:25px;
 
     border-radius:20px;
 
     box-shadow:var(--ombre);
 
-    display:flex;
-    flex-direction:column;
-    gap:12px;
 }
+
 
 
 .commande-card img {
 
     width:100%;
+
     height:220px;
+
     object-fit:cover;
 
-    border-radius:14px;
+    border-radius:15px;
+
 }
 
 
-.commande-card input,
-.commande-card select,
-.commande-form input,
-.commande-form textarea {
+
+input,
+select,
+textarea {
 
     width:100%;
 
     padding:14px;
 
-    border:1px solid #d9d3c7;
+    margin-top:8px;
+
+    border:1px solid #ddd;
 
     border-radius:12px;
 
     font-size:1rem;
+
 }
+
 
 
 input:focus,
@@ -347,10 +405,13 @@ select:focus {
 
 /* ---------- Panier ---------- */
 
+
 .panier-section {
 
-    padding:0 8% 50px;
+    padding:50px 8%;
+
 }
+
 
 
 .panier-card,
@@ -358,12 +419,14 @@ select:focus {
 
     background:white;
 
-    border-radius:24px;
+    padding:30px;
 
-    padding:28px;
+    border-radius:20px;
 
     box-shadow:var(--ombre);
+
 }
+
 
 
 .total-box {
@@ -372,10 +435,14 @@ select:focus {
 
     justify-content:space-between;
 
+    margin-top:20px;
+
     padding-top:20px;
 
-    border-top:1px solid #e7dfcf;
+    border-top:1px solid #ddd;
+
 }
+
 
 
 .total-box strong {
@@ -383,30 +450,14 @@ select:focus {
     color:var(--vert);
 
     font-size:1.8rem;
+
 }
 
 
-/* ---------- Formulaire ---------- */
-
-.form-grid {
-
-    display:grid;
-
-    grid-template-columns:repeat(2,1fr);
-
-    gap:20px;
-}
-
-
-.full-width {
-
-    grid-column:1/-1;
-}
+/* ---------- Paiement ---------- */
 
 
 .paiement-box {
-
-    margin:30px 0;
 
     background:var(--fond);
 
@@ -417,20 +468,26 @@ select:focus {
     padding:25px;
 
     text-align:center;
+
+    margin:30px 0;
+
 }
 
 
+
 .twint-number {
+
+    color:var(--vert);
 
     font-size:1.6rem;
 
     font-weight:bold;
 
-    color:var(--vert);
 }
 
 
 /* ---------- Footer ---------- */
+
 
 footer {
 
@@ -441,6 +498,7 @@ footer {
     text-align:center;
 
     padding:25px;
+
 }
 
 
@@ -448,20 +506,21 @@ footer a {
 
     color:var(--or);
 
-    text-decoration:none;
 }
 
 
 /* ==================================
-   RESPONSIVE
+   MOBILE
 ================================== */
 
 
 @media(max-width:900px){
 
+
     nav {
 
         flex-direction:column;
+
         gap:20px;
 
     }
@@ -470,6 +529,7 @@ footer a {
     nav ul {
 
         flex-direction:column;
+
         text-align:center;
 
     }
@@ -490,9 +550,11 @@ footer a {
     }
 
 
-    .form-grid {
+    .total-box {
 
-        grid-template-columns:1fr;
+        flex-direction:column;
+
+        gap:10px;
 
     }
 
@@ -501,14 +563,6 @@ footer a {
     button {
 
         width:100%;
-
-    }
-
-
-    .total-box {
-
-        flex-direction:column;
-        gap:10px;
 
     }
 
