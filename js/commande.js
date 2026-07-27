@@ -1,346 +1,338 @@
 // ==================================
 // IDÉE GOURMANDE
 // commande.js
-// Panier + commande + PDF + administration
 // ==================================
 
 let recapTexte = "";
 
 
 // ==================================
-// CALCUL DU TOTAL
+// CALCUL PANIER
 // ==================================
 
-function calculerTotal() {
-
-    const foieFigues = Number(document.getElementById("foieFigues").value) || 0;
-    const foiePiment = Number(document.getElementById("foiePiment").value) || 0;
-
-    const magretHerbes = Number(document.getElementById("magretHerbes").value) || 0;
-    const magretPiment = Number(document.getElementById("magretPiment").value) || 0;
-
-    const saumonAneth = Number(document.getElementById("saumonAneth").value) || 0;
-    const saumonPiment = Number(document.getElementById("saumonPiment").value) || 0;
+function calculerTotal(){
 
 
-    // Prix
+const produits = [
 
-    const prixFoieFigues = foieFigues * 35;
-    const prixFoiePiment = foiePiment * 35;
+{
+id:"foieFigues",
+nom:"Foie gras figues",
+prix:35
+},
 
-    const prixMagretHerbes = magretHerbes * 25;
-    const prixMagretPiment = magretPiment * 25;
+{
+id:"foiePiment",
+nom:"Foie gras Piment & Porto",
+prix:35
+},
 
-    const prixSaumonAneth = (saumonAneth / 100) * 8;
-    const prixSaumonPiment = (saumonPiment / 100) * 8;
+{
+id:"magretHerbes",
+nom:"Magret Herbes de Provence",
+prix:25
+},
 
+{
+id:"magretPiment",
+nom:"Magret Piment d'Espelette",
+prix:25
+}
 
-    const total =
-        prixFoieFigues +
-        prixFoiePiment +
-        prixMagretHerbes +
-        prixMagretPiment +
-        prixSaumonAneth +
-        prixSaumonPiment;
-
-
-    document.getElementById("total").innerHTML =
-        total.toFixed(2) + " CHF";
+];
 
 
 
-    // Création panier
+let total = 0;
 
-    let recapHTML = "";
+let html="";
 
-    recapTexte = "";
-
-
-    function ajouterProduit(nom, quantite, prix){
-
-        recapHTML +=
-        "• " + nom +
-        " × " + quantite +
-        " — " +
-        prix.toFixed(2) +
-        " CHF<br>";
-
-
-        recapTexte +=
-        nom +
-        " × " +
-        quantite +
-        " : " +
-        prix.toFixed(2) +
-        " CHF\n";
-
-    }
+recapTexte="";
 
 
 
-    if(foieFigues > 0){
-        ajouterProduit(
-            "Foie gras figues",
-            foieFigues,
-            prixFoieFigues
-        );
-    }
+produits.forEach(function(p){
 
 
-    if(foiePiment > 0){
-        ajouterProduit(
-            "Foie gras Piment & Porto",
-            foiePiment,
-            prixFoiePiment
-        );
-    }
+let q =
+Number(document.getElementById(p.id).value) || 0;
 
 
-    if(magretHerbes > 0){
-        ajouterProduit(
-            "Magret Herbes de Provence",
-            magretHerbes,
-            prixMagretHerbes
-        );
-    }
+if(q>0){
 
 
-    if(magretPiment > 0){
-        ajouterProduit(
-            "Magret Piment d'Espelette",
-            magretPiment,
-            prixMagretPiment
-        );
-    }
+let montant=q*p.prix;
 
 
-    if(saumonAneth > 0){
-        ajouterProduit(
-            "Saumon Aneth " + saumonAneth + " g",
-            "",
-            prixSaumonAneth
-        );
-    }
+total += montant;
 
 
-    if(saumonPiment > 0){
-        ajouterProduit(
-            "Saumon Piment d'Espelette " + saumonPiment + " g",
-            "",
-            prixSaumonPiment
-        );
-    }
+html +=
+"• "+p.nom+
+" × "+q+
+" — "+
+montant.toFixed(2)+" CHF<br>";
 
 
 
-    if(recapHTML === ""){
-
-        recapHTML =
-        "Aucun produit sélectionné.";
-
-    }
-
-
-    document.getElementById("recapCommande").innerHTML =
-        recapHTML;
+recapTexte +=
+p.nom+
+" × "+
+q+
+" : "+
+montant.toFixed(2)+" CHF\n";
 
 
-    return total;
+}
+
+
+});
+
+
+
+
+// Saumon
+
+let saumonA =
+Number(document.getElementById("saumonAneth").value)||0;
+
+
+if(saumonA>0){
+
+let montant=(saumonA/100)*8;
+
+total+=montant;
+
+
+html +=
+"• Saumon Aneth "+
+saumonA+
+" g — "+
+montant.toFixed(2)+" CHF<br>";
+
+
+recapTexte +=
+"Saumon Aneth "+
+saumonA+
+" g : "+
+montant.toFixed(2)+" CHF\n";
 
 }
 
 
 
 
+let saumonP =
+Number(document.getElementById("saumonPiment").value)||0;
+
+
+
+if(saumonP>0){
+
+let montant=(saumonP/100)*8;
+
+total+=montant;
+
+
+html +=
+"• Saumon Piment d'Espelette "+
+saumonP+
+" g — "+
+montant.toFixed(2)+" CHF<br>";
+
+
+
+recapTexte +=
+"Saumon Piment d'Espelette "+
+saumonP+
+" g : "+
+montant.toFixed(2)+" CHF\n";
+
+}
+
+
+
+
+
+if(html===""){
+
+html="Aucun produit sélectionné.";
+
+}
+
+
+
+document.getElementById("recapCommande").innerHTML=html;
+
+
+document.getElementById("total").innerHTML=
+total.toFixed(2)+" CHF";
+
+
+
+return total;
+
+
+}
+
+
+
 // ==================================
-// VIDER LE PANIER
+// VIDER PANIER
 // ==================================
 
 function viderPanier(){
 
 
-    document
-    .querySelectorAll(".commande-card input[type='number']")
-    .forEach(function(input){
+document
+.querySelectorAll(".commande-card input")
+.forEach(function(input){
 
-        input.value = 0;
+input.value=0;
 
-    });
-
-
-    calculerTotal();
+});
 
 
-    alert("Votre panier a été vidé.");
+
+calculerTotal();
+
+
 
 }
 
 
 
-
 // ==================================
-// ENVOYER COMMANDE
+// ENVOI COMMANDE
 // ==================================
 
 function envoyerCommande(event){
 
-    event.preventDefault();
 
+event.preventDefault();
 
-    const total = calculerTotal();
 
 
+let total=calculerTotal();
 
-    if(total <= 0){
 
-        alert(
-            "⚠️ Votre panier est vide."
-        );
 
-        return;
+if(total<=0){
 
-    }
+alert("Votre panier est vide.");
 
+return;
 
+}
 
-    const nom =
-    document.getElementById("nom").value.trim();
 
 
-    const telephone =
-    document.getElementById("telephone").value.trim();
+let nom=
+document.getElementById("nom").value;
 
 
-    const email =
-    document.getElementById("email").value.trim();
+let email=
+document.getElementById("email").value;
 
 
-    const adresse =
-    document.getElementById("adresse").value.trim();
+let adresse=
+document.getElementById("adresse").value;
 
 
-    const commentaire =
-    document.getElementById("commentaire").value.trim();
+let telephone=
+document.getElementById("telephone").value;
 
 
+let commentaire=
+document.getElementById("commentaire").value;
 
-    const twint =
-    document.querySelector('input[type="checkbox"]');
 
 
+let twint=
+document.querySelector('input[type="checkbox"]');
 
-    if(!twint.checked){
 
-        alert(
-            "⚠️ Merci de confirmer le paiement TWINT."
-        );
 
-        return;
+if(!twint.checked){
 
-    }
+alert("Merci de confirmer le paiement TWINT.");
 
+return;
 
+}
 
 
-    // PDF
 
-    if(typeof genererPDFCommande === "function"){
+// PDF
 
+if(typeof genererPDFCommande==="function"){
 
-        genererPDFCommande({
 
-            nom: nom,
+genererPDFCommande({
 
-            email: email,
+nom,
+email,
+adresse,
+recap:recapTexte,
+total:total.toFixed(2)
 
-            adresse: adresse,
+});
 
-            recap: recapTexte,
 
-            total: total.toFixed(2)
+}
 
-        });
 
 
-    }
+// sauvegarde administration
 
 
+let commande={
 
 
-    // Sauvegarde administration
+id:"IG-"+Date.now(),
 
+date:new Date().toLocaleString("fr-FR"),
 
-    const commande = {
+client:nom,
 
+telephone,
 
-        id:
-        "IG-" + Date.now(),
+email,
 
+adresse,
 
-        date:
-        new Date().toLocaleString("fr-FR"),
+produits:recapTexte,
 
+total:total.toFixed(2),
 
-        client:
-        nom,
+commentaire,
 
+statut:"Nouvelle"
 
-        telephone:
-        telephone,
 
+};
 
-        email:
-        email,
 
 
-        adresse:
-        adresse,
+let commandes=
+JSON.parse(localStorage.getItem("commandes"))||[];
 
 
-        produits:
-        recapTexte,
 
+commandes.push(commande);
 
-        total:
-        total.toFixed(2),
 
 
-        commentaire:
-        commentaire,
+localStorage.setItem(
+"commandes",
+JSON.stringify(commandes)
+);
 
 
-        statut:
-        "Nouvelle"
 
 
-    };
 
-
-
-    let commandes =
-    JSON.parse(
-        localStorage.getItem("commandes")
-    ) || [];
-
-
-
-    commandes.push(commande);
-
-
-
-    localStorage.setItem(
-        "commandes",
-        JSON.stringify(commandes)
-    );
-
-
-
-
-
-    // Email
-
-
-    const message =
+let message=
 
 `Nouvelle commande Idée Gourmande
 
@@ -360,48 +352,27 @@ ${recapTexte}
 Total :
 ${total.toFixed(2)} CHF
 
-Paiement :
-TWINT confirmé
-
 Adresse :
 ${adresse}
 
 Commentaire :
 ${commentaire}
-`;
+
+Paiement TWINT confirmé`;
 
 
 
-    const sujet =
-    "Nouvelle commande - Idée Gourmande";
+window.location.href=
 
+"mailto:vkloetzli@bluewin.ch"+
+"?subject="+
+encodeURIComponent("Nouvelle commande Idée Gourmande")+
+"&body="+
+encodeURIComponent(message);
 
-
-    const mailto =
-
-    "mailto:vkloetzli@bluewin.ch" +
-    "?subject=" +
-    encodeURIComponent(sujet) +
-    "&body=" +
-    encodeURIComponent(message);
-
-
-
-    window.location.href = mailto;
-
-
-
-    setTimeout(function(){
-
-        window.location.href =
-        "confirmation.html";
-
-    },1500);
 
 
 }
-
-
 
 
 
@@ -414,23 +385,22 @@ document.addEventListener(
 function(){
 
 
-    calculerTotal();
+calculerTotal();
 
 
 
-    const bouton =
-    document.getElementById("btnViderPanier");
+let bouton=
+document.getElementById("btnViderPanier");
 
 
+if(bouton){
 
-    if(bouton){
+bouton.addEventListener(
+"click",
+viderPanier
+);
 
-        bouton.addEventListener(
-            "click",
-            viderPanier
-        );
-
-    }
+}
 
 
 });
