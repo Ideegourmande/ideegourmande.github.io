@@ -11,8 +11,6 @@
 
 function obtenirCommandes(){
 
-function obtenirCommandes(){
-
 try{
 
 return JSON.parse(
@@ -152,7 +150,7 @@ ${cmd.total} CHF
 
 
 <option value="Nouvelle"
-${(cmd.statut || "Nouvelle")==="Nouvelle"?"selected":""}
+${(cmd.statut || "Nouvelle")==="Nouvelle"?"selected":""}>
 Nouvelle
 </option>
 
