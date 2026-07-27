@@ -398,3 +398,12 @@ document.addEventListener(
 "DOMContentLoaded",
 calculerTotal
 );
+function viderPanier() {
+
+    panier = [];
+
+    localStorage.removeItem("panier");
+
+    afficherPanier();
+
+}
