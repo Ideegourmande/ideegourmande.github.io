@@ -376,7 +376,15 @@ ${commentaire}
 
 
     window.location.href = mailto;
+genererPDFCommande({
 
+    nom: nom,
+    email: email,
+    adresse: adresse,
+    recap: recapTexte,
+    total: total.toFixed(2)
+
+});
 
 
     setTimeout(function(){
