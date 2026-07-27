@@ -202,3 +202,13 @@ document.addEventListener(
 "DOMContentLoaded",
 afficherCommandes
 );
+function deconnexion(){
+
+localStorage.removeItem(
+"adminConnecte"
+);
+
+window.location.href =
+"admin-login.html";
+
+}
