@@ -361,7 +361,125 @@ window.location.href =
 // ==================================
 // DEMARRAGE
 // ==================================
+// ==================================
+// RECHERCHE COMMANDES
+// ==================================
 
+function rechercherCommande(){
+
+
+let recherche =
+document.getElementById("rechercheCommande")
+.value
+.toLowerCase();
+
+
+
+let commandes =
+JSON.parse(
+localStorage.getItem("commandes")
+) || [];
+
+
+
+let filtre =
+commandes.filter(function(cmd){
+
+
+return (
+
+cmd.client
+.toLowerCase()
+.includes(recherche)
+
+||
+cmd.email
+.toLowerCase()
+.includes(recherche)
+
+);
+
+
+});
+
+
+
+afficherListeFiltree(filtre);
+
+
+}
+
+
+
+
+function afficherListeFiltree(commandes){
+
+
+const zone =
+document.getElementById("listeCommandes");
+
+
+
+if(commandes.length===0){
+
+zone.innerHTML =
+"<p>Aucun résultat.</p>";
+
+return;
+
+}
+
+
+
+let html="";
+
+
+
+commandes.forEach(function(cmd){
+
+
+html += `
+
+
+<div class="commande-admin">
+
+
+<h3>
+📦 ${cmd.id}
+</h3>
+
+
+<p>
+<strong>Client :</strong>
+${cmd.client}
+</p>
+
+
+<p>
+<strong>Total :</strong>
+${cmd.total} CHF
+</p>
+
+
+<p>
+<strong>Statut :</strong>
+${cmd.statut}
+</p>
+
+
+</div>
+
+
+`;
+
+
+});
+
+
+zone.innerHTML=html;
+
+
+}
 document.addEventListener(
 "DOMContentLoaded",
 function(){
