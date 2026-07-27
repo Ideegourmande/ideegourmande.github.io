@@ -1,48 +1,41 @@
 // ==================================
 // IDÉE GOURMANDE
-// Panier Version 6
-// Calcul + validation + email
+// commande.js
+// Panier + commande + PDF + sauvegarde
 // ==================================
-
 
 let recapTexte = "";
 
 
-
-// ================================
+// ==================================
 // CALCUL DU TOTAL
-// ================================
+// ==================================
 
 function calculerTotal() {
 
 
-    // Foie gras
-
     const foieFigues =
-        Number(document.getElementById("foieFigues").value) || 0;
+    Number(document.getElementById("foieFigues").value) || 0;
+
 
     const foiePiment =
-        Number(document.getElementById("foiePiment").value) || 0;
+    Number(document.getElementById("foiePiment").value) || 0;
 
-
-
-    // Magret
 
     const magretHerbes =
-        Number(document.getElementById("magretHerbes").value) || 0;
+    Number(document.getElementById("magretHerbes").value) || 0;
+
 
     const magretPiment =
-        Number(document.getElementById("magretPiment").value) || 0;
+    Number(document.getElementById("magretPiment").value) || 0;
 
-
-
-    // Saumon
 
     const saumonAneth =
-        Number(document.getElementById("saumonAneth").value) || 0;
+    Number(document.getElementById("saumonAneth").value) || 0;
+
 
     const saumonPiment =
-        Number(document.getElementById("saumonPiment").value) || 0;
+    Number(document.getElementById("saumonPiment").value) || 0;
 
 
 
@@ -70,15 +63,13 @@ function calculerTotal() {
 
 
     document.getElementById("total").innerHTML =
-        total.toFixed(2) + " CHF";
+    total.toFixed(2) + " CHF";
 
 
 
-
-
-    // ============================
-    // CREATION DU PANIER
-    // ============================
+    // ==============================
+    // RÉCAPITULATIF
+    // ==============================
 
     let recapHTML = "";
 
@@ -86,123 +77,74 @@ function calculerTotal() {
 
 
 
-    if (foieFigues > 0) {
+    function ajouterProduit(nom, quantite, prix) {
 
         recapHTML +=
-        "• Foie gras figues × " +
-        foieFigues +
+        "• " + nom +
+        " × " + quantite +
         " — " +
-        prixFoieFigues.toFixed(2) +
+        prix.toFixed(2) +
         " CHF<br>";
 
+
         recapTexte +=
-        "Foie gras figues × " +
-        foieFigues +
+        nom +
+        " × " +
+        quantite +
         " : " +
-        prixFoieFigues.toFixed(2) +
+        prix.toFixed(2) +
         " CHF\n";
 
     }
 
 
 
-    if (foiePiment > 0) {
-
-        recapHTML +=
-        "• Foie gras Piment & Porto × " +
-        foiePiment +
-        " — " +
-        prixFoiePiment.toFixed(2) +
-        " CHF<br>";
-
-        recapTexte +=
-        "Foie gras Piment & Porto × " +
-        foiePiment +
-        " : " +
-        prixFoiePiment.toFixed(2) +
-        " CHF\n";
-
-    }
+    if (foieFigues > 0)
+    ajouterProduit(
+        "Foie gras figues",
+        foieFigues,
+        prixFoieFigues
+    );
 
 
-
-    if (magretHerbes > 0) {
-
-        recapHTML +=
-        "• Magret Herbes de Provence × " +
-        magretHerbes +
-        " — " +
-        prixMagretHerbes.toFixed(2) +
-        " CHF<br>";
-
-        recapTexte +=
-        "Magret Herbes de Provence × " +
-        magretHerbes +
-        " : " +
-        prixMagretHerbes.toFixed(2) +
-        " CHF\n";
-
-    }
+    if (foiePiment > 0)
+    ajouterProduit(
+        "Foie gras Piment & Porto",
+        foiePiment,
+        prixFoiePiment
+    );
 
 
-
-    if (magretPiment > 0) {
-
-        recapHTML +=
-        "• Magret Piment d'Espelette × " +
-        magretPiment +
-        " — " +
-        prixMagretPiment.toFixed(2) +
-        " CHF<br>";
-
-        recapTexte +=
-        "Magret Piment d'Espelette × " +
-        magretPiment +
-        " : " +
-        prixMagretPiment.toFixed(2) +
-        " CHF\n";
-
-    }
+    if (magretHerbes > 0)
+    ajouterProduit(
+        "Magret Herbes de Provence",
+        magretHerbes,
+        prixMagretHerbes
+    );
 
 
-
-    if (saumonAneth > 0) {
-
-        recapHTML +=
-        "• Saumon Aneth " +
-        saumonAneth +
-        " g — " +
-        prixSaumonAneth.toFixed(2) +
-        " CHF<br>";
-
-        recapTexte +=
-        "Saumon Aneth " +
-        saumonAneth +
-        " g : " +
-        prixSaumonAneth.toFixed(2) +
-        " CHF\n";
-
-    }
+    if (magretPiment > 0)
+    ajouterProduit(
+        "Magret Piment d'Espelette",
+        magretPiment,
+        prixMagretPiment
+    );
 
 
+    if (saumonAneth > 0)
+    ajouterProduit(
+        "Saumon Aneth " + saumonAneth + " g",
+        "",
+        prixSaumonAneth
+    );
 
-    if (saumonPiment > 0) {
 
-        recapHTML +=
-        "• Saumon Piment d'Espelette " +
-        saumonPiment +
-        " g — " +
-        prixSaumonPiment.toFixed(2) +
-        " CHF<br>";
-
-        recapTexte +=
-        "Saumon Piment d'Espelette " +
-        saumonPiment +
-        " g : " +
-        prixSaumonPiment.toFixed(2) +
-        " CHF\n";
-
-    }
+    if (saumonPiment > 0)
+    ajouterProduit(
+        "Saumon Piment d'Espelette " + saumonPiment + " g",
+        "",
+        prixSaumonPiment
+    );
 
 
 
@@ -215,7 +157,7 @@ function calculerTotal() {
 
 
     document.getElementById("recapCommande").innerHTML =
-        recapHTML;
+    recapHTML;
 
 
 
@@ -227,10 +169,38 @@ function calculerTotal() {
 
 
 
+// ==================================
+// VIDER LE PANIER
+// ==================================
 
-// ================================
+function viderPanier() {
+
+
+    document
+    .querySelectorAll(".commande-card input[type='number']")
+    .forEach(function(input){
+
+        input.value = 0;
+
+    });
+
+
+    calculerTotal();
+
+
+    alert(
+        "Votre panier a été vidé."
+    );
+
+}
+
+
+
+
+
+// ==================================
 // ENVOI COMMANDE
-// ================================
+// ==================================
 
 function envoyerCommande(event) {
 
@@ -240,16 +210,14 @@ function envoyerCommande(event) {
 
 
     const total =
-        calculerTotal();
+    calculerTotal();
 
 
 
-    // Panier vide
-
-    if (total <= 0) {
+    if(total <= 0){
 
         alert(
-        "⚠️ Votre panier est vide.\nVeuillez sélectionner un produit."
+        "⚠️ Votre panier est vide."
         );
 
         return;
@@ -257,9 +225,6 @@ function envoyerCommande(event) {
     }
 
 
-
-
-    // Coordonnées
 
     const nom =
     document.getElementById("nom").value.trim();
@@ -282,31 +247,12 @@ function envoyerCommande(event) {
 
 
 
-
-    if (
-        nom === "" ||
-        email === "" ||
-        adresse === ""
-    ) {
-
-        alert(
-        "⚠️ Merci de compléter vos coordonnées."
-        );
-
-        return;
-
-    }
-
-
-
-
-    // TWINT
-
     const twint =
     document.querySelector('input[type="checkbox"]');
 
 
-    if (!twint.checked) {
+
+    if(!twint.checked){
 
         alert(
         "⚠️ Merci de confirmer le paiement TWINT."
@@ -318,10 +264,86 @@ function envoyerCommande(event) {
 
 
 
+    // PDF
+
+    if(typeof genererPDFCommande === "function"){
+
+        genererPDFCommande({
+
+            nom:nom,
+            email:email,
+            adresse:adresse,
+            recap:recapTexte,
+            total:total.toFixed(2)
+
+        });
+
+    }
 
 
 
-    // Création email
+
+    // Sauvegarde commande
+
+
+    const commande = {
+
+        id:
+        "IG-" + Date.now(),
+
+        date:
+        new Date().toLocaleString("fr-FR"),
+
+        client:
+        nom,
+
+        telephone:
+        telephone,
+
+        email:
+        email,
+
+        adresse:
+        adresse,
+
+        produits:
+        recapTexte,
+
+        total:
+        total.toFixed(2),
+
+        commentaire:
+        commentaire,
+
+        statut:
+        "Nouvelle"
+
+    };
+
+
+
+    let commandes =
+    JSON.parse(
+        localStorage.getItem("commandes")
+    ) || [];
+
+
+
+    commandes.push(commande);
+
+
+
+    localStorage.setItem(
+        "commandes",
+        JSON.stringify(commandes)
+    );
+
+
+
+
+
+    // Email
+
 
     const message =
 
@@ -336,23 +358,18 @@ ${telephone}
 Email :
 ${email}
 
-
 Commande :
 
 ${recapTexte}
 
-
 Total :
 ${total.toFixed(2)} CHF
-
 
 Paiement :
 TWINT confirmé
 
-
 Adresse :
 ${adresse}
-
 
 Commentaire :
 ${commentaire}
@@ -375,105 +392,9 @@ ${commentaire}
 
 
 
-    genererPDFCommande({
-
-    nom: nom,
-    email: email,
-    adresse: adresse,
-    recap: recapTexte,
-    total: total.toFixed(2)
-
-});
+    window.location.href = mailto;
 
 
-// ENREGISTREMENT COMMANDE ICI
-
-const commande = {
-
-    id: "IG-" + Date.now(),
-
-    date: new Date().toLocaleString("fr-FR"),
-
-    client: nom,
-
-    telephone: telephone,
-
-    email: email,
-
-    adresse: adresse,
-
-    produits: recapTexte,
-
-    total: total.toFixed(2),
-
-    statut: "Nouvelle"
-
-};
-
-
-let commandes =
-JSON.parse(localStorage.getItem("commandes")) || [];
-
-
-commandes.push(commande);
-
-
-localStorage.setItem(
-    "commandes",
-    JSON.stringify(commandes)
-);
-
-
-
-window.location.href = mailto;
-// ================================
-// ENREGISTREMENT COMMANDE
-// ================================
-
-const commande = {
-
-    id:
-    "IG-" + Date.now(),
-
-    date:
-    new Date().toLocaleString("fr-FR"),
-
-    client:
-    nom,
-
-    telephone:
-    telephone,
-
-    email:
-    email,
-
-    adresse:
-    adresse,
-
-    produits:
-    recapTexte,
-
-    total:
-    total.toFixed(2),
-
-    statut:
-    "Nouvelle"
-
-};
-
-
-
-let commandes =
-JSON.parse(localStorage.getItem("commandes")) || [];
-
-
-commandes.push(commande);
-
-
-localStorage.setItem(
-    "commandes",
-    JSON.stringify(commandes)
-);
 
     setTimeout(function(){
 
@@ -489,38 +410,11 @@ localStorage.setItem(
 
 
 
+// ==================================
+// INITIALISATION
+// ==================================
 
 document.addEventListener(
 "DOMContentLoaded",
 calculerTotal
 );
-// ==================================
-// VIDER LE PANIER
-// ==================================
-
-function viderPanier() {
-
-
-    // Remet toutes les quantités à zéro
-
-    document.querySelectorAll(
-        ".commande-card input[type='number']"
-    ).forEach(function(input){
-
-        input.value = 0;
-
-    });
-
-
-    // Recalcule l'affichage
-
-    calculerTotal();
-
-
-    // Message confirmation
-
-    alert(
-        "Votre panier a été vidé."
-    );
-
-}
