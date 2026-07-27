@@ -1,7 +1,7 @@
 // ==================================
 // IDÉE GOURMANDE
 // Administration commandes
-// Version complète finale
+// Version 1.4
 // ==================================
 
 
@@ -188,7 +188,13 @@ onclick="imprimerCommande(${index})">
 🖨 Imprimer PDF
 
 </button>
+<button
+class="btn"
+onclick="renvoyerEmail(${index})">
 
+📧 Renvoyer email
+
+</button>
 
 <button
 class="btn"
@@ -450,7 +456,68 @@ afficherListeCommandes(filtre);
 }
 
 
+// ==================================
+// RENVOYER EMAIL CLIENT
+// ==================================
 
+function renvoyerEmail(index){
+
+let commandes =
+obtenirCommandes();
+
+
+let cmd =
+commandes[index];
+
+
+if(!cmd){
+
+return;
+
+}
+if(!cmd.email){
+
+alert(
+"Cette commande n'a pas d'adresse email."
+);
+
+return;
+
+}
+
+let sujet =
+"Votre commande Idée Gourmande";
+
+
+let message =
+
+"Bonjour " + cmd.client + ",\n\n" +
+
+"Voici le rappel de votre commande :\n\n" +
+
+(cmd.produits || "") +
+
+"\n\nTotal : " +
+
+cmd.total +
+
+" CHF\n\n" +
+
+"Merci pour votre confiance.\n\n" +
+
+"Idée Gourmande";
+
+
+window.location.href =
+"mailto:" +
+cmd.email +
+"?subject=" +
+encodeURIComponent(sujet) +
+"&body=" +
+encodeURIComponent(message);
+
+
+}
 
 
 // ==================================
