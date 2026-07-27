@@ -385,7 +385,54 @@ genererPDFCommande({
     total: total.toFixed(2)
 
 });
+// ================================
+// ENREGISTREMENT COMMANDE
+// ================================
 
+const commande = {
+
+    id:
+    "IG-" + Date.now(),
+
+    date:
+    new Date().toLocaleString("fr-FR"),
+
+    client:
+    nom,
+
+    telephone:
+    telephone,
+
+    email:
+    email,
+
+    adresse:
+    adresse,
+
+    produits:
+    recapTexte,
+
+    total:
+    total.toFixed(2),
+
+    statut:
+    "Nouvelle"
+
+};
+
+
+
+let commandes =
+JSON.parse(localStorage.getItem("commandes")) || [];
+
+
+commandes.push(commande);
+
+
+localStorage.setItem(
+    "commandes",
+    JSON.stringify(commandes)
+);
 
     setTimeout(function(){
 
