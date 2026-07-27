@@ -16,6 +16,18 @@
 <body>
 
 
+<script>
+
+if(localStorage.getItem("adminConnecte") !== "oui"){
+
+    window.location.href="admin-login.html";
+
+}
+
+</script>
+
+
+
 <header>
 
 <div class="top-banner">
@@ -32,17 +44,23 @@
 Gestion des commandes
 </h1>
 
+
 <p>
 Liste des commandes enregistrées.
 </p>
 
+
 <br>
+
 
 <button onclick="deconnexion()">
 🚪 Déconnexion
 </button>
 
+
 </section>
+
+
 
 
 
@@ -71,17 +89,6 @@ Chargement des commandes...
 
 
 
-<footer>
-
-<p>
-© Idée Gourmande - Genève
-</p>
-
-</footer>
-
-
-
-<script src="js/admin.js"></script>
 
 
 <footer>
@@ -93,15 +100,6 @@ Chargement des commandes...
 </footer>
 
 
-<script>
-
-if(localStorage.getItem("adminConnecte") !== "oui"){
-
-window.location.href="admin-login.html";
-
-}
-
-</script>
 
 
 <script src="js/admin.js"></script>
