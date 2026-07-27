@@ -501,6 +501,7 @@ footer a:hover{
         align-items:flex-start;
         gap:8px;
     }
+   }
 /* =====================================================
    IDÉE GOURMANDE - Finitions Premium
    ===================================================== */
@@ -523,50 +524,85 @@ body{
     color:var(--texte);
 }
 
-/* ===========================
-   Cartes produits
-   =========================== */
+/* =====================================================
+   CARTES PRODUITS PREMIUM
+   ===================================================== */
 
 .produit,
 .carte-produit,
-.product-card{
+.product-card {
 
-    background:var(--blanc);
-    border-radius:var(--rayon);
-    overflow:hidden;
+    display: flex;
+    flex-direction: column;
 
-    box-shadow:var(--ombre);
+    background: var(--blanc);
+    border-radius: var(--rayon);
+
+    overflow: hidden;
+
+    box-shadow: var(--ombre);
 
     transition:
         transform var(--transition),
         box-shadow var(--transition);
+
+    height: 100%;
 }
 
 .produit:hover,
 .carte-produit:hover,
-.product-card:hover{
+.product-card:hover {
 
-    transform:translateY(-4px);
+    transform: translateY(-6px);
 
     box-shadow:
         0 15px 35px rgba(0,0,0,.15);
-
 }
 
 .produit img,
 .carte-produit img,
-.product-card img{
+.product-card img {
 
-    transition:transform .35s ease;
+    width: 100%;
+    aspect-ratio: 1 / 1;
+    object-fit: cover;
 
+    transition: transform .35s ease;
 }
 
 .produit:hover img,
 .carte-produit:hover img,
-.product-card:hover img{
+.product-card:hover img {
 
-    transform:scale(1.04);
+    transform: scale(1.05);
+}
 
+.produit h3,
+.carte-produit h3,
+.product-card h3 {
+
+    margin: 18px 18px 8px;
+    font-size: 1.2rem;
+    color: var(--couleur-principale);
+}
+
+.produit p,
+.carte-produit p,
+.product-card p {
+
+    margin: 0 18px 15px;
+    color: #555;
+    flex-grow: 1;
+}
+
+.prix {
+
+    margin: 0 18px 18px;
+
+    font-size: 1.3rem;
+    font-weight: bold;
+
+    color: var(--couleur-secondaire);
 }
 
 /* ===========================
@@ -814,5 +850,48 @@ select:focus{
     font-weight:bold;
 
     color:#b88a44;
+
+}
+.produit button,
+.carte-produit button,
+.product-card button{
+
+    margin:18px;
+
+    padding:14px;
+
+    border:none;
+
+    border-radius:12px;
+
+    background:#7d2d2d;
+
+    color:white;
+
+    font-weight:600;
+
+    font-size:1rem;
+
+    cursor:pointer;
+
+    transition:all .25s ease;
+
+}
+
+.produit button:hover,
+.carte-produit button:hover,
+.product-card button:hover{
+
+    background:#b88a44;
+
+    transform:translateY(-2px);
+
+}
+
+.produit button:active,
+.carte-produit button:active,
+.product-card button:active{
+
+    transform:scale(.97);
 
 }
