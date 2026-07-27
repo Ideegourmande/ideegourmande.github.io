@@ -863,3 +863,485 @@ color:var(--gris);
 margin-top:20px;
 
 }
+/* ===================================================
+   PARTIE 3/5
+   COMMANDE - PANIER - CONFIRMATION
+   =================================================== */
+
+
+/* ==============================
+   ZONE COMMANDE COMPLETE
+============================== */
+
+
+.commande-section{
+
+padding:60px 8%;
+
+}
+
+
+
+.commande-container{
+
+max-width:1200px;
+
+margin:auto;
+
+}
+
+
+
+/* ==============================
+   RESUME COMMANDE
+============================== */
+
+
+.resume-commande{
+
+background:white;
+
+padding:30px;
+
+border-radius:var(--rayon);
+
+box-shadow:var(--ombre);
+
+margin-top:40px;
+
+}
+
+
+
+.resume-commande h2{
+
+color:var(--vert);
+
+margin-bottom:20px;
+
+}
+
+
+
+.ligne-produit{
+
+display:flex;
+
+justify-content:space-between;
+
+align-items:center;
+
+padding:12px 0;
+
+border-bottom:1px solid #eee;
+
+}
+
+
+
+.ligne-produit:last-child{
+
+border-bottom:none;
+
+}
+
+
+
+.ligne-produit span{
+
+font-size:1rem;
+
+}
+
+
+
+.ligne-produit strong{
+
+color:var(--or-fonce);
+
+}
+
+
+
+/* ==============================
+   BLOC TOTAL COMMANDE
+============================== */
+
+
+.total-commande{
+
+margin-top:30px;
+
+background:var(--vert);
+
+color:white;
+
+padding:25px;
+
+border-radius:var(--rayon);
+
+display:flex;
+
+justify-content:space-between;
+
+align-items:center;
+
+font-size:1.4rem;
+
+}
+
+
+
+.total-commande strong{
+
+font-size:2rem;
+
+color:white;
+
+}
+
+
+
+/* ==============================
+   BOUTON VALIDATION
+============================== */
+
+
+.validation-commande{
+
+text-align:center;
+
+margin-top:35px;
+
+}
+
+
+
+.btn-large{
+
+font-size:1.15rem;
+
+padding:18px 50px;
+
+}
+
+
+
+/* ==============================
+   PAGE CONFIRMATION
+============================== */
+
+
+.confirmation-page{
+
+max-width:800px;
+
+margin:80px auto;
+
+padding:45px;
+
+background:white;
+
+border-radius:var(--rayon);
+
+box-shadow:var(--ombre);
+
+text-align:center;
+
+}
+
+
+
+.confirmation-page h1{
+
+color:var(--vert);
+
+font-size:3rem;
+
+margin-bottom:20px;
+
+}
+
+
+
+.confirmation-page p{
+
+font-size:1.15rem;
+
+color:var(--gris);
+
+}
+
+
+
+/* ==============================
+   PDF COMMANDE
+============================== */
+
+
+.pdf-box{
+
+background:#faf7ee;
+
+border:1px solid var(--or);
+
+padding:25px;
+
+border-radius:var(--rayon);
+
+margin-top:30px;
+
+text-align:center;
+
+}
+
+
+
+.pdf-box h3{
+
+color:var(--vert);
+
+margin-bottom:15px;
+
+}
+
+
+
+/* ==============================
+   CONTACT
+============================== */
+
+
+.contact-card{
+
+background:white;
+
+padding:40px;
+
+max-width:800px;
+
+margin:auto;
+
+border-radius:var(--rayon);
+
+box-shadow:var(--ombre);
+
+}
+
+
+
+.contact-card h2{
+
+color:var(--vert);
+
+margin-bottom:20px;
+
+}
+
+
+
+.contact-info{
+
+margin-top:25px;
+
+font-size:1.1rem;
+
+}
+
+
+
+.contact-info strong{
+
+color:var(--or-fonce);
+
+}
+
+
+
+/* ==============================
+   FOOTER
+============================== */
+
+
+footer{
+
+background:#292929;
+
+color:white;
+
+padding:35px;
+
+text-align:center;
+
+margin-top:60px;
+
+}
+
+
+
+footer a{
+
+color:var(--or);
+
+}
+
+
+
+footer a:hover{
+
+color:white;
+
+}
+
+
+
+/* ==============================
+   ELEMENTS ADMINISTRATION
+============================== */
+
+
+.commande-admin{
+
+background:white;
+
+padding:30px;
+
+margin-bottom:25px;
+
+border-radius:var(--rayon);
+
+box-shadow:var(--ombre);
+
+}
+
+
+
+.commande-admin h3{
+
+color:var(--vert);
+
+margin-bottom:20px;
+
+}
+
+
+
+.commande-admin p{
+
+margin-bottom:12px;
+
+}
+
+
+
+.commande-admin select{
+
+max-width:250px;
+
+}
+
+
+
+.commande-admin hr{
+
+margin-top:25px;
+
+border:none;
+
+border-top:1px solid #eee;
+
+}
+
+
+
+/* ==============================
+   TABLEAU DE BORD ADMIN
+============================== */
+
+
+.admin-stats{
+
+display:grid;
+
+grid-template-columns:repeat(3,1fr);
+
+gap:25px;
+
+margin:40px 8%;
+
+}
+
+
+
+.stat-card{
+
+background:white;
+
+padding:30px;
+
+border-radius:var(--rayon);
+
+box-shadow:var(--ombre);
+
+text-align:center;
+
+}
+
+
+
+.stat-card h3{
+
+font-size:2.5rem;
+
+color:var(--vert);
+
+}
+
+
+
+.stat-card p{
+
+color:var(--gris);
+
+font-weight:bold;
+
+margin-top:10px;
+
+}
+
+
+
+/* ==============================
+   ALERTES
+============================== */
+
+
+.message-success{
+
+background:#e9f3e5;
+
+color:#48613f;
+
+padding:18px;
+
+border-radius:15px;
+
+margin:20px 0;
+
+}
+
+
+
+.message-error{
+
+background:#f9e5e5;
+
+color:#8b3a3a;
+
+padding:18px;
+
+border-radius:15px;
+
+margin:20px 0;
+
+}
