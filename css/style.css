@@ -501,7 +501,225 @@ footer a:hover{
         align-items:flex-start;
         gap:8px;
     }
+/* =====================================================
+   IDÉE GOURMANDE - Finitions Premium
+   ===================================================== */
 
+/* Variables */
+:root{
+    --couleur-principale:#7d2d2d;
+    --couleur-secondaire:#b88a44;
+    --fond:#faf8f5;
+    --blanc:#ffffff;
+    --texte:#333;
+    --ombre:0 8px 25px rgba(0,0,0,.10);
+    --transition:.25s ease;
+    --rayon:16px;
+}
+
+/* Fond général */
+body{
+    background:var(--fond);
+    color:var(--texte);
+}
+
+/* ===========================
+   Cartes produits
+   =========================== */
+
+.produit,
+.carte-produit,
+.product-card{
+
+    background:var(--blanc);
+    border-radius:var(--rayon);
+    overflow:hidden;
+
+    box-shadow:var(--ombre);
+
+    transition:
+        transform var(--transition),
+        box-shadow var(--transition);
+}
+
+.produit:hover,
+.carte-produit:hover,
+.product-card:hover{
+
+    transform:translateY(-4px);
+
+    box-shadow:
+        0 15px 35px rgba(0,0,0,.15);
+
+}
+
+.produit img,
+.carte-produit img,
+.product-card img{
+
+    transition:transform .35s ease;
+
+}
+
+.produit:hover img,
+.carte-produit:hover img,
+.product-card:hover img{
+
+    transform:scale(1.04);
+
+}
+
+/* ===========================
+   Boutons
+   =========================== */
+
+button,
+.btn{
+
+    border:none;
+    border-radius:12px;
+
+    padding:12px 22px;
+
+    background:var(--couleur-principale);
+    color:white;
+
+    font-weight:600;
+
+    cursor:pointer;
+
+    transition:
+        background .25s,
+        transform .15s,
+        box-shadow .25s;
+
+}
+
+button:hover,
+.btn:hover{
+
+    background:var(--couleur-secondaire);
+
+    transform:translateY(-2px);
+
+    box-shadow:0 8px 20px rgba(0,0,0,.18);
+
+}
+
+button:active,
+.btn:active{
+
+    transform:scale(.98);
+
+}
+
+/* ===========================
+   Panier
+   =========================== */
+
+#panier,
+.panier{
+
+    background:white;
+
+    border-radius:18px;
+
+    padding:20px;
+
+    box-shadow:var(--ombre);
+
+}
+
+#panier table{
+
+    width:100%;
+    border-collapse:collapse;
+
+}
+
+#panier th{
+
+    background:#f4f1ec;
+
+}
+
+#panier td,
+#panier th{
+
+    padding:12px;
+
+}
+
+.total{
+
+    font-size:1.2rem;
+    font-weight:bold;
+    color:var(--couleur-principale);
+
+}
+
+/* ===========================
+   Champs formulaire
+   =========================== */
+
+input,
+textarea,
+select{
+
+    border:1px solid #ddd;
+    border-radius:10px;
+
+    transition:.2s;
+
+}
+
+input:focus,
+textarea:focus,
+select:focus{
+
+    border-color:var(--couleur-secondaire);
+
+    outline:none;
+
+    box-shadow:
+        0 0 0 4px rgba(184,138,68,.15);
+
+}
+
+/* ===========================
+   Mobile
+   =========================== */
+
+@media (max-width:768px){
+
+    .produit,
+    .carte-produit,
+    .product-card{
+
+        margin-bottom:20px;
+
+    }
+
+    button,
+    .btn{
+
+        width:100%;
+
+    }
+
+    #panier{
+
+        padding:15px;
+
+    }
+
+    #panier table{
+
+        font-size:.92rem;
+
+    }
+
+}
     .twint-number{
         font-size:1.6rem;
     }
