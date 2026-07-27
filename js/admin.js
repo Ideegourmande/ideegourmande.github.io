@@ -11,9 +11,20 @@
 
 function obtenirCommandes(){
 
+function obtenirCommandes(){
+
+try{
+
 return JSON.parse(
 localStorage.getItem("commandes")
 ) || [];
+
+}
+catch(e){
+
+return [];
+
+}
 
 }
 
@@ -141,7 +152,7 @@ ${cmd.total} CHF
 
 
 <option value="Nouvelle"
-${cmd.statut==="Nouvelle"?"selected":""}>
+${(cmd.statut || "Nouvelle")==="Nouvelle"?"selected":""}
 Nouvelle
 </option>
 
@@ -170,6 +181,15 @@ Livrée
 </p>
 
 
+
+
+<button
+class="btn"
+onclick="imprimerCommande(${index})">
+
+🖨 Imprimer PDF
+
+</button>
 
 
 <button
@@ -222,7 +242,8 @@ localStorage.setItem(
 "commandes",
 JSON.stringify(commandes)
 );
-
+afficherCommandes();
+afficherStatistiques();
 
 }
 
