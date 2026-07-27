@@ -398,12 +398,33 @@ document.addEventListener(
 "DOMContentLoaded",
 calculerTotal
 );
+// ==================================
+// VIDER LE PANIER
+// ==================================
+
 function viderPanier() {
 
-    panier = [];
 
-    localStorage.removeItem("panier");
+    // Remet toutes les quantités à zéro
 
-    afficherPanier();
+    document.querySelectorAll(
+        ".commande-card input[type='number']"
+    ).forEach(function(input){
+
+        input.value = 0;
+
+    });
+
+
+    // Recalcule l'affichage
+
+    calculerTotal();
+
+
+    // Message confirmation
+
+    alert(
+        "Votre panier a été vidé."
+    );
 
 }
