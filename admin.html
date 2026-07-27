@@ -20,7 +20,7 @@
 
 if(localStorage.getItem("adminConnecte") !== "oui"){
 
-    window.location.href="admin-login.html";
+window.location.href="admin-login.html";
 
 }
 
@@ -31,26 +31,23 @@ if(localStorage.getItem("adminConnecte") !== "oui"){
 <header>
 
 <div class="top-banner">
+
 🔐 Administration des commandes - Idée Gourmande
+
 </div>
 
 </header>
 
 
 
+
+
 <section class="presentation">
 
+
 <h1>
-Gestion des commandes
+Tableau de bord
 </h1>
-
-
-<p>
-Liste des commandes enregistrées.
-</p>
-
-
-<br>
 
 
 <button onclick="deconnexion()">
@@ -64,43 +61,95 @@ Liste des commandes enregistrées.
 
 
 
+
+<section class="stats">
+
+
+<div class="stat-card">
+
+<h3>
+Commandes
+</h3>
+
+<strong id="nbCommandes">
+0
+</strong>
+
+</div>
+
+
+
+<div class="stat-card">
+
+<h3>
+Chiffre d'affaires
+</h3>
+
+<strong id="caTotal">
+0 CHF
+</strong>
+
+</div>
+
+
+
+<div class="stat-card">
+
+<h3>
+Aujourd'hui
+</h3>
+
+<strong id="commandeJour">
+0
+</strong>
+
+</div>
+
+
+</section>
+
+
+
+
+
+
+
+
 <section class="panier-section">
 
 
 <div class="panier-card">
 
-<div class="admin-stats">
 
-    <div class="stat-card">
-        <h3 id="nbCommandes">0</h3>
-        <p>Commandes</p>
-    </div>
+<h2>
+📦 Commandes reçues
+</h2>
 
-    <div class="stat-card">
-        <h3 id="caTotal">0 CHF</h3>
-        <p>Chiffre d'affaires</p>
-    </div>
 
-    <div class="stat-card">
-        <h3 id="commandeJour">0</h3>
-        <p>Aujourd'hui</p>
-    </div>
 
-</div>
-<h2>📦 Commandes reçues</h2>
+<input
+type="search"
+id="rechercheCommande"
+placeholder="Rechercher un client..."
+oninput="rechercherCommande()">
+
+
+
 
 
 <div id="listeCommandes">
 
-Chargement des commandes...
+Chargement...
 
 </div>
+
 
 
 </div>
 
 
 </section>
+
 
 
 
@@ -123,3 +172,116 @@ Chargement des commandes...
 </body>
 
 </html>
+/* ==================================
+ADMINISTRATION
+================================== */
+
+
+.stats {
+
+display:grid;
+
+grid-template-columns:repeat(3,1fr);
+
+gap:25px;
+
+padding:40px 8%;
+
+}
+
+
+
+.stat-card {
+
+background:white;
+
+padding:30px;
+
+border-radius:20px;
+
+box-shadow:var(--ombre);
+
+text-align:center;
+
+}
+
+
+
+.stat-card h3 {
+
+color:var(--vert);
+
+}
+
+
+
+.stat-card strong {
+
+font-size:2rem;
+
+color:var(--or-fonce);
+
+}
+
+
+
+.commande-admin {
+
+background:white;
+
+padding:25px;
+
+margin-top:25px;
+
+border-radius:20px;
+
+box-shadow:var(--ombre);
+
+}
+
+
+
+.commande-admin h3 {
+
+color:var(--vert);
+
+}
+
+
+
+.commande-admin select {
+
+max-width:250px;
+
+}
+
+
+
+#rechercheCommande {
+
+margin-bottom:25px;
+
+}
+
+
+
+
+
+@media(max-width:900px){
+
+
+.stats {
+
+grid-template-columns:1fr;
+
+}
+
+
+.commande-admin {
+
+padding:18px;
+
+}
+
+
+}
