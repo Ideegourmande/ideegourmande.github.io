@@ -1,8 +1,22 @@
 // ==================================
 // IDÉE GOURMANDE
 // Administration commandes
-// Version complète
+// Version complète finale
 // ==================================
+
+
+// ==================================
+// CHARGEMENT DES COMMANDES
+// ==================================
+
+function obtenirCommandes(){
+
+return JSON.parse(
+localStorage.getItem("commandes")
+) || [];
+
+}
+
 
 
 
@@ -13,14 +27,28 @@
 function afficherCommandes(){
 
 
+afficherListeCommandes(
+obtenirCommandes()
+);
+
+
+}
+
+
+
+
+
+function afficherListeCommandes(commandes){
+
+
 const zone =
 document.getElementById("listeCommandes");
 
 
-let commandes =
-JSON.parse(
-localStorage.getItem("commandes")
-) || [];
+
+if(!zone){
+return;
+}
 
 
 
@@ -53,10 +81,12 @@ html += `
 </h3>
 
 
+
 <p>
 <strong>Date :</strong><br>
 ${cmd.date}
 </p>
+
 
 
 <p>
@@ -65,10 +95,12 @@ ${cmd.client}
 </p>
 
 
+
 <p>
 <strong>Téléphone :</strong><br>
 ${cmd.telephone || "-"}
 </p>
+
 
 
 <p>
@@ -77,16 +109,20 @@ ${cmd.email}
 </p>
 
 
+
 <p>
 <strong>Adresse :</strong><br>
 ${cmd.adresse}
 </p>
 
 
+
 <p>
 <strong>Commande :</strong><br>
-${cmd.produits.replace(/\n/g,"<br>")}
+${(cmd.produits || "")
+.replace(/\n/g,"<br>")}
 </p>
+
 
 
 <p>
@@ -100,41 +136,43 @@ ${cmd.total} CHF
 
 <strong>Statut :</strong>
 
-<select 
-onchange="changerStatut(${index},this.value)">
+
+<select onchange="changerStatut(${index},this.value)">
 
 
 <option value="Nouvelle"
-${cmd.statut==="Nouvelle" ? "selected":""}>
+${cmd.statut==="Nouvelle"?"selected":""}>
 Nouvelle
 </option>
 
 
 <option value="En préparation"
-${cmd.statut==="En préparation" ? "selected":""}>
+${cmd.statut==="En préparation"?"selected":""}>
 En préparation
 </option>
 
 
 <option value="Prête"
-${cmd.statut==="Prête" ? "selected":""}>
+${cmd.statut==="Prête"?"selected":""}>
 Prête
 </option>
 
 
 <option value="Livrée"
-${cmd.statut==="Livrée" ? "selected":""}>
+${cmd.statut==="Livrée"?"selected":""}>
 Livrée
 </option>
 
 
 </select>
 
+
 </p>
 
 
 
-<button 
+
+<button
 class="btn"
 onclick="supprimerCommande(${index})">
 
@@ -170,14 +208,14 @@ function changerStatut(index,valeur){
 
 
 let commandes =
-JSON.parse(
-localStorage.getItem("commandes")
-) || [];
+obtenirCommandes();
 
+
+
+if(commandes[index]){
 
 
 commandes[index].statut = valeur;
-
 
 
 localStorage.setItem(
@@ -185,6 +223,8 @@ localStorage.setItem(
 JSON.stringify(commandes)
 );
 
+
+}
 
 }
 
@@ -200,7 +240,7 @@ function supprimerCommande(index){
 
 
 if(!confirm(
-"Voulez-vous supprimer cette commande ?"
+"Supprimer cette commande ?"
 )){
 
 return;
@@ -210,9 +250,7 @@ return;
 
 
 let commandes =
-JSON.parse(
-localStorage.getItem("commandes")
-) || [];
+obtenirCommandes();
 
 
 
@@ -246,9 +284,7 @@ function afficherStatistiques(){
 
 
 let commandes =
-JSON.parse(
-localStorage.getItem("commandes")
-) || [];
+obtenirCommandes();
 
 
 
@@ -295,7 +331,6 @@ total.toFixed(2) + " CHF";
 
 
 
-
 let aujourd_hui =
 new Date()
 .toLocaleDateString("fr-FR");
@@ -309,7 +344,10 @@ let compteur = 0;
 commandes.forEach(function(cmd){
 
 
-if(cmd.date && cmd.date.includes(aujourd_hui)){
+if(
+cmd.date &&
+cmd.date.includes(aujourd_hui)
+){
 
 compteur++;
 
@@ -327,6 +365,67 @@ compteur;
 
 }
 
+
+}
+
+
+
+
+
+// ==================================
+// RECHERCHE COMMANDES
+// ==================================
+
+function rechercherCommande(){
+
+
+let champ =
+document.getElementById(
+"rechercheCommande"
+);
+
+
+
+if(!champ){
+return;
+}
+
+
+
+let recherche =
+champ.value.toLowerCase();
+
+
+
+let commandes =
+obtenirCommandes();
+
+
+
+let filtre =
+commandes.filter(function(cmd){
+
+
+return (
+
+(cmd.client || "")
+.toLowerCase()
+.includes(recherche)
+
+||
+
+(cmd.email || "")
+.toLowerCase()
+.includes(recherche)
+
+);
+
+
+});
+
+
+
+afficherListeCommandes(filtre);
 
 
 }
@@ -359,127 +458,9 @@ window.location.href =
 
 
 // ==================================
-// DEMARRAGE
-// ==================================
-// ==================================
-// RECHERCHE COMMANDES
+// INITIALISATION
 // ==================================
 
-function rechercherCommande(){
-
-
-let recherche =
-document.getElementById("rechercheCommande")
-.value
-.toLowerCase();
-
-
-
-let commandes =
-JSON.parse(
-localStorage.getItem("commandes")
-) || [];
-
-
-
-let filtre =
-commandes.filter(function(cmd){
-
-
-return (
-
-cmd.client
-.toLowerCase()
-.includes(recherche)
-
-||
-cmd.email
-.toLowerCase()
-.includes(recherche)
-
-);
-
-
-});
-
-
-
-afficherListeFiltree(filtre);
-
-
-}
-
-
-
-
-function afficherListeFiltree(commandes){
-
-
-const zone =
-document.getElementById("listeCommandes");
-
-
-
-if(commandes.length===0){
-
-zone.innerHTML =
-"<p>Aucun résultat.</p>";
-
-return;
-
-}
-
-
-
-let html="";
-
-
-
-commandes.forEach(function(cmd){
-
-
-html += `
-
-
-<div class="commande-admin">
-
-
-<h3>
-📦 ${cmd.id}
-</h3>
-
-
-<p>
-<strong>Client :</strong>
-${cmd.client}
-</p>
-
-
-<p>
-<strong>Total :</strong>
-${cmd.total} CHF
-</p>
-
-
-<p>
-<strong>Statut :</strong>
-${cmd.statut}
-</p>
-
-
-</div>
-
-
-`;
-
-
-});
-
-
-zone.innerHTML=html;
-
-
-}
 document.addEventListener(
 "DOMContentLoaded",
 function(){
