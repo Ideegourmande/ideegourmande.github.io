@@ -79,5 +79,16 @@ Chargement des commandes...
 
 
 </body>
+<script>
 
+if(localStorage.getItem("adminConnecte") !== "oui"){
+
+window.location.href="admin-login.html";
+
+}
+
+</script>
 </html>
+<button onclick="deconnexion()">
+Déconnexion
+</button>
