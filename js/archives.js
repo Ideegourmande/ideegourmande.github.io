@@ -1,7 +1,7 @@
 // ==================================
 // IDÉE GOURMANDE
 // Archives des commandes
-// Version 1.2
+// Version 1.3
 // ==================================
 
 
@@ -108,6 +108,14 @@ ${cmd.email || "-"}
 
 <p>
 
+<strong>Téléphone :</strong><br>
+
+${cmd.telephone || "-"}
+
+</p>
+
+<p>
+
 <strong>Adresse :</strong><br>
 
 ${cmd.adresse || "-"}
@@ -126,7 +134,7 @@ ${(cmd.produits || "").replace(/\n/g,"<br>")}
 
 <strong>Total :</strong>
 
-${cmd.total || "0.00"} CHF
+${Number(cmd.total || 0).toFixed(2)} CHF
 
 </p>
 
@@ -195,7 +203,11 @@ function restaurerCommande(index){
 
     }
 
-archives[index].statut = "Nouvelle";
+
+    // Remet le statut à "Nouvelle"
+    archives[index].statut = "Nouvelle";
+
+
     commandes.push(
         archives[index]
     );
