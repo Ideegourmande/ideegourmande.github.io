@@ -195,7 +195,7 @@ function restaurerCommande(index){
 
     }
 
-
+archives[index].statut = "Nouvelle";
     commandes.push(
         archives[index]
     );
