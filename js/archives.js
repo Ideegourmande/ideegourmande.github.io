@@ -1,76 +1,78 @@
 // ==================================
 // IDÉE GOURMANDE
 // Archives des commandes
-// Version 1.0
+// Version 1.1
 // ==================================
 
 
 // ==================================
-// CHARGEMENT
+// CHARGEMENT DES ARCHIVES
 // ==================================
 
 function obtenirArchives(){
 
-try{
+    try{
 
-return JSON.parse(
-localStorage.getItem("commandesArchivees")
-) || [];
+        return JSON.parse(
+            localStorage.getItem("commandesArchivees")
+        ) || [];
+
+    }
+    catch(e){
+
+        return [];
+
+    }
 
 }
-catch(e){
 
-return [];
-
-}
-
-}
 
 
 
 // ==================================
-// AFFICHAGE
+// AFFICHAGE DES ARCHIVES
 // ==================================
 
 function afficherArchives(){
 
-afficherListeArchives(
-obtenirArchives()
-);
+    afficherListeArchives(
+        obtenirArchives()
+    );
 
 }
+
 
 
 
 function afficherListeArchives(archives){
 
-const zone =
-document.getElementById("listeArchives");
+    const zone =
+        document.getElementById("listeArchives");
 
 
-if(!zone){
+    if(!zone){
 
-return;
+        return;
 
-}
-
-
-if(archives.length===0){
-
-zone.innerHTML=
-"<p>Aucune archive.</p>";
-
-return;
-
-}
+    }
 
 
-let html="";
+    if(archives.length === 0){
+
+        zone.innerHTML =
+            "<p>Aucune archive.</p>";
+
+        return;
+
+    }
 
 
-archives.forEach(function(cmd,index){
+    let html = "";
 
-html+=`
+
+    archives.forEach(function(cmd,index){
+
+        html += `
 
 <div class="commande-admin">
 
@@ -116,7 +118,7 @@ ${cmd.adresse}
 
 <strong>Commande :</strong><br>
 
-${(cmd.produits||"").replace(/\n/g,"<br>")}
+${(cmd.produits || "").replace(/\n/g,"<br>")}
 
 </p>
 
@@ -150,125 +152,182 @@ onclick="supprimerArchive(${index})">
 
 `;
 
-});
+    });
 
-zone.innerHTML=html;
+
+    zone.innerHTML = html;
 
 }
 
 
 
+
 // ==================================
-// RESTAURER
+// RESTAURER UNE COMMANDE
 // ==================================
 
 function restaurerCommande(index){
 
-let archives=
-obtenirArchives();
-
-let commandes=
-JSON.parse(
-localStorage.getItem("commandes")
-) || [];
+    let archives =
+        obtenirArchives();
 
 
-commandes.push(
-archives[index]
-);
+    if(!archives[index]){
+
+        return;
+
+    }
 
 
-archives.splice(index,1);
+    let commandes = [];
 
 
-localStorage.setItem(
-"commandes",
-JSON.stringify(commandes)
-);
+    try{
 
-localStorage.setItem(
-"commandesArchivees",
-JSON.stringify(archives)
-);
+        commandes = JSON.parse(
+            localStorage.getItem("commandes")
+        ) || [];
 
-afficherArchives();
+    }
+    catch(e){
+
+        commandes = [];
+
+    }
+
+
+    commandes.push(
+        archives[index]
+    );
+
+
+    archives.splice(index,1);
+
+
+    localStorage.setItem(
+        "commandes",
+        JSON.stringify(commandes)
+    );
+
+
+    localStorage.setItem(
+        "commandesArchivees",
+        JSON.stringify(archives)
+    );
+
+
+    afficherArchives();
 
 }
 
 
 
+
 // ==================================
-// SUPPRESSION
+// SUPPRIMER UNE ARCHIVE
 // ==================================
 
 function supprimerArchive(index){
 
-if(
-!confirm(
-"Supprimer définitivement cette archive ?"
-)
-){
+    if(
+        !confirm(
+            "Supprimer définitivement cette archive ?"
+        )
+    ){
 
-return;
+        return;
+
+    }
+
+
+    let archives =
+        obtenirArchives();
+
+
+    if(!archives[index]){
+
+        return;
+
+    }
+
+
+    archives.splice(index,1);
+
+
+    localStorage.setItem(
+        "commandesArchivees",
+        JSON.stringify(archives)
+    );
+
+
+    afficherArchives();
 
 }
 
-
-let archives=
-obtenirArchives();
-
-archives.splice(index,1);
-
-localStorage.setItem(
-"commandesArchivees",
-JSON.stringify(archives)
-);
-
-afficherArchives();
-
-}
 
 
 
 // ==================================
-// RECHERCHE
+// RECHERCHE DANS LES ARCHIVES
 // ==================================
 
 function rechercherArchive(){
 
-let recherche=
-document
-.getElementById("rechercheArchive")
-.value
-.toLowerCase();
+    let recherche =
+        document
+        .getElementById("rechercheArchive")
+        .value
+        .toLowerCase();
 
-let archives=
-obtenirArchives();
 
-let resultat=
-archives.filter(function(cmd){
+    let archives =
+        obtenirArchives();
 
-return(
 
-(cmd.client||"")
-.toLowerCase()
-.includes(recherche)
+    let resultat =
+        archives.filter(function(cmd){
 
-||
+            return (
 
-(cmd.email||"")
-.toLowerCase()
-.includes(recherche)
+                (cmd.client || "")
+                .toLowerCase()
+                .includes(recherche)
 
-);
+                ||
 
-});
+                (cmd.email || "")
+                .toLowerCase()
+                .includes(recherche)
 
-afficherListeArchives(
-resultat
-);
+            );
+
+        });
+
+
+    afficherListeArchives(
+        resultat
+    );
 
 }
+
+
+
+
+// ==================================
+// DÉCONNEXION
+// ==================================
+
+function deconnexion(){
+
+    localStorage.removeItem(
+        "adminConnecte"
+    );
+
+    window.location.href =
+        "admin-login.html";
+
+}
+
 
 
 
@@ -277,10 +336,10 @@ resultat
 // ==================================
 
 document.addEventListener(
-"DOMContentLoaded",
-function(){
+    "DOMContentLoaded",
+    function(){
 
-afficherArchives();
+        afficherArchives();
 
-}
+    }
 );
