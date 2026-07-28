@@ -4,31 +4,87 @@
 <head>
 
 <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>
-Archives commandes - Idée Gourmande
-</title>
+<title>Archives - Idée Gourmande</title>
 
 <link rel="stylesheet" href="css/style.css">
 
 </head>
 
-
 <body>
 
+<script>
 
-<h1>
+if(localStorage.getItem("adminConnecte") !== "oui"){
+
+window.location.href="admin-login.html";
+
+}
+
+</script>
+
+<header>
+
+<div class="top-banner">
+
 📂 Archives des commandes
-</h1>
-
-
-<div id="listeArchives">
 
 </div>
 
+</header>
+
+<section class="presentation">
+
+<h1>
+Historique des commandes
+</h1>
+
+<a
+href="admin.html"
+class="btn">
+
+⬅ Retour à l'administration
+
+</a>
+
+</section>
+
+<section class="panier-section">
+
+<div class="panier-card">
+
+<h2>
+Archives
+</h2>
+
+<input
+type="search"
+id="rechercheArchive"
+placeholder="Rechercher un client..."
+oninput="rechercherArchive()">
+
+<div id="listeArchives">
+
+Chargement...
+
+</div>
+
+</div>
+
+</section>
+
+<footer>
+
+<p>
+
+© Idée Gourmande - Genève
+
+</p>
+
+</footer>
 
 <script src="js/archives.js"></script>
-
 
 </body>
 
