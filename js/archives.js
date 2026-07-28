@@ -1,7 +1,7 @@
 // ==================================
 // IDÉE GOURMANDE
 // Archives des commandes
-// Version 1.1
+// Version 1.2
 // ==================================
 
 
@@ -78,7 +78,7 @@ function afficherListeArchives(archives){
 
 <h3>
 
-📦 Commande ${cmd.id}
+📦 Commande ${cmd.id || "-"}
 
 </h3>
 
@@ -86,7 +86,7 @@ function afficherListeArchives(archives){
 
 <strong>Date :</strong><br>
 
-${cmd.date}
+${cmd.date || "-"}
 
 </p>
 
@@ -94,7 +94,7 @@ ${cmd.date}
 
 <strong>Client :</strong><br>
 
-${cmd.client}
+${cmd.client || "-"}
 
 </p>
 
@@ -102,7 +102,7 @@ ${cmd.client}
 
 <strong>Email :</strong><br>
 
-${cmd.email}
+${cmd.email || "-"}
 
 </p>
 
@@ -110,7 +110,7 @@ ${cmd.email}
 
 <strong>Adresse :</strong><br>
 
-${cmd.adresse}
+${cmd.adresse || "-"}
 
 </p>
 
@@ -126,7 +126,7 @@ ${(cmd.produits || "").replace(/\n/g,"<br>")}
 
 <strong>Total :</strong>
 
-${cmd.total} CHF
+${cmd.total || "0.00"} CHF
 
 </p>
 
@@ -218,6 +218,10 @@ function restaurerCommande(index){
 
     afficherArchives();
 
+    alert(
+        "La commande a été restaurée."
+    );
+
 }
 
 
@@ -262,6 +266,10 @@ function supprimerArchive(index){
 
     afficherArchives();
 
+    alert(
+        "L'archive a été supprimée."
+    );
+
 }
 
 
@@ -273,11 +281,19 @@ function supprimerArchive(index){
 
 function rechercherArchive(){
 
+    const champ =
+        document.getElementById("rechercheArchive");
+
+
+    if(!champ){
+
+        return;
+
+    }
+
+
     let recherche =
-        document
-        .getElementById("rechercheArchive")
-        .value
-        .toLowerCase();
+        champ.value.toLowerCase();
 
 
     let archives =
