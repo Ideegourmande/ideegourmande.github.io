@@ -442,7 +442,9 @@ font-size:1.4rem;
 
     box-shadow:var(--ombre);
 
-    transition:var(--transition);
+    transition:
+transform var(--transition),
+box-shadow var(--transition);
 
     display:flex;
     flex-direction:column;
@@ -549,7 +551,9 @@ border-radius:var(--rayon);
 
 box-shadow:var(--ombre);
 
-transition:var(--transition);
+transition:
+transform var(--transition),
+box-shadow var(--transition);
 
 }
 
