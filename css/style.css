@@ -491,13 +491,13 @@ padding:0 20px 15px;
 
 color:var(--gris);
 
-}
 .produit .btn{
 
 margin-top:auto;
 margin:20px;
 
-width:calc(100% - 40px);
+align-self:center;
+width:85%;
 
 text-align:center;
 
