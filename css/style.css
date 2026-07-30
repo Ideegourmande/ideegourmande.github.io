@@ -525,17 +525,12 @@ box-shadow var(--transition);
 }
 
 .prix{
-
     display:block;
-
+    margin-top:8px;
     padding:0 20px 25px;
-
     font-size:1.3rem;
-
     font-weight:bold;
-
     color:var(--or-fonce);
-
 }
 
 
