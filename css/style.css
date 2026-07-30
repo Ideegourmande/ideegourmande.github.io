@@ -490,20 +490,16 @@ box-shadow var(--transition);
 }
 
 .produit .btn{
-
     margin:20px;
     margin-top:auto;
-
-    display:block;
-
+    display:flex;
+    justify-content:center;
+    align-items:center;
     width:calc(100% - 40px);
-
+    min-height:54px;
     text-align:center;
-
     border-bottom:2px solid white;
-
     border-radius:35px;
-
 }
 
 .prix{
