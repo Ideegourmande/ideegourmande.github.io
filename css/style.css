@@ -443,6 +443,10 @@ box-shadow:var(--ombre);
 
 transition:var(--transition);
 
+display:flex;
+flex-direction:column;
+height:100%;
+
 }
 
 
