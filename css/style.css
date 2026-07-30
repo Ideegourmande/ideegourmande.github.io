@@ -395,7 +395,9 @@ transition:var(--transition);
 
 .valeurs div:hover{
 
-transform:translateY(-8px);
+    transform:translateY(-8px);
+
+    box-shadow:0 15px 35px rgba(0,0,0,.12);
 
 }
 
@@ -880,21 +882,23 @@ margin-top:20px;
 }
 .twint-info{
 
-margin-top:20px;
+    margin-top:20px;
 
-padding:15px;
+    padding:15px;
 
-background:white;
+    background:white;
 
-border-left:4px solid var(--or);
+    border-left:4px solid var(--or);
 
-border-radius:10px;
+    border-radius:10px;
 
-font-size:0.95rem;
+    font-size:0.95rem;
 
-line-height:1.6;
+    line-height:1.6;
 
-color:var(--texte);
+    color:var(--texte);
+
+    box-shadow:0 2px 8px rgba(0,0,0,.05);
 
 }
 /* ===================================================
