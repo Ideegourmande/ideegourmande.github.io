@@ -434,30 +434,31 @@ font-size:1.4rem;
 
 .produit{
 
-    background:white;
+    background:var(--blanc);
 
-    border-radius:var(--rayon);
+    border-radius:22px;
 
     overflow:hidden;
 
-    box-shadow:var(--ombre);
+    border:1px solid #ece6d8;
+
+    box-shadow:0 10px 28px rgba(0,0,0,.06);
 
     transition:
-transform var(--transition),
-box-shadow var(--transition);
+        transform .35s ease,
+        box-shadow .35s ease;
 
     display:flex;
     flex-direction:column;
 
     height:100%;
-
 }
 
 .produit:hover{
 
-    transform:translateY(-8px);
+    transform:translateY(-10px);
 
-    box-shadow:0 15px 35px rgba(0,0,0,.12);
+    box-shadow:0 22px 45px rgba(0,0,0,.14);
 
 }
 
