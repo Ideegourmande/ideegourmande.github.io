@@ -404,3 +404,23 @@ viderPanier
 
 
 });
+// ===============================
+// Affichage du nom pour le paiement TWINT
+// ===============================
+
+const prenom = document.getElementById("prenom");
+const nom = document.getElementById("nom");
+const twintNomComplet = document.getElementById("twintNomComplet");
+
+function majNomTwint() {
+    if (!prenom || !nom || !twintNomComplet) return;
+
+    twintNomComplet.textContent =
+        (prenom.value + " " + nom.value).trim();
+}
+
+if (prenom && nom && twintNomComplet) {
+    prenom.addEventListener("input", majNomTwint);
+    nom.addEventListener("input", majNomTwint);
+    majNomTwint();
+}
