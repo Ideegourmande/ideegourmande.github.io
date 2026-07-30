@@ -488,7 +488,28 @@ box-shadow var(--transition);
     color:var(--gris);
 
 }
+/* Liste des recettes */
+.recettes{
 
+    margin:0 20px 15px;
+
+    padding-left:18px;
+
+    color:var(--gris);
+
+    font-size:0.95rem;
+
+    line-height:1.5;
+
+}
+
+.recettes li{
+
+    list-style:disc;
+
+    margin-bottom:6px;
+
+}
 .produit .btn{
     margin:20px;
     margin-top:auto;
