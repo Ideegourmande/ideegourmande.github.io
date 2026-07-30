@@ -1376,3 +1376,70 @@ border-radius:15px;
 margin:20px 0;
 
 }
+/* ==============================
+   RESPONSIVE
+============================== */
+
+@media (max-width:768px){
+
+    nav{
+
+        flex-direction:column;
+
+        gap:15px;
+
+    }
+
+    nav ul{
+
+        flex-wrap:wrap;
+
+        justify-content:center;
+
+        gap:15px;
+
+    }
+
+    .hero{
+
+        min-height:500px;
+
+    }
+
+    .hero h1{
+
+        font-size:2.8rem;
+
+    }
+
+    .hero h2{
+
+        font-size:1.5rem;
+
+    }
+
+    .presentation{
+
+        padding:50px 8%;
+
+    }
+
+    .form-grid{
+
+        grid-template-columns:1fr;
+
+    }
+
+    .valeurs{
+
+        grid-template-columns:1fr;
+
+    }
+
+    .admin-stats{
+
+        grid-template-columns:1fr;
+
+    }
+
+}
