@@ -494,8 +494,10 @@ color:var(--gris);
 }
 .produit .btn{
 
-margin:20px 20px 20px 20px;
 margin-top:auto;
+margin:20px;
+
+width:calc(100% - 40px);
 
 text-align:center;
 
