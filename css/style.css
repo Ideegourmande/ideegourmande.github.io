@@ -283,12 +283,13 @@ display:inline-block;
 
 
 .btn:hover,
-
 button:hover{
 
-background:#94741C;
+    background:#94741C;
 
-transform:translateY(-2px);
+    transform:translateY(-3px);
+
+    box-shadow:0 12px 25px rgba(184,145,34,.35);
 
 }
 
@@ -472,6 +473,8 @@ box-shadow:0 12px 30px rgba(0,0,0,.07);
 
     transition:transform .5s ease;
 
+    border-bottom:1px solid #ece6d8;
+
 }
 .produit:hover img{
 
@@ -494,7 +497,7 @@ box-shadow:0 12px 30px rgba(0,0,0,.07);
 
 .recettes{
 
-    margin:5px 20px 18px;
+    margin:8px 20px 28px;
 
     padding-left:22px;
 
@@ -543,17 +546,19 @@ box-shadow:0 12px 30px rgba(0,0,0,.07);
 
 }
 .produit .btn{
+
     margin:20px;
     margin-top:auto;
     display:flex;
     justify-content:center;
     align-items:center;
     width:calc(100% - 40px);
-    min-height:54px;
+    min-height:58px;
+    font-size:1.05rem;
     text-align:center;
     box-shadow:0 8px 18px rgba(184,145,34,.25);
     border-radius:35px;
-   letter-spacing:.4px;
+    letter-spacing:.4px;
 }
 
 .prix{
