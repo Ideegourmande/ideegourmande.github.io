@@ -421,11 +421,13 @@ font-size:1.4rem;
 
 display:grid;
 
-grid-template-columns:repeat(4,1fr);
+grid-template-columns:repeat(auto-fit,minmax(260px,1fr));
 
 gap:30px;
 
 padding:50px 8%;
+
+align-items:stretch;
 
 }
 
@@ -490,7 +492,19 @@ padding:0 20px 15px;
 color:var(--gris);
 
 }
+.produit .btn{
 
+margin-top:auto;
+
+margin:20px;
+
+text-align:center;
+
+border-bottom:2px solid white;
+
+border-radius:35px;
+
+}
 
 
 .prix{
