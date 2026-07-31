@@ -1,1 +1,142 @@
+<!DOCTYPE html>
+<html lang="fr">
 
+<head>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Gestion du stock - Idée Gourmande</title>
+
+<link rel="stylesheet" href="css/style.css">
+
+</head>
+
+<body>
+
+<script>
+
+if(localStorage.getItem("adminConnecte")!=="oui"){
+    window.location.href="admin-login.html";
+}
+
+</script>
+
+<header>
+
+<div class="top-banner">
+
+📦 Gestion du stock
+
+</div>
+
+</header>
+
+<section class="presentation">
+
+<h1>Stock des marchandises</h1>
+
+<a href="admin.html" class="btn">
+⬅ Retour Administration
+</a>
+
+<button class="btn" id="btnNouvelArticle">
+➕ Nouvel article
+</button>
+
+<button class="btn" onclick="imprimerStock()">
+🖨️ Imprimer
+</button>
+
+</section>
+
+<section class="stats">
+
+<div class="stat-card">
+<h3>Articles</h3>
+<strong id="nbArticles">0</strong>
+</div>
+
+<div class="stat-card">
+<h3>Stock critique</h3>
+<strong id="nbCritique">0</strong>
+</div>
+
+<div class="stat-card">
+<h3>Emplacements</h3>
+<strong id="nbEmplacements">6</strong>
+</div>
+
+</section>
+
+<section class="panier-section">
+
+<div class="panier-card">
+
+<h2>Recherche</h2>
+
+<input
+type="search"
+id="rechercheArticle"
+placeholder="Nom de l'article..."
+onkeyup="rechercherArticle()">
+
+</div>
+
+</section>
+
+<section class="panier-section">
+
+<div class="panier-card">
+
+<h2>Liste des articles</h2>
+
+<table id="tableStock">
+
+<thead>
+
+<tr>
+
+<th>Article</th>
+
+<th>Catégorie</th>
+
+<th>Stock</th>
+
+<th>Minimum</th>
+
+<th>Emplacement</th>
+
+<th>Etat</th>
+
+<th>Action</th>
+
+</tr>
+
+</thead>
+
+<tbody id="tbodyStock">
+
+</tbody>
+
+</table>
+
+</div>
+
+</section>
+
+<footer>
+
+<p>
+
+© Idée Gourmande - Version 2.0.0
+
+</p>
+
+</footer>
+
+<script src="js/stock.js"></script>
+
+</body>
+
+</html>
