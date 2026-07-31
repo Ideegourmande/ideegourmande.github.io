@@ -136,7 +136,57 @@ onkeyup="rechercherArticle()">
 </footer>
 
 <script src="js/stock.js"></script>
+<div id="popupArticle" class="popup" style="display:none;">
 
+<div class="popup-content">
+
+<h2>Article</h2>
+
+<label>Nom</label>
+<input type="text" id="artNom">
+
+<label>Catégorie</label>
+<select id="artCategorie">
+    <option>Viande</option>
+    <option>Poisson</option>
+    <option>Volaille</option>
+    <option>Légume</option>
+    <option>Épicerie</option>
+    <option>Boisson</option>
+    <option>Divers</option>
+</select>
+
+<label>Unité</label>
+<select id="artUnite">
+    <option>kg</option>
+    <option>g</option>
+    <option>pièce</option>
+    <option>litre</option>
+    <option>bouteille</option>
+</select>
+
+<label>Stock actuel</label>
+<input type="number" id="artStock" step="0.01">
+
+<label>Stock minimum</label>
+<input type="number" id="artMinimum" step="0.01">
+
+<label>Emplacement</label>
+<select id="artEmplacement"></select>
+
+<br><br>
+
+<button class="btn" onclick="enregistrerArticle()">
+💾 Enregistrer
+</button>
+
+<button class="btn" onclick="fermerPopup()">
+❌ Annuler
+</button>
+
+</div>
+
+</div>
 </body>
 
 </html>
