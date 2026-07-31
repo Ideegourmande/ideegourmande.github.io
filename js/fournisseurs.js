@@ -95,7 +95,7 @@ function migrerAchatsFournisseurID(){
 
             &&
 
-            client.nom === achat.fournisseur
+            client.nom?.toLowerCase() === achat.fournisseur?.toLowerCase()
 
         );
 
@@ -540,15 +540,23 @@ function enregistrerFournisseur(){
         db.achats.forEach(achat=>{
 
 
-            if(achat.fournisseur === ancienNom){
+            db.achats.forEach(achat=>{
 
+    if(
+        achat.fournisseurId === fournisseur.id
+        ||
+        achat.fournisseur === ancienNom
+    ){
 
-                achat.fournisseur =
+        achat.fournisseur =
+        fournisseur.nom;
 
-                fournisseur.nom;
+        achat.fournisseurId =
+        fournisseur.id;
 
+    }
 
-            }
+});
 
 
         });
@@ -640,7 +648,7 @@ function afficherFournisseurs(){
 
     .sort((a,b)=>
 
-        a.nom.localeCompare(b.nom)
+        (a.nom || "").localeCompare(b.nom || "")
 
     );
 
@@ -760,11 +768,7 @@ function afficherFournisseurs(){
 
         .sort((a,b)=>
 
-            new Date(b.date)
-
-            -
-
-            new Date(a.date)
+            new Date().toISOString()
 
         )[0].date
 
@@ -1195,7 +1199,7 @@ function afficherHistoriqueFournisseur(idFournisseur){
 
     db.clients.find(client =>
 
-        client.id == idFournisseur
+        Number(client.id) === Number(idFournisseur)
 
     );
 
@@ -1463,7 +1467,23 @@ function supprimerFournisseur(index){
 
     if(position >= 0){
 
+db.achats.forEach(achat=>{
 
+    if(
+        achat.fournisseurId === fournisseur.id
+        ||
+        achat.fournisseur === ancienNom
+    ){
+
+        achat.fournisseur =
+        fournisseur.nom;
+
+        achat.fournisseurId =
+        fournisseur.id;
+
+    }
+
+});
         db.clients.splice(
 
             position,
