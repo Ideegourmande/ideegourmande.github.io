@@ -1682,6 +1682,24 @@ border-radius:12px;
 ============================== */
 
 @media (max-width:768px){
+   #tableStock{
+
+display:block;
+
+overflow-x:auto;
+
+white-space:nowrap;
+
+}
+
+.popup-content{
+
+width:95%;
+
+padding:25px;
+
+}
+
 .produit img{
     height:220px;
 }
