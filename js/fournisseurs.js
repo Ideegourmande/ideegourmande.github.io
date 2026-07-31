@@ -371,15 +371,7 @@ Date.now()
 
 db.clients[fournisseurEdition]?.id || Date.now(),
 
-fournisseurEdition === -1
 
-?
-
-Date.now()
-
-:
-
-db.clients[fournisseurEdition]?.id || Date.now()
 
 
 
