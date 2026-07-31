@@ -22,6 +22,7 @@ if(localStorage.getItem("adminConnecte")!=="oui"){
 
 </script>
 
+
 <header>
 
 <div class="top-banner">
@@ -31,6 +32,7 @@ if(localStorage.getItem("adminConnecte")!=="oui"){
 </div>
 
 </header>
+
 
 <section class="presentation">
 
@@ -50,6 +52,7 @@ if(localStorage.getItem("adminConnecte")!=="oui"){
 
 </section>
 
+
 <section class="stats">
 
 <div class="stat-card">
@@ -57,10 +60,12 @@ if(localStorage.getItem("adminConnecte")!=="oui"){
 <strong id="nbArticles">0</strong>
 </div>
 
+
 <div class="stat-card">
 <h3>Stock critique</h3>
 <strong id="nbCritique">0</strong>
 </div>
+
 
 <div class="stat-card">
 <h3>Emplacements</h3>
@@ -68,6 +73,7 @@ if(localStorage.getItem("adminConnecte")!=="oui"){
 </div>
 
 </section>
+
 
 <section class="panier-section">
 
@@ -85,11 +91,13 @@ onkeyup="rechercherArticle()">
 
 </section>
 
+
 <section class="panier-section">
 
 <div class="panier-card">
 
 <h2>Liste des articles</h2>
+
 
 <table id="tableStock">
 
@@ -115,78 +123,130 @@ onkeyup="rechercherArticle()">
 
 </thead>
 
+
 <tbody id="tbodyStock">
 
 </tbody>
 
+
 </table>
+
 
 </div>
 
 </section>
 
+
+
 <footer>
 
 <p>
-
-© Idée Gourmande - Version 2.0.0
-
+© Idée Gourmande - Version 2.0.1
 </p>
 
 </footer>
 
-<script src="js/stock.js"></script>
+
+
+
 <div id="popupArticle" class="popup" style="display:none;">
+
 
 <div class="popup-content">
 
+
 <h2>Article</h2>
 
+
 <label>Nom</label>
+
 <input type="text" id="artNom">
 
+
+
 <label>Catégorie</label>
+
 <select id="artCategorie">
-    <option>Viande</option>
-    <option>Poisson</option>
-    <option>Volaille</option>
-    <option>Légume</option>
-    <option>Épicerie</option>
-    <option>Boisson</option>
-    <option>Divers</option>
+
+<option>Viande</option>
+<option>Poisson</option>
+<option>Volaille</option>
+<option>Légume</option>
+<option>Épicerie</option>
+<option>Boisson</option>
+<option>Divers</option>
+
 </select>
+
+
 
 <label>Unité</label>
+
 <select id="artUnite">
-    <option>kg</option>
-    <option>g</option>
-    <option>pièce</option>
-    <option>litre</option>
-    <option>bouteille</option>
+
+<option>kg</option>
+<option>g</option>
+<option>pièce</option>
+<option>litre</option>
+<option>bouteille</option>
+
 </select>
 
+
+
 <label>Stock actuel</label>
+
 <input type="number" id="artStock" step="0.01">
 
+
+
 <label>Stock minimum</label>
+
 <input type="number" id="artMinimum" step="0.01">
 
+
+
 <label>Emplacement</label>
-<select id="artEmplacement"></select>
+
+<select id="artEmplacement">
+
+</select>
+
+
 
 <br><br>
 
+
+
 <button class="btn" onclick="enregistrerArticle()">
+
 💾 Enregistrer
+
 </button>
+
+
 
 <button class="btn" onclick="fermerPopup()">
+
 ❌ Annuler
+
 </button>
 
-</div>
+
 
 </div>
+
+
+</div>
+
+
+
+
+<script src="js/database.js"></script>
+
+<script src="js/stock.js"></script>
+
+
 </body>
 
 </html>
