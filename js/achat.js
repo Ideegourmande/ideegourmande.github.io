@@ -1,6 +1,6 @@
 // ======================================
 // IDEE GOURMANDE - GESTION DES ACHATS
-// Version 1.2.1 corrigée
+// Version 1.3.0
 // Compatible database.js 2.1.0
 // Compatible js-stock.js 2.2.0
 // Compatible js-fournisseurs.js 1.1.1
@@ -17,6 +17,7 @@ let lignesAchat = [];
 //--------------------------------------
 
 function verifierAchatsDB(){
+
 
     if(typeof db === "undefined"){
 
@@ -50,11 +51,13 @@ function verifierAchatsDB(){
 
 function sauvegarderAchats(){
 
+
     if(typeof sauvegarderDB === "function"){
 
         sauvegarderDB();
 
     }
+
 
 }
 
@@ -66,204 +69,9 @@ function sauvegarderAchats(){
 
 function genererNumeroAchat(){
 
+
     return "ACH-" + Date.now();
 
-}
-
-
-
-//--------------------------------------
-// Migration fournisseurs anciens achats
-//--------------------------------------
-
-function migrerAchatsFournisseurID(){
-
-    if(!verifierAchatsDB())
-        return;
-
-
-    let modifications = 0;
-
-
-    db.achats.forEach(achat=>{
-
-
-        if(achat.fournisseurId){
-
-            return;
-
-        }
-
-
-        if(!achat.fournisseur){
-
-            return;
-
-        }
-
-
-
-        const fournisseur =
-
-        db.clients.find(client =>
-
-
-            client.type === "Fournisseur"
-
-            &&
-
-            client.nom?.toLowerCase()
-
-            ===
-
-            achat.fournisseur?.toLowerCase()
-
-
-        );
-
-
-
-        if(fournisseur){
-
-
-            achat.fournisseurId = fournisseur.id;
-
-
-            modifications++;
-
-        }
-
-
-    });
-
-
-
-    if(modifications > 0){
-
-
-        sauvegarderAchats();
-
-
-        console.log(
-
-            modifications +
-
-            " achat(s) migré(s) vers fournisseurId"
-
-        );
-
-
-    }
-
-
-}
-
-
-
-//--------------------------------------
-// Recherche ou création fournisseur
-//--------------------------------------
-
-function obtenirOuCreerFournisseur(nom){
-
-
-    if(!verifierAchatsDB())
-        return null;
-
-
-
-    let fournisseur =
-
-    db.clients.find(client =>
-
-
-        client.type === "Fournisseur"
-
-        &&
-
-        client.nom?.toLowerCase()
-
-        ===
-
-        nom.toLowerCase()
-
-
-    );
-
-
-
-    if(fournisseur){
-
-        return fournisseur;
-
-    }
-
-
-
-    fournisseur = {
-
-
-        id:
-
-        Date.now(),
-
-
-        nom,
-
-
-        type:
-
-        "Fournisseur",
-
-
-        telephone:"",
-
-
-        email:"",
-
-
-        adresse:"",
-
-
-        notes:"",
-
-
-        dateCreation:
-
-        new Date().toLocaleString()
-
-
-    };
-
-
-
-    db.clients.push(fournisseur);
-
-
-
-    db.mouvements.push({
-
-
-        date:
-
-        new Date().toLocaleString(),
-
-
-        action:
-
-        "Création fournisseur automatique",
-
-
-        fournisseur:
-
-        nom
-
-
-    });
-
-
-
-    return fournisseur;
 
 }
 
@@ -284,15 +92,12 @@ function nouvelAchat(){
 
 
     const fournisseur =
-
     document.getElementById(
         "achatFournisseur"
     );
 
 
-
     const date =
-
     document.getElementById(
         "achatDate"
     );
@@ -301,7 +106,7 @@ function nouvelAchat(){
 
     if(fournisseur){
 
-        fournisseur.value="";
+        fournisseur.value = "";
 
     }
 
@@ -335,7 +140,7 @@ function nouvelAchat(){
 
     if(popup){
 
-        popup.style.display="flex";
+        popup.style.display = "flex";
 
     }
 
@@ -358,13 +163,11 @@ function ajouterLigneAchat(){
     );
 
 
-
     const inputQuantite =
 
     document.getElementById(
         "achatQuantite"
     );
-
 
 
     const inputPrix =
@@ -375,9 +178,11 @@ function ajouterLigneAchat(){
 
 
 
-    if(!selectArticle ||
-       !inputQuantite ||
-       !inputPrix){
+    if(
+        !selectArticle ||
+        !inputQuantite ||
+        !inputPrix
+    ){
 
         return;
 
@@ -403,7 +208,7 @@ function ajouterLigneAchat(){
 
 
 
-    if(article===""){
+    if(article === ""){
 
 
         alert(
@@ -417,7 +222,7 @@ function ajouterLigneAchat(){
 
 
 
-    if(quantite<=0){
+    if(quantite <= 0){
 
 
         alert(
@@ -431,7 +236,7 @@ function ajouterLigneAchat(){
 
 
 
-    if(prix<0){
+    if(prix < 0){
 
 
         alert(
@@ -465,209 +270,6 @@ function ajouterLigneAchat(){
 
 
 //--------------------------------------
-// Enregistrer achat
-//--------------------------------------
-
-function enregistrerAchat(){
-
-
-    if(!verifierAchatsDB())
-        return;
-
-
-
-    const champFournisseur =
-
-    document.getElementById(
-        "achatFournisseur"
-    );
-
-
-
-    const fournisseurNom =
-
-    champFournisseur?.value?.trim()
-    || "";
-
-
-
-    if(!fournisseurNom){
-
-
-        alert(
-            "Veuillez saisir le fournisseur."
-        );
-
-
-        return;
-
-    }
-
-
-
-    if(lignesAchat.length===0){
-
-
-        alert(
-            "Ajoutez au moins un article."
-        );
-
-
-        return;
-
-    }
-
-
-
-    const fournisseur =
-
-    obtenirOuCreerFournisseur(
-        fournisseurNom
-    );
-
-
-
-    const achat = {
-
-
-        id:
-
-        Date.now(),
-
-
-
-        numero:
-
-        genererNumeroAchat(),
-
-
-
-        date:
-
-        document.getElementById(
-            "achatDate"
-        )
-        ?.value
-
-        ||
-
-        new Date()
-
-        .toISOString()
-
-        .split("T")[0],
-
-
-
-        fournisseur:
-
-        fournisseur.nom,
-
-
-
-        fournisseurId:
-
-        fournisseur.id,
-
-
-
-        articles:
-
-        [...lignesAchat],
-
-
-
-        total:
-
-        lignesAchat.reduce(
-
-            (total,ligne)=>
-
-            total +
-
-            (
-                ligne.quantite *
-
-                ligne.prix
-            ),
-
-            0
-
-        ),
-
-
-
-        statut:
-
-        "En attente",
-
-
-
-        dateReception:
-
-        null
-
-
-    };
-
-
-
-    db.achats.push(achat);
-
-
-
-    db.mouvements.push({
-
-
-        date:
-
-        new Date().toLocaleString(),
-
-
-
-        action:
-
-        "Création achat",
-
-
-
-        achat:
-
-        achat.numero,
-
-
-
-        fournisseur:
-
-        fournisseur.nom,
-
-
-
-        montant:
-
-        achat.total
-
-
-    });
-
-
-
-    lignesAchat=[];
-
-
-
-    sauvegarderAchats();
-
-
-    afficherAchats();
-
-
-    fermerPopupAchat();
-
-
-}
-
-//--------------------------------------
 // Affichage lignes achat
 //--------------------------------------
 
@@ -679,6 +281,7 @@ function afficherLignesAchat(){
     document.getElementById(
         "listeAchat"
     );
+
 
 
     if(!zone){
@@ -720,9 +323,9 @@ function afficherLignesAchat(){
 
             <span>
 
-            ${ligne.article}
+                ${ligne.article}
 
-            (${ligne.quantite})
+                (${ligne.quantite})
 
             </span>
 
@@ -730,7 +333,7 @@ function afficherLignesAchat(){
 
             <strong>
 
-            ${montant.toFixed(2)} CHF
+                ${montant.toFixed(2)} CHF
 
             </strong>
 
@@ -738,7 +341,7 @@ function afficherLignesAchat(){
 
             <button onclick="supprimerLigneAchat(${index})">
 
-            ❌
+                ❌
 
             </button>
 
@@ -763,15 +366,9 @@ function afficherLignesAchat(){
 
     if(totalZone){
 
-
         totalZone.textContent =
 
-        total.toFixed(2)
-
-        +
-
-        " CHF";
-
+        total.toFixed(2) + " CHF";
 
     }
 
@@ -800,6 +397,287 @@ function supprimerLigneAchat(index){
 
 
 }
+//--------------------------------------
+// Enregistrer achat
+//--------------------------------------
+
+function enregistrerAchat(){
+
+
+    if(!verifierAchatsDB())
+        return;
+
+
+
+    const fournisseurNom =
+
+    document.getElementById(
+        "achatFournisseur"
+    )
+    ?.value
+    ?.trim();
+
+
+
+    if(!fournisseurNom){
+
+
+        alert(
+            "Veuillez saisir le fournisseur."
+        );
+
+
+        return;
+
+    }
+
+
+
+    if(lignesAchat.length === 0){
+
+
+        alert(
+            "Ajoutez au moins un article."
+        );
+
+
+        return;
+
+    }
+
+
+
+
+    //----------------------------------
+    // Recherche fournisseur existant
+    //----------------------------------
+
+    let fournisseur =
+
+    db.clients.find(client =>
+
+
+        client.type === "Fournisseur"
+
+        &&
+
+        client.nom?.toLowerCase()
+
+        ===
+
+        fournisseurNom.toLowerCase()
+
+
+    );
+
+
+
+    //----------------------------------
+    // Création fournisseur automatique
+    //----------------------------------
+
+    if(!fournisseur){
+
+
+        fournisseur = {
+
+
+            id:
+            Date.now(),
+
+
+            nom:
+            fournisseurNom,
+
+
+            type:
+            "Fournisseur",
+
+
+            telephone:"",
+            email:"",
+            adresse:"",
+            notes:"",
+
+
+            dateCreation:
+
+            new Date()
+            .toLocaleString()
+
+
+        };
+
+
+
+        db.clients.push(
+            fournisseur
+        );
+
+
+    }
+
+
+
+    //----------------------------------
+    // Création achat
+    //----------------------------------
+
+    const achat = {
+
+
+        id:
+
+        Date.now(),
+
+
+
+        numero:
+
+        genererNumeroAchat(),
+
+
+
+        date:
+
+        document.getElementById(
+            "achatDate"
+        )
+        ?.value
+
+        ||
+
+        new Date()
+        .toISOString()
+        .split("T")[0],
+
+
+
+        fournisseur:
+
+        fournisseur.nom,
+
+
+
+        fournisseurId:
+
+        fournisseur.id,
+
+
+
+        articles:
+
+        [...lignesAchat],
+
+
+
+        total:
+
+        lignesAchat.reduce(
+
+            (total,ligne)=>
+
+            total +
+
+            (
+
+                ligne.quantite *
+
+                ligne.prix
+
+            ),
+
+            0
+
+        ),
+
+
+
+        statut:
+
+        "En attente",
+
+
+
+        dateReception:
+
+        null
+
+
+    };
+
+
+
+    db.achats.push(
+        achat
+    );
+
+
+
+
+
+    db.mouvements.push({
+
+
+        date:
+
+        new Date()
+        .toLocaleString(),
+
+
+
+        action:
+
+        "Création achat",
+
+
+
+        achat:
+
+        achat.numero,
+
+
+
+        fournisseur:
+
+        fournisseur.nom,
+
+
+
+        fournisseurId:
+
+        fournisseur.id,
+
+
+
+        montant:
+
+        achat.total
+
+
+    });
+
+
+
+
+
+    lignesAchat = [];
+
+
+
+    sauvegarderAchats();
+
+
+
+    afficherAchats();
+
+
+
+    fermerPopupAchat();
+
+
+}
+
 
 
 
@@ -837,6 +715,7 @@ function afficherAchats(){
     db.achats.forEach((achat,index)=>{
 
 
+
         achat.numero ??=
 
         "ACH-" + achat.id;
@@ -863,7 +742,7 @@ function afficherAchats(){
 
             <h3>
 
-            ${achat.numero}
+                ${achat.numero}
 
             </h3>
 
@@ -911,9 +790,10 @@ function afficherAchats(){
 
             Statut :
 
-            ${achat.statut || "Inconnu"}
+            ${achat.statut || "En attente"}
 
             </p>
+
 
 
 
@@ -927,7 +807,7 @@ function afficherAchats(){
 
                 <button onclick="receptionnerAchat(${index})">
 
-                📦 Réceptionner
+                    📦 Réceptionner
 
                 </button>
 
@@ -951,9 +831,11 @@ function afficherAchats(){
 
 
 
+
+
             <button onclick="supprimerAchat(${index})">
 
-            🗑 Supprimer
+                🗑 Supprimer
 
             </button>
 
@@ -963,6 +845,7 @@ function afficherAchats(){
 
 
         `;
+
 
 
     });
@@ -978,7 +861,7 @@ function afficherAchats(){
 // Calcul prix moyen achat
 //--------------------------------------
 
-function calculerPrixMoyen(article, quantiteAjoutee, prixAchat){
+function calculerPrixMoyen(article,quantiteAjoutee,prixAchat){
 
 
     const ancienStock =
@@ -995,9 +878,7 @@ function calculerPrixMoyen(article, quantiteAjoutee, prixAchat){
 
     const nouveauStock =
 
-    ancienStock +
-
-    quantiteAjoutee;
+    ancienStock + quantiteAjoutee;
 
 
 
@@ -1013,15 +894,11 @@ function calculerPrixMoyen(article, quantiteAjoutee, prixAchat){
 
         (
 
-            ancienStock *
-
-            ancienPrix
+            ancienStock * ancienPrix
 
             +
 
-            quantiteAjoutee *
-
-            prixAchat
+            quantiteAjoutee * prixAchat
 
         )
 
@@ -1033,13 +910,8 @@ function calculerPrixMoyen(article, quantiteAjoutee, prixAchat){
 
 
 }
-
-
-
-
-
 //--------------------------------------
-// Réception achat vers stock
+// Réception achat → Stock
 //--------------------------------------
 
 function receptionnerAchat(index){
@@ -1065,19 +937,13 @@ function receptionnerAchat(index){
 
 
         alert(
-
             "Cet achat est déjà réceptionné."
-
         );
 
 
         return;
 
     }
-
-
-
-    achat.articles ??= [];
 
 
 
@@ -1088,15 +954,47 @@ function receptionnerAchat(index){
 
         db.articles.find(a =>
 
-
             a.nom === ligne.article
-
 
         );
 
 
 
-        if(!article){
+        if(article){
+
+
+            const ancienStock =
+
+            Number(article.stock) || 0;
+
+
+
+            const ancienPrix =
+
+            Number(article.prixAchatMoyen) || 0;
+
+
+
+            article.prixAchatMoyen =
+
+            calculerPrixMoyen(
+
+                article,
+
+                ligne.quantite,
+
+                ligne.prix
+
+            );
+
+
+
+            article.stock =
+
+            ancienStock +
+
+            ligne.quantite;
+
 
 
             db.mouvements.push({
@@ -1105,125 +1003,52 @@ function receptionnerAchat(index){
                 date:
 
                 new Date()
-
                 .toLocaleString(),
 
 
 
                 action:
 
-                "Article introuvable réception achat",
+                "Réception achat",
 
 
 
                 article:
 
-                ligne.article,
+                article.nom,
 
 
 
-                achat:
+                ancienStock,
 
-                achat.numero
+
+
+                nouveauStock:
+
+                article.stock,
+
+
+
+                ancienPrix,
+
+
+
+                nouveauPrix:
+
+                article.prixAchatMoyen,
+
+
+
+                difference:
+
+                ligne.quantite
 
 
             });
 
 
 
-            return;
-
         }
-
-
-
-
-
-        const ancienStock =
-
-        Number(article.stock) || 0;
-
-
-
-        const ancienPrix =
-
-        Number(article.prixAchatMoyen) || 0;
-
-
-
-        article.prixAchatMoyen =
-
-        calculerPrixMoyen(
-
-            article,
-
-            ligne.quantite,
-
-            ligne.prix
-
-        );
-
-
-
-        article.stock =
-
-        ancienStock +
-
-        Number(ligne.quantite || 0);
-
-
-
-
-
-        db.mouvements.push({
-
-
-            date:
-
-            new Date()
-
-            .toLocaleString(),
-
-
-
-            article:
-
-            article.nom,
-
-
-
-            action:
-
-            "Réception achat",
-
-
-
-            ancienStock,
-
-
-
-            nouveauStock:
-
-            article.stock,
-
-
-
-            ancienPrix,
-
-
-
-            nouveauPrix:
-
-            article.prixAchatMoyen,
-
-
-
-            difference:
-
-            ligne.quantite
-
-
-        });
 
 
     });
@@ -1241,7 +1066,6 @@ function receptionnerAchat(index){
     achat.dateReception =
 
     new Date()
-
     .toLocaleString();
 
 
@@ -1254,7 +1078,6 @@ function receptionnerAchat(index){
         date:
 
         new Date()
-
         .toLocaleString(),
 
 
@@ -1277,12 +1100,20 @@ function receptionnerAchat(index){
 
 
 
+        fournisseurId:
+
+        achat.fournisseurId,
+
+
+
         montant:
 
         achat.total
 
 
     });
+
+
 
 
 
@@ -1304,6 +1135,12 @@ function receptionnerAchat(index){
 
 
 }
+
+
+
+
+
+
 //--------------------------------------
 // Supprimer achat
 //--------------------------------------
@@ -1316,7 +1153,10 @@ function supprimerAchat(index){
 
 
 
-    const achat = db.achats[index];
+    const achat =
+
+    db.achats[index];
+
 
 
     if(!achat)
@@ -1325,6 +1165,7 @@ function supprimerAchat(index){
 
 
     let message =
+
     "Supprimer cet achat ?";
 
 
@@ -1336,7 +1177,7 @@ function supprimerAchat(index){
 
         "Cet achat a déjà été réceptionné.\n\n" +
 
-        "Le stock ajouté ne sera pas retiré automatiquement.\n\n" +
+        "Le stock ajouté ne sera pas retiré.\n\n" +
 
         "Continuer ?";
 
@@ -1350,26 +1191,42 @@ function supprimerAchat(index){
 
 
 
+
     db.mouvements.push({
 
 
         date:
-        new Date().toLocaleString(),
+
+        new Date()
+        .toLocaleString(),
+
 
 
         action:
+
         "Suppression achat",
 
 
+
         achat:
+
         achat.numero ?? achat.id,
 
 
+
         fournisseur:
+
         achat.fournisseur,
 
 
+
+        fournisseurId:
+
+        achat.fournisseurId,
+
+
         statut:
+
         achat.statut
 
 
@@ -1377,7 +1234,15 @@ function supprimerAchat(index){
 
 
 
-    db.achats.splice(index,1);
+
+
+    db.achats.splice(
+
+        index,
+
+        1
+
+    );
 
 
 
@@ -1396,18 +1261,14 @@ function supprimerAchat(index){
 
 
 //--------------------------------------
-// Préparation future : annuler réception
+// Annulation réception future
 //--------------------------------------
 
 function annulerReceptionAchat(index){
 
 
-    if(!verifierAchatsDB())
-        return;
-
-
-
     const achat =
+
     db.achats[index];
 
 
@@ -1433,9 +1294,7 @@ function annulerReceptionAchat(index){
 
     alert(
 
-        "Fonction prévue pour une prochaine version.\n\n" +
-
-        "Elle permettra de retirer automatiquement les quantités du stock."
+        "Fonction prévue dans une prochaine version."
 
     );
 
@@ -1455,6 +1314,7 @@ function fermerPopupAchat(){
 
 
     const popup =
+
     document.getElementById(
         "popupAchat"
     );
@@ -1463,9 +1323,7 @@ function fermerPopupAchat(){
 
     if(popup){
 
-
-        popup.style.display="none";
-
+        popup.style.display = "none";
 
     }
 
@@ -1478,7 +1336,7 @@ function fermerPopupAchat(){
 
 
 //--------------------------------------
-// Charger articles formulaire achat
+// Charger articles
 //--------------------------------------
 
 function chargerArticlesAchat(){
@@ -1490,6 +1348,7 @@ function chargerArticlesAchat(){
 
 
     const liste =
+
     document.getElementById(
         "achatArticle"
     );
@@ -1501,7 +1360,7 @@ function chargerArticlesAchat(){
 
 
 
-    liste.innerHTML="";
+    liste.innerHTML = "";
 
 
 
@@ -1542,6 +1401,7 @@ function chargerFournisseursAchat(){
 
 
     const liste =
+
     document.getElementById(
         "achatFournisseur"
     );
@@ -1556,30 +1416,30 @@ function chargerFournisseursAchat(){
     if(liste.tagName === "SELECT"){
 
 
-        liste.innerHTML="";
+        liste.innerHTML = "";
 
 
 
-        const fournisseurs =
+        db.clients
 
-        db.clients.filter(client =>
+        .filter(client =>
 
             client.type === "Fournisseur"
 
-        );
+        )
 
-
-
-        fournisseurs.forEach(fournisseur=>{
+        .forEach(fournisseur=>{
 
 
             liste.innerHTML += `
+
 
             <option value="${fournisseur.nom}">
 
                 ${fournisseur.nom}
 
             </option>
+
 
             `;
 
@@ -1621,7 +1481,7 @@ function actualiserModuleAchats(){
 
 
 //--------------------------------------
-// Initialisation module achats
+// Initialisation
 //--------------------------------------
 
 document.addEventListener(
@@ -1631,11 +1491,8 @@ document.addEventListener(
 ()=>{
 
 
-    if(!verifierAchatsDB()){
-
+    if(!verifierAchatsDB())
         return;
-
-    }
 
 
 
