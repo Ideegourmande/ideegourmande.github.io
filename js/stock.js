@@ -1,6 +1,6 @@
 // ======================================
 // IDEE GOURMANDE - GESTION DU STOCK
-// Version 2.0.0
+// Version 2.0.1
 // ======================================
 
 let articles = JSON.parse(localStorage.getItem("articlesStock")) || [];
@@ -14,9 +14,33 @@ const emplacements = [
     "Réserve sèche"
 ];
 
+let indexEdition = -1;
+
+//--------------------------------------
+
 function sauvegarderStock() {
+
     localStorage.setItem("articlesStock", JSON.stringify(articles));
+
 }
+
+//--------------------------------------
+
+function chargerEmplacements() {
+
+    const liste = document.getElementById("artEmplacement");
+
+    liste.innerHTML = "";
+
+    emplacements.forEach(e => {
+
+        liste.innerHTML += `<option>${e}</option>`;
+
+    });
+
+}
+
+//--------------------------------------
 
 function afficherStock() {
 
@@ -31,11 +55,15 @@ function afficherStock() {
         let etat = "🟢";
 
         if (article.stock <= article.minimum) {
+
             etat = "🔴";
+
             critique++;
+
         }
 
         tbody.innerHTML += `
+
         <tr>
 
             <td>${article.nom}</td>
@@ -62,76 +90,131 @@ function afficherStock() {
 
             </td>
 
-        </tr>`;
+        </tr>
+
+        `;
+
     });
 
     document.getElementById("nbArticles").textContent = articles.length;
+
     document.getElementById("nbCritique").textContent = critique;
 
     sauvegarderStock();
+
 }
+
+//--------------------------------------
 
 function ajouterArticle() {
 
-    const nom = prompt("Nom de l'article");
+    indexEdition = -1;
 
-    if (!nom) return;
+    chargerEmplacements();
 
-    const categorie = prompt("Catégorie");
+    document.getElementById("artNom").value = "";
 
-    const unite = prompt("Unité (kg, pièce, litre...)");
+    document.getElementById("artCategorie").selectedIndex = 0;
 
-    const stock = parseFloat(prompt("Stock actuel", "0")) || 0;
+    document.getElementById("artUnite").selectedIndex = 0;
 
-    const minimum = parseFloat(prompt("Stock minimum", "0")) || 0;
+    document.getElementById("artStock").value = 0;
 
-    const emplacement = prompt(
-        "Emplacement :\n\n" +
-        emplacements.join("\n"),
-        emplacements[0]
-    );
+    document.getElementById("artMinimum").value = 0;
 
-    articles.push({
+    document.getElementById("artEmplacement").selectedIndex = 0;
 
-        nom,
-        categorie,
-        unite,
-        stock,
-        minimum,
-        emplacement
+    document.getElementById("popupArticle").style.display = "block";
 
-    });
+}
+
+//--------------------------------------
+
+function modifierArticle(index) {
+
+    indexEdition = index;
+
+    chargerEmplacements();
+
+    const a = articles[index];
+
+    document.getElementById("artNom").value = a.nom;
+
+    document.getElementById("artCategorie").value = a.categorie;
+
+    document.getElementById("artUnite").value = a.unite;
+
+    document.getElementById("artStock").value = a.stock;
+
+    document.getElementById("artMinimum").value = a.minimum;
+
+    document.getElementById("artEmplacement").value = a.emplacement;
+
+    document.getElementById("popupArticle").style.display = "block";
+
+}
+
+//--------------------------------------
+
+function enregistrerArticle() {
+
+    const article = {
+
+        nom: document.getElementById("artNom").value.trim(),
+
+        categorie: document.getElementById("artCategorie").value,
+
+        unite: document.getElementById("artUnite").value,
+
+        stock: parseFloat(document.getElementById("artStock").value) || 0,
+
+        minimum: parseFloat(document.getElementById("artMinimum").value) || 0,
+
+        emplacement: document.getElementById("artEmplacement").value
+
+    };
+
+    if (article.nom === "") {
+
+        alert("Veuillez saisir le nom de l'article.");
+
+        return;
+
+    }
+
+    if (indexEdition === -1) {
+
+        articles.push(article);
+
+    } else {
+
+        articles[indexEdition] = article;
+
+    }
+
+    sauvegarderStock();
 
     afficherStock();
 
-}
-
-function modifierArticle(index){
-
-    ajouterStock(index);
+    fermerPopup();
 
 }
 
-function ajouterStock(index){
+//--------------------------------------
 
-    let valeur = parseFloat(prompt(
-        "Nouveau stock",
-        articles[index].stock
-    ));
+function fermerPopup() {
 
-    if(isNaN(valeur)) return;
-
-    articles[index].stock = valeur;
-
-    afficherStock();
+    document.getElementById("popupArticle").style.display = "none";
 
 }
 
-function supprimerArticle(index){
+//--------------------------------------
 
-    if(confirm("Supprimer cet article ?")){
+function supprimerArticle(index) {
 
-        articles.splice(index,1);
+    if (confirm("Supprimer cet article ?")) {
+
+        articles.splice(index, 1);
 
         afficherStock();
 
@@ -139,7 +222,9 @@ function supprimerArticle(index){
 
 }
 
-function rechercherArticle(){
+//--------------------------------------
+
+function rechercherArticle() {
 
     const filtre = document
         .getElementById("rechercheArticle")
@@ -148,25 +233,33 @@ function rechercherArticle(){
 
     const lignes = document.querySelectorAll("#tbodyStock tr");
 
-    lignes.forEach(ligne=>{
+    lignes.forEach(ligne => {
 
         ligne.style.display =
             ligne.innerText.toLowerCase().includes(filtre)
-            ? ""
-            : "none";
+                ? ""
+                : "none";
 
     });
 
 }
 
-function imprimerStock(){
+//--------------------------------------
+
+function imprimerStock() {
 
     window.print();
 
 }
 
+//--------------------------------------
+
 document
-.getElementById("btnNouvelArticle")
-.addEventListener("click", ajouterArticle);
+    .getElementById("btnNouvelArticle")
+    .addEventListener("click", ajouterArticle);
+
+//--------------------------------------
+
+chargerEmplacements();
 
 afficherStock();
