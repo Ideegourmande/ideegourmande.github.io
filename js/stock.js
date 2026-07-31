@@ -1,7 +1,7 @@
 // ======================================
 // IDEE GOURMANDE - GESTION DU STOCK
-// Version 2.1.0
-// Compatible database.js
+// Version 2.2.0
+// Compatible database.js 2.0.1
 // ======================================
 
 
@@ -9,28 +9,72 @@ let indexEdition = -1;
 
 
 //--------------------------------------
-// Chargement des emplacements
+// Vérification database
+//--------------------------------------
+
+function verifierDB(){
+
+    if(typeof db === "undefined"){
+
+        console.error(
+            "Erreur : database.js doit être chargé avant js-stock.js"
+        );
+
+        return false;
+
+    }
+
+    if(!db.articles){
+        db.articles = [];
+    }
+
+    if(!db.mouvements){
+        db.mouvements = [];
+    }
+
+    if(!db.emplacements){
+        db.emplacements = [];
+    }
+
+    return true;
+
+}
+
+
+
+//--------------------------------------
+// Chargement emplacements
 //--------------------------------------
 
 function chargerEmplacements(){
 
-    const liste = document.getElementById("artEmplacement");
+    const liste =
+    document.getElementById("artEmplacement");
 
-    if(!liste) return;
+
+    if(!liste || !verifierDB()) return;
+
 
     liste.innerHTML="";
 
+
     db.emplacements.forEach(emplacement=>{
 
+
         liste.innerHTML += `
+
             <option value="${emplacement}">
                 ${emplacement}
             </option>
+
         `;
+
 
     });
 
+
 }
+
 
 
 //--------------------------------------
@@ -39,26 +83,40 @@ function chargerEmplacements(){
 
 function sauvegarderStock(){
 
-    sauvegarderDB();
+    if(typeof sauvegarderDB === "function"){
+
+        sauvegarderDB();
+
+    }
 
 }
 
 
+
 //--------------------------------------
-// Affichage du stock
+// Affichage stock
 //--------------------------------------
 
 function afficherStock(){
 
-    const tbody = document.getElementById("tbodyStock");
+
+    if(!verifierDB()) return;
+
+
+    const tbody =
+    document.getElementById("tbodyStock");
+
 
     if(!tbody) return;
+
 
 
     tbody.innerHTML="";
 
 
     let critique = 0;
+
+
 
     db.articles.forEach((article,index)=>{
 
@@ -67,12 +125,14 @@ function afficherStock(){
         let classe="";
 
 
+
         if(article.stock <= 0){
 
             etat="🔴 Rupture";
             classe="stock-rupture";
 
         }
+
         else if(article.stock <= article.minimum){
 
             etat="🟠 Critique";
@@ -81,6 +141,7 @@ function afficherStock(){
             critique++;
 
         }
+
         else{
 
             etat="🟢 OK";
@@ -96,18 +157,18 @@ function afficherStock(){
 
             <td>${article.nom}</td>
 
-            <td>${article.categorie}</td>
+            <td>${article.categorie || ""}</td>
 
             <td>
-                ${article.stock} ${article.unite}
+                ${article.stock} ${article.unite || ""}
             </td>
 
             <td>
-                ${article.minimum} ${article.unite}
+                ${article.minimum} ${article.unite || ""}
             </td>
 
             <td>
-                ${article.emplacement}
+                ${article.emplacement || ""}
             </td>
 
             <td class="${classe}">
@@ -118,17 +179,16 @@ function afficherStock(){
 
                 <button class="btn-stock"
                 onclick="modifierArticle(${index})">
-                ✏️
+                    ✏️
                 </button>
 
 
                 <button class="btn-stock"
                 onclick="supprimerArticle(${index})">
-                🗑️
+                    🗑️
                 </button>
 
             </td>
-
 
         </tr>
 
@@ -139,17 +199,29 @@ function afficherStock(){
 
 
 
-    document.getElementById("nbArticles").textContent =
-        db.articles.length;
+    const nbArticles =
+    document.getElementById("nbArticles");
 
 
-    document.getElementById("nbCritique").textContent =
-        critique;
+    const nbCritique =
+    document.getElementById("nbCritique");
+
+
+    const nbEmplacements =
+    document.getElementById("nbEmplacements");
 
 
 
-    document.getElementById("nbEmplacements").textContent =
-        db.emplacements.length;
+    if(nbArticles)
+        nbArticles.textContent=db.articles.length;
+
+
+    if(nbCritique)
+        nbCritique.textContent=critique;
+
+
+    if(nbEmplacements)
+        nbEmplacements.textContent=db.emplacements.length;
 
 
 
@@ -160,7 +232,7 @@ function afficherStock(){
 
 
 //--------------------------------------
-// Nouveau article
+// Ajouter article
 //--------------------------------------
 
 function ajouterArticle(){
@@ -172,21 +244,39 @@ function ajouterArticle(){
     chargerEmplacements();
 
 
-    document.getElementById("artNom").value="";
 
-    document.getElementById("artCategorie").selectedIndex=0;
+    const champs=[
 
-    document.getElementById("artUnite").selectedIndex=0;
+        "artNom",
+        "artStock",
+        "artMinimum"
+
+    ];
+
+
+
+    champs.forEach(id=>{
+
+        const element=document.getElementById(id);
+
+        if(element)
+            element.value="";
+
+    });
+
+
 
     document.getElementById("artStock").value=0;
-
     document.getElementById("artMinimum").value=0;
 
-    document.getElementById("artEmplacement").selectedIndex=0;
 
 
+    const popup =
+    document.getElementById("popupArticle");
 
-    document.getElementById("popupArticle").style.display="flex";
+
+    if(popup)
+        popup.style.display="flex";
 
 
 }
@@ -200,41 +290,46 @@ function ajouterArticle(){
 function modifierArticle(index){
 
 
+    if(!db.articles[index]) return;
+
+
     indexEdition=index;
 
 
     chargerEmplacements();
 
 
+
     const article=db.articles[index];
 
 
-    document.getElementById("artNom").value=
-        article.nom;
+    document.getElementById("artNom").value =
+    article.nom;
 
 
-    document.getElementById("artCategorie").value=
-        article.categorie;
+    document.getElementById("artCategorie").value =
+    article.categorie;
 
 
-    document.getElementById("artUnite").value=
-        article.unite;
+    document.getElementById("artUnite").value =
+    article.unite;
 
 
-    document.getElementById("artStock").value=
-        article.stock;
+    document.getElementById("artStock").value =
+    article.stock;
 
 
-    document.getElementById("artMinimum").value=
-        article.minimum;
+    document.getElementById("artMinimum").value =
+    article.minimum;
 
 
-    document.getElementById("artEmplacement").value=
-        article.emplacement;
+    document.getElementById("artEmplacement").value =
+    article.emplacement;
 
 
 
-    document.getElementById("popupArticle").style.display="flex";
+    document.getElementById("popupArticle")
+    .style.display="flex";
 
 
 }
@@ -242,20 +337,26 @@ function modifierArticle(index){
 
 
 //--------------------------------------
-// Enregistrer
+// Enregistrer article
 //--------------------------------------
 
 function enregistrerArticle(){
 
 
     const ancienStock =
-        indexEdition >=0
-        ? db.articles[indexEdition].stock
-        : 0;
+    indexEdition >= 0
+    ? db.articles[indexEdition].stock
+    : 0;
 
 
 
     const article={
+
+
+        id:
+        indexEdition>=0
+        ? db.articles[indexEdition].id
+        : Date.now(),
 
 
         nom:
@@ -274,15 +375,11 @@ function enregistrerArticle(){
 
 
         stock:
-        parseFloat(
-            document.getElementById("artStock").value
-        ) || 0,
+        Number(document.getElementById("artStock").value) || 0,
 
 
         minimum:
-        parseFloat(
-            document.getElementById("artMinimum").value
-        ) || 0,
+        Number(document.getElementById("artMinimum").value) || 0,
 
 
         emplacement:
@@ -296,7 +393,9 @@ function enregistrerArticle(){
 
     if(article.nom===""){
 
-        alert("Veuillez saisir le nom de l'article.");
+        alert(
+            "Veuillez saisir le nom de l'article."
+        );
 
         return;
 
@@ -304,60 +403,43 @@ function enregistrerArticle(){
 
 
 
-    if(indexEdition===-1){
+    const mouvement={
 
+        date:new Date().toLocaleString(),
+
+        article:article.nom,
+
+        action:
+        indexEdition===-1
+        ? "Création"
+        : "Modification",
+
+        ancienStock:ancienStock,
+
+        nouveauStock:article.stock,
+
+        difference:
+        article.stock-ancienStock
+
+    };
+
+
+
+    if(indexEdition===-1){
 
         db.articles.push(article);
 
-
-
-        db.mouvements.push({
-
-            date:new Date().toLocaleString(),
-
-            article:article.nom,
-
-            action:"Création",
-
-            ancienStock:0,
-
-            nouveauStock:article.stock,
-
-            difference:article.stock
-
-
-        });
-
-
-
     }
-    else{
 
+    else{
 
         db.articles[indexEdition]=article;
 
-
-
-        db.mouvements.push({
-
-            date:new Date().toLocaleString(),
-
-            article:article.nom,
-
-            action:"Modification",
-
-            ancienStock:ancienStock,
-
-            nouveauStock:article.stock,
-
-            difference:
-            article.stock-ancienStock
-
-
-        });
-
-
     }
+
+
+
+    db.mouvements.push(mouvement);
 
 
 
@@ -380,18 +462,29 @@ function enregistrerArticle(){
 
 function fermerPopup(){
 
-    document.getElementById("popupArticle")
-    .style.display="none";
+    const popup =
+    document.getElementById("popupArticle");
+
+
+    if(popup){
+
+        popup.style.display="none";
+
+    }
 
 }
 
 
 
 //--------------------------------------
-// Supprimer
+// Supprimer article
 //--------------------------------------
 
 function supprimerArticle(index){
+
+
+    if(!db.articles[index]) return;
+
 
 
     if(confirm("Supprimer cet article ?")){
@@ -414,12 +507,12 @@ function supprimerArticle(index){
 
             difference:-article.stock
 
-
         });
 
 
 
         db.articles.splice(index,1);
+
 
 
         sauvegarderDB();
@@ -429,7 +522,6 @@ function supprimerArticle(index){
 
 
     }
-
 
 }
 
@@ -442,9 +534,16 @@ function supprimerArticle(index){
 function rechercherArticle(){
 
 
+    const champ =
+    document.getElementById("rechercheArticle");
+
+
+    if(!champ) return;
+
+
+
     const filtre =
-    document.getElementById("rechercheArticle")
-    .value.toLowerCase();
+    champ.value.toLowerCase();
 
 
 
@@ -484,18 +583,14 @@ function imprimerStock(){
 // Initialisation
 //--------------------------------------
 
-document.addEventListener("DOMContentLoaded",()=>{
+document.addEventListener(
+"DOMContentLoaded",
+()=>{
 
 
-    if(typeof db==="undefined"){
-
-        console.error(
-        "database.js doit être chargé avant stock.js"
-        );
-
+    if(!verifierDB())
         return;
 
-    }
 
 
     chargerEmplacements();
@@ -506,7 +601,9 @@ document.addEventListener("DOMContentLoaded",()=>{
 
 
     const bouton =
-    document.getElementById("btnNouvelArticle");
+    document.getElementById(
+        "btnNouvelArticle"
+    );
 
 
     if(bouton){
