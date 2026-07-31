@@ -12,137 +12,101 @@
 
 </head>
 
-
 <body>
-
 
 <script>
 
 if(localStorage.getItem("adminConnecte") !== "oui"){
-
-window.location.href="admin-login.html";
-
+    window.location.href="admin-login.html";
 }
 
 </script>
 
-
-
 <header>
 
 <div class="top-banner">
-
 🔐 Administration des commandes - Idée Gourmande
-
 </div>
 
 </header>
 
-
-
-
-
 <section class="presentation">
-
 
 <h1>
 Tableau de bord
 </h1>
 
-
-
 <button class="btn" onclick="deconnexion()">
 🚪 Déconnexion
 </button>
 
-<a
-href="archives.html"
-class="btn">
-
-📂 Voir les archives
-
+<a href="archives.html" class="btn">
+📂 Archives
 </a>
 
-<a
-href="index.html"
-class="btn">
+<a href="stock.html" class="btn">
+📦 Gestion du stock
+</a>
 
+<a href="besoins.html" class="btn">
+🛒 Besoins d'achat
+</a>
+
+<a href="sessions.html" class="btn">
+🧾 Sessions d'achats
+</a>
+
+<a href="statistiques.html" class="btn">
+📊 Statistiques
+</a>
+
+<a href="index.html" class="btn">
 🏠 Accueil
-
 </a>
-
 
 </section>
-
-
-
-
-
 
 <section class="stats">
 
-
 <div class="stat-card">
-
-<h3>
-Commandes
-</h3>
-
-<strong id="nbCommandes">
-0
-</strong>
-
+<h3>Commandes</h3>
+<strong id="nbCommandes">0</strong>
 </div>
 
-
-
 <div class="stat-card">
-
-<h3>
-Chiffre d'affaires
-</h3>
-
-<strong id="caTotal">
-0 CHF
-</strong>
-
+<h3>Chiffre d'affaires</h3>
+<strong id="caTotal">0 CHF</strong>
 </div>
 
-
-
 <div class="stat-card">
-
-<h3>
-Aujourd'hui
-</h3>
-
-<strong id="commandeJour">
-0
-</strong>
-
+<h3>Aujourd'hui</h3>
+<strong id="commandeJour">0</strong>
 </div>
 
+<div class="stat-card">
+<h3>Articles à acheter</h3>
+<strong id="nbAchats">0</strong>
+</div>
+
+<div class="stat-card">
+<h3>Stock critique</h3>
+<strong id="stockCritique">0</strong>
+</div>
+
+<div class="stat-card">
+<h3>Session en cours</h3>
+<strong id="sessionActive">Aucune</strong>
+</div>
 
 </section>
 
-
-
-
-
-
-
-
 <section class="panier-section">
 
-
 <div class="panier-card">
-
 
 <h2>
 📦 Commandes reçues
 </h2>
-
-
 
 <input
 type="search"
@@ -150,27 +114,31 @@ id="rechercheCommande"
 placeholder="Rechercher un client..."
 oninput="rechercherCommande()">
 
-
-
-
-
 <div id="listeCommandes">
-
 Chargement...
-
 </div>
 
-
-
 </div>
-
 
 </section>
 
+<section class="panier-section">
 
+<div class="panier-card">
 
+<h2>
+🔔 Alertes
+</h2>
 
+<div id="listeAlertes">
 
+Aucune alerte.
+
+</div>
+
+</div>
+
+</section>
 
 <footer>
 
@@ -178,15 +146,14 @@ Chargement...
 © Idée Gourmande - Genève
 </p>
 
+<p>
+Version 2.0.0
+</p>
+
 </footer>
 
-
-
-
 <script src="js/pdfcommande.js"></script>
-
 <script src="js/admin.js"></script>
-
 
 </body>
 
