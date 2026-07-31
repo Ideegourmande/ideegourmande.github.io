@@ -1,6 +1,6 @@
 // ======================================
 // IDEE GOURMANDE - GESTION FOURNISSEURS
-// Version 1.0.0
+// Version 1.1.0
 // Compatible database.js 2.0.1
 // Compatible js-achats.js 1.2.0
 // ======================================
@@ -35,6 +35,8 @@ function verifierFournisseursDB(){
     db.clients ??= [];
 
     db.achats ??= [];
+
+    db.mouvements ??= [];
 
 
 
@@ -76,50 +78,45 @@ function nouveauFournisseur(){
 
 
 
-    const nom =
-    document.getElementById("fournisseurNom");
+    const champs = [
 
+        "fournisseurNom",
 
-    const telephone =
-    document.getElementById("fournisseurTelephone");
+        "fournisseurTelephone",
 
+        "fournisseurEmail",
 
-    const email =
-    document.getElementById("fournisseurEmail");
+        "fournisseurAdresse",
 
+        "fournisseurNotes"
 
-    const adresse =
-    document.getElementById("fournisseurAdresse");
-
-
-    const notes =
-    document.getElementById("fournisseurNotes");
+    ];
 
 
 
-    if(nom)
-        nom.value="";
+    champs.forEach(id=>{
 
 
-    if(telephone)
-        telephone.value="";
+        const champ =
+        document.getElementById(id);
 
 
-    if(email)
-        email.value="";
+
+        if(champ){
+
+            champ.value="";
+
+        }
 
 
-    if(adresse)
-        adresse.value="";
-
-
-    if(notes)
-        notes.value="";
+    });
 
 
 
     const popup =
-    document.getElementById("popupFournisseur");
+    document.getElementById(
+        "popupFournisseur"
+    );
 
 
 
@@ -171,44 +168,70 @@ function modifierFournisseur(index){
 
     fournisseurEdition =
 
-    db.clients.indexOf(fournisseur);
+    db.clients.indexOf(
+        fournisseur
+    );
 
 
 
-
-    document.getElementById("fournisseurNom").value =
-
-    fournisseur.nom || "";
+    const champs = {
 
 
-
-    document.getElementById("fournisseurTelephone").value =
-
-    fournisseur.telephone || "";
+        fournisseurNom:
+        fournisseur.nom || "",
 
 
-
-    document.getElementById("fournisseurEmail").value =
-
-    fournisseur.email || "";
+        fournisseurTelephone:
+        fournisseur.telephone || "",
 
 
-
-    document.getElementById("fournisseurAdresse").value =
-
-    fournisseur.adresse || "";
+        fournisseurEmail:
+        fournisseur.email || "",
 
 
+        fournisseurAdresse:
+        fournisseur.adresse || "",
 
-    document.getElementById("fournisseurNotes").value =
 
-    fournisseur.notes || "";
+        fournisseurNotes:
+        fournisseur.notes || ""
+
+    };
 
 
 
+    Object.entries(champs)
+    .forEach(([id,valeur])=>{
 
-    document.getElementById("popupFournisseur")
-    .style.display="flex";
+
+        const champ =
+        document.getElementById(id);
+
+
+
+        if(champ){
+
+            champ.value = valeur;
+
+        }
+
+
+    });
+
+
+
+    const popup =
+    document.getElementById(
+        "popupFournisseur"
+    );
+
+
+
+    if(popup){
+
+        popup.style.display="flex";
+
+    }
 
 
 }
@@ -240,13 +263,15 @@ function enregistrerFournisseur(){
 
         :
 
-        db.clients[fournisseurEdition].id,
+        db.clients[fournisseurEdition]?.id,
 
 
 
         nom:
 
-        document.getElementById("fournisseurNom")
+        document.getElementById(
+            "fournisseurNom"
+        )
         ?.value
         .trim(),
 
@@ -260,37 +285,49 @@ function enregistrerFournisseur(){
 
         telephone:
 
-        document.getElementById("fournisseurTelephone")
+        document.getElementById(
+            "fournisseurTelephone"
+        )
         ?.value
         .trim()
-        || "",
+        ||
+        "",
 
 
 
         email:
 
-        document.getElementById("fournisseurEmail")
+        document.getElementById(
+            "fournisseurEmail"
+        )
         ?.value
         .trim()
-        || "",
+        ||
+        "",
 
 
 
         adresse:
 
-        document.getElementById("fournisseurAdresse")
+        document.getElementById(
+            "fournisseurAdresse"
+        )
         ?.value
         .trim()
-        || "",
+        ||
+        "",
 
 
 
         notes:
 
-        document.getElementById("fournisseurNotes")
+        document.getElementById(
+            "fournisseurNotes"
+        )
         ?.value
         .trim()
-        || "",
+        ||
+        "",
 
 
 
@@ -300,11 +337,13 @@ function enregistrerFournisseur(){
 
         ?
 
-        new Date().toLocaleString()
+        new Date()
+        .toLocaleString()
 
         :
 
-        db.clients[fournisseurEdition].dateCreation
+        db.clients[fournisseurEdition]
+        ?.dateCreation
 
     };
 
@@ -325,12 +364,75 @@ function enregistrerFournisseur(){
 
 
 
+    //----------------------------------
+    // Contrôle doublon fournisseur
+    //----------------------------------
+
+    const doublon =
+
+    db.clients.some(
+
+        client =>
+
+        client.type==="Fournisseur"
+
+        &&
+
+        client.nom
+        ?.toLowerCase()
+        ===
+
+        fournisseur.nom
+        .toLowerCase()
+
+        &&
+
+        client.id !== fournisseur.id
+
+    );
+
+
+
+    if(doublon){
+
+
+        alert(
+            "Ce fournisseur existe déjà."
+        );
+
+
+        return;
+
+
+    }
+
+
+
+    //----------------------------------
+    // Création ou modification
+    //----------------------------------
+
     if(fournisseurEdition === -1){
 
 
         db.clients.push(
             fournisseur
         );
+
+
+        db.mouvements.push({
+
+            date:
+            new Date()
+            .toLocaleString(),
+
+            action:
+            "Création fournisseur",
+
+            fournisseur:
+            fournisseur.nom
+
+        });
 
 
     }
@@ -340,6 +442,21 @@ function enregistrerFournisseur(){
         db.clients[fournisseurEdition] =
 
         fournisseur;
+
+
+        db.mouvements.push({
+
+            date:
+            new Date()
+            .toLocaleString(),
+
+            action:
+            "Modification fournisseur",
+
+            fournisseur:
+            fournisseur.nom
+
+        });
 
 
     }
@@ -365,45 +482,37 @@ function enregistrerFournisseur(){
 
 function afficherFournisseurs(){
 
-
     if(!verifierFournisseursDB())
         return;
 
-
-
     const zone =
-    document.getElementById("listeFournisseurs");
-
-
+    document.getElementById(
+        "listeFournisseurs"
+    );
 
     if(!zone)
         return;
 
-
-
     zone.innerHTML="";
-
-
 
     const fournisseurs =
 
-    db.clients.filter(
+    db.clients
 
+    .filter(
         client =>
-
         client.type==="Fournisseur"
+    )
 
+    .sort(
+        (a,b)=>
+        a.nom.localeCompare(b.nom)
     );
 
-
-
     const compteur =
-
     document.getElementById(
         "nbFournisseurs"
     );
-
-
 
     if(compteur){
 
@@ -412,10 +521,7 @@ function afficherFournisseurs(){
 
     }
 
-
-
     fournisseurs.forEach((fournisseur,index)=>{
-
 
         const achats =
 
@@ -427,116 +533,91 @@ function afficherFournisseurs(){
 
         );
 
-
-
         const totalAchats =
 
         achats.reduce(
 
             (total,achat)=>
 
-            total + achat.total,
+            total + (achat.total || 0),
 
             0
 
         );
 
+        const dernierAchat =
 
+        achats.length
+
+        ?
+
+        achats
+        .slice()
+        .sort(
+            (a,b)=>
+            new Date(b.date)-new Date(a.date)
+        )[0].date
+
+        :
+
+        "-";
 
         zone.innerHTML += `
 
-
         <div class="fiche-fournisseur">
 
-
             <h3>
-
             ${fournisseur.nom}
-
             </h3>
 
-
-
             <p>
-
             📞 ${fournisseur.telephone || "Non renseigné"}
-
             </p>
 
-
-
             <p>
-
             ✉️ ${fournisseur.email || "Non renseigné"}
-
             </p>
 
-
-
             <p>
-
-            Achats :
-            <strong>
-            ${achats.length}
-            </strong>
-
+            Nombre d'achats :
+            <strong>${achats.length}</strong>
             </p>
 
-
-
             <p>
-
             Total achats :
             <strong>
-
             ${totalAchats.toFixed(2)} CHF
-
             </strong>
-
             </p>
 
-
-
+            <p>
+            Dernier achat :
+            ${dernierAchat}
+            </p>
 
             <button onclick="
             modifierFournisseur(${index})
             ">
-
             ✏️ Modifier
-
             </button>
-
-
-
 
             <button onclick="
             afficherFicheFournisseur(${index})
             ">
-
             📋 Fiche
-
             </button>
-
-
 
             <button onclick="
             supprimerFournisseur(${index})
             ">
-
             🗑 Supprimer
-
             </button>
-
-
 
         </div>
 
-
         `;
 
-
     });
-
 
 }
 
@@ -549,33 +630,29 @@ function afficherFournisseurs(){
 
 function rechercherFournisseur(){
 
-
-    const recherche =
+    const texte =
 
     document
-    .getElementById("rechercheFournisseur")
+    .getElementById(
+        "rechercheFournisseur"
+    )
     ?.value
-    .toLowerCase();
+    ?.toLowerCase()
+    || "";
 
+    document
 
-
-    const fiches =
-
-    document.querySelectorAll(
+    .querySelectorAll(
         ".fiche-fournisseur"
-    );
+    )
 
-
-
-    fiches.forEach(fiche=>{
-
+    .forEach(fiche=>{
 
         fiche.style.display =
 
-
         fiche.innerText
         .toLowerCase()
-        .includes(recherche)
+        .includes(texte)
 
         ?
 
@@ -585,10 +662,7 @@ function rechercherFournisseur(){
 
         "none";
 
-
-
     });
-
 
 }
 
@@ -601,11 +675,8 @@ function rechercherFournisseur(){
 
 function afficherFicheFournisseur(index){
 
-
     if(!verifierFournisseursDB())
         return;
-
-
 
     const fournisseurs =
 
@@ -617,30 +688,36 @@ function afficherFicheFournisseur(index){
 
     );
 
-
-
     const fournisseur =
 
     fournisseurs[index];
 
-
-
     if(!fournisseur)
         return;
 
-
-
     const achats =
 
-    db.achats.filter(
+    db.achats
+
+    .filter(
 
         achat =>
 
-        achat.fournisseur === fournisseur.nom
+        achat.fournisseur===fournisseur.nom
+
+    )
+
+    .sort(
+
+        (a,b)=>
+
+        new Date(b.date)
+
+        -
+
+        new Date(a.date)
 
     );
-
-
 
     const total =
 
@@ -648,13 +725,13 @@ function afficherFicheFournisseur(index){
 
         (somme,achat)=>
 
-        somme + achat.total,
+        somme +
+
+        (achat.total || 0),
 
         0
 
     );
-
-
 
     const derniereCommande =
 
@@ -662,14 +739,11 @@ function afficherFicheFournisseur(index){
 
     ?
 
-    achats[achats.length-1].date
+    achats[0].date
 
     :
 
     "Aucun achat";
-
-
-
 
     const zone =
 
@@ -677,26 +751,18 @@ function afficherFicheFournisseur(index){
         "ficheFournisseur"
     );
 
-
-
     if(!zone)
         return;
 
-
-
     zone.innerHTML = `
 
-
     <div class="fiche-detail">
-
 
         <h2>
 
         ${fournisseur.nom}
 
         </h2>
-
-
 
         <p>
 
@@ -705,16 +771,12 @@ function afficherFicheFournisseur(index){
 
         </p>
 
-
-
         <p>
 
         Email :
         ${fournisseur.email || "-"}
 
         </p>
-
-
 
         <p>
 
@@ -723,17 +785,20 @@ function afficherFicheFournisseur(index){
 
         </p>
 
+        <p>
 
+        Notes :
+        ${fournisseur.notes || "-"}
+
+        </p>
 
         <hr>
 
-
-
         <h3>
+
         Statistiques
+
         </h3>
-
-
 
         <p>
 
@@ -744,18 +809,16 @@ function afficherFicheFournisseur(index){
 
         </p>
 
-
-
         <p>
 
         Total commandé :
         <strong>
+
         ${total.toFixed(2)} CHF
+
         </strong>
 
         </p>
-
-
 
         <p>
 
@@ -764,24 +827,15 @@ function afficherFicheFournisseur(index){
 
         </p>
 
-
-
         <button onclick="
         afficherHistoriqueFournisseur('${fournisseur.nom}')
         ">
-
         📦 Historique achats
-
         </button>
-
-
 
     </div>
 
-
     `;
-
-
 
 }
 //--------------------------------------
@@ -811,11 +865,23 @@ function afficherHistoriqueFournisseur(nomFournisseur){
 
     const achats =
 
-    db.achats.filter(
+    db.achats
+
+    .filter(
 
         achat =>
 
         achat.fournisseur === nomFournisseur
+
+    )
+
+    .sort(
+
+        (a,b)=>
+
+        new Date(b.date) -
+
+        new Date(a.date)
 
     );
 
@@ -854,7 +920,13 @@ function afficherHistoriqueFournisseur(nomFournisseur){
     achats.forEach(achat=>{
 
 
-        totalGeneral += achat.total;
+        const montant =
+
+        Number(achat.total) || 0;
+
+
+
+        totalGeneral += montant;
 
 
 
@@ -875,7 +947,8 @@ function afficherHistoriqueFournisseur(nomFournisseur){
             <p>
 
             Date :
-            ${achat.date}
+
+            ${achat.date || "-"}
 
             </p>
 
@@ -884,7 +957,8 @@ function afficherHistoriqueFournisseur(nomFournisseur){
             <p>
 
             Statut :
-            ${achat.statut}
+
+            ${achat.statut || "Inconnu"}
 
             </p>
 
@@ -896,7 +970,7 @@ function afficherHistoriqueFournisseur(nomFournisseur){
 
             <strong>
 
-            ${achat.total.toFixed(2)} CHF
+            ${montant.toFixed(2)} CHF
 
             </strong>
 
@@ -906,7 +980,9 @@ function afficherHistoriqueFournisseur(nomFournisseur){
 
 
             <h4>
+
             Articles
+
             </h4>
 
 
@@ -914,24 +990,36 @@ function afficherHistoriqueFournisseur(nomFournisseur){
             <ul>
 
             ${
-                achat.articles.map(ligne=>`
+                (achat.articles || [])
+
+                .map(ligne=>`
+
 
                     <li>
 
-                    ${ligne.article}
+
+                    ${ligne.article || "-"}
+
 
                     -
 
-                    ${ligne.quantite}
+                    ${ligne.quantite || 0}
+
 
                     x
 
-                    ${ligne.prix.toFixed(2)}
+
+                    ${(Number(ligne.prix)||0).toFixed(2)}
+
                     CHF
+
 
                     </li>
 
-                `).join("")
+
+                `)
+
+                .join("")
             }
 
 
@@ -969,6 +1057,8 @@ function afficherHistoriqueFournisseur(nomFournisseur){
 
 
 }
+
+
 
 
 
@@ -1032,7 +1122,7 @@ function supprimerFournisseur(index){
 
         "Ce fournisseur possède des achats enregistrés.\n\n" +
 
-        "La suppression ne supprimera pas l'historique des achats.\n\n" +
+        "Le fournisseur sera supprimé mais les achats resteront dans l'historique.\n\n" +
 
         "Continuer ?";
 
@@ -1041,66 +1131,88 @@ function supprimerFournisseur(index){
 
 
 
-    if(confirm(message)){
+    if(!confirm(message))
+        return;
 
 
 
-        const position =
 
-        db.clients.indexOf(
-            fournisseur
+    const position =
+
+    db.clients.indexOf(
+        fournisseur
+    );
+
+
+
+    if(position >= 0){
+
+
+        db.clients.splice(
+
+            position,
+
+            1
+
         );
-
-
-
-        if(position>=0){
-
-
-            db.clients.splice(
-                position,
-                1
-            );
-
-
-        }
-
-
-
-        db.mouvements.push({
-
-
-            date:
-
-            new Date()
-            .toLocaleString(),
-
-
-            action:
-
-            "Suppression fournisseur",
-
-
-            fournisseur:
-
-            fournisseur.nom
-
-
-        });
-
-
-
-        sauvegarderFournisseurs();
-
-
-
-        afficherFournisseurs();
-
 
 
     }
 
 
+
+    db.mouvements ??= [];
+
+
+
+    db.mouvements.push({
+
+
+        date:
+
+        new Date()
+        .toLocaleString(),
+
+
+        action:
+
+        "Suppression fournisseur",
+
+
+        fournisseur:
+
+        fournisseur.nom
+
+
+    });
+
+
+
+    sauvegarderFournisseurs();
+
+
+
+    afficherFournisseurs();
+
+
+
+    const fiche =
+
+    document.getElementById(
+        "ficheFournisseur"
+    );
+
+
+    if(fiche){
+
+        fiche.innerHTML="";
+
+    }
+
+
+
 }
+
 
 
 
@@ -1134,12 +1246,15 @@ function fermerPopupFournisseur(){
 
 
 
+
 //--------------------------------------
 // Initialisation module fournisseurs
 //--------------------------------------
 
 document.addEventListener(
+
 "DOMContentLoaded",
+
 ()=>{
 
 
@@ -1152,6 +1267,7 @@ document.addEventListener(
 
 
     afficherFournisseurs();
+
 
 
 
@@ -1179,6 +1295,8 @@ document.addEventListener(
 
 
 
+
+
     const recherche =
 
     document.getElementById(
@@ -1200,6 +1318,8 @@ document.addEventListener(
 
 
     }
+
+
 
 
 });
