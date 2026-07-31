@@ -1,6 +1,6 @@
 // ======================================
 // IDEE GOURMANDE - GESTION DES ACHATS
-// Version 1.0.1
+// Version 1.1.0
 // Compatible database.js 2.0.1
 // Compatible js-stock.js 2.2.0
 // ======================================
@@ -12,10 +12,11 @@ let lignesAchat = [];
 
 
 //--------------------------------------
-// Vérification DB
+// Vérification base de données
 //--------------------------------------
 
 function verifierAchatsDB(){
+
 
     if(typeof db === "undefined"){
 
@@ -44,10 +45,11 @@ function verifierAchatsDB(){
 
 
 //--------------------------------------
-// Sauvegarde
+// Sauvegarde centrale
 //--------------------------------------
 
 function sauvegarderAchats(){
+
 
     if(typeof sauvegarderDB === "function"){
 
@@ -60,15 +62,30 @@ function sauvegarderAchats(){
 
 
 //--------------------------------------
+// Génération numéro achat
+//--------------------------------------
+
+function genererNumeroAchat(){
+
+
+    return "ACH-" + Date.now();
+
+
+}
+
+
+
+//--------------------------------------
 // Nouveau achat
 //--------------------------------------
 
 function nouvelAchat(){
 
 
-    achatEdition=-1;
+    achatEdition = -1;
 
-    lignesAchat=[];
+    lignesAchat = [];
+
 
 
     const fournisseur =
@@ -80,15 +97,22 @@ function nouvelAchat(){
 
 
 
-    if(fournisseur)
+    if(fournisseur){
+
         fournisseur.value="";
 
+    }
 
-    if(date)
+
+
+    if(date){
+
         date.value =
         new Date()
         .toISOString()
         .split("T")[0];
+
+    }
 
 
 
@@ -100,8 +124,12 @@ function nouvelAchat(){
     document.getElementById("popupAchat");
 
 
-    if(popup)
+
+    if(popup){
+
         popup.style.display="flex";
+
+    }
 
 
 }
@@ -109,30 +137,52 @@ function nouvelAchat(){
 
 
 //--------------------------------------
-// Ajouter ligne achat
+// Ajouter une ligne achat
 //--------------------------------------
 
 function ajouterLigneAchat(){
 
 
+    const selectArticle =
+    document.getElementById("achatArticle");
+
+
+    const inputQuantite =
+    document.getElementById("achatQuantite");
+
+
+    const inputPrix =
+    document.getElementById("achatPrix");
+
+
+
+    if(!selectArticle ||
+       !inputQuantite ||
+       !inputPrix){
+
+        return;
+
+    }
+
+
+
     const article =
-    document.getElementById("achatArticle")?.value;
+    selectArticle.value;
+
 
 
     const quantite =
-    Number(
-        document.getElementById("achatQuantite")?.value
-    ) || 0;
+    Number(inputQuantite.value) || 0;
+
 
 
     const prix =
-    Number(
-        document.getElementById("achatPrix")?.value
-    ) || 0;
+    Number(inputPrix.value) || 0;
 
 
 
-    if(!article){
+    if(article===""){
+
 
         alert(
             "Sélectionnez un article."
@@ -144,10 +194,24 @@ function ajouterLigneAchat(){
 
 
 
-    if(quantite<=0 || prix<0){
+    if(quantite<=0){
+
 
         alert(
-            "Quantité ou prix incorrect."
+            "La quantité doit être supérieure à zéro."
+        );
+
+        return;
+
+    }
+
+
+
+    if(prix<0){
+
+
+        alert(
+            "Le prix est incorrect."
         );
 
         return;
@@ -158,11 +222,13 @@ function ajouterLigneAchat(){
 
     lignesAchat.push({
 
+
         article,
 
         quantite,
 
         prix
+
 
     });
 
@@ -186,15 +252,18 @@ function afficherLignesAchat(){
     document.getElementById("listeAchat");
 
 
-    if(!zone)
+    if(!zone){
+
         return;
+
+    }
 
 
 
     zone.innerHTML="";
 
 
-    let total=0;
+    let total = 0;
 
 
 
@@ -206,11 +275,13 @@ function afficherLignesAchat(){
         ligne.prix;
 
 
+
         total += montant;
 
 
 
         zone.innerHTML += `
+
 
         <div class="ligne-produit">
 
@@ -218,10 +289,10 @@ function afficherLignesAchat(){
             <span>
 
             ${ligne.article}
-
             (${ligne.quantite})
 
             </span>
+
 
 
             <strong>
@@ -231,9 +302,8 @@ function afficherLignesAchat(){
             </strong>
 
 
-            <button onclick="
-            supprimerLigneAchat(${index})
-            ">
+
+            <button onclick="supprimerLigneAchat(${index})">
 
             ❌
 
@@ -241,6 +311,7 @@ function afficherLignesAchat(){
 
 
         </div>
+
 
         `;
 
@@ -267,7 +338,7 @@ function afficherLignesAchat(){
 
 
 //--------------------------------------
-// Supprimer ligne
+// Supprimer ligne achat
 //--------------------------------------
 
 function supprimerLigneAchat(index){
@@ -280,9 +351,6 @@ function supprimerLigneAchat(index){
 
 
 }
-
-
-
 //--------------------------------------
 // Enregistrer achat
 //--------------------------------------
@@ -304,6 +372,7 @@ function enregistrerAchat(){
 
     if(!fournisseur){
 
+
         alert(
             "Veuillez saisir le fournisseur."
         );
@@ -316,6 +385,7 @@ function enregistrerAchat(){
 
     if(lignesAchat.length===0){
 
+
         alert(
             "Ajoutez au moins un article."
         );
@@ -326,10 +396,15 @@ function enregistrerAchat(){
 
 
 
-    const achat={
+    const achat = {
 
 
-        id:Date.now(),
+        id:
+        Date.now(),
+
+
+        numero:
+        genererNumeroAchat(),
 
 
         date:
@@ -341,27 +416,36 @@ function enregistrerAchat(){
         .split("T")[0],
 
 
+
         fournisseur,
+
 
 
         articles:
         [...lignesAchat],
 
 
+
         total:
         lignesAchat.reduce(
-            (total,l)=>
-            total+
+            (total,ligne)=>
+            total +
             (
-                l.quantite*
-                l.prix
+                ligne.quantite *
+                ligne.prix
             ),
             0
         ),
 
 
+
         statut:
-        "En attente"
+        "En attente",
+
+
+
+        dateReception:
+        null
 
 
     };
@@ -372,30 +456,66 @@ function enregistrerAchat(){
 
 
 
-    // Création fournisseur automatique
+    // Création automatique fournisseur
 
-    const existeFournisseur =
-    db.clients.find(
-        c=>
-        c.nom===fournisseur &&
-        c.type==="Fournisseur"
+    const fournisseurExiste =
+    db.clients.some(
+        client =>
+        client.nom===fournisseur &&
+        client.type==="Fournisseur"
     );
 
 
 
-    if(!existeFournisseur){
+    if(!fournisseurExiste){
+
 
         db.clients.push({
 
-            id:Date.now(),
 
-            nom:fournisseur,
+            id:
+            Date.now(),
 
-            type:"Fournisseur"
+
+            nom:
+            fournisseur,
+
+
+            type:
+            "Fournisseur"
+
 
         });
 
+
     }
+
+
+
+    db.mouvements.push({
+
+
+        date:
+        new Date()
+        .toLocaleString(),
+
+
+        action:
+        "Création achat",
+
+
+        achat:
+        achat.numero,
+
+
+        fournisseur,
+
+
+        montant:
+        achat.total
+
+
+    });
 
 
 
@@ -406,7 +526,9 @@ function enregistrerAchat(){
     sauvegarderAchats();
 
 
+
     afficherAchats();
+
 
 
     fermerPopupAchat();
@@ -417,7 +539,7 @@ function enregistrerAchat(){
 
 
 //--------------------------------------
-// Affichage achats
+// Affichage liste achats
 //--------------------------------------
 
 function afficherAchats(){
@@ -430,6 +552,7 @@ function afficherAchats(){
 
     const zone =
     document.getElementById("listeAchats");
+
 
 
     if(!zone)
@@ -446,61 +569,95 @@ function afficherAchats(){
 
         zone.innerHTML += `
 
+
         <div class="commande-admin">
 
 
             <h3>
-            ${achat.fournisseur}
+
+            ${achat.numero}
+
             </h3>
 
 
+
             <p>
+
+            Fournisseur :
+            <strong>
+            ${achat.fournisseur}
+            </strong>
+
+            </p>
+
+
+
+            <p>
+
             Date :
             ${achat.date}
+
             </p>
 
 
+
             <p>
+
             Total :
             <strong>
+
             ${achat.total.toFixed(2)} CHF
+
             </strong>
+
             </p>
+
 
 
             <p>
+
             Statut :
             ${achat.statut}
+
             </p>
+
 
 
             ${
-            achat.statut!=="Réceptionné"
+                achat.statut !== "Réceptionné"
 
-            ?
+                ?
 
-            `<button onclick="
-            receptionnerAchat(${index})
-            ">
-            📦 Réceptionner
-            </button>`
+                `
+                <button onclick="receptionnerAchat(${index})">
 
-            :
+                📦 Réceptionner
 
-            "✅ Achat réceptionné"
+                </button>
+                `
+
+                :
+
+                `
+                <p>
+                ✅ Réceptionné le :
+                ${achat.dateReception}
+                </p>
+                `
 
             }
 
 
 
-            <button onclick="
-            supprimerAchat(${index})
-            ">
+            <button onclick="supprimerAchat(${index})">
+
             🗑 Supprimer
+
             </button>
 
 
         </div>
+
 
         `;
 
@@ -513,7 +670,7 @@ function afficherAchats(){
 
 
 //--------------------------------------
-// Réception achat
+// Réception achat → Stock
 //--------------------------------------
 
 function receptionnerAchat(index){
@@ -531,9 +688,11 @@ function receptionnerAchat(index){
 
     if(achat.statut==="Réceptionné"){
 
+
         alert(
-            "Cet achat a déjà été réceptionné."
+            "Cet achat est déjà réceptionné."
         );
+
 
         return;
 
@@ -544,9 +703,10 @@ function receptionnerAchat(index){
     achat.articles.forEach(ligne=>{
 
 
-        const article =
+        let article =
         db.articles.find(
-            a=>a.nom===ligne.article
+            a =>
+            a.nom === ligne.article
         );
 
 
@@ -566,30 +726,38 @@ function receptionnerAchat(index){
 
             db.mouvements.push({
 
+
                 date:
                 new Date()
                 .toLocaleString(),
+
 
 
                 article:
                 article.nom,
 
 
+
                 action:
                 "Réception achat",
 
 
+
                 ancienStock,
+
 
 
                 nouveauStock:
                 article.stock,
 
 
+
                 difference:
                 ligne.quantite
 
+
             });
+
 
 
         }
@@ -604,7 +772,34 @@ function receptionnerAchat(index){
 
 
 
+    achat.dateReception =
+    new Date()
+    .toLocaleString();
+
+
+
+    db.mouvements.push({
+
+
+        date:
+        new Date()
+        .toLocaleString(),
+
+
+        action:
+        "Achat réceptionné",
+
+
+        achat:
+        achat.numero
+
+
+    });
+
+
+
     sauvegarderDB();
+
 
 
     afficherAchats();
@@ -619,9 +814,6 @@ function receptionnerAchat(index){
 
 
 }
-
-
-
 //--------------------------------------
 // Supprimer achat
 //--------------------------------------
@@ -629,18 +821,72 @@ function receptionnerAchat(index){
 function supprimerAchat(index){
 
 
-    if(confirm(
-        "Supprimer cet achat ?"
-    )){
+    const achat =
+    db.achats[index];
+
+
+
+    if(!achat)
+        return;
+
+
+
+    let message =
+    "Supprimer cet achat ?";
+
+
+
+    if(achat.statut==="Réceptionné"){
+
+
+        message =
+        "Cet achat a déjà été réceptionné.\n\n" +
+        "La suppression ne retirera pas le stock ajouté.\n\n" +
+        "Continuer ?";
+
+
+    }
+
+
+
+    if(confirm(message)){
+
+
+
+        db.mouvements.push({
+
+
+            date:
+            new Date()
+            .toLocaleString(),
+
+
+            action:
+            "Suppression achat",
+
+
+            achat:
+            achat.numero,
+
+
+            fournisseur:
+            achat.fournisseur
+
+
+        });
+
 
 
         db.achats.splice(index,1);
 
 
+
         sauvegarderDB();
 
 
+
         afficherAchats();
+
 
 
     }
@@ -651,7 +897,7 @@ function supprimerAchat(index){
 
 
 //--------------------------------------
-// Fermer popup
+// Fermer popup achat
 //--------------------------------------
 
 function fermerPopupAchat(){
@@ -661,9 +907,12 @@ function fermerPopupAchat(){
     document.getElementById("popupAchat");
 
 
+
     if(popup){
 
+
         popup.style.display="none";
+
 
     }
 
@@ -673,7 +922,7 @@ function fermerPopupAchat(){
 
 
 //--------------------------------------
-// Charger articles
+// Charger articles dans formulaire achat
 //--------------------------------------
 
 function chargerArticlesAchat(){
@@ -683,8 +932,13 @@ function chargerArticlesAchat(){
     document.getElementById("achatArticle");
 
 
-    if(!liste || !verifierAchatsDB())
+
+    if(!liste ||
+       !verifierAchatsDB()){
+
         return;
+
+    }
 
 
 
@@ -697,9 +951,13 @@ function chargerArticlesAchat(){
 
         liste.innerHTML += `
 
+
         <option value="${article.nom}">
-        ${article.nom}
+
+            ${article.nom}
+
         </option>
+
 
         `;
 
@@ -712,7 +970,69 @@ function chargerArticlesAchat(){
 
 
 //--------------------------------------
-// Initialisation
+// Rafraîchir fournisseurs
+//--------------------------------------
+
+function chargerFournisseursAchat(){
+
+
+    const liste =
+    document.getElementById("achatFournisseur");
+
+
+
+    if(!liste ||
+       !verifierAchatsDB()){
+
+        return;
+
+    }
+
+
+
+    // uniquement si c'est un select
+
+    if(liste.tagName==="SELECT"){
+
+
+        liste.innerHTML="";
+
+
+        db.clients
+
+        .filter(
+            client =>
+            client.type==="Fournisseur"
+        )
+
+        .forEach(client=>{
+
+
+            liste.innerHTML += `
+
+
+            <option value="${client.nom}">
+
+            ${client.nom}
+
+            </option>
+
+
+            `;
+
+
+        });
+
+
+    }
+
+
+}
+
+
+
+//--------------------------------------
+// Initialisation module achats
 //--------------------------------------
 
 document.addEventListener(
@@ -720,12 +1040,18 @@ document.addEventListener(
 ()=>{
 
 
-    if(!verifierAchatsDB())
+    if(!verifierAchatsDB()){
+
         return;
+
+    }
 
 
 
     chargerArticlesAchat();
+
+
+    chargerFournisseursAchat();
 
 
     afficherAchats();
@@ -738,12 +1064,15 @@ document.addEventListener(
     );
 
 
+
     if(bouton){
+
 
         bouton.addEventListener(
             "click",
             nouvelAchat
         );
+
 
     }
 
