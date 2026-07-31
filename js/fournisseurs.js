@@ -18,13 +18,9 @@ function echapperHTML(texte){
     return String(texte ?? "")
 
     .replace(/&/g,"&amp;")
-
     .replace(/</g,"&lt;")
-
     .replace(/>/g,"&gt;")
-
     .replace(/"/g,"&quot;")
-
     .replace(/'/g,"&#039;");
 
 }
@@ -77,20 +73,11 @@ function migrerAchatsFournisseurID(){
     db.achats.forEach(achat=>{
 
 
-        // Déjà correctement lié
-
-        if(
-            achat.fournisseurId &&
-            db.clients.some(
-                f =>
-                f.id === achat.fournisseurId
-            )
-        ){
+        if(achat.fournisseurId){
 
             return;
 
         }
-
 
 
         if(!achat.fournisseur){
@@ -100,12 +87,9 @@ function migrerAchatsFournisseurID(){
         }
 
 
-
         const fournisseur =
 
-        db.clients.find(
-
-            client =>
+        db.clients.find(client =>
 
             client.type === "Fournisseur"
 
@@ -114,7 +98,6 @@ function migrerAchatsFournisseurID(){
             client.nom === achat.fournisseur
 
         );
-
 
 
         if(fournisseur){
@@ -126,7 +109,6 @@ function migrerAchatsFournisseurID(){
 
 
             modifications++;
-
 
         }
 
@@ -171,9 +153,7 @@ function sauvegarderFournisseurs(){
 
         sauvegarderDB();
 
-
     }
-
 
 }
 
@@ -191,17 +171,12 @@ function nouveauFournisseur(){
     fournisseurEdition = -1;
 
 
-
     const champs = [
 
         "fournisseurNom",
-
         "fournisseurTelephone",
-
         "fournisseurEmail",
-
         "fournisseurAdresse",
-
         "fournisseurNotes"
 
     ];
@@ -212,9 +187,7 @@ function nouveauFournisseur(){
 
 
         const champ =
-
         document.getElementById(id);
-
 
 
         if(champ){
@@ -229,7 +202,6 @@ function nouveauFournisseur(){
 
 
     const popup =
-
     document.getElementById(
         "popupFournisseur"
     );
@@ -263,9 +235,7 @@ function modifierFournisseur(index){
 
     const fournisseurs =
 
-    db.clients.filter(
-
-        client =>
+    db.clients.filter(client =>
 
         client.type === "Fournisseur"
 
@@ -286,9 +256,7 @@ function modifierFournisseur(index){
 
     fournisseurEdition =
 
-    db.clients.indexOf(
-        fournisseur
-    );
+    db.clients.indexOf(fournisseur);
 
 
 
@@ -296,29 +264,23 @@ function modifierFournisseur(index){
 
 
         fournisseurNom:
-
         fournisseur.nom || "",
 
 
         fournisseurTelephone:
-
         fournisseur.telephone || "",
 
 
         fournisseurEmail:
-
         fournisseur.email || "",
 
 
         fournisseurAdresse:
-
         fournisseur.adresse || "",
 
 
         fournisseurNotes:
-
         fournisseur.notes || ""
-
 
     };
 
@@ -330,7 +292,6 @@ function modifierFournisseur(index){
 
 
         const champ =
-
         document.getElementById(id);
 
 
@@ -347,7 +308,6 @@ function modifierFournisseur(index){
 
 
     const popup =
-
     document.getElementById(
         "popupFournisseur"
     );
@@ -356,12 +316,13 @@ function modifierFournisseur(index){
 
     if(popup){
 
-        popup.style.display = "flex";
+        popup.style.display="flex";
 
     }
 
 
 }
+
 
 
 
@@ -463,14 +424,12 @@ function enregistrerFournisseur(){
 
         ?
 
-        new Date()
-        .toLocaleString()
+        new Date().toLocaleString()
 
         :
 
         db.clients[fournisseurEdition]
         ?.dateCreation
-
 
     };
 
@@ -486,38 +445,26 @@ function enregistrerFournisseur(){
 
         return;
 
-
     }
-    //--------------------------------------
-// Contrôle doublon fournisseur
-//--------------------------------------
+
+
 
     const doublon =
 
-    db.clients.some(
-
-        client =>
+    db.clients.some(client =>
 
 
         client.type === "Fournisseur"
 
-
         &&
 
-
-        client.nom
-        ?.toLowerCase()
+        client.nom?.toLowerCase()
 
         ===
 
-        fournisseur.nom
-        .toLowerCase()
-
-
+        fournisseur.nom.toLowerCase()
 
         &&
-
-
 
         client.id !== fournisseur.id
 
@@ -530,39 +477,27 @@ function enregistrerFournisseur(){
 
 
         alert(
-
             "Ce fournisseur existe déjà."
-
         );
 
 
         return;
 
-
     }
-
-
-
-
-
-//--------------------------------------
-// Création ou modification
-//--------------------------------------
+    //----------------------------------
+    // Création ou modification
+    //----------------------------------
 
     if(fournisseurEdition === -1){
 
 
-
         db.clients.push(
-
             fournisseur
-
         );
 
 
 
         db.mouvements.push({
-
 
             date:
 
@@ -579,15 +514,11 @@ function enregistrerFournisseur(){
 
             fournisseur.nom
 
-
         });
 
 
-
     }
-
     else{
-
 
 
         const ancienNom =
@@ -602,17 +533,14 @@ function enregistrerFournisseur(){
 
 
 
-
-        // Mise à jour des anciens achats
+        //----------------------------------
+        // Mise à jour achats existants
+        //----------------------------------
 
         db.achats.forEach(achat=>{
 
 
-            if(
-
-                achat.fournisseur === ancienNom
-
-            ){
+            if(achat.fournisseur === ancienNom){
 
 
                 achat.fournisseur =
@@ -623,31 +551,11 @@ function enregistrerFournisseur(){
             }
 
 
-
-            if(
-
-                achat.fournisseurId === fournisseur.id
-
-            ){
-
-
-                achat.fournisseurId =
-
-                fournisseur.id;
-
-
-            }
-
-
-
         });
 
 
 
-
         db.mouvements.push({
-
-
 
             date:
 
@@ -655,25 +563,19 @@ function enregistrerFournisseur(){
             .toLocaleString(),
 
 
-
             action:
 
             "Modification fournisseur",
 
 
-
             ancienNom,
-
 
 
             nouveauNom:
 
             fournisseur.nom
 
-
-
         });
-
 
 
     }
@@ -681,20 +583,17 @@ function enregistrerFournisseur(){
 
 
 
-
     sauvegarderFournisseurs();
-
 
 
     afficherFournisseurs();
 
 
-
     fermerPopupFournisseur();
 
 
-
 }
+
 
 
 
@@ -708,7 +607,6 @@ function afficherFournisseurs(){
 
 
     if(!verifierFournisseursDB())
-
         return;
 
 
@@ -722,7 +620,6 @@ function afficherFournisseurs(){
 
 
     if(!zone)
-
         return;
 
 
@@ -735,26 +632,17 @@ function afficherFournisseurs(){
 
     db.clients
 
-    .filter(
-
-        client =>
+    .filter(client =>
 
         client.type === "Fournisseur"
 
     )
 
-    .sort(
+    .sort((a,b)=>
 
-        (a,b)=>
-
-        (a.nom || "")
-        .localeCompare(
-            b.nom || ""
-        )
+        a.nom.localeCompare(b.nom)
 
     );
-
-
 
 
 
@@ -768,16 +656,18 @@ function afficherFournisseurs(){
 
     if(compteur){
 
-
         compteur.textContent =
 
         fournisseurs.length;
-
 
     }
 
 
 
+
+    //----------------------------------
+    // Fournisseurs sans achat
+    //----------------------------------
 
     const compteurInactifs =
 
@@ -790,31 +680,22 @@ function afficherFournisseurs(){
     if(compteurInactifs){
 
 
-
         const sansAchat =
 
         fournisseurs.filter(f=>
 
 
-
-            !db.achats.some(achat=>
-
+            !db.achats.some(achat =>
 
 
                 achat.fournisseurId === f.id
 
-
-
                 ||
-
-
 
                 achat.fournisseur === f.nom
 
 
-
             )
-
 
 
         ).length;
@@ -826,9 +707,7 @@ function afficherFournisseurs(){
         sansAchat;
 
 
-
     }
-
 
 
 
@@ -837,68 +716,49 @@ function afficherFournisseurs(){
     fournisseurs.forEach((fournisseur,index)=>{
 
 
+
         const achats =
 
-        db.achats.filter(achat=>
-
+        db.achats.filter(achat =>
 
 
             achat.fournisseurId === fournisseur.id
 
-
-
             ||
-
-
 
             achat.fournisseur === fournisseur.nom
 
 
-
         );
-
 
 
 
         const totalAchats =
 
-        achats.reduce(
-
-            (total,achat)=>
-
+        achats.reduce((total,achat)=>
 
 
             total +
 
-            (Number(achat.total) || 0),
+            (Number(achat.total) || 0)
 
 
-
-            0
-
-
-        );
-
+        ,0);
 
 
 
 
         const dernierAchat =
 
-
         achats.length
 
-
         ?
-
 
         achats
 
         .slice()
 
-        .sort(
-
-            (a,b)=>
+        .sort((a,b)=>
 
             new Date(b.date)
 
@@ -909,10 +769,7 @@ function afficherFournisseurs(){
         )[0].date
 
 
-
         :
-
-
 
         "-";
 
@@ -923,111 +780,115 @@ function afficherFournisseurs(){
         zone.innerHTML += `
 
 
-<div class="fiche-fournisseur">
+        <div class="fiche-fournisseur">
 
 
-<h3>
+            <h3>
 
-${echapperHTML(fournisseur.nom)}
+            ${echapperHTML(fournisseur.nom)}
 
-</h3>
-
-
-
-<p>
-
-📞 ${echapperHTML(
-fournisseur.telephone || "Non renseigné"
-)}
-
-</p>
+            </h3>
 
 
 
-<p>
+            <p>
 
-✉️ ${echapperHTML(
-fournisseur.email || "Non renseigné"
-)}
+            📞
 
-</p>
+            ${echapperHTML(
+                fournisseur.telephone || "Non renseigné"
+            )}
 
-
-
-<p>
-
-Nombre d'achats :
-
-<strong>
-
-${achats.length}
-
-</strong>
-
-</p>
+            </p>
 
 
 
-<p>
+            <p>
 
-Total achats :
+            ✉️
 
-<strong>
+            ${echapperHTML(
+                fournisseur.email || "Non renseigné"
+            )}
 
-${totalAchats.toFixed(2)} CHF
-
-</strong>
-
-</p>
+            </p>
 
 
 
-<p>
+            <p>
 
-Dernier achat :
+            Nombre d'achats :
 
-${echapperHTML(dernierAchat)}
+            <strong>
 
-</p>
+            ${achats.length}
 
+            </strong>
 
-
-<button onclick="modifierFournisseur(${index})">
-
-✏️ Modifier
-
-</button>
+            </p>
 
 
 
-<button onclick="afficherFicheFournisseur(${index})">
+            <p>
 
-📋 Fiche
+            Total achats :
 
-</button>
+            <strong>
 
+            ${totalAchats.toFixed(2)} CHF
 
+            </strong>
 
-<button onclick="supprimerFournisseur(${index})">
-
-🗑 Supprimer
-
-</button>
+            </p>
 
 
 
-</div>
+            <p>
+
+            Dernier achat :
+
+            ${echapperHTML(dernierAchat)}
+
+            </p>
 
 
-`;
 
+
+            <button onclick="modifierFournisseur(${index})">
+
+            ✏️ Modifier
+
+            </button>
+
+
+
+            <button onclick="afficherFicheFournisseur(${index})">
+
+            📋 Fiche
+
+            </button>
+
+
+
+            <button onclick="supprimerFournisseur(${index})">
+
+            🗑 Supprimer
+
+            </button>
+
+
+
+        </div>
+
+
+        `;
 
 
     });
 
 
-
 }
+
 
 
 
@@ -1042,19 +903,12 @@ function rechercherFournisseur(){
 
     const texte =
 
-
-    document
-
-    .getElementById(
+    document.getElementById(
         "rechercheFournisseur"
     )
-
     ?.value
-
     ?.toLowerCase()
-
     || "";
-
 
 
 
@@ -1077,28 +931,27 @@ function rechercherFournisseur(){
         .includes(texte)
 
 
-
         ?
-
 
 
         ""
 
 
-
         :
-
 
 
         "none";
 
 
-
     });
 
 
-
 }
+
+
+
+
+
 
 //--------------------------------------
 // Fiche fournisseur
@@ -1108,16 +961,13 @@ function afficherFicheFournisseur(index){
 
 
     if(!verifierFournisseursDB())
-
         return;
 
 
 
     const fournisseurs =
 
-    db.clients.filter(
-
-        client =>
+    db.clients.filter(client =>
 
         client.type === "Fournisseur"
 
@@ -1132,33 +982,25 @@ function afficherFicheFournisseur(index){
 
 
     if(!fournisseur)
-
         return;
-
 
 
 
     const achats =
 
-    db.achats
-
-    .filter(achat=>
+    db.achats.filter(achat =>
 
 
         achat.fournisseurId === fournisseur.id
 
-
         ||
-
 
         achat.fournisseur === fournisseur.nom
 
 
     )
 
-    .sort(
-
-        (a,b)=>
+    .sort((a,b)=>
 
         new Date(b.date)
 
@@ -1170,49 +1012,31 @@ function afficherFicheFournisseur(index){
 
 
 
-
-
     const total =
 
-    achats.reduce(
-
-        (somme,achat)=>
+    achats.reduce((somme,achat)=>
 
 
         somme +
 
-        (Number(achat.total) || 0),
+        (Number(achat.total) || 0)
 
 
-        0
-
-
-    );
-
-
+    ,0);
 
 
 
     const derniereCommande =
 
-
     achats.length
-
 
     ?
 
-
     achats[0].date
-
-
 
     :
 
-
-
     "Aucun achat";
-
-
 
 
 
@@ -1225,138 +1049,135 @@ function afficherFicheFournisseur(index){
 
 
     if(!zone)
-
         return;
-
-
 
 
 
     zone.innerHTML = `
 
 
-<div class="fiche-detail">
+    <div class="fiche-detail">
 
 
-<h2>
+        <h2>
 
-${echapperHTML(fournisseur.nom)}
+        ${echapperHTML(fournisseur.nom)}
 
-</h2>
+        </h2>
 
 
 
-<p>
+        <p>
 
-Téléphone :
+        Téléphone :
 
-${echapperHTML(fournisseur.telephone || "-")}
+        ${echapperHTML(
+            fournisseur.telephone || "-"
+        )}
 
-</p>
+        </p>
 
 
 
-<p>
+        <p>
 
-Email :
+        Email :
 
-${echapperHTML(fournisseur.email || "-")}
+        ${echapperHTML(
+            fournisseur.email || "-"
+        )}
 
-</p>
+        </p>
 
 
 
-<p>
+        <p>
 
-Adresse :
+        Adresse :
 
-${echapperHTML(fournisseur.adresse || "-")}
+        ${echapperHTML(
+            fournisseur.adresse || "-"
+        )}
 
-</p>
+        </p>
 
 
 
-<p>
+        <p>
 
-Notes :
+        Notes :
 
-${echapperHTML(fournisseur.notes || "-")}
+        ${echapperHTML(
+            fournisseur.notes || "-"
+        )}
 
-</p>
+        </p>
 
 
 
-<hr>
+        <hr>
 
 
+        <h3>
 
-<h3>
+        Statistiques
 
-Statistiques
+        </h3>
 
-</h3>
 
 
+        <p>
 
-<p>
+        Nombre d'achats :
 
-Nombre d'achats :
+        <strong>
 
-<strong>
+        ${achats.length}
 
-${achats.length}
+        </strong>
 
-</strong>
+        </p>
 
-</p>
 
 
+        <p>
 
-<p>
+        Total commandé :
 
-Total commandé :
+        <strong>
 
-<strong>
+        ${total.toFixed(2)} CHF
 
-${total.toFixed(2)} CHF
+        </strong>
 
-</strong>
+        </p>
 
-</p>
 
 
+        <p>
 
-<p>
+        Dernier achat :
 
-Dernier achat :
+        ${echapperHTML(derniereCommande)}
 
-${echapperHTML(derniereCommande)}
+        </p>
 
-</p>
 
 
+        <button onclick="afficherHistoriqueFournisseur(${fournisseur.id})">
 
+        📦 Historique achats
 
-<button onclick="afficherHistoriqueFournisseur(${fournisseur.id})">
+        </button>
 
-📦 Historique achats
 
-</button>
+    </div>
 
 
-
-</div>
-
-
-`;
-
+    `;
 
 
 }
-
-
-
-
 
 //--------------------------------------
 // Historique achats fournisseur
@@ -1366,17 +1187,13 @@ function afficherHistoriqueFournisseur(idFournisseur){
 
 
     if(!verifierFournisseursDB())
-
         return;
 
 
 
     const fournisseur =
 
-
-    db.clients.find(
-
-        client =>
+    db.clients.find(client =>
 
         client.id == idFournisseur
 
@@ -1385,7 +1202,6 @@ function afficherHistoriqueFournisseur(idFournisseur){
 
 
     if(!fournisseur)
-
         return;
 
 
@@ -1399,33 +1215,25 @@ function afficherHistoriqueFournisseur(idFournisseur){
 
 
     if(!zone)
-
         return;
-
 
 
 
     const achats =
 
-    db.achats
-
-    .filter(achat=>
+    db.achats.filter(achat =>
 
 
         achat.fournisseurId === fournisseur.id
 
-
         ||
-
 
         achat.fournisseur === fournisseur.nom
 
 
     )
 
-    .sort(
-
-        (a,b)=>
+    .sort((a,b)=>
 
         new Date(b.date)
 
@@ -1457,7 +1265,6 @@ function afficherHistoriqueFournisseur(idFournisseur){
 
         return;
 
-
     }
 
 
@@ -1482,123 +1289,88 @@ function afficherHistoriqueFournisseur(idFournisseur){
         zone.innerHTML += `
 
 
-<div class="historique-achat">
+        <div class="historique-achat">
 
 
-<h3>
+            <h3>
 
-${echapperHTML(achat.numero || "Achat")}
+            ${echapperHTML(
+                achat.numero || "Achat"
+            )}
 
-</h3>
-
-
-
-<p>
-
-Date :
-
-${echapperHTML(achat.date || "-")}
-
-</p>
+            </h3>
 
 
 
-<p>
+            <p>
 
-Statut :
+            Date :
 
-${echapperHTML(achat.statut || "Inconnu")}
+            ${echapperHTML(
+                achat.date || "-"
+            )}
 
-</p>
-
-
-
-<p>
-
-Total :
-
-<strong>
-
-${montant.toFixed(2)} CHF
-
-</strong>
-
-</p>
+            </p>
 
 
 
-<h4>
+            <p>
 
-Articles
+            Statut :
 
-</h4>
+            ${echapperHTML(
+                achat.statut || "Inconnu"
+            )}
 
-
-
-<ul>
-
-${
-(achat.articles || [])
-
-.map(ligne=>`
-
-<li>
-
-${echapperHTML(ligne.article || "-")}
-
- -
-
-${ligne.quantite || 0}
-
- x
-
-${(Number(ligne.prix)||0).toFixed(2)}
-
- CHF
-
-</li>
-
-`)
-
-.join("")
-}
-
-</ul>
+            </p>
 
 
 
-</div>
+            <p>
+
+            Total :
+
+            <strong>
+
+            ${montant.toFixed(2)} CHF
+
+            </strong>
+
+            </p>
 
 
-`;
 
+        </div>
+
+
+        `;
 
 
     });
 
 
 
-
     zone.innerHTML += `
 
 
-<hr>
+    <hr>
 
 
-<h3>
+    <h3>
 
-Total fournisseur :
+    Total fournisseur :
 
-${totalGeneral.toFixed(2)} CHF
-
-</h3>
+    ${totalGeneral.toFixed(2)} CHF
 
 
-`;
+    </h3>
 
+
+    `;
 
 
 }
+
 
 
 
@@ -1612,16 +1384,13 @@ function supprimerFournisseur(index){
 
 
     if(!verifierFournisseursDB())
-
         return;
 
 
 
     const fournisseurs =
 
-    db.clients.filter(
-
-        client =>
+    db.clients.filter(client =>
 
         client.type === "Fournisseur"
 
@@ -1636,29 +1405,23 @@ function supprimerFournisseur(index){
 
 
     if(!fournisseur)
-
         return;
-
 
 
 
     const achatsExistants =
 
-
-    db.achats.some(achat=>
+    db.achats.some(achat =>
 
 
         achat.fournisseurId === fournisseur.id
 
-
         ||
-
 
         achat.fournisseur === fournisseur.nom
 
 
     );
-
 
 
 
@@ -1668,16 +1431,14 @@ function supprimerFournisseur(index){
 
 
 
-
     if(achatsExistants){
 
 
         message =
 
-
         "Ce fournisseur possède des achats enregistrés.\n\n" +
 
-        "Les achats seront conservés dans l'historique.\n\n" +
+        "Le fournisseur sera supprimé mais les achats resteront dans l'historique.\n\n" +
 
         "Continuer ?";
 
@@ -1686,18 +1447,17 @@ function supprimerFournisseur(index){
 
 
 
-
     if(!confirm(message))
-
         return;
-
 
 
 
 
     const position =
 
-    db.clients.indexOf(fournisseur);
+    db.clients.indexOf(
+        fournisseur
+    );
 
 
 
@@ -1717,6 +1477,9 @@ function supprimerFournisseur(index){
 
 
 
+    db.mouvements ??= [];
+
+
 
     db.mouvements.push({
 
@@ -1727,11 +1490,9 @@ function supprimerFournisseur(index){
         .toLocaleString(),
 
 
-
         action:
 
         "Suppression fournisseur",
-
 
 
         fournisseur:
@@ -1743,14 +1504,11 @@ function supprimerFournisseur(index){
 
 
 
-
     sauvegarderFournisseurs();
 
 
 
     afficherFournisseurs();
-
-
 
 
 
@@ -1762,13 +1520,15 @@ function supprimerFournisseur(index){
 
 
 
-    if(fiche)
+    if(fiche){
 
         fiche.innerHTML = "";
 
+    }
 
 
 }
+
 
 
 
@@ -1789,12 +1549,15 @@ function fermerPopupFournisseur(){
 
 
 
-    if(popup)
+    if(popup){
 
         popup.style.display = "none";
 
+    }
+
 
 }
+
 
 
 
@@ -1811,19 +1574,23 @@ document.addEventListener(
 ()=>{
 
 
-    if(!verifierFournisseursDB())
+    if(!verifierFournisseursDB()){
 
         return;
 
+    }
 
 
+
+    //----------------------------------
+    // Migration ancienne structure achats
+    //----------------------------------
 
     migrerAchatsFournisseurID();
 
 
 
     afficherFournisseurs();
-
 
 
 
