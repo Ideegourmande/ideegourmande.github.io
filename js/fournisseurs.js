@@ -35,7 +35,7 @@ function echapperHTML(texte){
 // Vérification base de données
 //--------------------------------------
 
-ffunction verifierFournisseursDB(){
+function verifierFournisseursDB(){
 
     if(typeof db === "undefined"){
 
@@ -66,12 +66,64 @@ ffunction verifierFournisseursDB(){
 
 function migrerAchatsFournisseurID(){
 
-    ...
-}
-
-
     if(!verifierFournisseursDB())
         return;
+
+
+    let modifications = 0;
+
+
+    db.achats.forEach(achat=>{
+
+        if(achat.fournisseurId){
+            return;
+        }
+
+
+        if(!achat.fournisseur){
+            return;
+        }
+
+
+        const fournisseur =
+
+        db.clients.find(
+
+            client =>
+
+            client.type === "Fournisseur"
+
+            &&
+
+            client.nom === achat.fournisseur
+
+        );
+
+
+        if(fournisseur){
+
+            achat.fournisseurId =
+            fournisseur.id;
+
+            modifications++;
+
+        }
+
+    });
+
+
+    if(modifications > 0){
+
+        sauvegarderFournisseurs();
+
+        console.log(
+            modifications +
+            " achat(s) migré(s) vers fournisseurId"
+        );
+
+    }
+
+}
 
 
 
@@ -1170,12 +1222,8 @@ function afficherFicheFournisseur(index){
 
 
         <button onclick="
-
-        afficherHistoriqueFournisseur(${fournisseur.id})
-        )
-
-        ">
-
+afficherHistoriqueFournisseur(${fournisseur.id})
+">
         📦 Historique achats
 
         </button>
@@ -1211,7 +1259,7 @@ function afficherHistoriqueFournisseur(idFournisseur){
 
         client =>
 
-        client.id === idFournisseur
+        client.id == idFournisseur
 
     );
 
