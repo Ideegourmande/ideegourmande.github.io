@@ -47,7 +47,95 @@ function verifierFournisseursDB(){
 
 
     }
+//--------------------------------------
+// Migration achats vers fournisseurId
+//--------------------------------------
 
+function migrerAchatsFournisseurID(){
+
+
+    if(!verifierFournisseursDB())
+        return;
+
+
+
+    let modifications = 0;
+
+
+
+    db.achats.forEach(achat=>{
+
+
+        // Déjà migré
+        if(achat.fournisseurId){
+
+            return;
+
+        }
+
+
+
+        if(!achat.fournisseur){
+
+            return;
+
+        }
+
+
+
+        const fournisseur =
+
+        db.clients.find(
+
+            client =>
+
+            client.type==="Fournisseur"
+
+            &&
+
+            client.nom === achat.fournisseur
+
+        );
+
+
+
+        if(fournisseur){
+
+
+            achat.fournisseurId =
+
+            fournisseur.id;
+
+
+            modifications++;
+
+
+        }
+
+
+    });
+
+
+
+    if(modifications > 0){
+
+
+        sauvegarderFournisseurs();
+
+
+        console.log(
+
+            modifications +
+
+            " achat(s) migré(s) vers fournisseurId"
+
+        );
+
+
+    }
+
+
+}
 
 
     db.clients ??= [];
@@ -273,15 +361,15 @@ function enregistrerFournisseur(){
 
         id:
 
-        fournisseurEdition === -1
+fournisseurEdition === -1
 
-        ?
+?
 
-        Date.now()
+Date.now()
 
-        :
+:
 
-        id:
+db.clients[fournisseurEdition]?.id || Date.now(),
 
 fournisseurEdition === -1
 
@@ -620,7 +708,11 @@ if(compteurInactifs){
 
             achat =>
 
-            achat.fournisseur === fournisseur.nom
+            achat.fournisseurId === fournisseur.id
+
+||
+
+achat.fournisseur === fournisseur.nom
 
         );
 
@@ -794,7 +886,11 @@ function afficherFicheFournisseur(index){
 
         achat =>
 
-        achat.fournisseur===fournisseur.nom
+        achat.fournisseurId === fournisseur.id
+
+||
+
+achat.fournisseur === fournisseur.nom
 
     )
 
@@ -1194,7 +1290,11 @@ function supprimerFournisseur(index){
 
         achat =>
 
-        achat.fournisseur === fournisseur.nom
+        achat.fournisseurId === fournisseur.id
+
+||
+
+achat.fournisseur === fournisseur.nom
 
     );
 
@@ -1357,7 +1457,14 @@ document.addEventListener(
 
 
 
-    afficherFournisseurs();
+    //----------------------------------
+// Migration ancienne structure achats
+//----------------------------------
+
+migrerAchatsFournisseurID();
+
+
+afficherFournisseurs();
 
 
 
