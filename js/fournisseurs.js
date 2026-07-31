@@ -7,7 +7,25 @@
 
 
 let fournisseurEdition = -1;
+//--------------------------------------
+// Protection affichage HTML
+//--------------------------------------
 
+function echapperHTML(texte){
+
+    return String(texte ?? "")
+
+    .replace(/&/g,"&amp;")
+
+    .replace(/</g,"&lt;")
+
+    .replace(/>/g,"&gt;")
+
+    .replace(/"/g,"&quot;")
+
+    .replace(/'/g,"&#039;");
+
+}
 
 
 //--------------------------------------
@@ -439,27 +457,56 @@ function enregistrerFournisseur(){
     else{
 
 
-        db.clients[fournisseurEdition] =
+    const ancienNom =
 
-        fournisseur;
-
-
-        db.mouvements.push({
-
-            date:
-            new Date()
-            .toLocaleString(),
-
-            action:
-            "Modification fournisseur",
-
-            fournisseur:
-            fournisseur.nom
-
-        });
+    db.clients[fournisseurEdition].nom;
 
 
-    }
+
+    db.clients[fournisseurEdition] =
+
+    fournisseur;
+
+
+
+    // Mise à jour historique achats
+
+    db.achats.forEach(achat=>{
+
+
+        if(achat.fournisseur === ancienNom){
+
+
+            achat.fournisseur =
+
+            fournisseur.nom;
+
+
+        }
+
+
+    });
+
+
+
+    db.mouvements.push({
+
+        date:
+        new Date()
+        .toLocaleString(),
+
+        action:
+        "Modification fournisseur",
+
+        ancienNom,
+
+        nouveauNom:
+        fournisseur.nom
+
+    });
+
+
+}
 
 
 
@@ -520,7 +567,41 @@ function afficherFournisseurs(){
         fournisseurs.length;
 
     }
+const compteurInactifs =
 
+document.getElementById(
+    "nbFournisseursSansAchat"
+);
+
+
+
+if(compteurInactifs){
+
+
+    const sansAchat =
+
+    fournisseurs.filter(f=>
+
+
+        !db.achats.some(
+
+            achat =>
+
+            achat.fournisseur === f.nom
+
+        )
+
+
+    ).length;
+
+
+
+    compteurInactifs.textContent =
+
+    sansAchat;
+
+
+}
     fournisseurs.forEach((fournisseur,index)=>{
 
         const achats =
@@ -567,15 +648,15 @@ function afficherFournisseurs(){
         <div class="fiche-fournisseur">
 
             <h3>
-            ${fournisseur.nom}
+            ${echapperHTML(fournisseur.nom)}
             </h3>
 
             <p>
-            📞 ${fournisseur.telephone || "Non renseigné"}
+            📞 ${echapperHTML(fournisseur.telephone || "Non renseigné")}
             </p>
 
             <p>
-            ✉️ ${fournisseur.email || "Non renseigné"}
+            ✉️ ${echapperHTML(fournisseur.email || "Non renseigné")}
             </p>
 
             <p>
@@ -760,14 +841,14 @@ function afficherFicheFournisseur(index){
 
         <h2>
 
-        ${fournisseur.nom}
+        ${echapperHTML(fournisseur.nom)}
 
         </h2>
 
         <p>
 
         Téléphone :
-        ${fournisseur.telephone || "-"}
+        ${echapperHTML(fournisseur.telephone || "-")}
 
         </p>
 
@@ -781,14 +862,14 @@ function afficherFicheFournisseur(index){
         <p>
 
         Adresse :
-        ${fournisseur.adresse || "-"}
+        ${echapperHTML(fournisseur.adresse || "-")}
 
         </p>
 
         <p>
 
         Notes :
-        ${fournisseur.notes || "-"}
+        ${echapperHTML(fournisseur.notes || "-")}
 
         </p>
 
@@ -828,8 +909,8 @@ function afficherFicheFournisseur(index){
         </p>
 
         <button onclick="
-        afficherHistoriqueFournisseur('${fournisseur.nom}')
-        ">
+afficherHistoriqueFournisseur(${JSON.stringify(fournisseur.nom)})
+">
         📦 Historique achats
         </button>
 
