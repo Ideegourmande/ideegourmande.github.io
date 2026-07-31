@@ -1,8 +1,9 @@
 // ======================================
 // IDEE GOURMANDE - GESTION DES ACHATS
-// Version 1.2.0
-// Compatible database.js 2.0.1
+// Version 1.2.1 corrigée
+// Compatible database.js 2.1.0
 // Compatible js-stock.js 2.2.0
+// Compatible js-fournisseurs.js 1.1.1
 // ======================================
 
 
@@ -16,7 +17,6 @@ let lignesAchat = [];
 //--------------------------------------
 
 function verifierAchatsDB(){
-
 
     if(typeof db === "undefined"){
 
@@ -50,13 +50,11 @@ function verifierAchatsDB(){
 
 function sauvegarderAchats(){
 
-
     if(typeof sauvegarderDB === "function"){
 
         sauvegarderDB();
 
     }
-
 
 }
 
@@ -68,9 +66,204 @@ function sauvegarderAchats(){
 
 function genererNumeroAchat(){
 
-
     return "ACH-" + Date.now();
 
+}
+
+
+
+//--------------------------------------
+// Migration fournisseurs anciens achats
+//--------------------------------------
+
+function migrerAchatsFournisseurID(){
+
+    if(!verifierAchatsDB())
+        return;
+
+
+    let modifications = 0;
+
+
+    db.achats.forEach(achat=>{
+
+
+        if(achat.fournisseurId){
+
+            return;
+
+        }
+
+
+        if(!achat.fournisseur){
+
+            return;
+
+        }
+
+
+
+        const fournisseur =
+
+        db.clients.find(client =>
+
+
+            client.type === "Fournisseur"
+
+            &&
+
+            client.nom?.toLowerCase()
+
+            ===
+
+            achat.fournisseur?.toLowerCase()
+
+
+        );
+
+
+
+        if(fournisseur){
+
+
+            achat.fournisseurId = fournisseur.id;
+
+
+            modifications++;
+
+        }
+
+
+    });
+
+
+
+    if(modifications > 0){
+
+
+        sauvegarderAchats();
+
+
+        console.log(
+
+            modifications +
+
+            " achat(s) migré(s) vers fournisseurId"
+
+        );
+
+
+    }
+
+
+}
+
+
+
+//--------------------------------------
+// Recherche ou création fournisseur
+//--------------------------------------
+
+function obtenirOuCreerFournisseur(nom){
+
+
+    if(!verifierAchatsDB())
+        return null;
+
+
+
+    let fournisseur =
+
+    db.clients.find(client =>
+
+
+        client.type === "Fournisseur"
+
+        &&
+
+        client.nom?.toLowerCase()
+
+        ===
+
+        nom.toLowerCase()
+
+
+    );
+
+
+
+    if(fournisseur){
+
+        return fournisseur;
+
+    }
+
+
+
+    fournisseur = {
+
+
+        id:
+
+        Date.now(),
+
+
+        nom,
+
+
+        type:
+
+        "Fournisseur",
+
+
+        telephone:"",
+
+
+        email:"",
+
+
+        adresse:"",
+
+
+        notes:"",
+
+
+        dateCreation:
+
+        new Date().toLocaleString()
+
+
+    };
+
+
+
+    db.clients.push(fournisseur);
+
+
+
+    db.mouvements.push({
+
+
+        date:
+
+        new Date().toLocaleString(),
+
+
+        action:
+
+        "Création fournisseur automatique",
+
+
+        fournisseur:
+
+        nom
+
+
+    });
+
+
+
+    return fournisseur;
 
 }
 
@@ -85,16 +278,24 @@ function nouvelAchat(){
 
     achatEdition = -1;
 
+
     lignesAchat = [];
 
 
 
     const fournisseur =
-    document.getElementById("achatFournisseur");
+
+    document.getElementById(
+        "achatFournisseur"
+    );
+
 
 
     const date =
-    document.getElementById("achatDate");
+
+    document.getElementById(
+        "achatDate"
+    );
 
 
 
@@ -109,8 +310,11 @@ function nouvelAchat(){
     if(date){
 
         date.value =
+
         new Date()
+
         .toISOString()
+
         .split("T")[0];
 
     }
@@ -122,7 +326,10 @@ function nouvelAchat(){
 
 
     const popup =
-    document.getElementById("popupAchat");
+
+    document.getElementById(
+        "popupAchat"
+    );
 
 
 
@@ -145,15 +352,26 @@ function ajouterLigneAchat(){
 
 
     const selectArticle =
-    document.getElementById("achatArticle");
+
+    document.getElementById(
+        "achatArticle"
+    );
+
 
 
     const inputQuantite =
-    document.getElementById("achatQuantite");
+
+    document.getElementById(
+        "achatQuantite"
+    );
+
 
 
     const inputPrix =
-    document.getElementById("achatPrix");
+
+    document.getElementById(
+        "achatPrix"
+    );
 
 
 
@@ -168,16 +386,19 @@ function ajouterLigneAchat(){
 
 
     const article =
+
     selectArticle.value;
 
 
 
     const quantite =
+
     Number(inputQuantite.value) || 0;
 
 
 
     const prix =
+
     Number(inputPrix.value) || 0;
 
 
@@ -244,6 +465,209 @@ function ajouterLigneAchat(){
 
 
 //--------------------------------------
+// Enregistrer achat
+//--------------------------------------
+
+function enregistrerAchat(){
+
+
+    if(!verifierAchatsDB())
+        return;
+
+
+
+    const champFournisseur =
+
+    document.getElementById(
+        "achatFournisseur"
+    );
+
+
+
+    const fournisseurNom =
+
+    champFournisseur?.value?.trim()
+    || "";
+
+
+
+    if(!fournisseurNom){
+
+
+        alert(
+            "Veuillez saisir le fournisseur."
+        );
+
+
+        return;
+
+    }
+
+
+
+    if(lignesAchat.length===0){
+
+
+        alert(
+            "Ajoutez au moins un article."
+        );
+
+
+        return;
+
+    }
+
+
+
+    const fournisseur =
+
+    obtenirOuCreerFournisseur(
+        fournisseurNom
+    );
+
+
+
+    const achat = {
+
+
+        id:
+
+        Date.now(),
+
+
+
+        numero:
+
+        genererNumeroAchat(),
+
+
+
+        date:
+
+        document.getElementById(
+            "achatDate"
+        )
+        ?.value
+
+        ||
+
+        new Date()
+
+        .toISOString()
+
+        .split("T")[0],
+
+
+
+        fournisseur:
+
+        fournisseur.nom,
+
+
+
+        fournisseurId:
+
+        fournisseur.id,
+
+
+
+        articles:
+
+        [...lignesAchat],
+
+
+
+        total:
+
+        lignesAchat.reduce(
+
+            (total,ligne)=>
+
+            total +
+
+            (
+                ligne.quantite *
+
+                ligne.prix
+            ),
+
+            0
+
+        ),
+
+
+
+        statut:
+
+        "En attente",
+
+
+
+        dateReception:
+
+        null
+
+
+    };
+
+
+
+    db.achats.push(achat);
+
+
+
+    db.mouvements.push({
+
+
+        date:
+
+        new Date().toLocaleString(),
+
+
+
+        action:
+
+        "Création achat",
+
+
+
+        achat:
+
+        achat.numero,
+
+
+
+        fournisseur:
+
+        fournisseur.nom,
+
+
+
+        montant:
+
+        achat.total
+
+
+    });
+
+
+
+    lignesAchat=[];
+
+
+
+    sauvegarderAchats();
+
+
+    afficherAchats();
+
+
+    fermerPopupAchat();
+
+
+}
+
+//--------------------------------------
 // Affichage lignes achat
 //--------------------------------------
 
@@ -251,7 +675,10 @@ function afficherLignesAchat(){
 
 
     const zone =
-    document.getElementById("listeAchat");
+
+    document.getElementById(
+        "listeAchat"
+    );
 
 
     if(!zone){
@@ -262,7 +689,8 @@ function afficherLignesAchat(){
 
 
 
-    zone.innerHTML="";
+    zone.innerHTML = "";
+
 
 
     let total = 0;
@@ -273,7 +701,9 @@ function afficherLignesAchat(){
 
 
         const montant =
+
         ligne.quantite *
+
         ligne.prix;
 
 
@@ -291,6 +721,7 @@ function afficherLignesAchat(){
             <span>
 
             ${ligne.article}
+
             (${ligne.quantite})
 
             </span>
@@ -323,14 +754,24 @@ function afficherLignesAchat(){
 
 
     const totalZone =
-    document.getElementById("totalAchat");
+
+    document.getElementById(
+        "totalAchat"
+    );
 
 
 
     if(totalZone){
 
+
         totalZone.textContent =
-        total.toFixed(2)+" CHF";
+
+        total.toFixed(2)
+
+        +
+
+        " CHF";
+
 
     }
 
@@ -346,7 +787,13 @@ function afficherLignesAchat(){
 function supprimerLigneAchat(index){
 
 
-    lignesAchat.splice(index,1);
+    lignesAchat.splice(
+
+        index,
+
+        1
+
+    );
 
 
     afficherLignesAchat();
@@ -356,198 +803,8 @@ function supprimerLigneAchat(index){
 
 
 
-//--------------------------------------
-// Enregistrer achat
-//--------------------------------------
 
-function enregistrerAchat(){
 
-
-    if(!verifierAchatsDB())
-        return;
-
-
-
-    const fournisseur =
-    document.getElementById("achatFournisseur")
-    ?.value
-    .trim();
-
-
-
-    if(!fournisseur){
-
-
-        alert(
-            "Veuillez saisir le fournisseur."
-        );
-
-
-        return;
-
-    }
-
-
-
-    if(lignesAchat.length===0){
-
-
-        alert(
-            "Ajoutez au moins un article."
-        );
-
-
-        return;
-
-    }
-
-
-
-    const achat = {
-
-
-        id:
-        Date.now(),
-
-
-        numero:
-        genererNumeroAchat(),
-
-
-        date:
-        document.getElementById("achatDate")
-        ?.value
-        ||
-        new Date()
-        .toISOString()
-        .split("T")[0],
-
-
-
-        fournisseur,
-
-
-
-        articles:
-        [...lignesAchat],
-
-
-
-        total:
-        lignesAchat.reduce(
-            (total,ligne)=>
-            total +
-            (
-                ligne.quantite *
-                ligne.prix
-            ),
-            0
-        ),
-
-
-
-        statut:
-        "En attente",
-
-
-
-        dateReception:
-        null
-
-
-    };
-
-
-
-    db.achats.push(achat);
-
-
-
-//--------------------------------------
-// Création fournisseur automatique
-//--------------------------------------
-
-    const fournisseurExiste =
-
-    db.clients.some(
-
-        client =>
-
-        client.nom === fournisseur &&
-
-        client.type === "Fournisseur"
-
-    );
-
-
-
-    if(!fournisseurExiste){
-
-
-        db.clients.push({
-
-            id:
-            Date.now(),
-
-            nom:
-            fournisseur,
-
-            type:
-            "Fournisseur",
-
-            telephone:"",
-            
-            email:"",
-
-            adresse:""
-
-        });
-
-
-    }
-
-
-
-    db.mouvements.push({
-
-        date:
-        new Date()
-        .toLocaleString(),
-
-
-        action:
-        "Création achat",
-
-
-        achat:
-        achat.numero,
-
-
-        fournisseur,
-
-
-        montant:
-        achat.total
-
-
-    });
-
-
-
-    lignesAchat=[];
-
-
-
-    sauvegarderAchats();
-
-
-    afficherAchats();
-
-
-    fermerPopupAchat();
-
-
-}
 //--------------------------------------
 // Affichage liste achats
 //--------------------------------------
@@ -561,7 +818,10 @@ function afficherAchats(){
 
 
     const zone =
-    document.getElementById("listeAchats");
+
+    document.getElementById(
+        "listeAchats"
+    );
 
 
 
@@ -570,21 +830,28 @@ function afficherAchats(){
 
 
 
-    zone.innerHTML="";
+    zone.innerHTML = "";
 
 
 
     db.achats.forEach((achat,index)=>{
 
 
-        // Compatibilité anciennes commandes
-
         achat.numero ??=
+
         "ACH-" + achat.id;
 
 
+
         achat.dateReception ??=
+
         null;
+
+
+
+        achat.total =
+
+        Number(achat.total) || 0;
 
 
 
@@ -605,8 +872,11 @@ function afficherAchats(){
             <p>
 
             Fournisseur :
+
             <strong>
-            ${achat.fournisseur}
+
+            ${achat.fournisseur || "-"}
+
             </strong>
 
             </p>
@@ -616,7 +886,8 @@ function afficherAchats(){
             <p>
 
             Date :
-            ${achat.date}
+
+            ${achat.date || "-"}
 
             </p>
 
@@ -625,6 +896,7 @@ function afficherAchats(){
             <p>
 
             Total :
+
             <strong>
 
             ${achat.total.toFixed(2)} CHF
@@ -638,9 +910,11 @@ function afficherAchats(){
             <p>
 
             Statut :
-            ${achat.statut}
+
+            ${achat.statut || "Inconnu"}
 
             </p>
+
 
 
 
@@ -653,7 +927,7 @@ function afficherAchats(){
 
                 <button onclick="receptionnerAchat(${index})">
 
-                    📦 Réceptionner
+                📦 Réceptionner
 
                 </button>
 
@@ -666,7 +940,8 @@ function afficherAchats(){
                 <p>
 
                 ✅ Réceptionné le :
-                ${achat.dateReception}
+
+                ${achat.dateReception || "-"}
 
                 </p>
 
@@ -678,7 +953,7 @@ function afficherAchats(){
 
             <button onclick="supprimerAchat(${index})">
 
-                🗑 Supprimer
+            🗑 Supprimer
 
             </button>
 
@@ -697,6 +972,8 @@ function afficherAchats(){
 
 
 
+
+
 //--------------------------------------
 // Calcul prix moyen achat
 //--------------------------------------
@@ -705,17 +982,22 @@ function calculerPrixMoyen(article, quantiteAjoutee, prixAchat){
 
 
     const ancienStock =
+
     Number(article.stock) || 0;
 
 
 
     const ancienPrix =
+
     Number(article.prixAchatMoyen) || 0;
 
 
 
     const nouveauStock =
-    ancienStock + quantiteAjoutee;
+
+    ancienStock +
+
+    quantiteAjoutee;
 
 
 
@@ -731,11 +1013,15 @@ function calculerPrixMoyen(article, quantiteAjoutee, prixAchat){
 
         (
 
-            ancienStock * ancienPrix
+            ancienStock *
+
+            ancienPrix
 
             +
 
-            quantiteAjoutee * prixAchat
+            quantiteAjoutee *
+
+            prixAchat
 
         )
 
@@ -746,19 +1032,26 @@ function calculerPrixMoyen(article, quantiteAjoutee, prixAchat){
     );
 
 
-
 }
 
 
 
+
+
 //--------------------------------------
-// Réception achat → Stock
+// Réception achat vers stock
 //--------------------------------------
 
 function receptionnerAchat(index){
 
 
+    if(!verifierAchatsDB())
+        return;
+
+
+
     const achat =
+
     db.achats[index];
 
 
@@ -768,11 +1061,13 @@ function receptionnerAchat(index){
 
 
 
-    if(achat.statut==="Réceptionné"){
+    if(achat.statut === "Réceptionné"){
 
 
         alert(
+
             "Cet achat est déjà réceptionné."
+
         );
 
 
@@ -782,133 +1077,153 @@ function receptionnerAchat(index){
 
 
 
+    achat.articles ??= [];
+
+
+
     achat.articles.forEach(ligne=>{
 
 
         const article =
-        db.articles.find(
 
-            a =>
+        db.articles.find(a =>
+
 
             a.nom === ligne.article
+
 
         );
 
 
 
-        if(article){
-
-
-            const ancienStock =
-            Number(article.stock) || 0;
-
-
-
-            const ancienPrix =
-            Number(article.prixAchatMoyen) || 0;
-
-
-
-            article.prixAchatMoyen =
-
-            calculerPrixMoyen(
-
-                article,
-
-                ligne.quantite,
-
-                ligne.prix
-
-            );
-
-
-
-            article.stock +=
-            ligne.quantite;
-
+        if(!article){
 
 
             db.mouvements.push({
 
 
                 date:
+
                 new Date()
+
                 .toLocaleString(),
 
 
 
-                article:
-                article.nom,
-
-
-
                 action:
-                "Réception achat",
 
-
-
-                ancienStock,
-
-
-                nouveauStock:
-                article.stock,
-
-
-
-                ancienPrix,
-
-
-
-                nouveauPrix:
-                article.prixAchatMoyen,
-
-
-
-                difference:
-                ligne.quantite
-
-
-
-            });
-
-
-
-        }
-
-        else{
-
-
-            // Article supprimé ou inexistant
-
-            db.mouvements.push({
-
-
-                date:
-                new Date()
-                .toLocaleString(),
-
-
-                action:
                 "Article introuvable réception achat",
 
 
+
                 article:
+
                 ligne.article,
 
 
-                quantite:
-                ligne.quantite,
-
 
                 achat:
+
                 achat.numero
 
 
             });
 
 
+
+            return;
+
         }
 
+
+
+
+
+        const ancienStock =
+
+        Number(article.stock) || 0;
+
+
+
+        const ancienPrix =
+
+        Number(article.prixAchatMoyen) || 0;
+
+
+
+        article.prixAchatMoyen =
+
+        calculerPrixMoyen(
+
+            article,
+
+            ligne.quantite,
+
+            ligne.prix
+
+        );
+
+
+
+        article.stock =
+
+        ancienStock +
+
+        Number(ligne.quantite || 0);
+
+
+
+
+
+        db.mouvements.push({
+
+
+            date:
+
+            new Date()
+
+            .toLocaleString(),
+
+
+
+            article:
+
+            article.nom,
+
+
+
+            action:
+
+            "Réception achat",
+
+
+
+            ancienStock,
+
+
+
+            nouveauStock:
+
+            article.stock,
+
+
+
+            ancienPrix,
+
+
+
+            nouveauPrix:
+
+            article.prixAchatMoyen,
+
+
+
+            difference:
+
+            ligne.quantite
+
+
+        });
 
 
     });
@@ -916,7 +1231,9 @@ function receptionnerAchat(index){
 
 
 
+
     achat.statut =
+
     "Réceptionné";
 
 
@@ -930,27 +1247,38 @@ function receptionnerAchat(index){
 
 
 
+
     db.mouvements.push({
 
 
         date:
+
         new Date()
+
         .toLocaleString(),
 
 
+
         action:
+
         "Achat réceptionné",
 
 
+
         achat:
+
         achat.numero,
 
 
+
         fournisseur:
+
         achat.fournisseur,
 
 
+
         montant:
+
         achat.total
 
 
@@ -958,8 +1286,7 @@ function receptionnerAchat(index){
 
 
 
-
-    sauvegarderDB();
+    sauvegarderAchats();
 
 
 
@@ -967,7 +1294,7 @@ function receptionnerAchat(index){
 
 
 
-    if(typeof afficherStock==="function"){
+    if(typeof afficherStock === "function"){
 
 
         afficherStock();
@@ -984,9 +1311,12 @@ function receptionnerAchat(index){
 function supprimerAchat(index){
 
 
-    const achat =
-    db.achats[index];
+    if(!verifierAchatsDB())
+        return;
 
+
+
+    const achat = db.achats[index];
 
 
     if(!achat)
@@ -999,27 +1329,24 @@ function supprimerAchat(index){
 
 
 
-    if(achat.statut==="Réceptionné"){
+    if(achat.statut === "Réceptionné"){
 
 
         message =
 
         "Cet achat a déjà été réceptionné.\n\n" +
 
-        "Le stock ajouté ne sera pas retiré.\n\n" +
+        "Le stock ajouté ne sera pas retiré automatiquement.\n\n" +
 
-        "Voulez-vous continuer ?";
+        "Continuer ?";
 
 
     }
 
 
 
-    if(!confirm(message)){
-
+    if(!confirm(message))
         return;
-
-    }
 
 
 
@@ -1027,24 +1354,19 @@ function supprimerAchat(index){
 
 
         date:
-        new Date()
-        .toLocaleString(),
-
+        new Date().toLocaleString(),
 
 
         action:
         "Suppression achat",
 
 
-
         achat:
         achat.numero ?? achat.id,
 
 
-
         fournisseur:
         achat.fournisseur,
-
 
 
         statut:
@@ -1059,7 +1381,7 @@ function supprimerAchat(index){
 
 
 
-    sauvegarderDB();
+    sauvegarderAchats();
 
 
 
@@ -1070,11 +1392,19 @@ function supprimerAchat(index){
 
 
 
+
+
+
 //--------------------------------------
 // Préparation future : annuler réception
 //--------------------------------------
 
 function annulerReceptionAchat(index){
+
+
+    if(!verifierAchatsDB())
+        return;
+
 
 
     const achat =
@@ -1103,14 +1433,17 @@ function annulerReceptionAchat(index){
 
     alert(
 
-        "Fonction prête pour la prochaine version.\n" +
+        "Fonction prévue pour une prochaine version.\n\n" +
 
-        "Elle permettra de retirer automatiquement le stock ajouté."
+        "Elle permettra de retirer automatiquement les quantités du stock."
 
     );
 
 
 }
+
+
+
 
 
 
@@ -1122,7 +1455,9 @@ function fermerPopupAchat(){
 
 
     const popup =
-    document.getElementById("popupAchat");
+    document.getElementById(
+        "popupAchat"
+    );
 
 
 
@@ -1139,6 +1474,9 @@ function fermerPopupAchat(){
 
 
 
+
+
+
 //--------------------------------------
 // Charger articles formulaire achat
 //--------------------------------------
@@ -1146,18 +1484,20 @@ function fermerPopupAchat(){
 function chargerArticlesAchat(){
 
 
-    const liste =
-    document.getElementById("achatArticle");
-
-
-
-    if(!liste ||
-       !verifierAchatsDB()){
-
-
+    if(!verifierAchatsDB())
         return;
 
-    }
+
+
+    const liste =
+    document.getElementById(
+        "achatArticle"
+    );
+
+
+
+    if(!liste)
+        return;
 
 
 
@@ -1170,13 +1510,11 @@ function chargerArticlesAchat(){
 
         liste.innerHTML += `
 
-
         <option value="${article.nom}">
 
             ${article.nom}
 
         </option>
-
 
         `;
 
@@ -1188,6 +1526,9 @@ function chargerArticlesAchat(){
 
 
 
+
+
+
 //--------------------------------------
 // Charger fournisseurs
 //--------------------------------------
@@ -1195,22 +1536,24 @@ function chargerArticlesAchat(){
 function chargerFournisseursAchat(){
 
 
-    const liste =
-    document.getElementById("achatFournisseur");
-
-
-
-    if(!liste ||
-       !verifierAchatsDB()){
-
-
+    if(!verifierAchatsDB())
         return;
 
-    }
+
+
+    const liste =
+    document.getElementById(
+        "achatFournisseur"
+    );
 
 
 
-    if(liste.tagName==="SELECT"){
+    if(!liste)
+        return;
+
+
+
+    if(liste.tagName === "SELECT"){
 
 
         liste.innerHTML="";
@@ -1219,9 +1562,7 @@ function chargerFournisseursAchat(){
 
         const fournisseurs =
 
-        db.clients.filter(
-
-            client =>
+        db.clients.filter(client =>
 
             client.type === "Fournisseur"
 
@@ -1234,19 +1575,16 @@ function chargerFournisseursAchat(){
 
             liste.innerHTML += `
 
-
             <option value="${fournisseur.nom}">
 
                 ${fournisseur.nom}
 
             </option>
 
-
             `;
 
 
         });
-
 
 
     }
@@ -1256,8 +1594,11 @@ function chargerFournisseursAchat(){
 
 
 
+
+
+
 //--------------------------------------
-// Rafraîchir données après réception
+// Actualisation module achats
 //--------------------------------------
 
 function actualiserModuleAchats(){
@@ -1276,6 +1617,9 @@ function actualiserModuleAchats(){
 
 
 
+
+
+
 //--------------------------------------
 // Initialisation module achats
 //--------------------------------------
@@ -1288,7 +1632,6 @@ document.addEventListener(
 
 
     if(!verifierAchatsDB()){
-
 
         return;
 
@@ -1305,6 +1648,7 @@ document.addEventListener(
 
 
     afficherAchats();
+
 
 
 
