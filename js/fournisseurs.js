@@ -35,20 +35,15 @@ function echapperHTML(texte){
 // Vérification base de données
 //--------------------------------------
 
-function verifierFournisseursDB(){
-
+ffunction verifierFournisseursDB(){
 
     if(typeof db === "undefined"){
-
 
         console.error(
             "database.js doit être chargé avant js-fournisseurs.js"
         );
 
-
         return false;
-
-
     }
 
 
@@ -61,7 +56,6 @@ function verifierFournisseursDB(){
 
     return true;
 
-
 }
 
 
@@ -71,6 +65,9 @@ function verifierFournisseursDB(){
 //--------------------------------------
 
 function migrerAchatsFournisseurID(){
+
+    ...
+}
 
 
     if(!verifierFournisseursDB())
@@ -1174,8 +1171,7 @@ function afficherFicheFournisseur(index){
 
         <button onclick="
 
-        afficherHistoriqueFournisseur(
-            ${JSON.stringify(fournisseur.id)}
+        afficherHistoriqueFournisseur(${fournisseur.id})
         )
 
         ">
