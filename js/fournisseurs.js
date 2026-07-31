@@ -1,6 +1,6 @@
 // ======================================
 // IDEE GOURMANDE - GESTION FOURNISSEURS
-// Version 1.1.1 corrigée
+// Version 1.1.2 stable corrigée
 // Compatible database.js 2.0.1
 // Compatible js-achats.js 1.2.0
 // ======================================
@@ -87,17 +87,25 @@ function migrerAchatsFournisseurID(){
         }
 
 
+
         const fournisseur =
 
         db.clients.find(client =>
+
 
             client.type === "Fournisseur"
 
             &&
 
-            client.nom?.toLowerCase() === achat.fournisseur?.toLowerCase()
+            client.nom?.trim().toLowerCase()
+
+            ===
+
+            achat.fournisseur?.trim().toLowerCase()
+
 
         );
+
 
 
         if(fournisseur){
@@ -171,6 +179,7 @@ function nouveauFournisseur(){
     fournisseurEdition = -1;
 
 
+
     const champs = [
 
         "fournisseurNom",
@@ -187,7 +196,9 @@ function nouveauFournisseur(){
 
 
         const champ =
+
         document.getElementById(id);
+
 
 
         if(champ){
@@ -202,6 +213,7 @@ function nouveauFournisseur(){
 
 
     const popup =
+
     document.getElementById(
         "popupFournisseur"
     );
@@ -292,6 +304,7 @@ function modifierFournisseur(index){
 
 
         const champ =
+
         document.getElementById(id);
 
 
@@ -308,6 +321,7 @@ function modifierFournisseur(index){
 
 
     const popup =
+
     document.getElementById(
         "popupFournisseur"
     );
@@ -316,13 +330,12 @@ function modifierFournisseur(index){
 
     if(popup){
 
-        popup.style.display="flex";
+        popup.style.display = "flex";
 
     }
 
 
 }
-
 
 
 
@@ -334,14 +347,11 @@ function modifierFournisseur(index){
 
 function enregistrerFournisseur(){
 
-
     if(!verifierFournisseursDB())
         return;
 
 
-
     const fournisseur = {
-
 
         id:
 
@@ -356,7 +366,6 @@ function enregistrerFournisseur(){
         db.clients[fournisseurEdition]?.id || Date.now(),
 
 
-
         nom:
 
         document.getElementById(
@@ -367,11 +376,9 @@ function enregistrerFournisseur(){
         || "",
 
 
-
         type:
 
         "Fournisseur",
-
 
 
         telephone:
@@ -384,7 +391,6 @@ function enregistrerFournisseur(){
         || "",
 
 
-
         email:
 
         document.getElementById(
@@ -393,7 +399,6 @@ function enregistrerFournisseur(){
         ?.value
         ?.trim()
         || "",
-
 
 
         adresse:
@@ -406,7 +411,6 @@ function enregistrerFournisseur(){
         || "",
 
 
-
         notes:
 
         document.getElementById(
@@ -415,7 +419,6 @@ function enregistrerFournisseur(){
         ?.value
         ?.trim()
         || "",
-
 
 
         dateCreation:
@@ -428,26 +431,25 @@ function enregistrerFournisseur(){
 
         :
 
-        db.clients[fournisseurEdition]
-        ?.dateCreation
+        db.clients[fournisseurEdition]?.dateCreation
 
     };
-
-
-
+    
     if(!fournisseur.nom){
-
 
         alert(
             "Veuillez saisir le nom du fournisseur."
         );
-
 
         return;
 
     }
 
 
+
+    //----------------------------------
+    // Contrôle doublon fournisseur
+    //----------------------------------
 
     const doublon =
 
@@ -458,11 +460,11 @@ function enregistrerFournisseur(){
 
         &&
 
-        client.nom?.toLowerCase()
+        client.nom?.trim().toLowerCase()
 
         ===
 
-        fournisseur.nom.toLowerCase()
+        fournisseur.nom.trim().toLowerCase()
 
         &&
 
@@ -475,15 +477,18 @@ function enregistrerFournisseur(){
 
     if(doublon){
 
-
         alert(
             "Ce fournisseur existe déjà."
         );
 
-
         return;
 
     }
+
+
+
+
+
     //----------------------------------
     // Création ou modification
     //----------------------------------
@@ -540,23 +545,28 @@ function enregistrerFournisseur(){
         db.achats.forEach(achat=>{
 
 
-            db.achats.forEach(achat=>{
+            if(
 
-    if(
-        achat.fournisseurId === fournisseur.id
-        ||
-        achat.fournisseur === ancienNom
-    ){
+                achat.fournisseurId === fournisseur.id
 
-        achat.fournisseur =
-        fournisseur.nom;
+                ||
 
-        achat.fournisseurId =
-        fournisseur.id;
+                achat.fournisseur === ancienNom
 
-    }
+            ){
 
-});
+
+                achat.fournisseur =
+
+                fournisseur.nom;
+
+
+                achat.fournisseurId =
+
+                fournisseur.id;
+
+
+            }
 
 
         });
@@ -607,6 +617,7 @@ function enregistrerFournisseur(){
 
 
 
+
 //--------------------------------------
 // Affichage liste fournisseurs
 //--------------------------------------
@@ -648,7 +659,9 @@ function afficherFournisseurs(){
 
     .sort((a,b)=>
 
-        (a.nom || "").localeCompare(b.nom || "")
+        (a.nom || "").localeCompare(
+            b.nom || ""
+        )
 
     );
 
@@ -672,10 +685,6 @@ function afficherFournisseurs(){
 
 
 
-
-    //----------------------------------
-    // Fournisseurs sans achat
-    //----------------------------------
 
     const compteurInactifs =
 
@@ -768,7 +777,11 @@ function afficherFournisseurs(){
 
         .sort((a,b)=>
 
-            new Date().toISOString()
+            new Date(b.date)
+
+            -
+
+            new Date(a.date)
 
         )[0].date
 
@@ -897,7 +910,6 @@ function afficherFournisseurs(){
 
 
 
-
 //--------------------------------------
 // Recherche fournisseur
 //--------------------------------------
@@ -937,12 +949,9 @@ function rechercherFournisseur(){
 
         ?
 
-
         ""
 
-
         :
-
 
         "none";
 
@@ -951,11 +960,6 @@ function rechercherFournisseur(){
 
 
 }
-
-
-
-
-
 
 //--------------------------------------
 // Fiche fournisseur
@@ -1122,6 +1126,7 @@ function afficherFicheFournisseur(index){
         <hr>
 
 
+
         <h3>
 
         Statistiques
@@ -1134,11 +1139,7 @@ function afficherFicheFournisseur(index){
 
         Nombre d'achats :
 
-        <strong>
-
         ${achats.length}
-
-        </strong>
 
         </p>
 
@@ -1148,11 +1149,7 @@ function afficherFicheFournisseur(index){
 
         Total commandé :
 
-        <strong>
-
         ${total.toFixed(2)} CHF
-
-        </strong>
 
         </p>
 
@@ -1182,6 +1179,11 @@ function afficherFicheFournisseur(index){
 
 
 }
+
+
+
+
+
 
 //--------------------------------------
 // Historique achats fournisseur
@@ -1259,9 +1261,7 @@ function afficherHistoriqueFournisseur(idFournisseur){
         zone.innerHTML = `
 
         <p>
-
         Aucun achat enregistré pour ce fournisseur.
-
         </p>
 
         `;
@@ -1334,14 +1334,9 @@ function afficherHistoriqueFournisseur(idFournisseur){
 
             Total :
 
-            <strong>
-
             ${montant.toFixed(2)} CHF
 
-            </strong>
-
             </p>
-
 
 
         </div>
@@ -1359,13 +1354,11 @@ function afficherHistoriqueFournisseur(idFournisseur){
 
     <hr>
 
-
     <h3>
 
     Total fournisseur :
 
     ${totalGeneral.toFixed(2)} CHF
-
 
     </h3>
 
@@ -1456,34 +1449,15 @@ function supprimerFournisseur(index){
 
 
 
-
     const position =
 
-    db.clients.indexOf(
-        fournisseur
-    );
+    db.clients.indexOf(fournisseur);
 
 
 
     if(position >= 0){
 
-db.achats.forEach(achat=>{
 
-    if(
-        achat.fournisseurId === fournisseur.id
-        ||
-        achat.fournisseur === ancienNom
-    ){
-
-        achat.fournisseur =
-        fournisseur.nom;
-
-        achat.fournisseurId =
-        fournisseur.id;
-
-    }
-
-});
         db.clients.splice(
 
             position,
@@ -1497,12 +1471,7 @@ db.achats.forEach(achat=>{
 
 
 
-    db.mouvements ??= [];
-
-
-
     db.mouvements.push({
-
 
         date:
 
@@ -1525,7 +1494,6 @@ db.achats.forEach(achat=>{
 
 
     sauvegarderFournisseurs();
-
 
 
     afficherFournisseurs();
@@ -1602,10 +1570,6 @@ document.addEventListener(
 
 
 
-    //----------------------------------
-    // Migration ancienne structure achats
-    //----------------------------------
-
     migrerAchatsFournisseurID();
 
 
@@ -1636,8 +1600,6 @@ document.addEventListener(
 
 
     }
-
-
 
 
 
