@@ -281,7 +281,17 @@ function enregistrerFournisseur(){
 
         :
 
-        db.clients[fournisseurEdition]?.id,
+        id:
+
+fournisseurEdition === -1
+
+?
+
+Date.now()
+
+:
+
+db.clients[fournisseurEdition]?.id || Date.now()
 
 
 
@@ -673,7 +683,7 @@ if(compteurInactifs){
 
             <p>
             Dernier achat :
-            ${dernierAchat}
+            ${echapperHTML(dernierAchat)}
             </p>
 
             <button onclick="
@@ -855,7 +865,7 @@ function afficherFicheFournisseur(index){
         <p>
 
         Email :
-        ${fournisseur.email || "-"}
+${echapperHTML(fournisseur.email || "-")}
 
         </p>
 
@@ -1019,7 +1029,7 @@ function afficherHistoriqueFournisseur(nomFournisseur){
 
             <h3>
 
-            ${achat.numero || "Achat"}
+            ${echapperHTML(achat.numero || "Achat")}
 
             </h3>
 
@@ -1029,7 +1039,7 @@ function afficherHistoriqueFournisseur(nomFournisseur){
 
             Date :
 
-            ${achat.date || "-"}
+            ${echapperHTML(achat.date || "-")}
 
             </p>
 
@@ -1039,7 +1049,7 @@ function afficherHistoriqueFournisseur(nomFournisseur){
 
             Statut :
 
-            ${achat.statut || "Inconnu"}
+            ${echapperHTML(achat.statut || "Inconnu")}
 
             </p>
 
