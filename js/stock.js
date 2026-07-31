@@ -1,66 +1,94 @@
 // ======================================
 // IDEE GOURMANDE - GESTION DU STOCK
-// Version 2.0.1
+// Version 2.1.0
+// Compatible database.js
 // ======================================
 
-let articles = JSON.parse(localStorage.getItem("articlesStock")) || [];
-
-const emplacements = [
-    "Congélateur du réduit",
-    "Congélateur bahut",
-    "Congélateur GI",
-    "Chambre froide",
-    "Cave",
-    "Réserve sèche"
-];
 
 let indexEdition = -1;
 
-//--------------------------------------
-
-function sauvegarderStock() {
-
-    localStorage.setItem("articlesStock", JSON.stringify(articles));
-
-}
 
 //--------------------------------------
+// Chargement des emplacements
+//--------------------------------------
 
-function chargerEmplacements() {
+function chargerEmplacements(){
 
     const liste = document.getElementById("artEmplacement");
 
-    liste.innerHTML = "";
+    if(!liste) return;
 
-    emplacements.forEach(e => {
+    liste.innerHTML="";
 
-        liste.innerHTML += `<option>${e}</option>`;
+    db.emplacements.forEach(emplacement=>{
+
+        liste.innerHTML += `
+            <option value="${emplacement}">
+                ${emplacement}
+            </option>
+        `;
 
     });
 
 }
 
+
+//--------------------------------------
+// Sauvegarde
 //--------------------------------------
 
-function afficherStock() {
+function sauvegarderStock(){
+
+    sauvegarderDB();
+
+}
+
+
+//--------------------------------------
+// Affichage du stock
+//--------------------------------------
+
+function afficherStock(){
 
     const tbody = document.getElementById("tbodyStock");
 
-    tbody.innerHTML = "";
+    if(!tbody) return;
+
+
+    tbody.innerHTML="";
+
 
     let critique = 0;
 
-    articles.forEach((article, index) => {
+    db.articles.forEach((article,index)=>{
 
-        let etat = "🟢";
 
-        if (article.stock <= article.minimum) {
+        let etat="";
+        let classe="";
 
-            etat = "🔴";
+
+        if(article.stock <= 0){
+
+            etat="🔴 Rupture";
+            classe="stock-rupture";
+
+        }
+        else if(article.stock <= article.minimum){
+
+            etat="🟠 Critique";
+            classe="stock-critique";
 
             critique++;
 
         }
+        else{
+
+            etat="🟢 OK";
+            classe="stock-ok";
+
+        }
+
+
 
         tbody.innerHTML += `
 
@@ -70,111 +98,203 @@ function afficherStock() {
 
             <td>${article.categorie}</td>
 
-            <td>${article.stock} ${article.unite}</td>
-
-            <td>${article.minimum} ${article.unite}</td>
-
-            <td>${article.emplacement}</td>
-
-            <td>${etat}</td>
+            <td>
+                ${article.stock} ${article.unite}
+            </td>
 
             <td>
+                ${article.minimum} ${article.unite}
+            </td>
 
-                <button onclick="modifierArticle(${index})">
-                    ✏️
+            <td>
+                ${article.emplacement}
+            </td>
+
+            <td class="${classe}">
+                ${etat}
+            </td>
+
+            <td class="action-stock">
+
+                <button class="btn-stock"
+                onclick="modifierArticle(${index})">
+                ✏️
                 </button>
 
-                <button onclick="supprimerArticle(${index})">
-                    🗑️
+
+                <button class="btn-stock"
+                onclick="supprimerArticle(${index})">
+                🗑️
                 </button>
 
             </td>
+
 
         </tr>
 
         `;
 
+
     });
 
-    document.getElementById("nbArticles").textContent = articles.length;
 
-    document.getElementById("nbCritique").textContent = critique;
 
-    sauvegarderStock();
+    document.getElementById("nbArticles").textContent =
+        db.articles.length;
+
+
+    document.getElementById("nbCritique").textContent =
+        critique;
+
+
+
+    document.getElementById("nbEmplacements").textContent =
+        db.emplacements.length;
+
+
+
+    sauvegarderDB();
 
 }
 
+
+
+//--------------------------------------
+// Nouveau article
 //--------------------------------------
 
-function ajouterArticle() {
+function ajouterArticle(){
 
-    indexEdition = -1;
+
+    indexEdition=-1;
+
 
     chargerEmplacements();
 
-    document.getElementById("artNom").value = "";
 
-    document.getElementById("artCategorie").selectedIndex = 0;
+    document.getElementById("artNom").value="";
 
-    document.getElementById("artUnite").selectedIndex = 0;
+    document.getElementById("artCategorie").selectedIndex=0;
 
-    document.getElementById("artStock").value = 0;
+    document.getElementById("artUnite").selectedIndex=0;
 
-    document.getElementById("artMinimum").value = 0;
+    document.getElementById("artStock").value=0;
 
-    document.getElementById("artEmplacement").selectedIndex = 0;
+    document.getElementById("artMinimum").value=0;
 
-    document.getElementById("popupArticle").style.display = "block";
+    document.getElementById("artEmplacement").selectedIndex=0;
+
+
+
+    document.getElementById("popupArticle").style.display="flex";
+
 
 }
 
+
+
+//--------------------------------------
+// Modifier article
 //--------------------------------------
 
-function modifierArticle(index) {
+function modifierArticle(index){
 
-    indexEdition = index;
+
+    indexEdition=index;
+
 
     chargerEmplacements();
 
-    const a = articles[index];
 
-    document.getElementById("artNom").value = a.nom;
+    const article=db.articles[index];
 
-    document.getElementById("artCategorie").value = a.categorie;
 
-    document.getElementById("artUnite").value = a.unite;
+    document.getElementById("artNom").value=
+        article.nom;
 
-    document.getElementById("artStock").value = a.stock;
 
-    document.getElementById("artMinimum").value = a.minimum;
+    document.getElementById("artCategorie").value=
+        article.categorie;
 
-    document.getElementById("artEmplacement").value = a.emplacement;
 
-    document.getElementById("popupArticle").style.display = "block";
+    document.getElementById("artUnite").value=
+        article.unite;
+
+
+    document.getElementById("artStock").value=
+        article.stock;
+
+
+    document.getElementById("artMinimum").value=
+        article.minimum;
+
+
+    document.getElementById("artEmplacement").value=
+        article.emplacement;
+
+
+
+    document.getElementById("popupArticle").style.display="flex";
+
 
 }
 
+
+
+//--------------------------------------
+// Enregistrer
 //--------------------------------------
 
-function enregistrerArticle() {
+function enregistrerArticle(){
 
-    const article = {
 
-        nom: document.getElementById("artNom").value.trim(),
+    const ancienStock =
+        indexEdition >=0
+        ? db.articles[indexEdition].stock
+        : 0;
 
-        categorie: document.getElementById("artCategorie").value,
 
-        unite: document.getElementById("artUnite").value,
 
-        stock: parseFloat(document.getElementById("artStock").value) || 0,
+    const article={
 
-        minimum: parseFloat(document.getElementById("artMinimum").value) || 0,
 
-        emplacement: document.getElementById("artEmplacement").value
+        nom:
+        document.getElementById("artNom")
+        .value.trim(),
+
+
+        categorie:
+        document.getElementById("artCategorie")
+        .value,
+
+
+        unite:
+        document.getElementById("artUnite")
+        .value,
+
+
+        stock:
+        parseFloat(
+            document.getElementById("artStock").value
+        ) || 0,
+
+
+        minimum:
+        parseFloat(
+            document.getElementById("artMinimum").value
+        ) || 0,
+
+
+        emplacement:
+        document.getElementById("artEmplacement")
+        .value
+
 
     };
 
-    if (article.nom === "") {
+
+
+    if(article.nom===""){
 
         alert("Veuillez saisir le nom de l'article.");
 
@@ -182,84 +302,221 @@ function enregistrerArticle() {
 
     }
 
-    if (indexEdition === -1) {
 
-        articles.push(article);
 
-    } else {
+    if(indexEdition===-1){
 
-        articles[indexEdition] = article;
+
+        db.articles.push(article);
+
+
+
+        db.mouvements.push({
+
+            date:new Date().toLocaleString(),
+
+            article:article.nom,
+
+            action:"Création",
+
+            ancienStock:0,
+
+            nouveauStock:article.stock,
+
+            difference:article.stock
+
+
+        });
+
+
+
+    }
+    else{
+
+
+        db.articles[indexEdition]=article;
+
+
+
+        db.mouvements.push({
+
+            date:new Date().toLocaleString(),
+
+            article:article.nom,
+
+            action:"Modification",
+
+            ancienStock:ancienStock,
+
+            nouveauStock:article.stock,
+
+            difference:
+            article.stock-ancienStock
+
+
+        });
+
 
     }
 
-    sauvegarderStock();
+
+
+    sauvegarderDB();
+
 
     afficherStock();
 
+
     fermerPopup();
 
-}
-
-//--------------------------------------
-
-function fermerPopup() {
-
-    document.getElementById("popupArticle").style.display = "none";
 
 }
 
+
+
+//--------------------------------------
+// Fermer popup
 //--------------------------------------
 
-function supprimerArticle(index) {
+function fermerPopup(){
 
-    if (confirm("Supprimer cet article ?")) {
+    document.getElementById("popupArticle")
+    .style.display="none";
 
-        articles.splice(index, 1);
+}
+
+
+
+//--------------------------------------
+// Supprimer
+//--------------------------------------
+
+function supprimerArticle(index){
+
+
+    if(confirm("Supprimer cet article ?")){
+
+
+        const article=db.articles[index];
+
+
+        db.mouvements.push({
+
+            date:new Date().toLocaleString(),
+
+            article:article.nom,
+
+            action:"Suppression",
+
+            ancienStock:article.stock,
+
+            nouveauStock:0,
+
+            difference:-article.stock
+
+
+        });
+
+
+
+        db.articles.splice(index,1);
+
+
+        sauvegarderDB();
+
 
         afficherStock();
 
+
     }
+
 
 }
 
+
+
+//--------------------------------------
+// Recherche
 //--------------------------------------
 
-function rechercherArticle() {
+function rechercherArticle(){
 
-    const filtre = document
-        .getElementById("rechercheArticle")
-        .value
-        .toLowerCase();
 
-    const lignes = document.querySelectorAll("#tbodyStock tr");
+    const filtre =
+    document.getElementById("rechercheArticle")
+    .value.toLowerCase();
 
-    lignes.forEach(ligne => {
+
+
+    document
+    .querySelectorAll("#tbodyStock tr")
+    .forEach(ligne=>{
+
 
         ligne.style.display =
-            ligne.innerText.toLowerCase().includes(filtre)
-                ? ""
-                : "none";
+        ligne.innerText
+        .toLowerCase()
+        .includes(filtre)
+        ? ""
+        : "none";
+
 
     });
 
+
 }
 
+
+
+//--------------------------------------
+// Impression
 //--------------------------------------
 
-function imprimerStock() {
+function imprimerStock(){
 
     window.print();
 
 }
 
-//--------------------------------------
 
-document
-    .getElementById("btnNouvelArticle")
-    .addEventListener("click", ajouterArticle);
 
 //--------------------------------------
+// Initialisation
+//--------------------------------------
 
-chargerEmplacements();
+document.addEventListener("DOMContentLoaded",()=>{
 
-afficherStock();
+
+    if(typeof db==="undefined"){
+
+        console.error(
+        "database.js doit être chargé avant stock.js"
+        );
+
+        return;
+
+    }
+
+
+    chargerEmplacements();
+
+
+    afficherStock();
+
+
+
+    const bouton =
+    document.getElementById("btnNouvelArticle");
+
+
+    if(bouton){
+
+        bouton.addEventListener(
+            "click",
+            ajouterArticle
+        );
+
+    }
+
+
+});
