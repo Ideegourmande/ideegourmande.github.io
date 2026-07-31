@@ -1438,6 +1438,246 @@ margin:20px 0;
 
 }
 /* ==============================
+   GESTION DU STOCK
+============================== */
+
+
+/* Tableau stock */
+
+#tableStock{
+
+width:100%;
+
+border-collapse:collapse;
+
+margin-top:25px;
+
+background:white;
+
+border-radius:15px;
+
+overflow:hidden;
+
+}
+
+
+
+#tableStock th{
+
+background:var(--vert);
+
+color:white;
+
+padding:15px;
+
+text-align:center;
+
+}
+
+
+
+#tableStock td{
+
+padding:14px;
+
+border-bottom:1px solid #eee;
+
+text-align:center;
+
+}
+
+
+
+#tableStock tr:hover{
+
+background:#faf7ee;
+
+}
+
+
+
+/* Etats du stock */
+
+.stock-ok{
+
+color:#4d7c3f;
+
+font-weight:bold;
+
+}
+
+
+
+.stock-critique{
+
+color:#c47a00;
+
+font-weight:bold;
+
+}
+
+
+
+.stock-rupture{
+
+color:#8b3a3a;
+
+font-weight:bold;
+
+}
+
+
+
+/* Actions tableau */
+
+.action-stock{
+
+display:flex;
+
+justify-content:center;
+
+gap:10px;
+
+}
+
+
+
+.btn-stock{
+
+padding:8px 15px;
+
+font-size:.9rem;
+
+}
+
+
+
+/* ==============================
+   POPUP ARTICLE
+============================== */
+
+
+.popup{
+
+position:fixed;
+
+top:0;
+
+left:0;
+
+width:100%;
+
+height:100%;
+
+background:rgba(0,0,0,.55);
+
+display:flex;
+
+justify-content:center;
+
+align-items:center;
+
+z-index:2000;
+
+}
+
+
+
+.popup-content{
+
+background:white;
+
+width:90%;
+
+max-width:500px;
+
+padding:35px;
+
+border-radius:var(--rayon);
+
+box-shadow:var(--ombre);
+
+}
+
+
+
+.popup-content h2{
+
+color:var(--vert);
+
+margin-bottom:25px;
+
+text-align:center;
+
+}
+
+
+
+.popup-content label{
+
+display:block;
+
+font-weight:bold;
+
+margin-top:15px;
+
+}
+
+
+
+/* ==============================
+   ALERTES STOCK
+============================== */
+
+
+.alertes{
+
+margin-top:20px;
+
+}
+
+
+
+.alerte-ok{
+
+background:#e9f3e5;
+
+color:#48613f;
+
+padding:15px;
+
+border-radius:12px;
+
+}
+
+
+
+.alerte-warning{
+
+background:#fff3d6;
+
+color:#9a6700;
+
+padding:15px;
+
+border-radius:12px;
+
+}
+
+
+
+.alerte-danger{
+
+background:#f9e5e5;
+
+color:#8b3a3a;
+
+padding:15px;
+
+border-radius:12px;
+
+}
+/* ==============================
    RESPONSIVE
 ============================== */
 
