@@ -1,7 +1,7 @@
 // ==================================
 // IDÉE GOURMANDE
 // Administration commandes
-// Version 1.5
+// Version 2.3.0
 // ==================================
 
 
