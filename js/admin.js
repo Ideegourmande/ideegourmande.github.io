@@ -718,7 +718,76 @@ window.location.href =
 
 }
 
+// ==================================
+// ALERTES
+// ==================================
 
+function afficherAlertes(){
+
+let zone =
+document.getElementById("listeAlertes");
+
+if(!zone){
+    return;
+}
+
+let html = "";
+
+// Articles à acheter
+let nbAchats =
+Number(
+document.getElementById("nbAchats")?.textContent
+) || 0;
+
+if(nbAchats > 0){
+
+html +=
+"<p>🟠 " +
+nbAchats +
+" article(s) à acheter</p>";
+
+}
+
+// Stock critique
+let stockCritique =
+Number(
+document.getElementById("stockCritique")?.textContent
+) || 0;
+
+if(stockCritique > 0){
+
+html +=
+"<p>🔴 " +
+stockCritique +
+" article(s) en stock critique</p>";
+
+}
+
+// Commandes
+let nbCommandes =
+Number(
+document.getElementById("nbCommandes")?.textContent
+) || 0;
+
+if(nbCommandes > 0){
+
+html +=
+"<p>📦 " +
+nbCommandes +
+" commande(s) en cours</p>";
+
+}
+
+if(html===""){
+
+html =
+"<p>✅ Aucune alerte.</p>";
+
+}
+
+zone.innerHTML = html;
+
+}
 
 // ==================================
 // INITIALISATION
@@ -733,6 +802,7 @@ afficherCommandes();
 
 afficherStatistiques();
 
+afficherAlertes();
 
 }
 );
