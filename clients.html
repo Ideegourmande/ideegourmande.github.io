@@ -1,1 +1,116 @@
+<!DOCTYPE html>
+<html lang="fr">
 
+<head>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Clients - Idée Gourmande</title>
+
+<link rel="stylesheet" href="css/style.css">
+
+</head>
+
+
+<body>
+
+
+<script>
+
+if(localStorage.getItem("adminConnecte") !== "oui"){
+    window.location.href="admin-login.html";
+}
+
+</script>
+
+
+
+<header>
+
+<div class="top-banner">
+👥 Gestion des clients - Idée Gourmande
+</div>
+
+</header>
+
+
+
+<section class="presentation">
+
+
+<h1>
+Gestion des clients
+</h1>
+
+
+<a href="admin.html" class="btn">
+⬅ Retour administration
+</a>
+
+
+</section>
+
+
+
+
+<section class="panier-section">
+
+
+<div class="panier-card">
+
+
+<h2>
+👥 Liste des clients
+</h2>
+
+
+<input
+type="search"
+id="rechercheClient"
+placeholder="Rechercher un client..."
+oninput="rechercherClient()">
+
+
+
+<div id="listeClients">
+
+Chargement...
+
+</div>
+
+
+
+</div>
+
+
+</section>
+
+
+
+
+
+<footer>
+
+<p>
+© Idée Gourmande - Genève
+</p>
+
+
+<p>
+Version 2.4.0
+</p>
+
+
+</footer>
+
+
+
+<script src="js/database.js"></script>
+
+<script src="js/clients.js"></script>
+
+
+</body>
+
+</html>
