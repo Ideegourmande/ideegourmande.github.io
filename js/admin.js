@@ -1202,7 +1202,11 @@ function(){
 
 
 afficherCommandes();
+
 afficherResumeStock();
+
+afficherResumeAchats();
+
 afficherStatistiques();
 
 afficherAlertes();
