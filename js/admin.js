@@ -256,7 +256,8 @@ sauvegarderDB();
 afficherCommandes();
 
 afficherStatistiques();
-
+afficherAlertes();
+afficherDernieresCommandes();
 }
 
 }
