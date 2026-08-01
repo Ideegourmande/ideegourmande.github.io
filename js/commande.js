@@ -322,7 +322,8 @@ return;
 
 }
 
-
+enregistrerClient(commande);
+    
 db.commandes.push(commande);
 
 
