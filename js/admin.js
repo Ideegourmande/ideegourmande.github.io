@@ -303,10 +303,6 @@ archives.push(cmd);
 commandes.splice(index,1);
 
 
-
-sauvegarderDB();
-
-
 sauvegarderDB();
 
 
@@ -565,9 +561,9 @@ let stockCritique = 0;
 db.articles.forEach(function(article){
 
 
-if(article.stock <= article.minimum){
+if(article.stock > 0 && article.stock <= article.minimum){
 
-stockCritique++;
+    stockCritique++;
 
 }
 
