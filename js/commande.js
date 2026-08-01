@@ -329,30 +329,41 @@ db.commandes = [];
 }
 
 
-db.commandes.push(commande);
-
-
 //--------------------------------------
-// Gestion automatique des clients
+// Sauvegarde commande + gestion client
 //--------------------------------------
+
+if(!Array.isArray(db.commandes)){
+    db.commandes = [];
+}
 
 if(!Array.isArray(db.clients)){
     db.clients = [];
 }
 
 
-let clientExiste = db.clients.find(c => 
+// Ajout commande
+
+db.commandes.push(commande);
+
+
+// Gestion client
+
+let clientExiste = db.clients.find(c =>
     c.email === email
 );
 
 
 if(clientExiste){
 
-    clientExiste.commandes = 
+    clientExiste.commandes =
         (clientExiste.commandes || 0) + 1;
 
     clientExiste.derniereCommande =
         new Date().toLocaleString("fr-FR");
+
+    clientExiste.telephone = telephone;
+    clientExiste.adresse = adresse;
 
 }
 else{
@@ -360,24 +371,19 @@ else{
     db.clients.push({
 
         id:"CL-"+Date.now(),
-
         nom:nom,
-
         telephone:telephone,
-
         email:email,
-
         adresse:adresse,
-
         commandes:1,
-
-        derniereCommande:
-            new Date().toLocaleString("fr-FR")
+        derniereCommande:new Date().toLocaleString("fr-FR")
 
     });
 
 }
 
+
+// Sauvegarde
 
 sauvegarderDB();
 
