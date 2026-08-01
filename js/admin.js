@@ -7,7 +7,7 @@
 
 // ==================================
 // CHARGEMENT DES COMMANDES
-// ==================================
+// =================F=================
 
 function obtenirCommandes(){
 
@@ -698,7 +698,12 @@ window.location.href =
 // Version 2.3.3
 // ==================================
 
+// ==================================
+// ALERTES INTELLIGENTES
+// ==================================
+
 function afficherAlertes(){
+
 
 let zone =
 document.getElementById("listeAlertes");
@@ -715,37 +720,50 @@ let html = "";
 
 
 
-// STOCK
+// COMMANDES EN ATTENTE
 
-if(typeof db !== "undefined" && db.articles){
-
-
-let rupture = 0;
-
-let critique = 0;
+let commandes =
+obtenirCommandes();
 
 
-db.articles.forEach(function(article){
+let commandesAttente =
+commandes.filter(function(cmd){
 
+return !cmd.statut ||
+cmd.statut === "Nouvelle" ||
+cmd.statut === "En préparation";
 
-let stock =
-Number(article.stock) || 0;
-
-
-let minimum =
-Number(article.minimum) || 0;
+}).length;
 
 
 
-if(stock <= 0){
+if(commandesAttente > 0){
 
-rupture++;
+html +=
+"<p>🟠 " +
+commandesAttente +
+" commande(s) à préparer</p>";
 
 }
 
-else if(stock <= minimum){
 
-critique++;
+
+// STOCK ZERO
+
+if(typeof db !== "undefined"){
+
+
+let stockZero = 0;
+
+
+(db.articles || []).forEach(function(article){
+
+
+if(
+Number(article.stock) === 0
+){
+
+stockZero++;
 
 }
 
@@ -753,104 +771,35 @@ critique++;
 });
 
 
-
-if(rupture > 0){
+if(stockZero > 0){
 
 html +=
-
 "<p>🔴 " +
-rupture +
+stockZero +
 " article(s) en rupture de stock</p>";
 
 }
 
 
 
-if(critique > 0){
+// ACHATS EN ATTENTE
+
+
+let achatsAttente =
+(db.achats || []).filter(function(achat){
+
+return achat.statut !== "Réceptionné";
+
+}).length;
+
+
+
+if(achatsAttente > 0){
 
 html +=
-
-"<p>🟠 " +
-critique +
-" article(s) sous le minimum</p>";
-
-}
-
-
-}
-
-
-
-// ACHATS
-
-if(typeof db !== "undefined" && db.achats){
-
-
-let attente = 0;
-
-
-db.achats.forEach(function(achat){
-
-
-if(achat.statut !== "Réceptionné"){
-
-attente++;
-
-}
-
-
-});
-
-
-
-if(attente > 0){
-
-html +=
-
-"<p>🛒 " +
-attente +
-" achat(s) en attente</p>";
-
-}
-
-
-}
-
-
-
-// COMMANDES
-
-if(typeof db !== "undefined" && db.commandes){
-
-
-let enCours = 0;
-
-
-db.commandes.forEach(function(cmd){
-
-
-if(
-cmd.statut !== "Livrée"
-&&
-cmd.statut !== "Archivée"
-){
-
-enCours++;
-
-}
-
-
-});
-
-
-
-if(enCours > 0){
-
-html +=
-
-"<p>📦 " +
-enCours +
-" commande(s) en cours</p>";
+"<p>🟡 " +
+achatsAttente +
+" achat(s) en attente de réception</p>";
 
 }
 
@@ -863,10 +812,8 @@ enCours +
 
 if(html === ""){
 
-
 html =
-"<p>✅ Aucune alerte.</p>";
-
+"<p>✅ Tout fonctionne correctement.</p>";
 
 }
 
