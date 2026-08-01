@@ -314,19 +314,19 @@ statut:"Nouvelle"
 
 
 
-let commandes=
-JSON.parse(localStorage.getItem("commandes"))||[];
+if(typeof db === "undefined"){
+
+alert("Erreur base de données.");
+
+return;
+
+}
 
 
-
-commandes.push(commande);
-
+db.commandes.push(commande);
 
 
-localStorage.setItem(
-"commandes",
-JSON.stringify(commandes)
-);
+sauvegarderDB();
 
 
 
