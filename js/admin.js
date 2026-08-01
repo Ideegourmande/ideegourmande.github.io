@@ -1075,7 +1075,7 @@ function(){
 
 
 afficherCommandes();
-
+afficherResumeStock();
 afficherStatistiques();
 
 afficherAlertes();
