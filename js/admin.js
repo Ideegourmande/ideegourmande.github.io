@@ -693,7 +693,8 @@ window.location.href =
 }
 
 // ==================================
-// ALERTES
+// ALERTES TABLEAU DE BORD
+// Version 2.3.3
 // ==================================
 
 function afficherAlertes(){
@@ -701,65 +702,177 @@ function afficherAlertes(){
 let zone =
 document.getElementById("listeAlertes");
 
+
 if(!zone){
-    return;
+
+return;
+
 }
+
 
 let html = "";
 
-// Articles à acheter
-let nbAchats =
-Number(
-document.getElementById("nbAchats")?.textContent
-) || 0;
 
-if(nbAchats > 0){
 
-html +=
-"<p>🟠 " +
-nbAchats +
-" article(s) à acheter</p>";
+// STOCK
+
+if(typeof db !== "undefined" && db.articles){
+
+
+let rupture = 0;
+
+let critique = 0;
+
+
+db.articles.forEach(function(article){
+
+
+let stock =
+Number(article.stock) || 0;
+
+
+let minimum =
+Number(article.minimum) || 0;
+
+
+
+if(stock <= 0){
+
+rupture++;
 
 }
 
-// Stock critique
-let stockCritique =
-Number(
-document.getElementById("stockCritique")?.textContent
-) || 0;
+else if(stock <= minimum){
 
-if(stockCritique > 0){
+critique++;
+
+}
+
+
+});
+
+
+
+if(rupture > 0){
 
 html +=
+
 "<p>🔴 " +
-stockCritique +
-" article(s) en stock critique</p>";
+rupture +
+" article(s) en rupture de stock</p>";
 
 }
 
-// Commandes
-let nbCommandes =
-Number(
-document.getElementById("nbCommandes")?.textContent
-) || 0;
 
-if(nbCommandes > 0){
+
+if(critique > 0){
 
 html +=
+
+"<p>🟠 " +
+critique +
+" article(s) sous le minimum</p>";
+
+}
+
+
+}
+
+
+
+// ACHATS
+
+if(typeof db !== "undefined" && db.achats){
+
+
+let attente = 0;
+
+
+db.achats.forEach(function(achat){
+
+
+if(achat.statut !== "Réceptionné"){
+
+attente++;
+
+}
+
+
+});
+
+
+
+if(attente > 0){
+
+html +=
+
+"<p>🛒 " +
+attente +
+" achat(s) en attente</p>";
+
+}
+
+
+}
+
+
+
+// COMMANDES
+
+if(typeof db !== "undefined" && db.commandes){
+
+
+let enCours = 0;
+
+
+db.commandes.forEach(function(cmd){
+
+
+if(
+cmd.statut !== "Livrée"
+&&
+cmd.statut !== "Archivée"
+){
+
+enCours++;
+
+}
+
+
+});
+
+
+
+if(enCours > 0){
+
+html +=
+
 "<p>📦 " +
-nbCommandes +
+enCours +
 " commande(s) en cours</p>";
 
 }
 
-if(html===""){
+
+}
+
+
+
+// AUCUNE ALERTE
+
+if(html === ""){
+
 
 html =
 "<p>✅ Aucune alerte.</p>";
 
+
 }
 
+
+
 zone.innerHTML = html;
+
 
 }
 // ==================================
