@@ -762,7 +762,87 @@ html =
 zone.innerHTML = html;
 
 }
+// ==================================
+// DERNIERES COMMANDES
+// ==================================
 
+function afficherDernieresCommandes(){
+
+let zone =
+document.getElementById("dernieresCommandes");
+
+
+if(!zone){
+
+return;
+
+}
+
+
+let commandes =
+obtenirCommandes();
+
+
+if(commandes.length === 0){
+
+zone.innerHTML =
+"<p>Aucune commande récente.</p>";
+
+return;
+
+}
+
+
+// prendre les 5 dernières
+
+let dernieres =
+commandes.slice(-5).reverse();
+
+
+
+let html = "";
+
+
+dernieres.forEach(function(cmd){
+
+
+html += `
+
+<div class="commande-admin">
+
+<strong>
+📦 Commande ${cmd.id}
+</strong>
+
+<br>
+
+Client :
+${cmd.client || "-"}
+
+<br>
+
+Total :
+${cmd.total || 0} CHF
+
+<br>
+
+Statut :
+${cmd.statut || "Nouvelle"}
+
+</div>
+
+<hr>
+
+`;
+
+
+});
+
+
+zone.innerHTML = html;
+
+
+}
 // ==================================
 // INITIALISATION
 // ==================================
@@ -777,6 +857,9 @@ afficherCommandes();
 afficherStatistiques();
 
 afficherAlertes();
+
+afficherDernieresCommandes();
+
 
 }
 );
