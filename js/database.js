@@ -8,6 +8,8 @@ let db = JSON.parse(
 localStorage.getItem("ideeGourmandeDB")
 );
 
+console.log("DATABASE OK", db);
+
 const emplacementsDefaut = [
 
 ```
