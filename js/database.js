@@ -1,7 +1,7 @@
 // ======================================
 // IDEE GOURMANDE
 // Base de données centrale
-// Version 2.1.0
+// Version 2.3.0 - Sécurisation base de données
 // ======================================
 
 
