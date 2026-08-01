@@ -28,18 +28,13 @@ return db.commandes;
 
 function obtenirArchives(){
 
-try{
+if(!db.archives){
 
-return JSON.parse(
-localStorage.getItem("commandesArchivees")
-) || [];
+db.archives = [];
 
 }
-catch(e){
 
-return [];
-
-}
+return db.archives;
 
 }
 
