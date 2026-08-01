@@ -1,1 +1,201 @@
+<!DOCTYPE html>
+<html lang="fr">
 
+<head>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Besoins d'achat - Idée Gourmande</title>
+
+<link rel="stylesheet" href="css/style.css">
+
+</head>
+
+<body>
+
+<script>
+
+if(localStorage.getItem("adminConnecte") !== "oui"){
+    window.location.href="admin-login.html";
+}
+
+</script>
+
+
+<header>
+
+<div class="top-banner">
+
+🛒 Besoins d'achat
+
+</div>
+
+</header>
+
+
+<section class="presentation">
+
+<h1>
+Liste de courses
+</h1>
+
+
+<a href="admin.html" class="btn">
+⬅ Retour Administration
+</a>
+
+</section>
+
+
+
+<section class="panier-section">
+
+<div class="panier-card">
+
+
+<h2>
+Articles à acheter
+</h2>
+
+
+<table>
+
+<thead>
+
+<tr>
+
+<th>Article</th>
+
+<th>Stock actuel</th>
+
+<th>Minimum</th>
+
+<th>À acheter</th>
+
+</tr>
+
+</thead>
+
+
+<tbody id="listeBesoins">
+
+</tbody>
+
+
+</table>
+
+
+</div>
+
+</section>
+
+
+
+<footer>
+
+<p>
+© Idée Gourmande - Genève
+</p>
+
+</footer>
+
+
+
+<script src="js/database.js"></script>
+
+
+<script>
+
+
+function afficherBesoins(){
+
+
+const zone =
+document.getElementById("listeBesoins");
+
+
+zone.innerHTML="";
+
+
+let compteur=0;
+
+
+
+db.articles.forEach(article=>{
+
+
+if(article.stock <= article.minimum){
+
+
+const manque =
+article.minimum - article.stock;
+
+
+
+zone.innerHTML += `
+
+<tr>
+
+<td>${article.nom}</td>
+
+<td>${article.stock} ${article.unite || ""}</td>
+
+<td>${article.minimum} ${article.unite || ""}</td>
+
+<td>
+<strong>${manque} ${article.unite || ""}</strong>
+</td>
+
+</tr>
+
+`;
+
+
+compteur++;
+
+
+}
+
+
+});
+
+
+
+if(compteur===0){
+
+
+zone.innerHTML = `
+
+<tr>
+
+<td colspan="4">
+
+✅ Aucun besoin d'achat
+
+</td>
+
+</tr>
+
+`;
+
+
+}
+
+
+}
+
+
+
+document.addEventListener(
+"DOMContentLoaded",
+afficherBesoins
+);
+
+
+</script>
+
+
+</body>
+
+</html>
