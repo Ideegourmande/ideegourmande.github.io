@@ -958,6 +958,114 @@ zone.innerHTML = html;
 
 }
 // ==================================
+// RESUME STOCK TABLEAU DE BORD
+// ==================================
+
+function afficherResumeStock(){
+
+
+if(typeof db === "undefined"){
+
+return;
+
+}
+
+
+
+let articles =
+db.articles || [];
+
+
+
+let totalArticles =
+articles.length;
+
+
+
+let valeurStock = 0;
+
+
+let stockCritique = 0;
+
+
+
+articles.forEach(function(article){
+
+
+let stock =
+Number(article.stock) || 0;
+
+
+let prix =
+Number(article.prixAchatMoyen) || 0;
+
+
+
+valeurStock += stock * prix;
+
+
+
+if(
+stock > 0 &&
+stock <= Number(article.minimum)
+){
+
+stockCritique++;
+
+}
+
+
+});
+
+
+
+let zoneArticles =
+document.getElementById(
+"totalArticlesStock"
+);
+
+
+if(zoneArticles){
+
+zoneArticles.textContent =
+totalArticles;
+
+}
+
+
+
+let zoneValeur =
+document.getElementById(
+"valeurStock"
+);
+
+
+if(zoneValeur){
+
+zoneValeur.textContent =
+valeurStock.toFixed(2)
++ " CHF";
+
+}
+
+
+
+let zoneCritique =
+document.getElementById(
+"stockCritiqueStock"
+);
+
+
+if(zoneCritique){
+
+zoneCritique.textContent =
+stockCritique;
+
+}
+
+
+}
+// ==================================
 // INITIALISATION
 // ==================================
 
