@@ -147,7 +147,41 @@ else{
 
 
     });
+// Sécurité supplémentaire modules
 
+if(!Array.isArray(db.commandes)){
+
+db.commandes = [];
+
+}
+
+
+if(!Array.isArray(db.archives)){
+
+db.archives = [];
+
+}
+
+
+if(!Array.isArray(db.achats)){
+
+db.achats = [];
+
+}
+
+
+if(!Array.isArray(db.sessions)){
+
+db.sessions = [];
+
+}
+
+
+if(!Array.isArray(db.clients)){
+
+db.clients = [];
+
+}
 
 
     // Sécurité supplémentaire stock
