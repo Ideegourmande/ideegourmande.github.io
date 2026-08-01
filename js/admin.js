@@ -576,7 +576,67 @@ compteur;
 
 }
 
+// STOCK ET ACHATS
 
+if(typeof db !== "undefined"){
+
+
+let stockCritique = 0;
+
+
+db.articles.forEach(function(article){
+
+
+if(article.stock <= article.minimum){
+
+stockCritique++;
+
+}
+
+
+});
+
+
+let zoneStock =
+document.getElementById("stockCritique");
+
+
+if(zoneStock){
+
+zoneStock.innerHTML = stockCritique;
+
+}
+
+
+
+let achatsAttente = 0;
+
+
+db.achats.forEach(function(achat){
+
+
+if(achat.statut !== "Réceptionné"){
+
+achatsAttente++;
+
+}
+
+
+});
+
+
+let zoneAchats =
+document.getElementById("nbAchats");
+
+
+if(zoneAchats){
+
+zoneAchats.innerHTML = achatsAttente;
+
+}
+
+
+}
 }
 
 
