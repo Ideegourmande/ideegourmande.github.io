@@ -11,18 +11,13 @@
 
 function obtenirCommandes(){
 
-try{
+if(!db.commandes){
 
-return JSON.parse(
-localStorage.getItem("commandes")
-) || [];
+db.commandes = [];
 
 }
-catch(e){
 
-return [];
-
-}
+return db.commandes;
 
 }
 
