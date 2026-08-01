@@ -4,68 +4,39 @@
 // Version 2.3.0 - Sécurisation base de données
 // ======================================
 
-
 let db = JSON.parse(
-    localStorage.getItem("ideeGourmandeDB")
+localStorage.getItem("ideeGourmandeDB")
 );
-
-
 
 const emplacementsDefaut = [
 
-    "Congélateur du réduit",
-
-    "Congélateur bahut",
-
-    "Congélateur GI",
-
-    "Chambre froide",
-
-    "Cave",
-
-    "Réserve sèche"
+```
+"Congélateur du réduit",
+"Congélateur bahut",
+"Congélateur GI",
+"Chambre froide",
+"Cave",
+"Réserve sèche"
+```
 
 ];
 
-
-
 const structureDB = {
 
-
-    commandes: [],
-
-
-    articles: [],
-
-
-    emplacements: emplacementsDefaut,
-
-
-    mouvements: [],
-
-
-    achats: [],
-
-
-    sessions: [],
-
-
-    archives: [],
-
-
-    clients: [],
-
-
-    statistiques: {},
-
-
-    parametres: {}
-
+```
+commandes: [],
+articles: [],
+emplacements: emplacementsDefaut,
+mouvements: [],
+achats: [],
+sessions: [],
+archives: [],
+clients: [],
+statistiques: {},
+parametres: {}
+```
 
 };
-
-
-
 
 //--------------------------------------
 // Création première base
@@ -73,148 +44,141 @@ const structureDB = {
 
 if(!db){
 
+```
+db = {
 
-    db = {
+    commandes: [],
+    articles: [],
+    emplacements: [...emplacementsDefaut],
+    mouvements: [],
+    achats: [],
+    sessions: [],
+    archives: [],
+    clients: [],
+    statistiques: {},
+    parametres: {}
 
-
-        commandes: [],
-
-
-        articles: [],
-
-
-        emplacements: [...emplacementsDefaut],
-
-
-        mouvements: [],
-
-
-        achats: [],
+};
 
 
-        sessions: [],
-
-
-        archives: [],
-
-
-        clients: [],
-
-
-        statistiques: {},
-
-
-        parametres: {}
-
-
-    };
-
-
-    sauvegarderDB();
-
+sauvegarderDB();
+```
 
 }
 
 else{
 
+```
+// Vérification des anciennes versions
 
-    // Vérification des anciennes versions
-
-    Object.keys(structureDB).forEach(cle=>{
-
-
-        if(db[cle] === undefined){
+Object.keys(structureDB).forEach(cle=>{
 
 
-            if(Array.isArray(structureDB[cle])){
+    if(db[cle] === undefined){
 
 
-                db[cle] = [...structureDB[cle]];
+        if(Array.isArray(structureDB[cle])){
 
+            db[cle] = [...structureDB[cle]];
 
-            }
+        }
+        else{
 
-            else{
-
-
-                db[cle] = {};
-
-
-            }
-
+            db[cle] = {};
 
         }
 
+    }
 
-    });
-// Sécurité supplémentaire modules
+
+});
+
+
+
+// Sécurité modules
 
 if(!Array.isArray(db.commandes)){
-
-db.commandes = [];
-
+    db.commandes = [];
 }
 
 
 if(!Array.isArray(db.archives)){
-
-db.archives = [];
-
+    db.archives = [];
 }
 
 
 if(!Array.isArray(db.achats)){
-
-db.achats = [];
-
+    db.achats = [];
 }
 
 
 if(!Array.isArray(db.sessions)){
-
-db.sessions = [];
-
+    db.sessions = [];
 }
 
 
 if(!Array.isArray(db.clients)){
+    db.clients = [];
+}
 
-db.clients = [];
+
+
+// Sécurité stock
+
+if(!Array.isArray(db.articles)){
+    db.articles = [];
+}
+
+
+
+if(!Array.isArray(db.mouvements)){
+    db.mouvements = [];
+}
+
+
+
+if(!Array.isArray(db.emplacements)
+   || db.emplacements.length===0){
+
+    db.emplacements = [...emplacementsDefaut];
 
 }
 
 
-    // Sécurité supplémentaire stock
 
+sauvegarderDB();
+```
 
-    if(!Array.isArray(db.articles)){
+}
 
+//--------------------------------------
+// Migration anciennes commandes
+//--------------------------------------
 
-        db.articles=[];
+function migrerAnciennesCommandes(){
 
-
-    }
-
-
-
-    if(!Array.isArray(db.mouvements)){
-
-
-        db.mouvements=[];
-
-
-    }
+```
+let anciennes =
+JSON.parse(
+    localStorage.getItem("commandes")
+) || [];
 
 
 
-    if(!Array.isArray(db.emplacements)
-       || db.emplacements.length===0){
+if(
+    anciennes.length > 0 &&
+    db.commandes.length === 0
+){
 
 
-        db.emplacements=[...emplacementsDefaut];
+    db.commandes =
+    [...anciennes];
 
 
-    }
+
+    localStorage.removeItem(
+        "commandes"
+    );
 
 
 
@@ -222,9 +186,13 @@ db.clients = [];
 
 
 }
+```
 
+}
 
+// Lancement migration automatique
 
+migrerAnciennesCommandes();
 
 //--------------------------------------
 // Sauvegarde centrale
@@ -232,20 +200,17 @@ db.clients = [];
 
 function sauvegarderDB(){
 
+```
+localStorage.setItem(
 
-    localStorage.setItem(
+    "ideeGourmandeDB",
 
-        "ideeGourmandeDB",
+    JSON.stringify(db)
 
-        JSON.stringify(db)
-
-    );
-
+);
+```
 
 }
-
-
-
 
 //--------------------------------------
 // Accès base complète
@@ -253,12 +218,11 @@ function sauvegarderDB(){
 
 function obtenirDB(){
 
-    return db;
+```
+return db;
+```
 
 }
-
-
-
 
 //--------------------------------------
 // Sécurité affichage HTML
@@ -266,18 +230,18 @@ function obtenirDB(){
 
 function securiserTexte(texte){
 
+```
+return String(texte)
 
-    return String(texte)
+    .replace(/&/g,"&amp;")
 
-        .replace(/&/g,"&amp;")
+    .replace(/</g,"&lt;")
 
-        .replace(/</g,"&lt;")
+    .replace(/>/g,"&gt;")
 
-        .replace(/>/g,"&gt;")
+    .replace(/"/g,"&quot;")
 
-        .replace(/"/g,"&quot;")
-
-        .replace(/'/g,"&#039;");
-
+    .replace(/'/g,"&#039;");
+```
 
 }
