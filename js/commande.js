@@ -207,7 +207,7 @@ calculerTotal();
 // ==================================
 
 function envoyerCommande(event){
-
+console.log("TEST DB", typeof db);
 
 event.preventDefault();
 
