@@ -1066,6 +1066,133 @@ stockCritique;
 
 }
 // ==================================
+// RESUME ACHATS TABLEAU DE BORD
+// ==================================
+
+function afficherResumeAchats(){
+
+
+if(typeof db === "undefined"){
+
+return;
+
+}
+
+
+
+let achats =
+db.achats || [];
+
+
+
+let attente = 0;
+
+let receptionnes = 0;
+
+let montantAttente = 0;
+
+
+
+achats.forEach(function(achat){
+
+
+if(
+achat.statut === "Réceptionné"
+){
+
+receptionnes++;
+
+}
+else{
+
+attente++;
+
+montantAttente +=
+Number(achat.total) || 0;
+
+}
+
+
+});
+
+
+
+let fournisseurs =
+(db.clients || []).filter(function(client){
+
+return client.type === "Fournisseur";
+
+});
+
+
+
+
+let zoneAttente =
+document.getElementById(
+"achatsEnAttente"
+);
+
+
+if(zoneAttente){
+
+zoneAttente.textContent =
+attente;
+
+}
+
+
+
+
+let zoneReception =
+document.getElementById(
+"achatsReceptionnes"
+);
+
+
+if(zoneReception){
+
+zoneReception.textContent =
+receptionnes;
+
+}
+
+
+
+
+let zoneFournisseurs =
+document.getElementById(
+"nombreFournisseurs"
+);
+
+
+if(zoneFournisseurs){
+
+zoneFournisseurs.textContent =
+fournisseurs.length;
+
+}
+
+
+
+
+let zoneMontant =
+document.getElementById(
+"montantAchatsAttente"
+);
+
+
+if(zoneMontant){
+
+zoneMontant.textContent =
+montantAttente.toFixed(2)
++
+" CHF";
+
+}
+
+
+}
+// ==================================
 // INITIALISATION
 // ==================================
 
