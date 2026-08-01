@@ -240,3 +240,4 @@ function securiserTexte(texte){
         .replace(/'/g,"&#039;");
 
 }
+console.log("DATABASE.JS CHARGE - DB =", db);
