@@ -209,7 +209,46 @@ function sauvegarderDB(){
 
 }
 
+//--------------------------------------
+// Ajout commande + client automatique
+//--------------------------------------
 
+function ajouterCommande(commande){
+
+    // Ajout commande
+    db.commandes.push(commande);
+
+
+    // Vérification client existant
+    let clientExiste = db.clients.find(c =>
+        c.email === commande.email
+    );
+
+
+    // Création client si nouveau
+    if(!clientExiste){
+
+        db.clients.push({
+
+            id: commande.id,
+
+            nom: commande.client,
+
+            telephone: commande.telephone,
+
+            email: commande.email,
+
+            adresse: commande.adresse || ""
+
+        });
+
+    }
+
+
+    // Sauvegarde complète
+    sauvegarderDB();
+
+}
 //--------------------------------------
 // Accès base complète
 //--------------------------------------
