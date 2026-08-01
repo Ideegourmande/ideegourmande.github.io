@@ -316,7 +316,7 @@ statut:"Nouvelle"
 
 if(typeof db === "undefined"){
 
-alert("Base de données non chargée.");
+alert("DB absente - database.js non chargé");
 return;
 
 }
