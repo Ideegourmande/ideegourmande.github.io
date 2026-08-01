@@ -332,6 +332,53 @@ db.commandes = [];
 db.commandes.push(commande);
 
 
+//--------------------------------------
+// Gestion automatique des clients
+//--------------------------------------
+
+if(!Array.isArray(db.clients)){
+    db.clients = [];
+}
+
+
+let clientExiste = db.clients.find(c => 
+    c.email === email
+);
+
+
+if(clientExiste){
+
+    clientExiste.commandes = 
+        (clientExiste.commandes || 0) + 1;
+
+    clientExiste.derniereCommande =
+        new Date().toLocaleString("fr-FR");
+
+}
+else{
+
+    db.clients.push({
+
+        id:"CL-"+Date.now(),
+
+        nom:nom,
+
+        telephone:telephone,
+
+        email:email,
+
+        adresse:adresse,
+
+        commandes:1,
+
+        derniereCommande:
+            new Date().toLocaleString("fr-FR")
+
+    });
+
+}
+
+
 sauvegarderDB();
 
 
