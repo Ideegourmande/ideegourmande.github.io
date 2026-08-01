@@ -316,13 +316,19 @@ statut:"Nouvelle"
 
 if(typeof db === "undefined"){
 
-alert("Erreur base de données.");
-
+alert("Base de données non chargée.");
 return;
 
 }
 
-    
+
+if(!Array.isArray(db.commandes)){
+
+db.commandes = [];
+
+}
+
+
 db.commandes.push(commande);
 
 
