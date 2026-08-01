@@ -250,10 +250,7 @@ if(commandes[index]){
 commandes[index].statut = valeur;
 
 
-localStorage.setItem(
-"commandes",
-JSON.stringify(commandes)
-);
+sauvegarderDB();
 
 
 afficherCommandes();
@@ -307,16 +304,10 @@ commandes.splice(index,1);
 
 
 
-localStorage.setItem(
-"commandesArchivees",
-JSON.stringify(archives)
-);
+sauvegarderDB();
 
 
-localStorage.setItem(
-"commandes",
-JSON.stringify(commandes)
-);
+sauvegarderDB();
 
 
 afficherCommandes();
@@ -351,10 +342,7 @@ obtenirCommandes();
 commandes.splice(index,1);
 
 
-localStorage.setItem(
-"commandes",
-JSON.stringify(commandes)
-);
+sauvegarderDB();
 
 
 afficherCommandes();
