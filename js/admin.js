@@ -1140,6 +1140,24 @@ montantAttente.toFixed(2)
 
 }
 // ==================================
+// DECONNEXION ADMIN
+// ==================================
+
+function deconnexion(){
+
+
+localStorage.removeItem(
+"adminConnecte"
+);
+
+
+window.location.href =
+"admin-login.html";
+
+
+}
+
+// ==================================
 // INITIALISATION
 // ==================================
 
