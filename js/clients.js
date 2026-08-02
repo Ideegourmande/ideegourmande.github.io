@@ -255,3 +255,70 @@ afficherClients();
 
 }
 );
+// ==================================
+// HISTORIQUE CLIENT
+// ==================================
+
+function voirHistorique(email){
+
+    let commandes = db.commandes.filter(c =>
+        c.email === email
+    );
+
+    let html = "";
+
+    if(commandes.length === 0){
+
+        html =
+        "<p>Aucune commande trouvée.</p>";
+
+    }
+    else{
+
+        commandes.forEach(function(c){
+
+            html += `
+
+            <div class="commande-admin">
+
+                <strong>${c.id}</strong><br>
+
+                📅 ${c.date}<br>
+
+                💰 ${c.total} CHF<br>
+
+                📦 ${c.statut}<br><br>
+
+                <small>
+                ${c.produits}
+                </small>
+
+            </div>
+
+            <br>
+
+            `;
+
+        });
+
+    }
+
+    document.getElementById(
+        "contenuHistorique"
+    ).innerHTML = html;
+
+    document.getElementById(
+        "fenetreHistorique"
+    ).style.display = "block";
+
+}
+
+
+
+function fermerHistorique(){
+
+    document.getElementById(
+        "fenetreHistorique"
+    ).style.display = "none";
+
+}
