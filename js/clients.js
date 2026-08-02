@@ -31,92 +31,75 @@ return db.clients || [];
 
 function afficherClients(){
 
+    let zone = document.getElementById("listeClients");
 
-let zone =
-document.getElementById("listeClients");
+    if(!zone){
+        return;
+    }
 
+    let clients = obtenirClients();
 
-if(!zone){
+    if(clients.length === 0){
+        zone.innerHTML = "<p>Aucun client enregistré.</p>";
+        return;
+    }
 
-return;
+    let html = "";
 
-}
+    clients.forEach(function(client){
 
+        let commandes = db.commandes.filter(c =>
+            c.email === client.email
+        );
 
+        let nbCommandes = commandes.length;
 
-let clients =
-obtenirClients();
+        let total = commandes.reduce((somme, c) =>
+            somme + Number(c.total || 0),
+            0
+        );
 
+        let premiereCommande = "-";
+        let derniereCommande = "-";
 
+        if(commandes.length){
 
-if(clients.length === 0){
+            premiereCommande = commandes[0].date;
+            derniereCommande = commandes[commandes.length - 1].date;
 
+        }
 
-zone.innerHTML =
-
-"<p>Aucun client enregistré.</p>";
-
-
-return;
-
-
-}
-
-
-
-let html = "";
-
-
-
-clients.forEach(function(client){
-
-
-
-html += `
+        html += `
 
 <div class="commande-admin">
 
+<h3>👤 ${client.nom || "-"}</h3>
 
-<h3>
-👤 ${client.nom || "-"}
-</h3>
+<p><strong>Téléphone :</strong><br>${client.telephone || "-"}</p>
 
+<p><strong>Email :</strong><br>${client.email || "-"}</p>
 
-<p>
-<strong>Téléphone :</strong><br>
-${client.telephone || "-"}
-</p>
-
-
-<p>
-<strong>Email :</strong><br>
-${client.email || "-"}
-</p>
-
-
-<p>
-<strong>Adresse :</strong><br>
-${client.adresse || "-"}
-</p>
-
+<p><strong>Adresse :</strong><br>${client.adresse || "-"}</p>
 
 <hr>
 
+<p>🛒 <strong>Commandes :</strong> ${nbCommandes}</p>
+
+<p>💰 <strong>Total dépensé :</strong> ${total.toFixed(2)} CHF</p>
+
+<p>📅 <strong>Première commande :</strong> ${premiereCommande}</p>
+
+<p>🕒 <strong>Dernière commande :</strong> ${derniereCommande}</p>
 
 </div>
 
 `;
 
+    });
 
-});
-
-
-
-zone.innerHTML = html;
-
+    zone.innerHTML = html;
 
 }
-
 
 
 // ==================================
