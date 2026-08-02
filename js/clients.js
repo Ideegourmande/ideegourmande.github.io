@@ -1,10 +1,8 @@
 // ==================================
 // IDEE GOURMANDE
 // Gestion clients
-// Version 2.4.0
+// Version 2.5.0
 // ==================================
-
-
 
 // ==================================
 // CHARGEMENT CLIENTS
@@ -12,24 +10,20 @@
 
 function obtenirClients(){
 
-if(typeof db === "undefined"){
+    if(typeof db === "undefined"){
+        return [];
+    }
 
-return [];
-
-}
-
-
-return db.clients || [];
+    return db.clients || [];
 
 }
-
 
 
 // ==================================
 // AFFICHAGE CLIENTS
 // ==================================
 
-function afficherClients(){
+function afficherClients(clients = obtenirClients()){
 
     let zone = document.getElementById("listeClients");
 
@@ -37,35 +31,48 @@ function afficherClients(){
         return;
     }
 
-    let clients = obtenirClients();
-
     if(clients.length === 0){
-        zone.innerHTML = "<p>Aucun client enregistré.</p>";
+
+        zone.innerHTML =
+        "<p>Aucun client enregistré.</p>";
+
         return;
+
     }
 
     let html = "";
 
     clients.forEach(function(client){
 
-        let commandes = db.commandes.filter(c =>
-            c.email === client.email
-        );
+        let commandes = (db.commandes || [])
+
+            .filter(c => c.email === client.email)
+
+            .sort(function(a,b){
+
+                return new Date(a.date) -
+                       new Date(b.date);
+
+            });
 
         let nbCommandes = commandes.length;
 
-        let total = commandes.reduce((somme, c) =>
-            somme + Number(c.total || 0),
-            0
-        );
+        let total = commandes.reduce(function(somme,c){
+
+            return somme + Number(c.total || 0);
+
+        },0);
 
         let premiereCommande = "-";
         let derniereCommande = "-";
 
         if(commandes.length){
 
-            premiereCommande = commandes[0].date;
-            derniereCommande = commandes[commandes.length - 1].date;
+            premiereCommande =
+            commandes[0].date;
+
+            derniereCommande =
+            commandes[commandes.length-1].date;
 
         }
 
@@ -75,11 +82,17 @@ function afficherClients(){
 
 <h3>👤 ${client.nom || "-"}</h3>
 
-<p><strong>Téléphone :</strong><br>${client.telephone || "-"}</p>
+<p><strong>Téléphone :</strong><br>
+${client.telephone || "-"}
+</p>
 
-<p><strong>Email :</strong><br>${client.email || "-"}</p>
+<p><strong>Email :</strong><br>
+${client.email || "-"}
+</p>
 
-<p><strong>Adresse :</strong><br>${client.adresse || "-"}</p>
+<p><strong>Adresse :</strong><br>
+${client.adresse || "-"}
+</p>
 
 <hr>
 
@@ -90,6 +103,7 @@ function afficherClients(){
 <p>📅 <strong>Première commande :</strong> ${premiereCommande}</p>
 
 <p>🕒 <strong>Dernière commande :</strong> ${derniereCommande}</p>
+
 <br>
 
 <button
@@ -99,6 +113,7 @@ onclick="voirHistorique('${client.email}')">
 📂 Voir l'historique
 
 </button>
+
 </div>
 
 `;
@@ -116,168 +131,74 @@ onclick="voirHistorique('${client.email}')">
 
 function rechercherClient(){
 
+    let champ =
+    document.getElementById("rechercheClient");
 
-let champ =
-document.getElementById(
-"rechercheClient"
-);
+    if(!champ){
+        return;
+    }
 
+    let recherche =
+    champ.value.toLowerCase().trim();
 
+    let resultat =
+    obtenirClients().filter(function(client){
 
-if(!champ){
+        return (
 
-return;
+            (client.nom || "")
+            .toLowerCase()
+            .includes(recherche)
 
-}
+            ||
 
+            (client.email || "")
+            .toLowerCase()
+            .includes(recherche)
 
+            ||
 
-let recherche =
-champ.value.toLowerCase();
+            (client.telephone || "")
+            .toLowerCase()
+            .includes(recherche)
 
+            ||
 
+            (client.adresse || "")
+            .toLowerCase()
+            .includes(recherche)
 
-let clients =
-obtenirClients();
+        );
 
+    });
 
-
-let resultat =
-clients.filter(function(client){
-
-
-return (
-
-(client.nom || "")
-.toLowerCase()
-.includes(recherche)
-
-
-||
-
-(client.email || "")
-.toLowerCase()
-.includes(recherche)
-
-
-);
-
-
-});
-
-
-
-afficherListeClients(resultat);
-
+    afficherClients(resultat);
 
 }
 
 
-
-
-// ==================================
-// AFFICHAGE LISTE FILTREE
-// ==================================
-
-function afficherListeClients(clients){
-
-
-let zone =
-document.getElementById("listeClients");
-
-
-if(!zone){
-
-return;
-
-}
-
-
-
-if(clients.length === 0){
-
-zone.innerHTML =
-"<p>Aucun client trouvé.</p>";
-
-return;
-
-}
-
-
-
-let html = "";
-
-
-
-clients.forEach(function(client){
-
-
-html += `
-
-<div class="commande-admin">
-
-<h3>
-👤 ${client.nom || "-"}
-</h3>
-
-
-<p>
-${client.email || ""}
-</p>
-
-
-<p>
-${client.telephone || ""}
-</p>
-
-
-</div>
-
-`;
-
-
-});
-
-
-
-zone.innerHTML = html;
-
-
-}
-
-
-
-
-
-// ==================================
-// INITIALISATION
-// ==================================
-
-document.addEventListener(
-"DOMContentLoaded",
-function(){
-
-
-afficherClients();
-
-
-}
-);
 // ==================================
 // HISTORIQUE CLIENT
 // ==================================
 
 function voirHistorique(email){
 
-    let commandes = db.commandes.filter(c =>
-        c.email === email
-    );
+    let commandes = (db.commandes || [])
 
-    let html = "";
+        .filter(c => c.email === email)
+
+        .sort(function(a,b){
+
+            return new Date(a.date) -
+                   new Date(b.date);
+
+        });
+
+    let html = "<h3>Historique des commandes</h3>";
 
     if(commandes.length === 0){
 
-        html =
+        html +=
         "<p>Aucune commande trouvée.</p>";
 
     }
@@ -287,25 +208,27 @@ function voirHistorique(email){
 
             html += `
 
-            <div class="commande-admin">
+<div class="commande-admin">
 
-                <strong>${c.id}</strong><br>
+<strong>${c.id}</strong><br>
 
-                📅 ${c.date}<br>
+📅 ${c.date}<br>
 
-                💰 ${c.total} CHF<br>
+💰 ${c.total} CHF<br>
 
-                📦 ${c.statut}<br><br>
+📦 ${c.statut}<br><br>
 
-                <small>
-                ${c.produits}
-                </small>
+<small>
 
-            </div>
+${c.produits}
 
-            <br>
+</small>
 
-            `;
+</div>
+
+<br>
+
+`;
 
         });
 
@@ -322,6 +245,9 @@ function voirHistorique(email){
 }
 
 
+// ==================================
+// FERMETURE HISTORIQUE
+// ==================================
 
 function fermerHistorique(){
 
@@ -330,3 +256,20 @@ function fermerHistorique(){
     ).style.display = "none";
 
 }
+
+
+// ==================================
+// INITIALISATION
+// ==================================
+
+document.addEventListener(
+
+    "DOMContentLoaded",
+
+    function(){
+
+        afficherClients();
+
+    }
+
+);
