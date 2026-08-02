@@ -1764,3 +1764,48 @@ padding:25px;
     }
 
 }
+/* ==================================
+   Amélioration espacements boutons admin
+   ================================== */
+
+.admin-menu,
+.menu-admin,
+.dashboard-admin {
+    gap: 15px;
+}
+
+
+.admin-menu .btn,
+.menu-admin .btn,
+.dashboard-admin .btn {
+
+    margin: 8px;
+
+    min-height: 45px;
+
+    display: inline-flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    text-align: center;
+
+}
+
+
+/* Version téléphone */
+
+@media (max-width:600px){
+
+    .admin-menu .btn,
+    .menu-admin .btn,
+    .dashboard-admin .btn {
+
+        width: 100%;
+
+        margin: 8px 0;
+
+    }
+
+}
