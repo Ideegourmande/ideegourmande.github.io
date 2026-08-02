@@ -90,7 +90,15 @@ function afficherClients(){
 <p>📅 <strong>Première commande :</strong> ${premiereCommande}</p>
 
 <p>🕒 <strong>Dernière commande :</strong> ${derniereCommande}</p>
+<br>
 
+<button
+class="btn"
+onclick="voirHistorique('${client.email}')">
+
+📂 Voir l'historique
+
+</button>
 </div>
 
 `;
