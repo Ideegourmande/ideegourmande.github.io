@@ -1,7 +1,7 @@
 // ==================================
 // IDÉE GOURMANDE
 // commande.js
-// ==================================
+// ==========================F========
 
 let recapTexte = "";
 
@@ -467,19 +467,19 @@ viderPanier
 // Affichage du nom pour le paiement TWINT
 // ===============================
 
-const prenom = document.getElementById("prenom");
-const nom = document.getElementById("nom");
+const prenomInput = document.getElementById("prenom");
+const nomInput = document.getElementById("nom");
 const twintNomComplet = document.getElementById("twintNomComplet");
 
 function majNomTwint() {
-    if (!prenom || !nom || !twintNomComplet) return;
+    if (!prenomInput || !nomInput || !twintNomComplet) return;
 
     twintNomComplet.textContent =
-        (prenom.value + " " + nom.value).trim();
+        (prenomInput.value + " " + nomInput.value).trim();
 }
 
-if (prenom && nom && twintNomComplet) {
-    prenom.addEventListener("input", majNomTwint);
-    nom.addEventListener("input", majNomTwint);
+if (prenomInput && nomInput && twintNomComplet) {
+    prenomInput.addEventListener("input", majNomTwint);
+    nomInput.addEventListener("input", majNomTwint);
     majNomTwint();
 }
