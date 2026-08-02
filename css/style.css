@@ -1809,3 +1809,49 @@ padding:25px;
     }
 
 }
+/* ==================================
+   Amélioration menu administration
+   Espacement boutons
+================================== */
+
+.presentation .btn {
+
+    margin: 8px;
+
+    display: inline-flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    min-height: 45px;
+
+    padding: 12px 18px;
+
+}
+
+
+/* Affichage téléphone */
+
+@media (max-width:600px){
+
+    .presentation {
+
+        padding: 15px;
+
+    }
+
+
+    .presentation .btn {
+
+        display: flex;
+
+        width: 100%;
+
+        margin: 10px 0;
+
+        box-sizing: border-box;
+
+    }
+
+}
