@@ -1864,3 +1864,11 @@ padding:25px;
     margin: 35px 0 20px;
 
 }
+/* Titres catégories produits */
+
+.titre-categorie {
+
+    grid-column:1/-1;
+    text-align:center;
+    margin:40px 0 10px;
+}
