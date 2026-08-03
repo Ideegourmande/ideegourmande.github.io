@@ -547,18 +547,22 @@ box-shadow:0 12px 30px rgba(0,0,0,.07);
 }
 .produit .btn{
 
-    margin:20px;
-    margin-top:auto;
+    width:160px;
+    height:55px;
+
+    margin:20px auto;
+
     display:flex;
     justify-content:center;
     align-items:center;
-    width:calc(100% - 40px);
-    min-height:58px;
+
     font-size:1.05rem;
     text-align:center;
+
     box-shadow:0 8px 18px rgba(184,145,34,.25);
     border-radius:35px;
     letter-spacing:.4px;
+
 }
 
 .prix{
