@@ -1928,3 +1928,12 @@ padding:25px;
     margin:0 auto;
 
 }
+.produit img[alt="Viande séchée artisanale"] {
+
+    height:200px;
+    object-fit:cover;
+    object-position:center;
+
+    transform:scale(1.8);
+
+}
