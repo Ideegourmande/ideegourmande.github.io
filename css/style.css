@@ -1922,3 +1922,13 @@ padding:25px;
     object-fit:cover;
 
 }
+/* Correction définitive image viande séchée */
+
+.produit img.image-viande {
+
+    width:180px;
+    height:120px;
+    object-fit:cover;
+    margin:0 auto;
+
+}
