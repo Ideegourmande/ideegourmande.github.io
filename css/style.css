@@ -1,1776 +1,1352 @@
 /* ===================================================
    IDÉE GOURMANDE V2
-   Style principal
+   Style principal nettoyé
    =================================================== */
 
-/* ==============================
+
+/* ===================================================
    VARIABLES
-============================== */
+   =================================================== */
 
-:root{
+:root {
 
---vert:#7F9275;
---vert-fonce:#5E7055;
+    --vert: #7F9275;
+    --vert-fonce: #5E7055;
 
---or:#D4AF37;
---or-fonce:#B89122;
+    --or: #D4AF37;
+    --or-fonce: #B89122;
 
---fond:#F8F5EF;
---blanc:#FFFFFF;
+    --fond: #F8F5EF;
+    --blanc: #FFFFFF;
 
---texte:#333333;
---gris:#666666;
+    --texte: #333333;
+    --gris: #666666;
 
---ombre:0 8px 25px rgba(0,0,0,.08);
+    --ombre: 0 8px 25px rgba(0,0,0,.08);
 
---rayon:18px;
+    --rayon: 18px;
 
---transition:.30s;
-
-}
-
-
-/* ==============================
-RESET
-============================== */
-
-*{
-
-margin:0;
-
-padding:0;
-
-box-sizing:border-box;
+    --transition: .30s;
 
 }
 
 
-html{
+/* ===================================================
+   RESET GLOBAL
+   =================================================== */
 
-scroll-behavior:smooth;
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+
+html {
+    scroll-behavior: smooth;
+}
+
+
+body {
+
+    font-family: Georgia, serif;
+
+    background: var(--fond);
+
+    color: var(--texte);
+
+    line-height: 1.6;
 
 }
 
 
-body{
+img {
 
-font-family:Georgia,serif;
+    display: block;
 
-background:var(--fond);
+    max-width: 100%;
 
-color:var(--texte);
-
-line-height:1.6;
+    height: auto;
 
 }
 
 
-img{
+a {
 
-display:block;
+    text-decoration: none;
 
-max-width:100%;
-
-height:auto;
+    transition: var(--transition);
 
 }
 
 
-a{
+ul {
 
-text-decoration:none;
-
-transition:var(--transition);
+    list-style: none;
 
 }
 
 
-ul{
+/* ===================================================
+   BANDEAU SUPERIEUR
+   =================================================== */
 
-list-style:none;
+.top-banner {
 
-}
+    background: var(--vert);
 
+    color: white;
 
-/* ==============================
-BANDEAU
-============================== */
+    padding: 12px;
 
-.top-banner{
+    text-align: center;
 
-background:var(--vert);
+    font-size: .95rem;
 
-color:white;
-
-padding:12px;
-
-text-align:center;
-
-font-size:.95rem;
-
-letter-spacing:.3px;
+    letter-spacing: .3px;
 
 }
 
 
-/* ==============================
-NAVIGATION
-============================== */
+/* ===================================================
+   NAVIGATION
+   =================================================== */
 
-nav{
+nav {
 
-display:flex;
+    display: flex;
 
-justify-content:space-between;
+    justify-content: space-between;
 
-align-items:center;
+    align-items: center;
 
-padding:18px 8%;
+    padding: 18px 8%;
 
-background:white;
+    background: white;
 
-box-shadow:0 2px 10px rgba(0,0,0,.05);
+    box-shadow: 0 2px 10px rgba(0,0,0,.05);
 
-position:sticky;
+    position: sticky;
 
-top:0;
+    top: 0;
 
-z-index:999;
-
-}
-
-
-.logo img{
-
-width:120px;
+    z-index: 999;
 
 }
 
 
-nav ul{
+.logo img {
 
-display:flex;
-
-gap:35px;
-
-align-items:center;
+    width: 120px;
 
 }
 
 
-nav a{
+nav ul {
 
-color:var(--texte);
+    display: flex;
 
-font-weight:bold;
+    align-items: center;
 
-font-size:1rem;
-
-}
-
-
-nav a:hover{
-
-color:var(--or-fonce);
+    gap: 35px;
 
 }
 
 
-/* ==============================
-HERO
-============================== */
+nav a {
 
-.hero{
+    color: var(--texte);
 
-min-height:700px;
+    font-weight: bold;
 
-display:flex;
-
-justify-content:center;
-
-align-items:center;
-
-text-align:center;
-
-color:white;
-
-background:
-
-linear-gradient(
-
-rgba(0,0,0,.45),
-
-rgba(0,0,0,.45)
-
-),
-
-url("../images/hero.jpg");
-
-background-size:cover;
-
-background-position:center;
+    font-size: 1rem;
 
 }
 
 
-.hero-content{
+nav a:hover {
 
-max-width:850px;
-
-padding:30px;
+    color: var(--or-fonce);
 
 }
 
 
-.hero h1{
+/* ===================================================
+   HERO
+   =================================================== */
 
-font-size:4.5rem;
+.hero {
 
-margin-bottom:20px;
+    min-height: 700px;
+
+    display: flex;
+
+    justify-content: center;
+
+    align-items: center;
+
+    text-align: center;
+
+    color: white;
+
+    background:
+
+        linear-gradient(
+            rgba(0,0,0,.45),
+            rgba(0,0,0,.45)
+        ),
+
+        url("../images/hero.jpg");
+
+    background-size: cover;
+
+    background-position: center;
 
 }
 
 
-.hero h2{
+.hero-content {
 
-color:#F1D78A;
+    max-width: 850px;
 
-font-size:2rem;
-
-margin-bottom:20px;
+    padding: 30px;
 
 }
 
 
-.hero p{
+.hero h1 {
 
-font-size:1.25rem;
+    font-size: 4.5rem;
 
-margin-bottom:40px;
+    margin-bottom: 20px;
 
 }
 
 
-/* ==============================
-BOUTONS
-============================== */
+.hero h2 {
+
+    color: #F1D78A;
+
+    font-size: 2rem;
+
+    margin-bottom: 20px;
+
+}
+
+
+.hero p {
+
+    font-size: 1.25rem;
+
+    margin-bottom: 40px;
+
+}
+
+
+/* ===================================================
+   BOUTONS GENERAUX
+   =================================================== */
 
 .btn,
+button {
 
-button{
+    background: var(--or-fonce);
 
-background:var(--or-fonce);
+    color: white;
 
-color:white;
+    border: none;
 
-border:none;
+    padding: 15px 36px;
 
-padding:15px 36px;
+    border-radius: 35px;
 
-border-radius:35px;
+    font-size: 1rem;
 
-font-size:1rem;
+    font-weight: bold;
 
-font-weight:bold;
+    cursor: pointer;
 
-cursor:pointer;
+    transition: var(--transition);
 
-transition:var(--transition);
+    display: inline-flex;
 
-display:inline-block;
+    align-items: center;
+
+    justify-content: center;
 
 }
 
 
 .btn:hover,
-button:hover{
+button:hover {
 
-    background:#94741C;
+    background: #94741C;
 
-    transform:translateY(-3px);
+    transform: translateY(-3px);
 
-    box-shadow:0 12px 25px rgba(184,145,34,.35);
-
-}
-
-
-.btn-secondaire{
-
-background:var(--vert);
+    box-shadow: 0 12px 25px rgba(184,145,34,.35);
 
 }
 
 
-.btn-secondaire:hover{
+.btn-secondaire {
 
-background:var(--vert-fonce);
-
-}
-
-
-/* ==============================
-SECTIONS
-============================== */
-
-.presentation{
-
-padding:70px 10%;
-
-text-align:center;
+    background: var(--vert);
 
 }
 
 
-.presentation h1{
+.btn-secondaire:hover {
 
-font-size:3rem;
-
-margin-bottom:20px;
-
-color:var(--vert);
+    background: var(--vert-fonce);
 
 }
 
 
-.presentation h2{
+/* ===================================================
+   SECTIONS INTRODUCTION
+   =================================================== */
 
-font-size:2.3rem;
+.presentation {
 
-margin-bottom:20px;
+    padding: 70px 10%;
 
-color:var(--vert);
+    text-align: center;
 
 }
 
 
-.presentation p{
+.presentation h1,
+.presentation h2 {
 
-max-width:900px;
+    color: var(--vert);
 
-margin:auto;
+    margin-bottom: 20px;
 
-font-size:1.1rem;
+}
 
-color:var(--gris);
+
+.presentation h1 {
+
+    font-size: 3rem;
+
+}
+
+
+.presentation h2 {
+
+    font-size: 2.3rem;
+
+}
+
+
+.presentation p {
+
+    max-width: 900px;
+
+    margin: auto;
+
+    font-size: 1.1rem;
+
+    color: var(--gris);
 
 }
 /* ===================================================
-   PARTIE 2/5
-   PRODUITS - COMMANDES - FORMULAIRES
+   VALEURS / BLOCS PREMIUM
    =================================================== */
 
+.valeurs {
 
-/* ==============================
-   VALEURS / BLOCS PREMIUM
-============================== */
+    display: grid;
 
-.valeurs{
+    grid-template-columns: repeat(3,1fr);
 
-display:grid;
+    gap: 30px;
 
-grid-template-columns:repeat(3,1fr);
-
-gap:30px;
-
-padding:60px 8%;
+    padding: 60px 8%;
 
 }
 
 
-.valeurs div{
+.valeurs div {
 
-background:white;
+    background: white;
 
-padding:35px;
+    padding: 35px;
 
-border-radius:var(--rayon);
+    border-radius: var(--rayon);
 
-box-shadow:var(--ombre);
+    box-shadow: var(--ombre);
 
-text-align:center;
+    text-align: center;
 
-transition:var(--transition);
-
-}
-
-
-.valeurs div:hover{
-
-    transform:translateY(-8px);
-
-    box-shadow:0 15px 35px rgba(0,0,0,.12);
+    transition: var(--transition);
 
 }
 
 
-.valeurs h3{
+.valeurs div:hover {
 
-color:var(--vert);
+    transform: translateY(-8px);
 
-margin-bottom:15px;
-
-font-size:1.4rem;
+    box-shadow: 0 15px 35px rgba(0,0,0,.12);
 
 }
 
 
+.valeurs h3 {
 
-/* ==============================
-   PRODUITS
-============================== */
+    color: var(--vert);
 
-.produits{
+    margin-bottom: 15px;
 
-    display:grid;
-
-    grid-template-columns:repeat(auto-fit,minmax(280px,1fr));
-
-    gap:30px;
-
-    padding:50px 8%;
-
-    align-items:stretch;
+    font-size: 1.4rem;
 
 }
 
-.produit{
 
-    background:linear-gradient(to bottom,#ffffff,#fcfaf6);
+/* ===================================================
+   CATALOGUE PRODUITS
+   =================================================== */
 
-border-radius:22px;
+.produits {
 
-overflow:hidden;
+    display: grid;
 
-border:1px solid #e9e1d1;
+    grid-template-columns: repeat(auto-fit,minmax(280px,1fr));
 
-box-shadow:0 12px 30px rgba(0,0,0,.07);
+    gap: 30px;
+
+    padding: 50px 8%;
+
+    align-items: stretch;
+
+}
+
+
+.titre-categorie {
+
+    grid-column: 1/-1;
+
+    text-align: center;
+
+    margin: 40px 0 10px;
+
+}
+
+
+/* ===================================================
+   CARTE PRODUIT
+   =================================================== */
+
+.produit {
+
+    background: linear-gradient(
+        to bottom,
+        #ffffff,
+        #fcfaf6
+    );
+
+    border-radius: 22px;
+
+    overflow: hidden;
+
+    border: 1px solid #e9e1d1;
+
+    box-shadow: 0 12px 30px rgba(0,0,0,.07);
+
+    display: flex;
+
+    flex-direction: column;
+
+    text-align: center;
+
+    height: 100%;
 
     transition:
+
         transform .35s ease,
+
         box-shadow .35s ease;
 
-    display:flex;
-    flex-direction:column;
-
-    height:100%;
 }
 
-.produit:hover{
 
-    transform:translateY(-12px);
+.produit:hover {
 
-    box-shadow:0 30px 55px rgba(0,0,0,.16);
+    transform: translateY(-12px);
 
-}
-
-.produit img[alt="Viande séchée artisanale"] {
-
-    height:200px;
-    object-fit:cover;
-    object-position:center 60%;
-    transform:scale(1.5);
-
-}
-.produit:hover img{
-
-    transform:scale(1.05);
-
-}
-
-.produit h3{
-    color:var(--vert);
-    padding:22px 20px 10px;
-    font-size:1.45rem;
-    line-height:1.3;
-}
-.produit p{
-    margin:0 20px 15px;
-    color:var(--gris);
-}
-
-/* Liste des recettes */
-
-.recettes{
-
-    margin:8px 20px 28px;
-
-    padding-left:22px;
-
-    color:#555;
-
-    line-height:1.75;
-
-    font-size:1rem;
-
-}
-
-.recettes li{
-
-    list-style:none;
-
-    position:relative;
-
-    padding-left:12px;
-
-    margin-bottom:6px;
-
-}
-
-.recettes li::before{
-
-    content:"•";
-
-    color:var(--or-fonce);
-
-    position:absolute;
-
-    left:-8px;
-
-}
-.produit::after{
-
-    content:"";
-
-    display:block;
-
-    width:80%;
-
-    margin:auto;
-
-    border-top:1px solid #ece6d8;
-
-}
-.produit .btn{
-
-    width:160px;
-    height:55px;
-
-    margin:20px auto;
-
-    display:flex;
-    justify-content:center;
-    align-items:center;
-
-    font-size:1.05rem;
-    text-align:center;
-
-    box-shadow:0 8px 18px rgba(184,145,34,.25);
-    border-radius:35px;
-    letter-spacing:.4px;
-
-}
-
-.prix{
-    display:block;
-    margin:10px 20px 0;
-    font-size:1.45rem;
-    font-weight:bold;
-    color:var(--or-fonce);
+    box-shadow: 0 30px 55px rgba(0,0,0,.16);
 
 }
 
 
+/* ===================================================
+   IMAGES PRODUITS
+   =================================================== */
 
-/* ==============================
-   COMMANDES
-============================== */
+.produit img {
 
+    width: 100%;
 
-.commande-grid{
+    height: 220px;
 
-display:grid;
-
-grid-template-columns:repeat(auto-fit,minmax(270px,1fr));
-
-gap:30px;
-
-padding:50px 8%;
+    object-fit: cover;
 
 }
 
 
+/* Image viande séchée */
 
-.commande-card{
+.produit img.image-viande {
 
-background:white;
+    width: 120px;
 
-padding:25px;
+    height: 90px;
 
-border-radius:var(--rayon);
+    margin: 0 auto;
 
-box-shadow:var(--ombre);
-
-transition:
-transform var(--transition),
-box-shadow var(--transition);
+    object-fit: cover;
 
 }
 
 
+/* ===================================================
+   CONTENU CARTE PRODUIT
+   =================================================== */
 
-.commande-card:hover{
+.produit h3 {
 
-    transform:translateY(-8px);
+    min-height: 70px;
 
-    box-shadow:0 15px 35px rgba(0,0,0,.12);
+    display: flex;
 
-}
+    align-items: center;
 
+    justify-content: center;
 
+    padding: 20px;
 
-.commande-card img{
+    color: var(--vert);
 
-width:100%;
+    font-size: 1.45rem;
 
-height:220px;
-
-object-fit:cover;
-
-border-radius:15px;
-
-margin-bottom:20px;
-
-}
-
-
-
-.commande-card h3{
-
-color:var(--vert);
-
-font-size:1.25rem;
-
-margin-bottom:10px;
+    line-height: 1.3;
 
 }
 
 
+.produit p {
 
-.commande-card p{
+    margin: 0 20px 15px;
 
-margin-bottom:12px;
-
-}
-
-
-
-.commande-card strong{
-
-color:var(--or-fonce);
-
-font-size:1.1rem;
+    color: var(--gris);
 
 }
 
 
+/* Prix */
 
-.commande-card label{
+.prix {
 
-display:block;
+    display: flex;
 
-font-weight:bold;
+    align-items: center;
 
-margin-top:15px;
+    justify-content: center;
+
+    min-height: 45px;
+
+    margin: 10px 20px 0;
+
+    font-size: 1.45rem;
+
+    font-weight: bold;
+
+    color: var(--or-fonce);
 
 }
 
 
+/* Liste recettes */
 
-/* ==============================
+.recettes {
+
+    margin: 8px 20px 28px;
+
+    padding-left: 22px;
+
+    color: #555;
+
+    line-height: 1.75;
+
+    font-size: 1rem;
+
+}
+
+
+.recettes li {
+
+    position: relative;
+
+    padding-left: 12px;
+
+    margin-bottom: 6px;
+
+}
+
+
+.recettes li::before {
+
+    content: "•";
+
+    color: var(--or-fonce);
+
+    position: absolute;
+
+    left: -8px;
+
+}
+
+
+/* Séparation avant bouton */
+
+.produit::after {
+
+    content: "";
+
+    display: block;
+
+    width: 80%;
+
+    margin: auto;
+
+    border-top: 1px solid #ece6d8;
+
+}
+
+
+/* Bouton produit */
+
+.produit .btn {
+
+    width: 160px;
+
+    height: 55px;
+
+    margin: 20px auto;
+
+    font-size: 1.05rem;
+
+    letter-spacing: .4px;
+
+    box-shadow: 0 8px 18px rgba(184,145,34,.25);
+
+}
+
+
+/* ===================================================
+   COMMANDES - CARTES
+   =================================================== */
+
+.commande-grid {
+
+    display: grid;
+
+    grid-template-columns: repeat(auto-fit,minmax(270px,1fr));
+
+    gap: 30px;
+
+    padding: 50px 8%;
+
+}
+
+
+.commande-card {
+
+    background: white;
+
+    padding: 25px;
+
+    border-radius: var(--rayon);
+
+    box-shadow: var(--ombre);
+
+    transition: var(--transition);
+
+}
+
+
+.commande-card:hover {
+
+    transform: translateY(-8px);
+
+    box-shadow: 0 15px 35px rgba(0,0,0,.12);
+
+}
+
+
+.commande-card img {
+
+    width: 100%;
+
+    height: 220px;
+
+    object-fit: cover;
+
+    border-radius: 15px;
+
+    margin-bottom: 20px;
+
+}
+
+
+.commande-card h3 {
+
+    color: var(--vert);
+
+    font-size: 1.25rem;
+
+    margin-bottom: 10px;
+
+}
+
+
+.commande-card p {
+
+    margin-bottom: 12px;
+
+}
+
+
+.commande-card strong {
+
+    color: var(--or-fonce);
+
+    font-size: 1.1rem;
+
+}
+
+
+.commande-card label {
+
+    display: block;
+
+    font-weight: bold;
+
+    margin-top: 15px;
+
+}
+/* ===================================================
    FORMULAIRES
-============================== */
+   =================================================== */
 
+.commande-form {
 
-.commande-form{
+    background: white;
 
-background:white;
+    padding: 40px;
 
-padding:40px;
+    border-radius: var(--rayon);
 
-border-radius:var(--rayon);
+    box-shadow: var(--ombre);
 
-box-shadow:var(--ombre);
+    max-width: 1000px;
 
-max-width:1000px;
-
-margin:auto;
-
-}
-
-
-
-.form-grid{
-
-display:grid;
-
-grid-template-columns:repeat(2,1fr);
-
-gap:25px;
+    margin: auto;
 
 }
 
 
+.form-grid {
 
-.full-width{
+    display: grid;
 
-grid-column:1/-1;
+    grid-template-columns: repeat(2,1fr);
+
+    gap: 25px;
 
 }
 
+
+.full-width {
+
+    grid-column: 1/-1;
+
+}
 
 
 input,
-
 textarea,
+select {
 
-select{
+    width: 100%;
 
-width:100%;
+    padding: 15px;
 
-padding:15px;
+    margin-top: 8px;
 
-margin-top:8px;
+    border: 1px solid #ddd;
 
-border:1px solid #ddd;
+    border-radius: 12px;
 
-border-radius:12px;
+    font-family: inherit;
 
-font-family:inherit;
+    font-size: 1rem;
 
-font-size:1rem;
-
-background:white;
-
-}
-
-
-
-textarea{
-
-resize:vertical;
+    background: white;
 
 }
 
+
+textarea {
+
+    resize: vertical;
+
+}
 
 
 input:focus,
-
 textarea:focus,
+select:focus {
 
-select:focus{
+    outline: none;
 
-outline:none;
+    border-color: var(--or);
 
-border-color:var(--or);
-
-box-shadow:0 0 0 3px rgba(212,175,55,.15);
+    box-shadow: 0 0 0 3px rgba(212,175,55,.15);
 
 }
 
 
+/* ===================================================
+   SECTION COMMANDE
+   =================================================== */
 
-/* ==============================
+.commande-section {
+
+    padding: 60px 8%;
+
+}
+
+
+.commande-container {
+
+    max-width: 1200px;
+
+    margin: auto;
+
+}
+
+
+/* ===================================================
    PANIER
-============================== */
+   =================================================== */
 
+.panier-section {
 
-.panier-section{
-
-padding:60px 8%;
-
-}
-
-
-
-.panier-card{
-
-background:white;
-
-padding:35px;
-
-border-radius:var(--rayon);
-
-box-shadow:var(--ombre);
-
-max-width:900px;
-
-margin:auto;
+    padding: 60px 8%;
 
 }
 
 
+.panier-card {
 
-.panier-card h2{
+    background: white;
 
-color:var(--vert);
+    padding: 35px;
 
-margin-bottom:25px;
+    border-radius: var(--rayon);
 
-}
+    box-shadow: var(--ombre);
 
+    max-width: 900px;
 
-
-#recapCommande{
-
-padding:20px;
-
-background:#fafafa;
-
-border-radius:15px;
-
-min-height:80px;
+    margin: auto;
 
 }
 
 
+.panier-card h2 {
 
-.total-box{
+    color: var(--vert);
 
-display:flex;
-
-justify-content:space-between;
-
-align-items:center;
-
-margin-top:25px;
-
-padding-top:20px;
-
-border-top:1px solid #ddd;
-
-font-size:1.2rem;
+    margin-bottom: 25px;
 
 }
 
 
+#recapCommande {
 
-.total-box strong{
+    padding: 20px;
 
-font-size:2rem;
+    background: #fafafa;
 
-color:var(--vert);
+    border-radius: 15px;
 
-}
-
-
-
-/* ==============================
-   BOUTON VIDER PANIER
-============================== */
-
-
-.vider-panier{
-
-background:#8b3a3a;
-
-margin-top:20px;
+    min-height: 80px;
 
 }
 
 
+.total-box {
 
-.vider-panier:hover{
+    display: flex;
 
-background:#6c2929;
+    justify-content: space-between;
+
+    align-items: center;
+
+    margin-top: 25px;
+
+    padding-top: 20px;
+
+    border-top: 1px solid #ddd;
+
+    font-size: 1.2rem;
 
 }
 
 
+.total-box strong {
 
-/* ==============================
+    font-size: 2rem;
+
+    color: var(--vert);
+
+}
+
+
+/* Bouton vider panier */
+
+.vider-panier {
+
+    background: #8b3a3a;
+
+    margin-top: 20px;
+
+}
+
+
+.vider-panier:hover {
+
+    background: #6c2929;
+
+}
+
+
+/* ===================================================
+   RESUME COMMANDE
+   =================================================== */
+
+.resume-commande {
+
+    background: white;
+
+    padding: 30px;
+
+    border-radius: var(--rayon);
+
+    box-shadow: var(--ombre);
+
+    margin-top: 40px;
+
+}
+
+
+.resume-commande h2 {
+
+    color: var(--vert);
+
+    margin-bottom: 20px;
+
+}
+
+
+.ligne-produit {
+
+    display: flex;
+
+    justify-content: space-between;
+
+    align-items: center;
+
+    padding: 12px 0;
+
+    border-bottom: 1px solid #eee;
+
+}
+
+
+.ligne-produit:last-child {
+
+    border-bottom: none;
+
+}
+
+
+.ligne-produit span {
+
+    font-size: 1rem;
+
+}
+
+
+.ligne-produit strong {
+
+    color: var(--or-fonce);
+
+}
+
+
+/* ===================================================
+   TOTAL COMMANDE
+   =================================================== */
+
+.total-commande {
+
+    margin-top: 30px;
+
+    background: var(--vert);
+
+    color: white;
+
+    padding: 25px;
+
+    border-radius: var(--rayon);
+
+    display: flex;
+
+    justify-content: space-between;
+
+    align-items: center;
+
+    font-size: 1.4rem;
+
+}
+
+
+.total-commande strong {
+
+    font-size: 2rem;
+
+    color: white;
+
+}
+
+
+/* Validation */
+
+.validation-commande {
+
+    text-align: center;
+
+    margin-top: 35px;
+
+}
+
+
+.btn-large {
+
+    font-size: 1.15rem;
+
+    padding: 18px 50px;
+
+}
+
+
+/* ===================================================
    PAIEMENT TWINT
-============================== */
+   =================================================== */
 
+.paiement-box {
 
-.paiement-box{
+    margin: 35px auto;
 
-margin:35px auto;
+    padding: 30px;
 
-padding:30px;
+    background: #faf7ee;
 
-background:#faf7ee;
+    border: 1px solid var(--or);
 
-border:1px solid var(--or);
+    border-radius: var(--rayon);
 
-border-radius:var(--rayon);
-
-text-align:center;
-
-}
-
-
-
-.paiement-box h3{
-
-color:var(--vert);
-
-margin-bottom:15px;
+    text-align: center;
 
 }
 
 
+.paiement-box h3 {
 
-.twint-number{
+    color: var(--vert);
 
-font-size:1.8rem;
-
-font-weight:bold;
-
-color:var(--vert);
-
-margin:20px;
+    margin-bottom: 15px;
 
 }
 
 
+.twint-number {
 
-.confirmation{
+    font-size: 1.8rem;
 
-font-size:.95rem;
+    font-weight: bold;
 
-color:var(--gris);
+    color: var(--vert);
 
-margin-top:20px;
+    margin: 20px;
 
 }
-.twint-info{
 
-    margin-top:20px;
 
-    padding:15px;
+.twint-info {
 
-    background:white;
+    margin-top: 20px;
 
-    border-left:4px solid var(--or);
+    padding: 15px;
 
-    border-radius:10px;
+    background: white;
 
-    font-size:0.95rem;
+    border-left: 4px solid var(--or);
 
-    line-height:1.6;
+    border-radius: 10px;
 
-    color:var(--texte);
+    font-size: .95rem;
 
-    box-shadow:0 2px 8px rgba(0,0,0,.05);
+    line-height: 1.6;
+
+    color: var(--texte);
+
+    box-shadow: 0 2px 8px rgba(0,0,0,.05);
+
+}
+
+
+.confirmation {
+
+    font-size: .95rem;
+
+    color: var(--gris);
+
+    margin-top: 20px;
+
+}
+
+
+/* ===================================================
+   PAGE CONFIRMATION
+   =================================================== */
+
+.confirmation-page {
+
+    max-width: 800px;
+
+    margin: 80px auto;
+
+    padding: 45px;
+
+    background: white;
+
+    border-radius: var(--rayon);
+
+    box-shadow: var(--ombre);
+
+    text-align: center;
+
+}
+
+
+.confirmation-page h1 {
+
+    color: var(--vert);
+
+    font-size: 3rem;
+
+    margin-bottom: 20px;
+
+}
+
+
+.confirmation-page p {
+
+    font-size: 1.15rem;
+
+    color: var(--gris);
+
+}
+
+
+/* ===================================================
+   PDF COMMANDE
+   =================================================== */
+
+.pdf-box {
+
+    background: #faf7ee;
+
+    border: 1px solid var(--or);
+
+    padding: 25px;
+
+    border-radius: var(--rayon);
+
+    margin-top: 30px;
+
+    text-align: center;
+
+}
+
+
+.pdf-box h3 {
+
+    color: var(--vert);
+
+    margin-bottom: 15px;
 
 }
 /* ===================================================
-   PARTIE 3/5
-   COMMANDE - PANIER - CONFIRMATION
+   CONTACT
    =================================================== */
 
+.contact-card {
 
-/* ==============================
-   ZONE COMMANDE COMPLETE
-============================== */
+    background: white;
 
+    padding: 40px;
 
-.commande-section{
+    max-width: 800px;
 
-padding:60px 8%;
+    margin: auto;
 
-}
+    border-radius: var(--rayon);
 
-
-
-.commande-container{
-
-max-width:1200px;
-
-margin:auto;
+    box-shadow: var(--ombre);
 
 }
 
 
+.contact-card h2 {
 
-/* ==============================
-   RESUME COMMANDE
-============================== */
+    color: var(--vert);
 
-
-.resume-commande{
-
-background:white;
-
-padding:30px;
-
-border-radius:var(--rayon);
-
-box-shadow:var(--ombre);
-
-margin-top:40px;
+    margin-bottom: 20px;
 
 }
 
 
+.contact-info {
 
-.resume-commande h2{
+    margin-top: 25px;
 
-color:var(--vert);
-
-margin-bottom:20px;
-
-}
-
-
-
-.ligne-produit{
-
-display:flex;
-
-justify-content:space-between;
-
-align-items:center;
-
-padding:12px 0;
-
-border-bottom:1px solid #eee;
+    font-size: 1.1rem;
 
 }
 
 
+.contact-info strong {
 
-.ligne-produit:last-child{
-
-border-bottom:none;
-
-}
-
-
-
-.ligne-produit span{
-
-font-size:1rem;
+    color: var(--or-fonce);
 
 }
 
 
-
-.ligne-produit strong{
-
-color:var(--or-fonce);
-
-}
-
-
-
-/* ==============================
-   BLOC TOTAL COMMANDE
-============================== */
-
-
-.total-commande{
-
-margin-top:30px;
-
-background:var(--vert);
-
-color:white;
-
-padding:25px;
-
-border-radius:var(--rayon);
-
-display:flex;
-
-justify-content:space-between;
-
-align-items:center;
-
-font-size:1.4rem;
-
-}
-
-
-
-.total-commande strong{
-
-font-size:2rem;
-
-color:white;
-
-}
-
-
-
-/* ==============================
-   BOUTON VALIDATION
-============================== */
-
-
-.validation-commande{
-
-text-align:center;
-
-margin-top:35px;
-
-}
-
-
-
-.btn-large{
-
-font-size:1.15rem;
-
-padding:18px 50px;
-
-}
-
-
-
-/* ==============================
-   PAGE CONFIRMATION
-============================== */
-
-
-.confirmation-page{
-
-max-width:800px;
-
-margin:80px auto;
-
-padding:45px;
-
-background:white;
-
-border-radius:var(--rayon);
-
-box-shadow:var(--ombre);
-
-text-align:center;
-
-}
-
-
-
-.confirmation-page h1{
-
-color:var(--vert);
-
-font-size:3rem;
-
-margin-bottom:20px;
-
-}
-
-
-
-.confirmation-page p{
-
-font-size:1.15rem;
-
-color:var(--gris);
-
-}
-
-
-
-/* ==============================
-   PDF COMMANDE
-============================== */
-
-
-.pdf-box{
-
-background:#faf7ee;
-
-border:1px solid var(--or);
-
-padding:25px;
-
-border-radius:var(--rayon);
-
-margin-top:30px;
-
-text-align:center;
-
-}
-
-
-
-.pdf-box h3{
-
-color:var(--vert);
-
-margin-bottom:15px;
-
-}
-
-
-
-/* ==============================
-   CONTACT
-============================== */
-
-
-.contact-card{
-
-background:white;
-
-padding:40px;
-
-max-width:800px;
-
-margin:auto;
-
-border-radius:var(--rayon);
-
-box-shadow:var(--ombre);
-
-}
-
-
-
-.contact-card h2{
-
-color:var(--vert);
-
-margin-bottom:20px;
-
-}
-
-
-
-.contact-info{
-
-margin-top:25px;
-
-font-size:1.1rem;
-
-}
-
-
-
-.contact-info strong{
-
-color:var(--or-fonce);
-
-}
-
-
-
-/* ==============================
+/* ===================================================
    FOOTER
-============================== */
+   =================================================== */
 
+footer {
 
-footer{
+    background: #292929;
 
-background:#292929;
+    color: white;
 
-color:white;
+    padding: 35px;
 
-padding:35px;
+    text-align: center;
 
-text-align:center;
-
-margin-top:60px;
-
-}
-
-
-
-footer a{
-
-color:var(--or);
+    margin-top: 60px;
 
 }
 
 
+footer a {
 
-footer a:hover{
-
-color:white;
-
-}
-
-
-
-/* ==============================
-   ELEMENTS ADMINISTRATION
-============================== */
-
-
-.commande-admin{
-
-background:white;
-
-padding:30px;
-
-margin-bottom:25px;
-
-border-radius:var(--rayon);
-
-box-shadow:var(--ombre);
+    color: var(--or);
 
 }
 
 
+footer a:hover {
 
-.commande-admin h3{
-
-color:var(--vert);
-
-margin-bottom:20px;
+    color: white;
 
 }
 
 
+/* ===================================================
+   ADMINISTRATION
+   =================================================== */
 
-.commande-admin p{
+.commande-admin {
 
-margin-bottom:12px;
+    background: white;
 
-}
+    padding: 30px;
 
+    margin-bottom: 25px;
 
+    border-radius: var(--rayon);
 
-.commande-admin select{
-
-max-width:250px;
-
-}
-
-
-
-.commande-admin hr{
-
-margin-top:25px;
-
-border:none;
-
-border-top:1px solid #eee;
+    box-shadow: var(--ombre);
 
 }
 
 
+.commande-admin h3 {
 
-/* ==============================
-   TABLEAU DE BORD ADMIN
-============================== */
+    color: var(--vert);
 
-
-.admin-stats{
-
-display:grid;
-
-grid-template-columns:repeat(3,1fr);
-
-gap:25px;
-
-margin:40px 8%;
+    margin-bottom: 20px;
 
 }
 
 
+.commande-admin p {
 
-.stat-card{
-
-background:white;
-
-padding:30px;
-
-border-radius:var(--rayon);
-
-box-shadow:var(--ombre);
-
-text-align:center;
+    margin-bottom: 12px;
 
 }
 
 
+.commande-admin select {
 
-.stat-card h3{
-
-font-size:2.5rem;
-
-color:var(--vert);
+    max-width: 250px;
 
 }
 
 
+.commande-admin hr {
 
-.stat-card p{
+    margin-top: 25px;
 
-color:var(--gris);
+    border: none;
 
-font-weight:bold;
-
-margin-top:10px;
-
-}
-
-
-
-/* ==============================
-   ALERTES
-============================== */
-
-
-.message-success{
-
-background:#e9f3e5;
-
-color:#48613f;
-
-padding:18px;
-
-border-radius:15px;
-
-margin:20px 0;
+    border-top: 1px solid #eee;
 
 }
 
 
-
-.message-error{
-
-background:#f9e5e5;
-
-color:#8b3a3a;
-
-padding:18px;
-
-border-radius:15px;
-
-margin:20px 0;
-
-}
-/* ==============================
-   GESTION DU STOCK
-============================== */
-
-
-/* Tableau stock */
-
-#tableStock{
-
-width:100%;
-
-border-collapse:collapse;
-
-margin-top:25px;
-
-background:white;
-
-border-radius:15px;
-
-overflow:hidden;
-
-}
-
-
-
-#tableStock th{
-
-background:var(--vert);
-
-color:white;
-
-padding:15px;
-
-text-align:center;
-
-}
-
-
-
-#tableStock td{
-
-padding:14px;
-
-border-bottom:1px solid #eee;
-
-text-align:center;
-
-}
-
-
-
-#tableStock tr:hover{
-
-background:#faf7ee;
-
-}
-
-
-
-/* Etats du stock */
-
-.stock-ok{
-
-color:#4d7c3f;
-
-font-weight:bold;
-
-}
-
-
-
-.stock-critique{
-
-color:#c47a00;
-
-font-weight:bold;
-
-}
-
-
-
-.stock-rupture{
-
-color:#8b3a3a;
-
-font-weight:bold;
-
-}
-
-
-
-/* Actions tableau */
-
-.action-stock{
-
-display:flex;
-
-justify-content:center;
-
-gap:10px;
-
-}
-
-
-
-.btn-stock{
-
-padding:8px 15px;
-
-font-size:.9rem;
-
-}
-
-
-
-/* ==============================
-   POPUP ARTICLE
-============================== */
-
-
-.popup{
-
-position:fixed;
-
-top:0;
-
-left:0;
-
-width:100%;
-
-height:100%;
-
-background:rgba(0,0,0,.55);
-
-display:flex;
-
-justify-content:center;
-
-align-items:center;
-
-z-index:2000;
-
-}
-
-
-
-.popup-content{
-
-background:white;
-
-width:90%;
-
-max-width:500px;
-
-padding:35px;
-
-border-radius:var(--rayon);
-
-box-shadow:var(--ombre);
-
-}
-
-
-
-.popup-content h2{
-
-color:var(--vert);
-
-margin-bottom:25px;
-
-text-align:center;
-
-}
-
-
-
-.popup-content label{
-
-display:block;
-
-font-weight:bold;
-
-margin-top:15px;
-
-}
-
-
-
-/* ==============================
-   ALERTES STOCK
-============================== */
-
-
-.alertes{
-
-margin-top:20px;
-
-}
-
-
-
-.alerte-ok{
-
-background:#e9f3e5;
-
-color:#48613f;
-
-padding:15px;
-
-border-radius:12px;
-
-}
-
-
-
-.alerte-warning{
-
-background:#fff3d6;
-
-color:#9a6700;
-
-padding:15px;
-
-border-radius:12px;
-
-}
-
-
-
-.alerte-danger{
-
-background:#f9e5e5;
-
-color:#8b3a3a;
-
-padding:15px;
-
-border-radius:12px;
-
-}
-/* ==============================
-   RESPONSIVE
-============================== */
-
-@media (max-width:768px){
-   #tableStock{
-
-display:block;
-
-overflow-x:auto;
-
-white-space:nowrap;
-
-}
-
-.popup-content{
-
-width:95%;
-
-padding:25px;
-
-}
-
-.produit img{
-    height:220px;
-}
-    nav{
-
-        flex-direction:column;
-
-        gap:15px;
-
-    }
-
-    nav ul{
-
-        flex-wrap:wrap;
-
-        justify-content:center;
-
-        gap:15px;
-
-    }
-
-    .hero{
-
-        min-height:500px;
-
-    }
-
-    .hero h1{
-
-        font-size:2.8rem;
-
-    }
-
-    .hero h2{
-
-        font-size:1.5rem;
-
-    }
-
-    .presentation{
-
-        padding:50px 8%;
-
-    }
-
-    .form-grid{
-
-        grid-template-columns:1fr;
-
-    }
-
-    .valeurs{
-
-        grid-template-columns:1fr;
-
-    }
-
-    .admin-stats{
-
-        grid-template-columns:1fr;
-
-    }
-
-}
-/* ==================================
-   Amélioration espacements boutons admin
-   ================================== */
+/* Menu administration */
 
 .admin-menu,
 .menu-admin,
 .dashboard-admin {
+
+    display: flex;
+
+    flex-wrap: wrap;
+
     gap: 15px;
+
 }
 
 
@@ -1793,9 +1369,437 @@ padding:25px;
 }
 
 
-/* Version téléphone */
+/* ===================================================
+   STATISTIQUES ADMIN
+   =================================================== */
 
-@media (max-width:600px){
+.admin-stats {
+
+    display: grid;
+
+    grid-template-columns: repeat(3,1fr);
+
+    gap: 25px;
+
+    margin: 40px 8%;
+
+}
+
+
+.stat-card {
+
+    background: white;
+
+    padding: 30px;
+
+    border-radius: var(--rayon);
+
+    box-shadow: var(--ombre);
+
+    text-align: center;
+
+}
+
+
+.stat-card h3 {
+
+    font-size: 2.5rem;
+
+    color: var(--vert);
+
+}
+
+
+.stat-card p {
+
+    color: var(--gris);
+
+    font-weight: bold;
+
+    margin-top: 10px;
+
+}
+
+
+/* ===================================================
+   MESSAGES
+   =================================================== */
+
+.message-success {
+
+    background: #e9f3e5;
+
+    color: #48613f;
+
+    padding: 18px;
+
+    border-radius: 15px;
+
+    margin: 20px 0;
+
+}
+
+
+.message-error {
+
+    background: #f9e5e5;
+
+    color: #8b3a3a;
+
+    padding: 18px;
+
+    border-radius: 15px;
+
+    margin: 20px 0;
+
+}
+
+
+/* ===================================================
+   GESTION STOCK
+   =================================================== */
+
+#tableStock {
+
+    width: 100%;
+
+    border-collapse: collapse;
+
+    margin-top: 25px;
+
+    background: white;
+
+    border-radius: 15px;
+
+    overflow: hidden;
+
+}
+
+
+#tableStock th {
+
+    background: var(--vert);
+
+    color: white;
+
+    padding: 15px;
+
+    text-align: center;
+
+}
+
+
+#tableStock td {
+
+    padding: 14px;
+
+    border-bottom: 1px solid #eee;
+
+    text-align: center;
+
+}
+
+
+#tableStock tr:hover {
+
+    background: #faf7ee;
+
+}
+
+
+/* Etats stock */
+
+.stock-ok {
+
+    color: #4d7c3f;
+
+    font-weight: bold;
+
+}
+
+
+.stock-critique {
+
+    color: #c47a00;
+
+    font-weight: bold;
+
+}
+
+
+.stock-rupture {
+
+    color: #8b3a3a;
+
+    font-weight: bold;
+
+}
+
+
+/* Actions stock */
+
+.action-stock {
+
+    display: flex;
+
+    justify-content: center;
+
+    gap: 10px;
+
+}
+
+
+.btn-stock {
+
+    padding: 8px 15px;
+
+    font-size: .9rem;
+
+}
+
+
+/* ===================================================
+   POPUP ARTICLE
+   =================================================== */
+
+.popup {
+
+    position: fixed;
+
+    top: 0;
+
+    left: 0;
+
+    width: 100%;
+
+    height: 100%;
+
+    background: rgba(0,0,0,.55);
+
+    display: flex;
+
+    justify-content: center;
+
+    align-items: center;
+
+    z-index: 2000;
+
+}
+
+
+.popup-content {
+
+    background: white;
+
+    width: 90%;
+
+    max-width: 500px;
+
+    padding: 35px;
+
+    border-radius: var(--rayon);
+
+    box-shadow: var(--ombre);
+
+}
+
+
+.popup-content h2 {
+
+    color: var(--vert);
+
+    margin-bottom: 25px;
+
+    text-align: center;
+
+}
+
+
+.popup-content label {
+
+    display: block;
+
+    font-weight: bold;
+
+    margin-top: 15px;
+
+}
+
+
+/* ===================================================
+   ALERTES STOCK
+   =================================================== */
+
+.alertes {
+
+    margin-top: 20px;
+
+}
+
+
+.alerte-ok {
+
+    background: #e9f3e5;
+
+    color: #48613f;
+
+    padding: 15px;
+
+    border-radius: 12px;
+
+}
+
+
+.alerte-warning {
+
+    background: #fff3d6;
+
+    color: #9a6700;
+
+    padding: 15px;
+
+    border-radius: 12px;
+
+}
+
+
+.alerte-danger {
+
+    background: #f9e5e5;
+
+    color: #8b3a3a;
+
+    padding: 15px;
+
+    border-radius: 12px;
+
+}
+/* ===================================================
+   RESPONSIVE
+   =================================================== */
+
+
+/* Tablette et mobile */
+
+@media (max-width: 768px) {
+
+
+    /* Navigation */
+
+    nav {
+
+        flex-direction: column;
+
+        gap: 15px;
+
+    }
+
+
+    nav ul {
+
+        flex-wrap: wrap;
+
+        justify-content: center;
+
+        gap: 15px;
+
+    }
+
+
+    /* Hero */
+
+    .hero {
+
+        min-height: 500px;
+
+    }
+
+
+    .hero h1 {
+
+        font-size: 2.8rem;
+
+    }
+
+
+    .hero h2 {
+
+        font-size: 1.5rem;
+
+    }
+
+
+    /* Présentation */
+
+    .presentation {
+
+        padding: 50px 8%;
+
+    }
+
+
+    /* Produits */
+
+    .produit img {
+
+        height: 220px;
+
+    }
+
+
+    .produit img.image-viande {
+
+        width: 120px;
+
+        height: 90px;
+
+    }
+
+
+    .produit h3 {
+
+        min-height: auto;
+
+    }
+
+
+    /* Formulaires */
+
+    .form-grid {
+
+        grid-template-columns: 1fr;
+
+    }
+
+
+    /* Valeurs */
+
+    .valeurs {
+
+        grid-template-columns: 1fr;
+
+    }
+
+
+    /* Administration */
+
+    .admin-stats {
+
+        grid-template-columns: 1fr;
+
+    }
+
+
+    .admin-menu,
+    .menu-admin,
+    .dashboard-admin {
+
+        flex-direction: column;
+
+        align-items: stretch;
+
+    }
+
 
     .admin-menu .btn,
     .menu-admin .btn,
@@ -1807,132 +1811,66 @@ padding:25px;
 
     }
 
-}
-/* ==============================
-   Produits - alignement catalogue
-   Version 3.1
-============================== */
+
+    /* Popup */
+
+    .popup-content {
+
+        width: 95%;
+
+        padding: 25px;
+
+    }
 
 
-/* Titres des catégories */
+    /* Tableau stock */
 
-.titre-categorie {
+    #tableStock {
 
-    grid-column:1/-1;
-    text-align:center;
-    margin:40px 0 10px;
+        display: block;
 
-}
+        overflow-x: auto;
 
-
-/* Cartes produits */
-
-.produit {
-
-    display:flex;
-    flex-direction:column;
-    text-align:center;
-
-}
-
-
-/* Images identiques */
-
-.produit img {
-
-    width:100%;
-    height:220px;
-    object-fit:cover;
-
-}
-
-
-/* Titres alignés */
-
-.produit h3 {
-
-    min-height:70px;
-    display:flex;
-    align-items:center;
-    justify-content:center;
-
-    padding:20px;
-
-}
-
-
-/* Prix alignés */
-
-.produit .prix {
-
-    min-height:45px;
-    display:flex;
-    align-items:center;
-    justify-content:center;
-
-}
-
-
-/* Boutons identiques */
-
-.produit .btn {
-
-    width:160px;
-    height:55px;
-
-    margin:20px auto;
-
-    display:flex;
-    align-items:center;
-    justify-content:center;
-
-}
-
-
-/* Mobile */
-
-@media(max-width:768px){
-
-    .produit h3 {
-
-        min-height:auto;
+        white-space: nowrap;
 
     }
 
 }
-/* Ajustement image viande séchée */
 
-.produit img.image-viande {
 
-    height:160px;
-    object-fit:cover;
+/* Petit téléphone */
 
-}
-/* Image viande séchée plus compacte */
+@media (max-width: 600px) {
 
-.produit img.image-viande {
 
-    width:100%;
-    height:130px;
-    object-fit:cover;
+    .hero-content {
 
-}
-/* Correction définitive image viande séchée */
+        padding: 20px;
 
-.produit img.image-viande {
+    }
 
-    width:120px;
-    height:90px;
-    object-fit:cover;
-    margin:0 auto;
 
-}
-.produit img[alt="Viande séchée artisanale"] {
+    .hero h1 {
 
-    height:100px;
-    object-fit:cover;
-    object-position:center;
+        font-size: 2.2rem;
 
-    transform:scale(1.8);
+    }
+
+
+    .btn {
+
+        width: 100%;
+
+    }
+
+
+    .commande-form,
+    .panier-card,
+    .contact-card {
+
+        padding: 25px;
+
+    }
+
 
 }
