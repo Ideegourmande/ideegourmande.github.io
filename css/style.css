@@ -1809,66 +1809,95 @@ padding:25px;
     }
 
 }
-/* ==================================
-   Amélioration menu administration
-   Espacement boutons
-================================== */
-
-.presentation .btn {
-
-    margin: 8px;
-
-    display: inline-flex;
-
-    align-items: center;
-
-    justify-content: center;
-
-    min-height: 45px;
-
-    padding: 12px 18px;
-
-}
+/* ==============================
+   Produits - alignement catalogue
+   Version 3.1
+============================== */
 
 
-/* Affichage téléphone */
-
-@media (max-width:600px){
-
-    .presentation {
-
-        padding: 15px;
-
-    }
-
-
-    .presentation .btn {
-
-        display: flex;
-
-        width: 100%;
-
-        margin: 10px 0;
-
-        box-sizing: border-box;
-
-    }
-
-}
-/* Titres des catégories produits */
-
-.titre-categorie {
-
-    width: 100%;
-    text-align: center;
-    margin: 35px 0 20px;
-
-}
-/* Titres catégories produits */
+/* Titres des catégories */
 
 .titre-categorie {
 
     grid-column:1/-1;
     text-align:center;
     margin:40px 0 10px;
+
+}
+
+
+/* Cartes produits */
+
+.produit {
+
+    display:flex;
+    flex-direction:column;
+    text-align:center;
+
+}
+
+
+/* Images identiques */
+
+.produit img {
+
+    width:100%;
+    height:220px;
+    object-fit:cover;
+
+}
+
+
+/* Titres alignés */
+
+.produit h3 {
+
+    min-height:70px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+
+    padding:20px;
+
+}
+
+
+/* Prix alignés */
+
+.produit .prix {
+
+    min-height:45px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+
+}
+
+
+/* Boutons identiques */
+
+.produit .btn {
+
+    width:160px;
+    height:55px;
+
+    margin:20px auto;
+
+    display:flex;
+    align-items:center;
+    justify-content:center;
+
+}
+
+
+/* Mobile */
+
+@media(max-width:768px){
+
+    .produit h3 {
+
+        min-height:auto;
+
+    }
+
 }
