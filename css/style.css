@@ -469,6 +469,7 @@ box-shadow:0 12px 30px rgba(0,0,0,.07);
     height:200px;
     object-fit:cover;
     object-position:center;
+    flex-shrink:0;
 
 }
 .produit:hover img{
