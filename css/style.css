@@ -1905,3 +1905,11 @@ padding:25px;
     }
 
 }
+/* Ajustement image viande séchée */
+
+.produit img.image-viande {
+
+    height:160px;
+    object-fit:cover;
+
+}
