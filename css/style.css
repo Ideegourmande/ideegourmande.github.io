@@ -1855,3 +1855,12 @@ padding:25px;
     }
 
 }
+/* Titres des catégories produits */
+
+.titre-categorie {
+
+    width: 100%;
+    text-align: center;
+    margin: 35px 0 20px;
+
+}
