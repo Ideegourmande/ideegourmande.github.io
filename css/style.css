@@ -1913,3 +1913,12 @@ padding:25px;
     object-fit:cover;
 
 }
+/* Image viande séchée plus compacte */
+
+.produit img.image-viande {
+
+    width:100%;
+    height:130px;
+    object-fit:cover;
+
+}
