@@ -91,72 +91,96 @@ Choisissez vos spécialités artisanales et indiquez les quantités souhaitées.
      FOIE GRAS
 =================================================== -->
 
-
 <div class="commande-card">
-
 
 <img src="images/foie-gras-figues.jpg"
 alt="Foie gras de canard au torchon">
 
 
 <h3>
-
 🦆 Foie gras de canard au torchon
-
 </h3>
 
 
 <p>
-
 Choisissez votre recette :
-
-</p>
-
-
-<select id="foieRecette">
-
-
-<option value="figues">
-
-Gelée de figues au vin de messe
-
-</option>
-
-
-<option value="piment">
-
-Piment d'Espelette & Porto Calem
-
-</option>
-
-
-</select>
-
-
-<p>
-
-<strong>
-
-200 g - 35.00 CHF
-
-</strong>
-
 </p>
 
 
 <label>
+<input 
+type="radio"
+name="foieRecette"
+value="figues"
+id="foieFigues">
 
-Quantité
+Gelée de figues au vin de messe
+
+</label>
+
+
+<br>
+
+
+<label>
+
+<input 
+type="radio"
+name="foieRecette"
+value="piment"
+id="foiePiment">
+
+Piment d'Espelette & Porto Calem
+
+</label>
+
+
+<br><br>
+
+
+<button
+type="button"
+class="btn"
+onclick="validerFoie()">
+
+Valider la recette
+
+</button>
+
+
+
+<p id="foieSelection"
+class="confirmation">
+
+Aucune recette sélectionnée.
+
+</p>
+
+
+
+<label>
+
+Quantité (200 g)
 
 </label>
 
 
 <input
 type="number"
-id="foieGras"
+id="foieQuantite"
 value="0"
 min="0"
 oninput="calculerTotal()">
+
+
+
+<p>
+
+<strong>
+35.00 CHF / 200 g
+</strong>
+
+</p>
 
 
 </div>
@@ -253,61 +277,72 @@ oninput="calculerTotal()">
      VIANDE SÉCHÉE
 =================================================== -->
 
-
 <div class="commande-card">
-
 
 <img src="images/viande-sechee.jpg"
 alt="Viande séchée artisanale">
 
 
 <h3>
-
 🥩 Viande séchée artisanale
-
 </h3>
 
 
 <p>
-
 Recette maison
-
 </p>
 
 
 <p>
-
 <strong>
-
-500 g - 45.00 CHF
-
+45.00 CHF / 500 g
 </strong>
-
 </p>
 
 
 <label>
-
-Quantité (500 g)
-
+Poids souhaité
 </label>
 
 
-<input
-type="number"
+<select 
 id="viandeSechee"
-value="0"
-min="0"
-oninput="calculerTotal()">
+onchange="calculerTotal()">
 
 
+<option value="0">
+Aucun
+</option>
 
-<p>
+
+<option value="500">
+500 g
+</option>
+
+
+<option value="1000">
+1000 g
+</option>
+
+
+<option value="1500">
+1500 g
+</option>
+
+
+<option value="2000">
+2000 g
+</option>
+
+
+</select>
+
+
+<p class="confirmation">
 
 Poids réel confirmé lors de la préparation.
 
 </p>
-
 
 
 </div>
@@ -321,7 +356,6 @@ Poids réel confirmé lors de la préparation.
 <!-- ===================================================
      LARD SEC
 =================================================== -->
-
 
 <div class="commande-card">
 
@@ -338,40 +372,71 @@ alt="Lard sec légèrement fumé">
 
 
 <p>
-
 Recette maison
-
 </p>
 
 
 <p>
-
 <strong>
-
-500 g - 20.00 CHF
-
+20.00 CHF / 500 g
 </strong>
-
 </p>
+
 
 
 <label>
 
-Quantité (500 g)
+Poids souhaité
 
 </label>
 
 
-<input
-type="number"
+<select
 id="lardSec"
-value="0"
-min="0"
-oninput="calculerTotal()">
+onchange="calculerTotal()">
 
 
 
-<p>
+<option value="0">
+
+Aucun
+
+</option>
+
+
+<option value="500">
+
+500 g
+
+</option>
+
+
+<option value="1000">
+
+1000 g
+
+</option>
+
+
+<option value="1500">
+
+1500 g
+
+</option>
+
+
+<option value="2000">
+
+2000 g
+
+</option>
+
+
+</select>
+
+
+
+<p class="confirmation">
 
 Poids réel confirmé lors de la préparation.
 
@@ -387,7 +452,7 @@ Poids réel confirmé lors de la préparation.
 
 
 <!-- ===================================================
-     SAUMON
+     SAUMON FUMÉ
 =================================================== -->
 
 
@@ -405,22 +470,73 @@ alt="Cœur de saumon fumé">
 </h3>
 
 
+
 <p>
 
-Aneth ou assaisonnement selon disponibilité
+Choisissez votre recette :
 
 </p>
 
 
-<p>
 
-<strong>
+<label>
 
-8.00 CHF / 100 g
+<input
+type="radio"
+name="saumonRecette"
+value="aneth"
+id="saumonAneth">
 
-</strong>
+
+Aneth
+
+</label>
+
+
+
+<br>
+
+
+
+<label>
+
+<input
+type="radio"
+name="saumonRecette"
+value="piment"
+id="saumonPiment">
+
+
+Piment d'Espelette
+
+</label>
+
+
+
+<br><br>
+
+
+
+<button
+type="button"
+class="btn"
+onclick="validerSaumon()">
+
+Valider la recette
+
+</button>
+
+
+
+
+<p id="saumonSelection"
+class="confirmation">
+
+Aucune recette sélectionnée.
 
 </p>
+
+
 
 
 <label>
@@ -430,8 +546,11 @@ Poids souhaité
 </label>
 
 
-<select id="saumonPoids"
+
+<select
+id="saumonPoids"
 onchange="calculerTotal()">
+
 
 
 <option value="0">
@@ -514,11 +633,26 @@ Aucun
 </select>
 
 
+
+
 <p>
+
+<strong>
+
+8.00 CHF / 100 g
+
+</strong>
+
+</p>
+
+
+
+<p class="confirmation">
 
 Poids réel confirmé lors de la préparation.
 
 </p>
+
 
 
 </div>
