@@ -495,11 +495,9 @@ button:hover {
 
 .produit img.image-viande {
 
-    width: 120px;
+    width: 100%;
 
-    height: 90px;
-
-    margin: 0 auto;
+    height: 160px;
 
     object-fit: cover;
 
