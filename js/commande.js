@@ -1,485 +1,689 @@
-// ==================================
-// IDÉE GOURMANDE
-// commande.js
-// ==========================F========
+// ===================================================
+// COMMANDE.JS
+// Idée Gourmande V2
+// Gestion du panier et calcul des commandes
+// ===================================================
 
-let recapTexte = "";
 
+// ===================================================
+// PRODUITS
+// ===================================================
 
-// ==================================
-// CALCUL PANIER
-// ==================================
 
-function calculerTotal(){
+const produits = {
 
+    foieGras: {
 
-const produits = [
+        nom: "Foie gras de canard au torchon",
 
-{
-id:"foieFigues",
-nom:"Foie gras figues",
-prix:35
-},
+        prix: 35,
 
-{
-id:"foiePiment",
-nom:"Foie gras Piment & Porto",
-prix:35
-},
+        unite: "200 g"
 
-{
-id:"magretHerbes",
-nom:"Magret Herbes de Provence",
-prix:25
-},
+    },
 
-{
-id:"magretPiment",
-nom:"Magret Piment d'Espelette",
-prix:25
-}
 
-];
+    magret: {
 
+        nom: "Magret de canard fumé et séché",
 
+        prix: 25,
 
-let total = 0;
+        unite: "pièce"
 
-let html="";
+    },
 
-recapTexte="";
 
+    viandeSechee: {
 
+        nom: "Viande séchée artisanale",
 
-produits.forEach(function(p){
+        prix: 45,
 
+        unite: "500 g",
 
-let q =
-Number(document.getElementById(p.id).value) || 0;
+        poidsVariable: true
 
+    },
 
-if(q>0){
 
+    lardSec: {
 
-let montant=q*p.prix;
+        nom: "Lard sec légèrement fumé",
 
+        prix: 20,
 
-total += montant;
+        unite: "500 g",
 
+        poidsVariable: true
 
-html +=
-"• "+p.nom+
-" × "+q+
-" — "+
-montant.toFixed(2)+" CHF<br>";
+    },
 
 
+    saumon: {
 
-recapTexte +=
-p.nom+
-" × "+
-q+
-" : "+
-montant.toFixed(2)+" CHF\n";
+        nom: "Cœur de saumon fumé",
 
+        prix: 8,
 
-}
+        unite: "100 g",
 
+        poidsVariable: true
 
-});
-
-
-
-
-// Saumon
-
-let saumonA =
-Number(document.getElementById("saumonAneth").value)||0;
-
-
-if(saumonA>0){
-
-let montant=(saumonA/100)*8;
-
-total+=montant;
-
-
-html +=
-"• Saumon Aneth "+
-saumonA+
-" g — "+
-montant.toFixed(2)+" CHF<br>";
-
-
-recapTexte +=
-"Saumon Aneth "+
-saumonA+
-" g : "+
-montant.toFixed(2)+" CHF\n";
-
-}
-
-
-
-
-let saumonP =
-Number(document.getElementById("saumonPiment").value)||0;
-
-
-
-if(saumonP>0){
-
-let montant=(saumonP/100)*8;
-
-total+=montant;
-
-
-html +=
-"• Saumon Piment d'Espelette "+
-saumonP+
-" g — "+
-montant.toFixed(2)+" CHF<br>";
-
-
-
-recapTexte +=
-"Saumon Piment d'Espelette "+
-saumonP+
-" g : "+
-montant.toFixed(2)+" CHF\n";
-
-}
-
-
-
-
-
-if(html===""){
-
-html="Aucun produit sélectionné.";
-
-}
-
-
-
-document.getElementById("recapCommande").innerHTML=html;
-
-
-document.getElementById("total").innerHTML=
-total.toFixed(2)+" CHF";
-
-
-
-return total;
-
-
-}
-
-
-
-// ==================================
-// VIDER PANIER
-// ==================================
-
-function viderPanier(){
-
-
-document
-.querySelectorAll(".commande-card input")
-.forEach(function(input){
-
-input.value=0;
-
-});
-
-
-
-calculerTotal();
-
-
-
-}
-
-
-
-// ==================================
-// ENVOI COMMANDE
-// ==================================
-
-function envoyerCommande(event){
-console.log("TEST DB", typeof db);
-
-event.preventDefault();
-
-
-
-let total=calculerTotal();
-
-
-
-if(total<=0){
-
-alert("Votre panier est vide.");
-
-return;
-
-}
-
-
-
-let nom=
-document.getElementById("nom").value;
-
-
-let email=
-document.getElementById("email").value;
-
-
-let adresse=
-document.getElementById("adresse").value;
-
-
-let telephone=
-document.getElementById("telephone").value;
-
-
-let commentaire=
-document.getElementById("commentaire").value;
-
-
-
-let twint=
-document.querySelector('input[type="checkbox"]');
-
-
-
-if(!twint.checked){
-
-alert("Merci de confirmer le paiement TWINT.");
-
-return;
-
-}
-
-
-
-// PDF
-
-if(typeof genererPDFCommande==="function"){
-
-
-genererPDFCommande({
-
-nom,
-email,
-adresse,
-recap:recapTexte,
-total:total.toFixed(2)
-
-});
-
-
-}
-
-
-
-// sauvegarde administration
-
-
-let commande={
-
-
-id:"IG-"+Date.now(),
-
-date:new Date().toLocaleString("fr-FR"),
-
-client:nom,
-
-telephone,
-
-email,
-
-adresse,
-
-produits:recapTexte,
-
-total:total.toFixed(2),
-
-commentaire,
-
-statut:"Nouvelle"
-
+    }
 
 };
 
 
 
-if(typeof db === "undefined"){
-
-alert("DB absente - database.js non chargé");
-return;
-
-}
 
 
-if(!Array.isArray(db.commandes)){
-
-db.commandes = [];
-
-}
 
 
-//--------------------------------------
-// Sauvegarde commande + gestion client
-//--------------------------------------
-
-if(!Array.isArray(db.commandes)){
-    db.commandes = [];
-}
-
-if(!Array.isArray(db.clients)){
-    db.clients = [];
-}
+// ===================================================
+// CALCUL DU TOTAL
+// ===================================================
 
 
-// Ajout commande
-
-db.commandes.push(commande);
+function calculerTotal() {
 
 
-// Gestion client
+    let total = 0;
 
-let clientExiste = db.clients.find(c =>
-    c.email === email
+
+    let panier = [];
+
+
+
+
+
+
+    // =========================
+    // FOIE GRAS
+    // =========================
+
+
+    let foie = Number(
+        document.getElementById("foieGras").value
+    );
+
+
+
+    if (foie > 0) {
+
+
+        let recette =
+            document.getElementById("foieRecette").value;
+
+
+
+        let nomRecette =
+            recette === "figues"
+            ?
+            "Gelée de figues au vin de messe"
+            :
+            "Piment d'Espelette & Porto Calem";
+
+
+
+        let prix = foie * produits.foieGras.prix;
+
+
+
+        total += prix;
+
+
+
+        panier.push({
+
+            nom:
+            produits.foieGras.nom,
+
+            detail:
+            nomRecette,
+
+            quantite:
+            foie + " x 200 g",
+
+            prix:
+            prix
+
+        });
+
+
+    }
+
+
+
+
+
+
+    // =========================
+    // MAGRET
+    // =========================
+
+
+    let magret = Number(
+        document.getElementById("magret").value
+    );
+
+
+
+    if (magret > 0) {
+
+
+        let recette =
+            document.getElementById("magretRecette").value;
+
+
+
+        let nomRecette =
+            recette === "herbes"
+            ?
+            "Herbes de Provence"
+            :
+            "Piment d'Espelette";
+
+
+
+        let prix =
+            magret * produits.magret.prix;
+
+
+
+        total += prix;
+
+
+
+        panier.push({
+
+            nom:
+            produits.magret.nom,
+
+            detail:
+            nomRecette,
+
+            quantite:
+            magret + " pièce(s)",
+
+            prix:
+            prix
+
+        });
+
+
+    }
+// =========================
+// VIANDE SÉCHÉE
+// =========================
+
+
+let viande = Number(
+    document.getElementById("viandeSechee").value
 );
 
 
-if(clientExiste){
 
-    clientExiste.commandes =
-        (clientExiste.commandes || 0) + 1;
+if (viande > 0) {
 
-    clientExiste.derniereCommande =
-        new Date().toLocaleString("fr-FR");
 
-    clientExiste.telephone = telephone;
-    clientExiste.adresse = adresse;
+    let prix =
+        viande * produits.viandeSechee.prix;
 
-}
-else{
 
-    db.clients.push({
 
-        id:"CL-"+Date.now(),
-        nom:nom,
-        telephone:telephone,
-        email:email,
-        adresse:adresse,
-        commandes:1,
-        derniereCommande:new Date().toLocaleString("fr-FR")
+    total += prix;
+
+
+
+    panier.push({
+
+        nom:
+        produits.viandeSechee.nom,
+
+        detail:
+        "Poids réel confirmé lors de la préparation",
+
+        quantite:
+        viande + " x 500 g",
+
+        prix:
+        prix
 
     });
 
-}
-
-
-// Sauvegarde
-
-sauvegarderDB();
-
-
-
-
-
-let message=
-
-`Nouvelle commande Idée Gourmande
-
-Client :
-${nom}
-
-Téléphone :
-${telephone}
-
-Email :
-${email}
-
-Commande :
-
-${recapTexte}
-
-Total :
-${total.toFixed(2)} CHF
-
-Adresse :
-${adresse}
-
-Commentaire :
-${commentaire}
-
-Paiement TWINT confirmé`;
-
-
-
-window.location.href=
-
-"mailto:vkloetzli@bluewin.ch"+
-"?subject="+
-encodeURIComponent("Nouvelle commande Idée Gourmande")+
-"&body="+
-encodeURIComponent(message);
-
-
 
 }
 
 
 
-// ==================================
-// INITIALISATION
-// ==================================
-
-document.addEventListener(
-"DOMContentLoaded",
-function(){
-
-
-calculerTotal();
 
 
 
-let bouton=
-document.getElementById("btnViderPanier");
+// =========================
+// LARD SEC
+// =========================
 
 
-if(bouton){
-
-bouton.addEventListener(
-"click",
-viderPanier
+let lard = Number(
+    document.getElementById("lardSec").value
 );
 
+
+
+if (lard > 0) {
+
+
+    let prix =
+        lard * produits.lardSec.prix;
+
+
+
+    total += prix;
+
+
+
+    panier.push({
+
+        nom:
+        produits.lardSec.nom,
+
+        detail:
+        "Poids réel confirmé lors de la préparation",
+
+        quantite:
+        lard + " x 500 g",
+
+        prix:
+        prix
+
+    });
+
+
 }
+
+
+
+
+
+
+
+// =========================
+// SAUMON
+// =========================
+
+
+let saumon = Number(
+    document.getElementById("saumonPoids").value
+);
+
+
+
+if (saumon > 0) {
+
+
+    let quantite100 =
+        saumon / 100;
+
+
+
+    let prix =
+        quantite100 * produits.saumon.prix;
+
+
+
+    total += prix;
+
+
+
+    panier.push({
+
+        nom:
+        produits.saumon.nom,
+
+        detail:
+        "Poids réel confirmé lors de la préparation",
+
+        quantite:
+        saumon + " g",
+
+        prix:
+        prix
+
+    });
+
+
+}
+
+
+
+
+
+
+
+
+// =========================
+// AFFICHAGE PANIER
+// =========================
+
+
+afficherPanier(panier);
+
+
+
+
+document.getElementById("total").innerHTML =
+
+    total.toFixed(2) + " CHF";
+
+
+
+}
+
+
+
+
+
+// ===================================================
+// AFFICHER PANIER
+// ===================================================
+
+
+function afficherPanier(panier) {
+
+
+    let zone =
+        document.getElementById("recapCommande");
+
+
+
+    if (panier.length === 0) {
+
+
+        zone.innerHTML =
+
+        "Aucun produit sélectionné.";
+
+
+        return;
+
+    }
+
+
+
+
+
+    let html = "";
+
+
+
+    panier.forEach(produit => {
+
+
+
+        html += `
+
+        <div class="ligne-produit">
+
+
+            <div>
+
+
+                <strong>
+                ${produit.nom}
+                </strong>
+
+
+                <br>
+
+
+                ${produit.detail}
+
+
+                <br>
+
+
+                ${produit.quantite}
+
+
+            </div>
+
+
+
+            <div>
+
+
+                ${produit.prix.toFixed(2)} CHF
+
+
+            </div>
+
+
+        </div>
+
+        `;
+
+
+    });
+
+
+
+
+
+    zone.innerHTML = html;
+
+
+}
+// ===================================================
+// BOUTON VIDER PANIER
+// ===================================================
+
+
+document
+.getElementById("btnViderPanier")
+.addEventListener("click", function(){
+
+
+    document.getElementById("foieGras").value = 0;
+
+
+    document.getElementById("magret").value = 0;
+
+
+    document.getElementById("viandeSechee").value = 0;
+
+
+    document.getElementById("lardSec").value = 0;
+
+
+    document.getElementById("saumonPoids").value = 0;
+
+
+
+    calculerTotal();
 
 
 });
-// ===============================
-// Affichage du nom pour le paiement TWINT
-// ===============================
 
-const prenomInput = document.getElementById("prenom");
-const nomInput = document.getElementById("nom");
-const twintNomComplet = document.getElementById("twintNomComplet");
 
-function majNomTwint() {
-    if (!prenomInput || !nomInput || !twintNomComplet) return;
 
-    twintNomComplet.textContent =
-        (prenomInput.value + " " + nomInput.value).trim();
+
+
+
+
+
+// ===================================================
+// ENVOI COMMANDE
+// ===================================================
+
+
+function envoyerCommande(event) {
+
+
+    event.preventDefault();
+
+
+
+    let commande = {
+
+
+        date:
+        new Date().toLocaleString("fr-CH"),
+
+
+
+        client: {
+
+
+            nom:
+            document.getElementById("nom").value,
+
+
+            telephone:
+            document.getElementById("telephone").value,
+
+
+            email:
+            document.getElementById("email").value,
+
+
+            adresse:
+            document.getElementById("adresse").value,
+
+
+            commentaire:
+            document.getElementById("commentaire").value
+
+
+        },
+
+
+
+        produits:
+        recupererCommande(),
+
+
+
+        total:
+        document
+        .getElementById("total")
+        .innerText
+
+
+    };
+
+
+
+
+
+
+    // Sauvegarde locale provisoire
+    // Sera remplacée plus tard par la base de données
+
+
+    let commandes =
+        JSON.parse(
+            localStorage.getItem("commandes")
+        )
+        ||
+        [];
+
+
+
+    commandes.push(commande);
+
+
+
+    localStorage.setItem(
+
+        "commandes",
+
+        JSON.stringify(commandes)
+
+    );
+
+
+
+
+
+
+
+    alert(
+
+        "Merci pour votre commande. Elle sera confirmée après vérification du paiement TWINT."
+
+    );
+
+
+
+    window.location.href =
+    "confirmation.html";
+
+
+
 }
 
-if (prenomInput && nomInput && twintNomComplet) {
-    prenomInput.addEventListener("input", majNomTwint);
-    nomInput.addEventListener("input", majNomTwint);
-    majNomTwint();
+
+
+
+
+
+
+
+// ===================================================
+// RÉCUPÉRER COMMANDE
+// ===================================================
+
+
+function recupererCommande() {
+
+
+    let produitsCommande = [];
+
+
+
+    let recap =
+    document.getElementById("recapCommande")
+    .innerText;
+
+
+
+    produitsCommande.push({
+
+        recap:
+        recap
+
+
+    });
+
+
+
+    return produitsCommande;
+
+
 }
+
+
+
+
+
+
+
+
+// ===================================================
+// NOM POUR TWINT
+// ===================================================
+
+
+document
+.getElementById("nom")
+.addEventListener("input", function(){
+
+
+    document
+    .getElementById("twintNomComplet")
+    .innerText =
+    this.value;
+
+
+});
