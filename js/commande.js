@@ -1,76 +1,50 @@
 // ===================================================
 // COMMANDE.JS
 // Idée Gourmande V2
-// Gestion du panier et calcul des commandes
+// Gestion panier artisanat
 // ===================================================
 
 
 // ===================================================
-// PRODUITS
+// VARIABLES GLOBALES
 // ===================================================
 
 
-const produits = {
-
-    foieGras: {
-
-        nom: "Foie gras de canard au torchon",
-
-        prix: 35,
-
-        unite: "200 g"
-
-    },
+let panierActuel = [];
 
 
-    magret: {
 
-        nom: "Magret de canard fumé et séché",
+let foieRecetteValidee = null;
 
-        prix: 25,
-
-        unite: "pièce"
-
-    },
+let saumonRecetteValidee = null;
 
 
-    viandeSechee: {
-
-        nom: "Viande séchée artisanale",
-
-        prix: 45,
-
-        unite: "500 g",
-
-        poidsVariable: true
-
-    },
 
 
-    lardSec: {
-
-        nom: "Lard sec légèrement fumé",
-
-        prix: 20,
-
-        unite: "500 g",
-
-        poidsVariable: true
-
-    },
 
 
-    saumon: {
+// ===================================================
+// PRIX
+// ===================================================
 
-        nom: "Cœur de saumon fumé",
 
-        prix: 8,
+const PRIX = {
 
-        unite: "100 g",
 
-        poidsVariable: true
+    foieGras: 35,
 
-    }
+
+    magret: 25,
+
+
+    viandeSechee: 45,
+
+
+    lardSec: 20,
+
+
+    saumon: 8
+
 
 };
 
@@ -80,53 +54,190 @@ const produits = {
 
 
 
+
 // ===================================================
-// CALCUL DU TOTAL
+// VALIDATION RECETTE FOIE GRAS
 // ===================================================
 
 
-function calculerTotal() {
+function validerFoie() {
+
+
+    let choix =
+    document.querySelector(
+        'input[name="foieRecette"]:checked'
+    );
+
+
+
+    if(!choix){
+
+
+        alert(
+            "Veuillez choisir une recette de foie gras."
+        );
+
+
+        return;
+
+
+    }
+
+
+
+    foieRecetteValidee = choix.value;
+
+
+
+    let texte =
+    choix.value === "figues"
+
+    ?
+
+    "Gelée de figues au vin de messe"
+
+    :
+
+    "Piment d'Espelette & Porto Calem";
+
+
+
+    document
+    .getElementById("foieSelection")
+    .innerHTML =
+
+    "✅ Recette sélectionnée : " + texte;
+
+
+
+}
+
+
+
+
+
+
+
+// ===================================================
+// VALIDATION RECETTE SAUMON
+// ===================================================
+
+
+function validerSaumon(){
+
+
+    let choix =
+    document.querySelector(
+        'input[name="saumonRecette"]:checked'
+    );
+
+
+
+    if(!choix){
+
+
+        alert(
+            "Veuillez choisir une recette de saumon."
+        );
+
+
+        return;
+
+
+    }
+
+
+
+    saumonRecetteValidee = choix.value;
+
+
+
+    let texte =
+    choix.value === "aneth"
+
+    ?
+
+    "Aneth"
+
+    :
+
+    "Piment d'Espelette";
+
+
+
+    document
+    .getElementById("saumonSelection")
+    .innerHTML =
+
+    "✅ Recette sélectionnée : " + texte;
+
+
+
+}
+
+// ===================================================
+// CALCUL DU PANIER
+// ===================================================
+
+
+function calculerTotal(){
+
+
+    panierActuel = [];
 
 
     let total = 0;
 
 
-    let panier = [];
 
 
 
-
-
-
-    // =========================
+    // ===================================================
     // FOIE GRAS
-    // =========================
+    // ===================================================
 
 
-    let foie = Number(
-        document.getElementById("foieGras").value
+    let foieQuantite =
+    Number(
+        document.getElementById("foieQuantite").value
     );
 
 
 
-    if (foie > 0) {
+    if(foieQuantite > 0){
+
+
+        if(!foieRecetteValidee){
+
+
+            alert(
+                "Veuillez valider la recette du foie gras."
+            );
+
+
+            return;
+
+
+        }
+
 
 
         let recette =
-            document.getElementById("foieRecette").value;
+
+        foieRecetteValidee === "figues"
+
+        ?
+
+        "Gelée de figues au vin de messe"
+
+        :
+
+        "Piment d'Espelette & Porto Calem";
 
 
 
-        let nomRecette =
-            recette === "figues"
-            ?
-            "Gelée de figues au vin de messe"
-            :
-            "Piment d'Espelette & Porto Calem";
-
-
-
-        let prix = foie * produits.foieGras.prix;
+        let prix =
+        foieQuantite * PRIX.foieGras;
 
 
 
@@ -134,21 +245,27 @@ function calculerTotal() {
 
 
 
-        panier.push({
+        panierActuel.push({
 
-            nom:
-            produits.foieGras.nom,
+
+            produit:
+            "Foie gras de canard au torchon",
+
 
             detail:
-            nomRecette,
+            recette,
+
 
             quantite:
-            foie + " x 200 g",
+            foieQuantite + " x 200 g",
+
 
             prix:
             prix
 
+
         });
+
 
 
     }
@@ -158,36 +275,43 @@ function calculerTotal() {
 
 
 
-    // =========================
+
+    // ===================================================
     // MAGRET
-    // =========================
+    // ===================================================
 
 
-    let magret = Number(
+    let magret =
+    Number(
         document.getElementById("magret").value
     );
 
 
 
-    if (magret > 0) {
+    if(magret > 0){
 
 
         let recette =
-            document.getElementById("magretRecette").value;
+        document.getElementById("magretRecette").value;
 
 
 
-        let nomRecette =
-            recette === "herbes"
-            ?
-            "Herbes de Provence"
-            :
-            "Piment d'Espelette";
+        let detail =
+
+        recette === "herbes"
+
+        ?
+
+        "Herbes de Provence"
+
+        :
+
+        "Piment d'Espelette";
 
 
 
         let prix =
-            magret * produits.magret.prix;
+        magret * PRIX.magret;
 
 
 
@@ -195,140 +319,194 @@ function calculerTotal() {
 
 
 
-        panier.push({
+        panierActuel.push({
 
-            nom:
-            produits.magret.nom,
+
+            produit:
+            "Magret de canard fumé et séché",
+
 
             detail:
-            nomRecette,
+            detail,
+
 
             quantite:
             magret + " pièce(s)",
 
+
             prix:
             prix
+
+
+
+        });
+
+
+
+    }
+
+
+
+
+
+
+
+
+    // ===================================================
+    // VIANDE SÉCHÉE
+    // ===================================================
+
+
+    let viande =
+    Number(
+        document.getElementById("viandeSechee").value
+    );
+
+
+
+    if(viande > 0){
+
+
+
+        let prix =
+        (viande / 500) * PRIX.viandeSechee;
+
+
+
+        total += prix;
+
+
+
+        panierActuel.push({
+
+
+            produit:
+            "Viande séchée artisanale",
+
+
+            detail:
+            "Poids réel confirmé lors de la préparation",
+
+
+            quantite:
+            viande + " g",
+
+
+            prix:
+            prix
+
 
         });
 
 
     }
-// =========================
-// VIANDE SÉCHÉE
-// =========================
-
-
-let viande = Number(
-    document.getElementById("viandeSechee").value
-);
-
-
-
-if (viande > 0) {
-
-
-    let prix =
-        viande * produits.viandeSechee.prix;
-
-
-
-    total += prix;
-
-
-
-    panier.push({
-
-        nom:
-        produits.viandeSechee.nom,
-
-        detail:
-        "Poids réel confirmé lors de la préparation",
-
-        quantite:
-        viande + " x 500 g",
-
-        prix:
-        prix
-
-    });
-
-
-}
 
 
 
 
 
-
-// =========================
-// LARD SEC
-// =========================
-
-
-let lard = Number(
-    document.getElementById("lardSec").value
-);
+    // ===================================================
+    // LARD SEC
+    // ===================================================
 
 
-
-if (lard > 0) {
-
-
-    let prix =
-        lard * produits.lardSec.prix;
+    let lard =
+    Number(
+        document.getElementById("lardSec").value
+    );
 
 
 
-    total += prix;
+    if(lard > 0){
+
+
+        let prix =
+        (lard / 500) * PRIX.lardSec;
 
 
 
-    panier.push({
-
-        nom:
-        produits.lardSec.nom,
-
-        detail:
-        "Poids réel confirmé lors de la préparation",
-
-        quantite:
-        lard + " x 500 g",
-
-        prix:
-        prix
-
-    });
-
-
-}
+        total += prix;
 
 
 
+        panierActuel.push({
+
+
+            produit:
+            "Lard sec légèrement fumé",
+
+
+            detail:
+            "Poids réel confirmé lors de la préparation",
+
+
+            quantite:
+            lard + " g",
+
+
+            prix:
+            prix
 
 
 
-
-// =========================
-// SAUMON
-// =========================
+        });
 
 
-let saumon = Number(
+
+    }
+// ===================================================
+// SAUMON FUMÉ
+// ===================================================
+
+
+let saumonPoids =
+
+Number(
     document.getElementById("saumonPoids").value
 );
 
 
 
-if (saumon > 0) {
+if(saumonPoids > 0){
 
 
-    let quantite100 =
-        saumon / 100;
+
+    if(!saumonRecetteValidee){
+
+
+        alert(
+            "Veuillez valider la recette du saumon."
+        );
+
+
+        return;
+
+
+    }
+
+
+
+
+    let recette =
+
+    saumonRecetteValidee === "aneth"
+
+    ?
+
+    "Aneth"
+
+    :
+
+    "Piment d'Espelette";
+
+
 
 
 
     let prix =
-        quantite100 * produits.saumon.prix;
+
+    (saumonPoids / 100) * PRIX.saumon;
+
 
 
 
@@ -336,23 +514,62 @@ if (saumon > 0) {
 
 
 
-    panier.push({
 
-        nom:
-        produits.saumon.nom,
+    panierActuel.push({
+
+
+
+        produit:
+
+        "Cœur de saumon fumé",
+
+
 
         detail:
-        "Poids réel confirmé lors de la préparation",
+
+        recette,
+
+
 
         quantite:
-        saumon + " g",
+
+        saumonPoids + " g",
+
+
 
         prix:
+
         prix
+
+
 
     });
 
 
+
+}
+
+
+
+
+
+
+
+// Affichage
+
+afficherPanier();
+
+
+
+
+document
+.getElementById("total")
+.innerHTML =
+
+total.toFixed(2) + " CHF";
+
+
+
 }
 
 
@@ -362,42 +579,26 @@ if (saumon > 0) {
 
 
 
-// =========================
+
+
+// ===================================================
 // AFFICHAGE PANIER
-// =========================
-
-
-afficherPanier(panier);
-
-
-
-
-document.getElementById("total").innerHTML =
-
-    total.toFixed(2) + " CHF";
-
-
-
-}
-
-
-
-
-
-// ===================================================
-// AFFICHER PANIER
 // ===================================================
 
 
-function afficherPanier(panier) {
+function afficherPanier(){
 
 
     let zone =
-        document.getElementById("recapCommande");
+
+    document.getElementById(
+        "recapCommande"
+    );
 
 
 
-    if (panier.length === 0) {
+
+    if(panierActuel.length === 0){
 
 
         zone.innerHTML =
@@ -407,7 +608,9 @@ function afficherPanier(panier) {
 
         return;
 
+
     }
+
 
 
 
@@ -417,11 +620,13 @@ function afficherPanier(panier) {
 
 
 
-    panier.forEach(produit => {
+
+    panierActuel.forEach(article => {
 
 
 
         html += `
+
 
         <div class="ligne-produit">
 
@@ -430,38 +635,39 @@ function afficherPanier(panier) {
 
 
                 <strong>
-                ${produit.nom}
+                ${article.produit}
                 </strong>
 
 
                 <br>
 
 
-                ${produit.detail}
+                ${article.detail}
 
 
                 <br>
 
 
-                ${produit.quantite}
+                ${article.quantite}
 
 
             </div>
 
 
 
-            <div>
+            <strong>
 
+            ${article.prix.toFixed(2)} CHF
 
-                ${produit.prix.toFixed(2)} CHF
+            </strong>
 
-
-            </div>
 
 
         </div>
 
+
         `;
+
 
 
     });
@@ -469,41 +675,107 @@ function afficherPanier(panier) {
 
 
 
-
     zone.innerHTML = html;
 
 
+
 }
+
+
+
+
+
+
+
+
+
 // ===================================================
-// BOUTON VIDER PANIER
+// VIDER PANIER
 // ===================================================
 
 
 document
 .getElementById("btnViderPanier")
-.addEventListener("click", function(){
-
-
-    document.getElementById("foieGras").value = 0;
-
-
-    document.getElementById("magret").value = 0;
-
-
-    document.getElementById("viandeSechee").value = 0;
-
-
-    document.getElementById("lardSec").value = 0;
-
-
-    document.getElementById("saumonPoids").value = 0;
+.addEventListener(
+"click",
+function(){
 
 
 
-    calculerTotal();
+    panierActuel = [];
+
+
+
+    foieRecetteValidee = null;
+
+
+    saumonRecetteValidee = null;
+
+
+
+
+    document
+    .getElementById("foieQuantite")
+    .value = 0;
+
+
+
+    document
+    .getElementById("magret")
+    .value = 0;
+
+
+
+    document
+    .getElementById("viandeSechee")
+    .value = 0;
+
+
+
+    document
+    .getElementById("lardSec")
+    .value = 0;
+
+
+
+    document
+    .getElementById("saumonPoids")
+    .value = 0;
+
+
+
+
+    document
+    .getElementById("foieSelection")
+    .innerHTML =
+
+    "Aucune recette sélectionnée.";
+
+
+
+    document
+    .getElementById("saumonSelection")
+    .innerHTML =
+
+    "Aucune recette sélectionnée.";
+
+
+
+
+    afficherPanier();
+
+
+
+    document
+    .getElementById("total")
+    .innerHTML =
+
+    "0.00 CHF";
+
 
 
 });
+
 
 
 
@@ -517,57 +789,86 @@ document
 // ===================================================
 
 
-function envoyerCommande(event) {
+function envoyerCommande(event){
 
 
     event.preventDefault();
 
 
 
+
     let commande = {
 
 
+
         date:
-        new Date().toLocaleString("fr-CH"),
+
+        new Date()
+        .toLocaleString("fr-CH"),
 
 
 
-        client: {
+
+        client:{
 
 
             nom:
-            document.getElementById("nom").value,
+
+            document
+            .getElementById("nom")
+            .value,
+
 
 
             telephone:
-            document.getElementById("telephone").value,
+
+            document
+            .getElementById("telephone")
+            .value,
+
 
 
             email:
-            document.getElementById("email").value,
+
+            document
+            .getElementById("email")
+            .value,
+
 
 
             adresse:
-            document.getElementById("adresse").value,
+
+            document
+            .getElementById("adresse")
+            .value,
+
 
 
             commentaire:
-            document.getElementById("commentaire").value
+
+            document
+            .getElementById("commentaire")
+            .value
 
 
         },
 
 
 
+
         produits:
-        recupererCommande(),
+
+        panierActuel,
+
 
 
 
         total:
+
         document
         .getElementById("total")
         .innerText
+
 
 
     };
@@ -577,20 +878,22 @@ function envoyerCommande(event) {
 
 
 
-    // Sauvegarde locale provisoire
-    // Sera remplacée plus tard par la base de données
-
-
     let commandes =
-        JSON.parse(
-            localStorage.getItem("commandes")
-        )
-        ||
-        [];
+
+    JSON.parse(
+        localStorage.getItem("commandes")
+    )
+
+    ||
+
+    [];
+
+
 
 
 
     commandes.push(commande);
+
 
 
 
@@ -606,13 +909,12 @@ function envoyerCommande(event) {
 
 
 
-
-
     alert(
 
-        "Merci pour votre commande. Elle sera confirmée après vérification du paiement TWINT."
+    "Votre commande a été enregistrée. Elle sera confirmée après vérification du paiement."
 
     );
+
 
 
 
@@ -630,60 +932,23 @@ function envoyerCommande(event) {
 
 
 
-// ===================================================
-// RÉCUPÉRER COMMANDE
-// ===================================================
-
-
-function recupererCommande() {
-
-
-    let produitsCommande = [];
-
-
-
-    let recap =
-    document.getElementById("recapCommande")
-    .innerText;
-
-
-
-    produitsCommande.push({
-
-        recap:
-        recap
-
-
-    });
-
-
-
-    return produitsCommande;
-
-
-}
-
-
-
-
-
-
-
 
 // ===================================================
-// NOM POUR TWINT
+// NOM TWINT
 // ===================================================
 
 
 document
 .getElementById("nom")
-.addEventListener("input", function(){
+.addEventListener(
+"input",
+function(){
 
 
-    document
-    .getElementById("twintNomComplet")
-    .innerText =
-    this.value;
+document
+.getElementById("twintNomComplet")
+.innerText =
+this.value;
 
 
 });
