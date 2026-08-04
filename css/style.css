@@ -416,7 +416,9 @@ button:hover {
     gap: 30px;
     margin-bottom: 50px;
 }
-
+.produit {
+    width: 320px;
+}
 
 .titre-categorie {
 
