@@ -631,6 +631,8 @@ button:hover {
 
     margin: 20px auto;
 
+    margin-top: auto;
+
     font-size: 1.05rem;
 
     letter-spacing: .4px;
@@ -638,7 +640,6 @@ button:hover {
     box-shadow: 0 8px 18px rgba(184,145,34,.25);
 
 }
-
 
 /* ===================================================
    COMMANDES - CARTES
