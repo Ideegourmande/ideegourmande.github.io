@@ -629,9 +629,7 @@ button:hover {
 
     height: 55px;
 
-    margin: 20px auto;
-
-    margin-top: auto;
+    margin: auto auto 20px;
 
     font-size: 1.05rem;
 
