@@ -419,9 +419,6 @@ button:hover {
     gap: 30px;
     margin-bottom: 50px;
 }
-.produit {
-    width: 320px;
-}
 
 .titre-categorie {
 
@@ -439,6 +436,8 @@ button:hover {
    =================================================== */
 
 .produit {
+
+    width: 320px;
 
     background: linear-gradient(
         to bottom,
@@ -463,11 +462,8 @@ button:hover {
     height: 100%;
 
     transition:
-
         transform .35s ease,
-
         box-shadow .35s ease;
-
 }
 
 
