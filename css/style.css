@@ -410,17 +410,11 @@ button:hover {
    =================================================== */
 
 .produits {
-
-    display: grid;
-
-    grid-template-columns: repeat(auto-fit,minmax(280px,1fr));
-
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
     gap: 30px;
-
-    padding: 50px 8%;
-
-    align-items: stretch;
-
+    margin-bottom: 50px;
 }
 
 
@@ -1873,4 +1867,7 @@ footer a:hover {
     }
 
 
+}
+.catalogue {
+    padding: 0 8% 60px;
 }
