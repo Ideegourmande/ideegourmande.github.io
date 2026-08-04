@@ -11,7 +11,7 @@
 :root {
 
     --vert: #7F9275;
-    --vert-fonce: #5E7055;
+    --vert-fonce: F#5E7055;
 
     --or: #D4AF37;
     --or-fonce: #B89122;
@@ -422,11 +422,11 @@ button:hover {
 
 .titre-categorie {
 
-    grid-column: 1/-1;
-
     text-align: center;
 
     margin: 40px 0 10px;
+
+    color: var(--vert);
 
 }
 
