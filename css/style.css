@@ -408,6 +408,9 @@ button:hover {
 /* ===================================================
    CATALOGUE PRODUITS
    =================================================== */
+.catalogue {
+    padding: 0 8% 60px;
+}
 
 .produits {
     display: flex;
@@ -1869,7 +1872,4 @@ footer a:hover {
     }
 
 
-}
-.catalogue {
-    padding: 0 8% 60px;
 }
