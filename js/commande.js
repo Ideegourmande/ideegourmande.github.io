@@ -1,4 +1,6 @@
 console.log("COMMANDE.JS CHARGE");
+
+
 /* ===================================================
    IDÉE GOURMANDE
    commande.js
@@ -15,11 +17,7 @@ console.log("COMMANDE.JS CHARGE");
 let panierCommande = [];
 
 
-// Variable accessible pour pdfcommande.js
-
 window.panierCommande = panierCommande;
-
-
 
 
 
@@ -91,11 +89,6 @@ const produits = {
 
 
 
-
-
-
-
-
 /* ===================================================
    INITIALISATION
    =================================================== */
@@ -108,9 +101,7 @@ document.addEventListener(
 
         initialiserBoutonsPanier();
 
-
         afficherPanier();
-
 
         initialiserNomTwint();
 
@@ -118,10 +109,6 @@ document.addEventListener(
     }
 
 );
-
-
-
-
 
 
 
@@ -135,10 +122,10 @@ document.addEventListener(
 function initialiserBoutonsPanier(){
 
 
-    const boutons = document.querySelectorAll(
+    const boutons =
+    document.querySelectorAll(
         ".ajouter-panier"
     );
-
 
 
     boutons.forEach(
@@ -150,12 +137,9 @@ function initialiserBoutonsPanier(){
                 function(){
 
 
-                    const produit =
-                    bouton.dataset.produit;
-
-
-
-                    ajouterAuPanier(produit);
+                    ajouterAuPanier(
+                        bouton.dataset.produit
+                    );
 
 
                 }
@@ -175,9 +159,6 @@ function initialiserBoutonsPanier(){
 
 
 
-
-
-
 /* ===================================================
    AJOUT AU PANIER
    =================================================== */
@@ -186,29 +167,20 @@ function initialiserBoutonsPanier(){
 function ajouterAuPanier(reference){
 
 
-
     const produit =
     produits[reference];
 
 
-
     if(!produit){
-
 
         console.error(
             "Produit inconnu : ",
             reference
         );
 
-
         return;
 
-
     }
-
-
-
-
 
 
 
@@ -216,9 +188,6 @@ function ajouterAuPanier(reference){
     document.querySelector(
         `.commande-card[data-produit="${reference}"]`
     );
-
-
-
 
 
 
@@ -231,7 +200,8 @@ function ajouterAuPanier(reference){
         nom: produit.nom,
 
 
-        recette: getRecette(
+        recette:
+        getRecette(
             reference,
             carte
         ),
@@ -252,17 +222,7 @@ function ajouterAuPanier(reference){
 
 
 
-
-
-
-
-    /*
-       Gestion spécifique des produits
-    */
-
-
     switch(reference){
-
 
 
         case "foie-gras":
@@ -274,16 +234,7 @@ function ajouterAuPanier(reference){
             );
 
 
-            article.prix =
-            produit.prix *
-            article.quantite;
-
-
         break;
-
-
-
-
 
 
 
@@ -296,17 +247,7 @@ function ajouterAuPanier(reference){
             );
 
 
-            article.prix =
-            produit.prix *
-            article.quantite;
-
-
         break;
-
-
-
-
-
 
 
 
@@ -319,17 +260,7 @@ function ajouterAuPanier(reference){
             );
 
 
-            article.prix =
-            produit.prix *
-            article.quantite;
-
-
         break;
-
-
-
-
-
 
 
 
@@ -342,17 +273,7 @@ function ajouterAuPanier(reference){
             );
 
 
-            article.prix =
-            produit.prix *
-            article.quantite;
-
-
         break;
-
-
-
-
-
 
 
 
@@ -363,9 +284,7 @@ function ajouterAuPanier(reference){
             obtenirPoidsSaumon();
 
 
-
-
-            if(article.poids === 0){
+            if(article.poids <= 0){
 
 
                 alert(
@@ -379,29 +298,13 @@ function ajouterAuPanier(reference){
             }
 
 
-
-
-
             article.quantite = 1;
-
-
-
-
-            article.prix =
-(produit.prix * article.poids) / 100;
-
 
 
         break;
 
 
-
     }
-
-
-
-
-
 
 
 
@@ -421,23 +324,12 @@ function ajouterAuPanier(reference){
 
 
 
+    article.prix =
+    calculerPrixArticle(article);
 
-
-
-
-
-
-    /*
-       Nouvelle gestion :
-       fusion des articles identiques
-    */
 
 
     fusionnerArticlePanier(article);
-
-
-
-
 
 
 
@@ -446,19 +338,13 @@ function ajouterAuPanier(reference){
 
 
 
-
-
-
-
     afficherPanier();
-
 
 
 }
 
-/* ===================================================
-   FUSION ARTICLES IDENTIQUES
-   =================================================== */
+
+
 
 
 /* ===================================================
@@ -469,14 +355,15 @@ function ajouterAuPanier(reference){
 function fusionnerArticlePanier(article){
 
 
-    const recetteNormalisee =
-    article.recette
-    ? article.recette.trim()
-    : "";
+
+    const recette =
+    (article.recette || "")
+    .trim();
 
 
 
-    const existant = panierCommande.find(
+    const existant =
+    panierCommande.find(
         item =>
 
 
@@ -486,11 +373,9 @@ function fusionnerArticlePanier(article){
         &&
 
 
-        (
-            item.recette || ""
-        ).trim()
+        (item.recette || "").trim()
         ===
-        recetteNormalisee
+        recette
 
 
         &&
@@ -505,54 +390,37 @@ function fusionnerArticlePanier(article){
 
 
 
-
     if(existant){
-
 
 
         existant.quantite +=
         article.quantite;
 
 
-
         existant.prix =
-        calculerPrixArticle(existant);
-
-
-
-        console.log(
-            "Fusion effectuée :",
+        calculerPrixArticle(
             existant
         );
-
 
 
     }
     else {
 
 
-
         article.recette =
-        recetteNormalisee;
+        recette;
 
 
-
-        panierCommande.push(article);
-
-
-
-        console.log(
-            "Nouvel article ajouté :",
+        panierCommande.push(
             article
         );
-
 
 
     }
 
 
-
 }
+
 
 
 
@@ -560,15 +428,17 @@ function fusionnerArticlePanier(article){
 
 
 /* ===================================================
-   RECALCUL PRIX ARTICLE
+   CALCUL PRIX ARTICLE
    =================================================== */
 
 
 function calculerPrixArticle(article){
 
 
+
     const produit =
     produits[article.reference];
+
 
 
     if(!produit){
@@ -579,22 +449,24 @@ function calculerPrixArticle(article){
 
 
 
-    /*
-       Produit vendu au poids
-    */
+    // Saumon vendu au poids
 
     if(article.reference === "saumon-fume"){
 
 
         return Number(
+
             (
+
                 produit.prix
                 *
                 article.poids
                 /
                 100
 
-            ).toFixed(2)
+            )
+            .toFixed(2)
+
         );
 
 
@@ -602,43 +474,20 @@ function calculerPrixArticle(article){
 
 
 
-    /*
-       Produits à la pièce
-    */
+    // Produits à la pièce
+
 
     return Number(
+
         (
+
             produit.prix
             *
             article.quantite
 
-        ).toFixed(2)
-    );
+        )
+        .toFixed(2)
 
-
-}
-
-
-    const produit =
-    produits[article.reference];
-
-
-
-    if(!produit){
-
-        return 0;
-
-    }
-
-
-
-    return Number(
-        (
-            produit.prix
-            *
-            article.quantite
-
-        ).toFixed(2)
     );
 
 
@@ -658,14 +507,11 @@ function calculerPrixArticle(article){
 function getRecette(reference, carte){
 
 
-
     if(!carte){
 
         return "";
 
     }
-
-
 
 
     const choix =
@@ -674,22 +520,12 @@ function getRecette(reference, carte){
     );
 
 
+    return choix
+    ? choix.value
+    : "";
 
-    if(choix){
-
-
-        return choix.value;
-
-
-    }
-
-
-
-    return "";
 
 }
-
-
 
 
 
@@ -732,15 +568,12 @@ function obtenirQuantite(id){
 
 
 
-
-
 /* ===================================================
    POIDS SAUMON
    =================================================== */
 
 
 function obtenirPoidsSaumon(){
-
 
 
     const champ =
@@ -764,6 +597,7 @@ function obtenirPoidsSaumon(){
 
 
 }
+ 
 /* ===================================================
    AFFICHAGE DU PANIER
    =================================================== */
@@ -778,12 +612,10 @@ function afficherPanier(){
     );
 
 
-
     const zoneTotal =
     document.getElementById(
         "total"
     );
-
 
 
     if(!zonePanier || !zoneTotal){
@@ -794,43 +626,33 @@ function afficherPanier(){
 
 
 
-
-
-
-
     if(panierCommande.length === 0){
 
 
-
         zonePanier.innerHTML =
-
         "<p>Aucun produit sélectionné.</p>";
-
 
 
         zoneTotal.textContent =
         "0.00 CHF";
 
 
+        mettreAJourTitrePanier(0);
+
 
         return;
+
 
     }
 
 
 
 
+    let contenu = "";
 
+    let total = 0;
 
-
-   let contenu = "";
-
-let total = 0;
-
-let nombreArticles = 0;
-
-
-
+    let nombreArticles = 0;
 
 
 
@@ -838,105 +660,130 @@ let nombreArticles = 0;
     panierCommande.forEach(
         (article,index)=>{
 
-if(article.reference === "saumon-fume"){
 
-    nombreArticles += 1;
+            /*
+              Compteur articles
+              Le saumon compte comme
+              une pièce quel que soit le poids
+            */
 
-}
-else {
 
-    nombreArticles += article.quantite;
+            if(article.reference === "saumon-fume"){
 
-}
+
+                nombreArticles += 1;
+
+
+            }
+            else {
+
+
+                nombreArticles +=
+                article.quantite;
+
+
+            }
+
+
+
+
             total += article.prix;
-
 
 
 
 
             contenu += `
 
-            <div class="ligne-produit">
+
+<div class="ligne-produit">
 
 
-                <div>
+    <div class="infos-produit">
 
 
-                    <strong>
-                    ${article.nom}
-                    </strong>
+        <strong>
+            ${article.nom}
+        </strong>
 
 
-                    <br>
+        <br>
 
 
-${afficherDetailsArticle(article)}
-
-<div class="gestion-quantite">
-
-<button
-type="button"
-class="btn-quantite moins"
-onclick="modifierQuantite(${index}, -1)">
-−
-</button>
+        ${afficherDetailsArticle(article)}
 
 
-<span>
-${article.quantite}
-</span>
+
+        <div class="gestion-quantite">
 
 
-<button
-type="button"
-class="btn-quantite plus"
-onclick="modifierQuantite(${index}, 1)">
-+
-</button>
+            <button
+            type="button"
+            class="btn-quantite moins"
+            onclick="modifierQuantite(${index},-1)">
+                −
+            </button>
+
+
+
+            <span>
+                ${article.quantite}
+            </span>
+
+
+
+            <button
+            type="button"
+            class="btn-quantite plus"
+            onclick="modifierQuantite(${index},1)">
+                +
+            </button>
+
+
+        </div>
+
+
+    </div>
+
+
+
+
+    <div class="prix-produit">
+
+
+        <strong>
+            Sous-total :
+        </strong>
+
+
+        <br>
+
+
+        <strong>
+            ${article.prix.toFixed(2)} CHF
+        </strong>
+
+
+        <br><br>
+
+
+        <button
+        type="button"
+        class="btn-supprimer"
+        onclick="supprimerArticle(${index})">
+
+            Supprimer
+
+        </button>
+
+
+    </div>
+
+
 
 </div>
 
 
-
-
-                </div>
-
-
-
-                <div>
-
-
-                    <strong>
-                    Sous-total :
-<br>
-
-<strong>
-${article.prix.toFixed(2)} CHF
-</strong>
-                    </strong>
-
-
-
-                    <br>
-
-
-                    <button
-                    type="button"
-                    class="btn-supprimer"
-                    data-index="${index}">
-
-                    Supprimer
-
-                    </button>
-
-
-                </div>
-
-
-
-            </div>
-
-            `;
+`;
 
 
 
@@ -947,46 +794,78 @@ ${article.prix.toFixed(2)} CHF
 
 
 
-
-const titrePanier =
-document.getElementById(
-    "titrePanier"
-);
+    zonePanier.innerHTML =
+    contenu;
 
 
-if(titrePanier){
 
-
-    titrePanier.textContent =
-    "🛒 Votre panier (" 
+    zoneTotal.textContent =
+    total.toFixed(2)
     +
-    nombreArticles
+    " CHF";
+
+
+
+    mettreAJourTitrePanier(
+        nombreArticles
+    );
+
+
+
+}
+
+
+
+
+
+/* ===================================================
+   TITRE PANIER
+   =================================================== */
+
+
+function mettreAJourTitrePanier(nombre){
+
+
+    const titre =
+    document.getElementById(
+        "titrePanier"
+    );
+
+
+    if(!titre){
+
+        return;
+
+    }
+
+
+
+    titre.textContent =
+
+    "🛒 Votre panier ("
+    +
+    nombre
     +
     " article"
     +
-    (nombreArticles > 1 ? "s" : "")
+    (
+        nombre > 1
+        ? "s"
+        : ""
+    )
     +
     ")";
 
 
 }
 
-    zonePanier.innerHTML = contenu;
-
-
-
-    zoneTotal.textContent =
-    total.toFixed(2) + " CHF";
 
 
 
 
-
-    initialiserSuppression();
-   initialiserModificationQuantite();
 
 /* ===================================================
-   DETAILS ARTICLE PANIER
+   DETAILS ARTICLE
    =================================================== */
 
 
@@ -1001,11 +880,13 @@ function afficherDetailsArticle(article){
 
 
         details +=
+
         "Recette : "
         +
         article.recette
         +
         "<br>";
+
 
     }
 
@@ -1015,9 +896,11 @@ function afficherDetailsArticle(article){
 
 
         details +=
+
         article.poids
         +
         " g";
+
 
     }
 
@@ -1034,77 +917,18 @@ function afficherDetailsArticle(article){
 
 
 
-
-
 /* ===================================================
-   SUPPRESSION ARTICLE
-   =================================================== */
-
-
-function initialiserSuppression(){
-
-
-
-    const boutons =
-    document.querySelectorAll(
-        ".btn-supprimer"
-    );
-
-
-
-    boutons.forEach(
-        bouton => {
-
-
-
-            bouton.addEventListener(
-                "click",
-                function(){
-
-
-
-                    const index =
-                    Number(
-                        bouton.dataset.index
-                    );
-
-
-
-                    supprimerArticle(index);
-
-
-
-                }
-
-            );
-
-
-
-        }
-
-    );
-
-
-}
-
-
-
-
-
-
-
-
-
-function supprimerArticle(index){
-/* ===================================================
-   MODIFICATION QUANTITE CENTRALISEE
+   MODIFICATION QUANTITE
    =================================================== */
 
 
 function modifierQuantite(index, variation){
 
 
-    const article = panierCommande[index];
+
+    const article =
+    panierCommande[index];
+
 
 
     if(!article){
@@ -1114,7 +938,27 @@ function modifierQuantite(index, variation){
     }
 
 
-    article.quantite += variation;
+
+    /*
+       Le saumon est vendu au poids.
+       On ne modifie pas sa quantité.
+    */
+
+
+    if(article.reference === "saumon-fume"){
+
+
+        return;
+
+
+    }
+
+
+
+
+
+    article.quantite +=
+    variation;
 
 
 
@@ -1126,12 +970,17 @@ function modifierQuantite(index, variation){
 
         return;
 
+
     }
 
 
 
+
+
     article.prix =
-    calculerPrixArticle(article);
+    calculerPrixArticle(
+        article
+    );
 
 
 
@@ -1143,7 +992,22 @@ function modifierQuantite(index, variation){
     afficherPanier();
 
 
+
 }
+
+
+
+
+
+
+
+/* ===================================================
+   SUPPRESSION ARTICLE
+   =================================================== */
+
+
+function supprimerArticle(index){
+
 
 
     panierCommande.splice(
@@ -1161,9 +1025,8 @@ function modifierQuantite(index, variation){
     afficherPanier();
 
 
+
 }
-
-
 
 
 
@@ -1192,31 +1055,18 @@ document.addEventListener(
         if(bouton){
 
 
-
             bouton.addEventListener(
                 "click",
-                function(){
-
-
-                    viderPanier();
-
-
-                }
-
+                viderPanier
             );
 
 
         }
 
 
-
     }
 
 );
-
-
-
-
 
 
 
@@ -1238,8 +1088,23 @@ function viderPanier(){
     afficherPanier();
 
 
-
 }
+
+
+
+
+
+/* ===================================================
+   EXPORT FONCTIONS GLOBALES
+   =================================================== */
+
+
+window.modifierQuantite =
+modifierQuantite;
+
+
+window.supprimerArticle =
+supprimerArticle;
 /* ===================================================
    GESTION NOM TWINT
    =================================================== */
@@ -1267,7 +1132,13 @@ function initialiserNomTwint(){
 
 
 
-    if(!prenom || !nom || !affichage){
+    if(
+        !prenom
+        ||
+        !nom
+        ||
+        !affichage
+    ){
 
         return;
 
@@ -1276,31 +1147,22 @@ function initialiserNomTwint(){
 
 
 
-
-
     function mettreAJourNomTwint(){
 
 
-
-        const nomComplet =
-
-        prenom.value.trim()
-        +
-        " "
-        +
-        nom.value.trim();
-
-
-
         affichage.textContent =
-        nomComplet;
 
+        (
+            prenom.value.trim()
+            +
+            " "
+            +
+            nom.value.trim()
+        )
+        .trim();
 
 
     }
-
-
-
 
 
 
@@ -1311,12 +1173,10 @@ function initialiserNomTwint(){
     );
 
 
-
     nom.addEventListener(
         "input",
         mettreAJourNomTwint
     );
-
 
 
 }
@@ -1350,23 +1210,18 @@ document.addEventListener(
         if(formulaire){
 
 
-
             formulaire.addEventListener(
                 "submit",
                 envoyerCommande
             );
 
 
-
         }
-
 
 
     }
 
 );
-
-
 
 
 
@@ -1383,10 +1238,9 @@ function envoyerCommande(event){
 
 
 
-
-
-
-    if(panierCommande.length === 0){
+    if(
+        panierCommande.length === 0
+    ){
 
 
         alert(
@@ -1405,14 +1259,10 @@ function envoyerCommande(event){
 
 
 
-
     const confirmationTwint =
-
     document.getElementById(
         "confirmationTwint"
     );
-
-
 
 
 
@@ -1439,13 +1289,11 @@ function envoyerCommande(event){
 
 
 
-
-
-
     const commande = {
 
 
         date:
+
         new Date()
         .toLocaleString(
             "fr-CH"
@@ -1453,43 +1301,37 @@ function envoyerCommande(event){
 
 
 
+
         client:{
 
 
             prenom:
-            document.getElementById(
-                "prenom"
-            ).value,
+            valeurChamp("prenom"),
+
 
 
             nom:
-            document.getElementById(
-                "nom"
-            ).value,
+            valeurChamp("nom"),
+
 
 
             telephone:
-            document.getElementById(
-                "telephone"
-            ).value,
+            valeurChamp("telephone"),
+
 
 
             email:
-            document.getElementById(
-                "email"
-            ).value,
+            valeurChamp("email"),
+
 
 
             adresse:
-            document.getElementById(
-                "adresse"
-            ).value,
+            valeurChamp("adresse"),
+
 
 
             commentaire:
-            document.getElementById(
-                "commentaire"
-            ).value
+            valeurChamp("commentaire")
 
 
         },
@@ -1497,21 +1339,19 @@ function envoyerCommande(event){
 
 
 
-
         produits:
+
         panierCommande,
 
 
 
 
-
         total:
+
         calculerTotalCommande()
 
 
     };
-
-
 
 
 
@@ -1528,15 +1368,10 @@ function envoyerCommande(event){
 
 
 
-    /*
-       Disponible pour pdfcommande.js
-    */
 
 
     window.commandeFinale =
     commande;
-
-
 
 
 
@@ -1563,17 +1398,43 @@ function envoyerCommande(event){
 
 
 
+
     alert(
         "Merci pour votre commande. Elle a été préparée avec succès."
     );
 
 
 
-
-
-
 }
 
+
+
+
+
+
+
+
+
+/* ===================================================
+   LECTURE CHAMP FORMULAIRE
+   =================================================== */
+
+
+function valeurChamp(id){
+
+
+    const champ =
+    document.getElementById(id);
+
+
+
+    return champ
+    ?
+    champ.value.trim()
+    :
+    "";
+
+}
 
 
 
@@ -1596,10 +1457,13 @@ function calculerTotalCommande(){
 
 
     panierCommande.forEach(
-        article=>{
+        article => {
 
 
-            total += article.prix;
+            total +=
+            Number(
+                article.prix
+            );
 
 
         }
@@ -1614,7 +1478,6 @@ function calculerTotalCommande(){
 
 
 }
-
 
 
 
@@ -1639,6 +1502,7 @@ function(){
 
 
 
+
 window.getTotalCommande =
 function(){
 
@@ -1647,5 +1511,9 @@ function(){
 
 
 };
-window.modifierQuantite =
-modifierQuantite;
+
+
+
+
+window.calculerTotalCommande =
+calculerTotalCommande;
