@@ -804,13 +804,38 @@ function afficherPanier(){
 
 
         ${
-            article.reference !== "saumon-fume"
+article.reference === "saumon-fume"
 
-            ?
+?
 
 `
 <div class="gestion-quantite">
 
+<button
+type="button"
+class="btn-quantite moins"
+onclick="modifierQuantite(${index},-100)">
+−
+</button>
+
+<span>
+${article.poids} g
+</span>
+
+<button
+type="button"
+class="btn-quantite plus"
+onclick="modifierQuantite(${index},100)">
++
+</button>
+
+</div>
+`
+
+:
+
+`
+<div class="gestion-quantite">
 
 <button
 type="button"
@@ -819,13 +844,9 @@ onclick="modifierQuantite(${index},-1)">
 −
 </button>
 
-
-
 <span>
 ${article.quantite}
 </span>
-
-
 
 <button
 type="button"
@@ -834,15 +855,9 @@ onclick="modifierQuantite(${index},1)">
 +
 </button>
 
-
 </div>
 `
-
-            :
-
-""
-
-        }
+}
 
 
     </div>
@@ -1055,13 +1070,26 @@ function modifierQuantite(index, variation){
 
 
 
-    if(article.reference === "saumon-fume"){
+   if(article.reference === "saumon-fume"){
 
+    article.poids += variation;
 
+    if(article.poids < 100){
+
+        supprimerArticle(index);
         return;
 
-
     }
+
+    article.prix = calculerPrixArticle(article);
+
+    window.panierCommande = panierCommande;
+
+    afficherPanier();
+
+    return;
+
+}
 
 
 
