@@ -181,139 +181,34 @@ function initialiserBoutonsPanier(){
 
 function ajouterAuPanier(reference){
 
-
-    const produit =
-    produits[reference];
-
-
-
-    if(!produit){
-
-
-        console.error(
-            "Produit inconnu : ",
-            reference
-        );
-
-
-        return;
-
-
-    }
-
-
-
-
-    const carte =
-    document.querySelector(
-        `.commande-card[data-produit="${reference}"]`
-    );
-
-
-
-
-
-    let article = {
-
-
-        reference: reference,
-
-
-        nom: produit.nom,
-
-
-        recette:
-        getRecette(
-            reference,
-            carte
-        ),
-
-
-        quantite: 1,
-
-
-        poids: null,
-
-
-        prix: 0
-
-
-    };
-
-
-
-
-
-
+    ...
 
     switch(reference){
 
-
         case "foie-gras":
-
-
-            article.quantite =
-            obtenirQuantite(
-                "foieQuantite"
-            );
-
-
         break;
-
-
-
-
 
         case "magret":
-
-
-            article.quantite =
-            obtenirQuantite(
-                "magretQuantite"
-            );
-
-
         break;
-
-
-
-
 
         case "viande-sechee":
-
-
-            article.quantite =
-            obtenirQuantite(
-                "viandeQuantite"
-            );
-
-
         break;
-
-
-
-
 
         case "lard-sec":
-
-
-            article.quantite =
-            obtenirQuantite(
-                "lardQuantite"
-            );
-
-
         break;
-
-
-
-
 
         case "saumon-fume":
 
+            ...
 
-            article.poids =
-            obtenirPoidsSaumon();
+        break;
+
+    }   // fermeture switch
+
+
+    ... // calcul prix
+
+}   // fermeture ajouterAuPanier
 /* ===================================================
    AFFICHAGE DU PANIER
    =================================================== */
