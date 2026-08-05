@@ -26,6 +26,7 @@
 </div>
 
 
+
 <nav>
 
 
@@ -34,6 +35,7 @@
 <img src="images/logo.svg" alt="Idée Gourmande">
 
 </div>
+
 
 
 <ul>
@@ -57,6 +59,9 @@
 
 
 
+
+
+
 <section class="presentation">
 
 
@@ -69,12 +74,13 @@ Préparer ma commande
 
 <p>
 
-Choisissez vos spécialités artisanales, sélectionnez vos options et ajoutez vos produits au panier.
+Choisissez vos spécialités artisanales, vos options et ajoutez vos produits au panier.
 
 </p>
 
 
 </section>
+
 
 
 
@@ -87,31 +93,44 @@ Choisissez vos spécialités artisanales, sélectionnez vos options et ajoutez v
 
 
 
+
+
 <!-- ===================================================
      FOIE GRAS
 =================================================== -->
 
 
 <div class="commande-card"
-data-produit="foie-gras">
+data-produit="foie-gras"
+data-prix="35">
+
 
 
 <img src="images/foie-gras-figues.jpg"
 alt="Foie gras de canard au torchon">
 
 
+
 <h3>
+
 🦆 Foie gras de canard au torchon
+
 </h3>
 
 
+
+
 <p>
+
 Choisissez votre recette :
+
 </p>
 
 
 
+
 <div class="choix-recette">
+
 
 
 <label>
@@ -128,6 +147,7 @@ Gelée de figues au vin de messe
 
 
 
+
 <label>
 
 <input
@@ -141,7 +161,11 @@ Piment d'Espelette & Porto Calem
 </label>
 
 
+
 </div>
+
+
+
 
 
 
@@ -152,7 +176,10 @@ Quantité (200 g)
 </label>
 
 
+
+
 <input
+class="quantite-produit"
 type="number"
 id="foieQuantite"
 value="1"
@@ -160,13 +187,18 @@ min="1">
 
 
 
+
+
 <p>
 
 <strong>
+
 35.00 CHF / 200 g
+
 </strong>
 
 </p>
+
 
 
 
@@ -182,7 +214,10 @@ Ajouter au panier
 
 
 
+
 </div>
+
+
 
 
 
@@ -196,11 +231,18 @@ Ajouter au panier
 
 
 <div class="commande-card"
-data-produit="magret">
+data-produit="magret"
+data-prix="25">
+
+
+
 
 
 <img src="images/magret-fume.jpg"
 alt="Magret de canard fumé et séché">
+
+
+
 
 
 <h3>
@@ -208,6 +250,8 @@ alt="Magret de canard fumé et séché">
 🦆 Magret de canard fumé et séché
 
 </h3>
+
+
 
 
 
@@ -219,7 +263,10 @@ Choisissez votre recette :
 
 
 
+
+
 <div class="choix-recette">
+
 
 
 <label>
@@ -236,6 +283,8 @@ Herbes de Provence
 
 
 
+
+
 <label>
 
 <input
@@ -249,7 +298,11 @@ Piment d'Espelette
 </label>
 
 
+
 </div>
+
+
+
 
 
 
@@ -261,11 +314,16 @@ Quantité
 </label>
 
 
+
+
 <input
+class="quantite-produit"
 type="number"
 id="magretQuantite"
 value="1"
 min="1">
+
+
 
 
 
@@ -281,6 +339,9 @@ min="1">
 
 
 
+
+
+
 <button
 type="button"
 class="btn ajouter-panier"
@@ -292,8 +353,10 @@ Ajouter au panier
 
 
 
-</div>
 
+
+
+</div>
 
 
 
@@ -307,11 +370,16 @@ Ajouter au panier
 
 
 <div class="commande-card"
-data-produit="viande-sechee">
+data-produit="viande-sechee"
+data-prix="45">
+
 
 
 <img src="images/viande-sechee.jpg"
 alt="Viande séchée artisanale">
+
+
+
 
 
 <h3>
@@ -321,11 +389,15 @@ alt="Viande séchée artisanale">
 </h3>
 
 
+
+
 <p>
 
 Recette maison
 
 </p>
+
+
 
 
 
@@ -341,6 +413,9 @@ Recette maison
 
 
 
+
+
+
 <label>
 
 Nombre de portions
@@ -349,11 +424,15 @@ Nombre de portions
 
 
 
+
 <input
+class="quantite-produit"
 type="number"
 id="viandeQuantite"
 value="1"
 min="0">
+
+
 
 
 
@@ -363,6 +442,7 @@ min="0">
 Poids réel confirmé lors de la préparation.
 
 </p>
+
 
 
 
@@ -378,7 +458,12 @@ Ajouter au panier
 
 
 
+
+
 </div>
+
+
+
 
 
 
@@ -391,11 +476,19 @@ Ajouter au panier
 
 
 <div class="commande-card"
-data-produit="lard-sec">
+data-produit="lard-sec"
+data-prix="20">
+
+
+
 
 
 <img src="images/lard-sec.jpg"
 alt="Lard sec légèrement fumé">
+
+
+
+
 
 
 <h3>
@@ -406,11 +499,15 @@ alt="Lard sec légèrement fumé">
 
 
 
+
+
 <p>
 
 Recette maison
 
 </p>
+
+
 
 
 
@@ -426,6 +523,9 @@ Recette maison
 
 
 
+
+
+
 <label>
 
 Nombre de portions
@@ -434,11 +534,17 @@ Nombre de portions
 
 
 
+
+
 <input
+class="quantite-produit"
 type="number"
 id="lardQuantite"
 value="1"
 min="0">
+
+
+
 
 
 
@@ -448,6 +554,8 @@ min="0">
 Poids réel confirmé lors de la préparation.
 
 </p>
+
+
 
 
 
@@ -463,7 +571,11 @@ Ajouter au panier
 
 
 
+
+
 </div>
+
+
 
 
 
@@ -477,11 +589,19 @@ Ajouter au panier
 
 
 <div class="commande-card"
-data-produit="saumon-fume">
+data-produit="saumon-fume"
+data-prix="8">
+
+
+
 
 
 <img src="images/saumon-fume.jpg"
 alt="Cœur de saumon fumé">
+
+
+
+
 
 
 <h3>
@@ -489,6 +609,8 @@ alt="Cœur de saumon fumé">
 🐟 Cœur de saumon fumé
 
 </h3>
+
+
 
 
 
@@ -501,7 +623,12 @@ Choisissez votre recette :
 
 
 
+
+
 <div class="choix-recette">
+
+
+
 
 
 <label>
@@ -519,6 +646,8 @@ Aneth
 
 
 
+
+
 <label>
 
 <input
@@ -532,7 +661,14 @@ Piment d'Espelette
 </label>
 
 
+
+
+
 </div>
+
+
+
+
 
 
 
@@ -546,7 +682,12 @@ Poids souhaité
 
 
 
+
+
+
+
 <select
+class="poids-produit"
 id="saumonPoids">
 
 
@@ -558,11 +699,13 @@ Choisir un poids
 </option>
 
 
+
 <option value="100">
 
 100 g
 
 </option>
+
 
 
 <option value="200">
@@ -572,11 +715,13 @@ Choisir un poids
 </option>
 
 
+
 <option value="300">
 
 300 g
 
 </option>
+
 
 
 <option value="400">
@@ -586,11 +731,13 @@ Choisir un poids
 </option>
 
 
+
 <option value="500">
 
 500 g
 
 </option>
+
 
 
 <option value="600">
@@ -600,11 +747,13 @@ Choisir un poids
 </option>
 
 
+
 <option value="700">
 
 700 g
 
 </option>
+
 
 
 <option value="800">
@@ -614,11 +763,13 @@ Choisir un poids
 </option>
 
 
+
 <option value="900">
 
 900 g
 
 </option>
+
 
 
 <option value="1000">
@@ -628,7 +779,10 @@ Choisir un poids
 </option>
 
 
+
 </select>
+
+
 
 
 
@@ -647,11 +801,16 @@ Choisir un poids
 
 
 
+
+
+
 <p class="confirmation">
 
 Poids réel confirmé lors de la préparation.
 
 </p>
+
+
 
 
 
@@ -667,6 +826,9 @@ Ajouter au panier
 
 
 
+
+
+
 </div>
 
 
@@ -675,7 +837,6 @@ Ajouter au panier
 
 
 </section>
-
 
 
 
@@ -693,7 +854,11 @@ Ajouter au panier
 <section class="presentation">
 
 
+
 <div class="paiement-box">
+
+
+
 
 
 <h3>
@@ -704,11 +869,16 @@ Ajouter au panier
 
 
 
+
+
+
 <p>
 
 Les produits vendus au poids (cœur de saumon fumé, viande séchée et lard sec) sont préparés artisanalement.
 
 </p>
+
+
 
 
 
@@ -724,6 +894,8 @@ Le poids réel sera confirmé lors de la préparation.
 
 
 
+
+
 <p>
 
 Le montant final sera ajusté en fonction du poids effectivement préparé.
@@ -732,10 +904,15 @@ Le montant final sera ajusté en fonction du poids effectivement préparé.
 
 
 
+
+
 </div>
 
 
+
 </section>
+
+
 
 
 
@@ -751,7 +928,11 @@ Le montant final sera ajusté en fonction du poids effectivement préparé.
 <section class="panier-section">
 
 
+
 <div class="panier-card">
+
+
+
 
 
 <h2>
@@ -759,6 +940,7 @@ Le montant final sera ajusté en fonction du poids effectivement préparé.
 🛒 Votre panier
 
 </h2>
+
 
 
 
@@ -773,7 +955,10 @@ Aucun produit sélectionné.
 
 
 
+
 <div class="total-box">
+
+
 
 
 
@@ -785,11 +970,15 @@ Total estimatif
 
 
 
+
+
 <strong id="total">
 
 0.00 CHF
 
 </strong>
+
+
 
 
 
@@ -805,18 +994,22 @@ type="button"
 id="btnViderPanier"
 class="btn vider-panier">
 
-
 Vider le panier
 
-
 </button>
+
+
+
 
 
 
 </div>
 
 
+
+
 </section>
+
 
 
 
@@ -832,6 +1025,9 @@ Vider le panier
 <section class="presentation">
 
 
+
+
+
 <h2>
 
 Vos coordonnées
@@ -842,13 +1038,20 @@ Vos coordonnées
 
 
 
-<form class="commande-form">
+
+
+<form
+id="formCommande"
+class="commande-form">
+
 
 
 
 
 
 <div class="form-grid">
+
+
 
 
 
@@ -864,11 +1067,14 @@ Prénom
 </label>
 
 
+
+
 <input
 type="text"
 id="prenom"
 placeholder="Votre prénom"
 required>
+
 
 
 </div>
@@ -889,11 +1095,15 @@ Nom
 </label>
 
 
+
+
+
 <input
 type="text"
 id="nom"
 placeholder="Votre nom"
 required>
+
 
 
 </div>
@@ -914,10 +1124,14 @@ Téléphone
 </label>
 
 
+
+
+
 <input
 type="tel"
 id="telephone"
 placeholder="079 xxx xx xx">
+
 
 
 </div>
@@ -938,11 +1152,14 @@ Adresse e-mail
 </label>
 
 
+
+
 <input
 type="email"
 id="email"
 placeholder="votre@email.ch"
 required>
+
 
 
 </div>
@@ -963,10 +1180,14 @@ Adresse de livraison
 </label>
 
 
+
+
+
 <textarea
 id="adresse"
 rows="4"
 placeholder="Rue, numéro, NPA, ville"></textarea>
+
 
 
 </div>
@@ -987,13 +1208,18 @@ Commentaire
 </label>
 
 
+
+
+
 <textarea
 id="commentaire"
 rows="3"
 placeholder="Date souhaitée, instructions particulières..."></textarea>
 
 
+
 </div>
+
 
 
 
@@ -1017,6 +1243,9 @@ placeholder="Date souhaitée, instructions particulières..."></textarea>
 <div class="paiement-box">
 
 
+
+
+
 <h3>
 
 💳 Paiement TWINT
@@ -1026,11 +1255,16 @@ placeholder="Date souhaitée, instructions particulières..."></textarea>
 
 
 
+
+
 <p>
 
 Merci d'effectuer le paiement avant validation de la commande.
 
 </p>
+
+
+
 
 
 
@@ -1046,7 +1280,12 @@ Merci d'effectuer le paiement avant validation de la commande.
 
 
 
+
+
 <label>
+
+
+
 
 
 <input
@@ -1055,7 +1294,13 @@ id="confirmationTwint"
 required>
 
 
+
+
+
 J'ai effectué le paiement TWINT au nom de
+
+
+
 
 
 <strong id="twintNomComplet">
@@ -1064,7 +1309,11 @@ J'ai effectué le paiement TWINT au nom de
 
 
 
+
+
 </label>
+
+
 
 
 
@@ -1075,6 +1324,9 @@ J'ai effectué le paiement TWINT au nom de
 La commande sera confirmée après vérification du paiement.
 
 </p>
+
+
+
 
 
 
@@ -1090,14 +1342,19 @@ La commande sera confirmée après vérification du paiement.
 
 
 <button
+
 class="btn btn-large"
+
 type="submit">
+
 
 
 Envoyer ma commande
 
 
+
 </button>
+
 
 
 
@@ -1108,7 +1365,12 @@ Envoyer ma commande
 
 
 
+
+
+
+
 </section>
+
 
 
 
@@ -1125,6 +1387,9 @@ Envoyer ma commande
 <footer>
 
 
+
+
+
 <p>
 
 © Idée Gourmande - Genève
@@ -1134,7 +1399,13 @@ Envoyer ma commande
 
 
 
+
+
+
 <p>
+
+
+
 
 
 <a href="contact.html">
@@ -1144,7 +1415,13 @@ Contact
 </a>
 
 
+
+
+
 &nbsp;|&nbsp;
+
+
+
 
 
 <a href="mentions-legales.html">
@@ -1155,7 +1432,14 @@ Mentions légales
 
 
 
+
+
+
 </p>
+
+
+
+
 
 
 
@@ -1174,13 +1458,25 @@ Mentions légales
 =================================================== -->
 
 
+
+
+
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
+
+
 
 
 <script src="js/database.js"></script>
 
 
+
+
+
 <script src="js/pdfcommande.js"></script>
+
+
+
 
 
 <script src="js/commande.js"></script>
@@ -1189,7 +1485,8 @@ Mentions légales
 
 
 
+
+
 </body>
 
 </html>
-
