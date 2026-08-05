@@ -2323,3 +2323,18 @@ footer a:hover {
     justify-content:center;
     padding:0;
 }
+.infos-produit{
+    display:flex;
+    flex-direction:column;
+}
+
+.infos-produit br{
+    display:none;
+}
+
+.gestion-quantite{
+    margin-top:auto;
+}
+.infos-produit{
+    min-height:140px;
+}
