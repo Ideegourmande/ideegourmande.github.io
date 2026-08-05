@@ -2296,3 +2296,62 @@ footer a:hover {
 
 
 }
+/* ===================================================
+   BOUTONS QUANTITE PANIER
+   =================================================== */
+
+
+.gestion-quantite {
+
+    display:flex;
+
+    align-items:center;
+
+    justify-content:center;
+
+    gap:15px;
+
+    margin-top:15px;
+
+}
+
+
+.btn-quantite {
+
+
+    width:35px;
+
+    height:35px;
+
+    padding:0;
+
+    border-radius:50%;
+
+    font-size:1.2rem;
+
+    background:var(--vert);
+
+    color:white;
+
+}
+
+
+
+.btn-quantite:hover {
+
+    background:var(--or-fonce);
+
+}
+
+
+.gestion-quantite span {
+
+    font-weight:bold;
+
+    font-size:1.2rem;
+
+    min-width:25px;
+
+    text-align:center;
+
+}
