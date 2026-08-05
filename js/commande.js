@@ -458,8 +458,57 @@ function ajouterAuPanier(reference){
 
 }
 
+/* ===================================================
+   FUSION ARTICLES IDENTIQUES
+   =================================================== */
+
+
 function fusionnerArticlePanier(article){
-    ...
+
+
+    const existant = panierCommande.find(
+        item =>
+
+        item.reference === article.reference
+
+        &&
+
+        item.recette === article.recette
+
+        &&
+
+        Number(item.poids || 0) === Number(article.poids || 0)
+
+    );
+
+
+
+    if(existant){
+
+
+        // Addition des quantités
+
+        existant.quantite += article.quantite;
+
+
+
+        // Recalcul du prix
+
+        existant.prix =
+        calculerPrixArticle(existant);
+
+
+
+    }
+    else {
+
+
+        panierCommande.push(article);
+
+
+    }
+
+
 }
 
 
