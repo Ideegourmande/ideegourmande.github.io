@@ -463,39 +463,69 @@ function ajouterAuPanier(reference){
    =================================================== */
 
 
+/* ===================================================
+   FUSION ARTICLES IDENTIQUES
+   =================================================== */
+
+
 function fusionnerArticlePanier(article){
+
+
+    const recetteNormalisee =
+    article.recette
+    ? article.recette.trim()
+    : "";
+
 
 
     const existant = panierCommande.find(
         item =>
 
+
         item.reference === article.reference
 
-        &&
-
-        item.recette === article.recette
 
         &&
 
-        Number(item.poids || 0) === Number(article.poids || 0)
+
+        (
+            item.recette || ""
+        ).trim()
+        ===
+        recetteNormalisee
+
+
+        &&
+
+
+        Number(item.poids || 0)
+        ===
+        Number(article.poids || 0)
+
 
     );
+
 
 
 
     if(existant){
 
 
-        // Addition des quantités
 
-        existant.quantite += article.quantite;
+        existant.quantite +=
+        article.quantite;
 
 
-
-        // Recalcul du prix
 
         existant.prix =
         calculerPrixArticle(existant);
+
+
+
+        console.log(
+            "Fusion effectuée :",
+            existant
+        );
 
 
 
@@ -503,10 +533,63 @@ function fusionnerArticlePanier(article){
     else {
 
 
+
+        article.recette =
+        recetteNormalisee;
+
+
+
         panierCommande.push(article);
 
 
+
+        console.log(
+            "Nouvel article ajouté :",
+            article
+        );
+
+
+
     }
+
+
+
+}
+
+
+
+
+
+
+/* ===================================================
+   RECALCUL PRIX ARTICLE
+   =================================================== */
+
+
+function calculerPrixArticle(article){
+
+
+    const produit =
+    produits[article.reference];
+
+
+
+    if(!produit){
+
+        return 0;
+
+    }
+
+
+
+    return Number(
+        (
+            produit.prix
+            *
+            article.quantite
+
+        ).toFixed(2)
+    );
 
 
 }
