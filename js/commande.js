@@ -106,18 +106,20 @@ document.addEventListener(
     "DOMContentLoaded",
     function(){
 
-
         initialiserBoutonsPanier();
 
 
         afficherPanier();
 
 
-        initialiserNomTwint();
+        if(typeof initialiserNomTwint === "function"){
+
+            initialiserNomTwint();
+
+        }
 
 
     }
-
 );
 
 
