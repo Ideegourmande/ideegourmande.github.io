@@ -2309,49 +2309,34 @@ footer a:hover {
 
     justify-content:center;
 
-    gap:15px;
+    gap:12px;
 
-    margin-top:15px;
+    margin-top:12px;
 
 }
 
 
 .btn-quantite {
 
+    width:32px;
 
-    width:35px;
-
-    height:35px;
+    height:32px;
 
     padding:0;
 
     border-radius:50%;
 
-    font-size:1.2rem;
-
-    background:var(--vert);
-
-    color:white;
-
-}
-
-
-
-.btn-quantite:hover {
-
-    background:var(--or-fonce);
+    font-size:1rem;
 
 }
 
 
 .gestion-quantite span {
 
-    font-weight:bold;
-
-    font-size:1.2rem;
-
-    min-width:25px;
+    width:30px;
 
     text-align:center;
+
+    font-weight:bold;
 
 }
