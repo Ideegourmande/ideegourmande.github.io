@@ -17,7 +17,10 @@ console.log("COMMANDE.JS CHARGE");
 let panierCommande = [];
 
 
-window.panierCommande = panierCommande;
+window.panierCommande =
+panierCommande;
+
+
 
 
 
@@ -89,6 +92,10 @@ const produits = {
 
 
 
+
+
+
+
 /* ===================================================
    INITIALISATION
    =================================================== */
@@ -101,7 +108,9 @@ document.addEventListener(
 
         initialiserBoutonsPanier();
 
+
         afficherPanier();
+
 
         initialiserNomTwint();
 
@@ -109,6 +118,9 @@ document.addEventListener(
     }
 
 );
+
+
+
 
 
 
@@ -126,6 +138,7 @@ function initialiserBoutonsPanier(){
     document.querySelectorAll(
         ".ajouter-panier"
     );
+
 
 
     boutons.forEach(
@@ -159,6 +172,8 @@ function initialiserBoutonsPanier(){
 
 
 
+
+
 /* ===================================================
    AJOUT AU PANIER
    =================================================== */
@@ -171,16 +186,21 @@ function ajouterAuPanier(reference){
     produits[reference];
 
 
+
     if(!produit){
+
 
         console.error(
             "Produit inconnu : ",
             reference
         );
 
+
         return;
 
+
     }
+
 
 
 
@@ -188,6 +208,8 @@ function ajouterAuPanier(reference){
     document.querySelector(
         `.commande-card[data-produit="${reference}"]`
     );
+
+
 
 
 
@@ -222,6 +244,8 @@ function ajouterAuPanier(reference){
 
 
 
+
+
     switch(reference){
 
 
@@ -238,6 +262,8 @@ function ajouterAuPanier(reference){
 
 
 
+
+
         case "magret":
 
 
@@ -248,6 +274,8 @@ function ajouterAuPanier(reference){
 
 
         break;
+
+
 
 
 
@@ -264,6 +292,8 @@ function ajouterAuPanier(reference){
 
 
 
+
+
         case "lard-sec":
 
 
@@ -277,11 +307,14 @@ function ajouterAuPanier(reference){
 
 
 
+
+
         case "saumon-fume":
 
 
             article.poids =
             obtenirPoidsSaumon();
+
 
 
             if(article.poids <= 0){
@@ -309,6 +342,9 @@ function ajouterAuPanier(reference){
 
 
 
+
+
+
     if(article.quantite <= 0){
 
 
@@ -324,12 +360,26 @@ function ajouterAuPanier(reference){
 
 
 
+
+
+
     article.prix =
-    calculerPrixArticle(article);
+    calculerPrixArticle(
+        article
+    );
 
 
 
-    fusionnerArticlePanier(article);
+
+
+
+
+    fusionnerArticlePanier(
+        article
+    );
+
+
+
 
 
 
@@ -341,7 +391,12 @@ function ajouterAuPanier(reference){
     afficherPanier();
 
 
+
 }
+
+
+
+
 
 
 
@@ -362,6 +417,7 @@ function fusionnerArticlePanier(article){
 
 
 
+
     const existant =
     panierCommande.find(
         item =>
@@ -373,7 +429,8 @@ function fusionnerArticlePanier(article){
         &&
 
 
-        (item.recette || "").trim()
+        (item.recette || "")
+        .trim()
         ===
         recette
 
@@ -390,11 +447,15 @@ function fusionnerArticlePanier(article){
 
 
 
+
+
+
     if(existant){
 
 
         existant.quantite +=
         article.quantite;
+
 
 
         existant.prix =
@@ -427,6 +488,8 @@ function fusionnerArticlePanier(article){
 
 
 
+
+
 /* ===================================================
    CALCUL PRIX ARTICLE
    =================================================== */
@@ -443,15 +506,20 @@ function calculerPrixArticle(article){
 
     if(!produit){
 
+
         return 0;
+
 
     }
 
 
 
-    // Saumon vendu au poids
+
+
+    // Produit vendu au poids
 
     if(article.reference === "saumon-fume"){
+
 
 
         return Number(
@@ -474,7 +542,11 @@ function calculerPrixArticle(article){
 
 
 
-    // Produits à la pièce
+
+
+
+
+    // Produits vendus à la pièce
 
 
     return Number(
@@ -499,6 +571,8 @@ function calculerPrixArticle(article){
 
 
 
+
+
 /* ===================================================
    LECTURE RECETTES
    =================================================== */
@@ -507,11 +581,15 @@ function calculerPrixArticle(article){
 function getRecette(reference, carte){
 
 
+
     if(!carte){
+
 
         return "";
 
+
     }
+
 
 
     const choix =
@@ -520,12 +598,17 @@ function getRecette(reference, carte){
     );
 
 
+
     return choix
-    ? choix.value
-    : "";
+    ?
+    choix.value
+    :
+    "";
 
 
 }
+
+
 
 
 
@@ -549,9 +632,12 @@ function obtenirQuantite(id){
 
     if(!champ){
 
+
         return 0;
 
+
     }
+
 
 
 
@@ -568,12 +654,15 @@ function obtenirQuantite(id){
 
 
 
+
+
 /* ===================================================
    POIDS SAUMON
    =================================================== */
 
 
 function obtenirPoidsSaumon(){
+
 
 
     const champ =
@@ -585,7 +674,9 @@ function obtenirPoidsSaumon(){
 
     if(!champ){
 
+
         return 0;
+
 
     }
 
