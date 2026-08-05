@@ -2301,42 +2301,25 @@ footer a:hover {
    =================================================== */
 
 
-.gestion-quantite {
-
+.gestion-quantite{
     display:flex;
-
     align-items:center;
-
-    justify-content:center;
-
+    justify-content:flex-start;
     gap:12px;
-
-    margin-top:12px;
-
+    margin-top:8px;
 }
 
-
-.btn-quantite {
-
-    width:32px;
-
-    height:32px;
-
-    padding:0;
-
-    border-radius:50%;
-
-    font-size:1rem;
-
-}
-
-
-.gestion-quantite span {
-
-    width:30px;
-
+.gestion-quantite span{
+    min-width:70px;
     text-align:center;
+    font-weight:600;
+}
 
-    font-weight:bold;
-
+.btn-quantite{
+    width:32px;
+    height:32px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    padding:0;
 }
