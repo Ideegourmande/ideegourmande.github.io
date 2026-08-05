@@ -187,18 +187,22 @@ function ajouterAuPanier(reference){
 
 
 
-    const produit = produits[reference];
+    const produit =
+    produits[reference];
 
 
 
     if(!produit){
+
 
         console.error(
             "Produit inconnu : ",
             reference
         );
 
+
         return;
+
 
     }
 
@@ -207,28 +211,44 @@ function ajouterAuPanier(reference){
 
 
 
+
     const carte =
     document.querySelector(
-        `[data-produit="${reference}"]`
+        `.commande-card[data-produit="${reference}"]`
     );
+
+
+
 
 
 
     let article = {
 
-        reference:reference,
 
-        nom:produit.nom,
+        reference: reference,
 
-        recette:getRecette(reference, carte),
 
-        quantite:1,
+        nom: produit.nom,
 
-        poids:null,
 
-        prix:0
+        recette: getRecette(
+            reference,
+            carte
+        ),
+
+
+        quantite: 1,
+
+
+        poids: null,
+
+
+        prix: 0
+
 
     };
+
+
 
 
 
@@ -344,20 +364,27 @@ function ajouterAuPanier(reference){
 
 
 
+
             if(article.poids === 0){
+
 
                 alert(
                     "Veuillez choisir un poids pour le saumon fumé."
                 );
 
+
                 return;
+
 
             }
 
 
 
+
+
             article.quantite =
             article.poids / 100;
+
 
 
 
@@ -370,6 +397,7 @@ function ajouterAuPanier(reference){
         break;
 
 
+
     }
 
 
@@ -377,13 +405,19 @@ function ajouterAuPanier(reference){
 
 
 
-    if(article.quantite <=0){
+
+
+
+    if(article.quantite <= 0){
+
 
         alert(
             "Veuillez choisir une quantité valide."
         );
 
+
         return;
+
 
     }
 
@@ -392,12 +426,29 @@ function ajouterAuPanier(reference){
 
 
 
-    panierCommande.push(article);
+
+
+
+    /*
+       Nouvelle gestion :
+       fusion des articles identiques
+    */
+
+
+    fusionnerArticlePanier(article);
+
+
+
+
 
 
 
     window.panierCommande =
     panierCommande;
+
+
+
+
 
 
 
@@ -407,7 +458,9 @@ function ajouterAuPanier(reference){
 
 }
 
-
+function fusionnerArticlePanier(article){
+    ...
+}
 
 
 
