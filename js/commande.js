@@ -866,3 +866,478 @@ modifierQuantite;
 
 window.supprimerArticle =
 supprimerArticle;
+/* ===================================================
+   GESTION NOM TWINT
+   =================================================== */
+
+
+function initialiserNomTwint(){
+
+
+    const prenom =
+    document.getElementById(
+        "prenom"
+    );
+
+
+    const nom =
+    document.getElementById(
+        "nom"
+    );
+
+
+    const affichage =
+    document.getElementById(
+        "twintNomComplet"
+    );
+
+
+
+    if(
+        !prenom
+        ||
+        !nom
+        ||
+        !affichage
+    ){
+
+        return;
+
+    }
+
+
+
+
+
+
+    function mettreAJourNomTwint(){
+
+
+        const nomComplet =
+
+        (
+            prenom.value.trim()
+            +
+            " "
+            +
+            nom.value.trim()
+        )
+        .trim();
+
+
+
+        affichage.textContent =
+        nomComplet;
+
+
+    }
+
+
+
+
+
+    prenom.addEventListener(
+        "input",
+        mettreAJourNomTwint
+    );
+
+
+    nom.addEventListener(
+        "input",
+        mettreAJourNomTwint
+    );
+
+
+}
+
+
+
+
+
+
+
+
+
+/* ===================================================
+   VALIDATION COMMANDE
+   =================================================== */
+
+
+document.addEventListener(
+    "DOMContentLoaded",
+    function(){
+
+
+
+        const formulaire =
+        document.getElementById(
+            "formCommande"
+        );
+
+
+
+        if(formulaire){
+
+
+            formulaire.addEventListener(
+                "submit",
+                envoyerCommande
+            );
+
+
+        }
+
+
+    }
+
+);
+
+
+
+
+
+
+
+
+
+function envoyerCommande(event){
+
+
+
+    event.preventDefault();
+
+
+
+
+
+
+    if(panierCommande.length === 0){
+
+
+        alert(
+            "Votre panier est vide."
+        );
+
+
+        return;
+
+
+    }
+
+
+
+
+
+
+
+
+    const confirmationTwint =
+
+    document.getElementById(
+        "confirmationTwint"
+    );
+
+
+
+
+
+    if(
+        confirmationTwint
+        &&
+        !confirmationTwint.checked
+    ){
+
+
+        alert(
+            "Veuillez confirmer le paiement TWINT."
+        );
+
+
+        return;
+
+
+    }
+
+
+
+
+
+
+
+
+
+
+    const commande = {
+
+
+        date:
+
+        new Date()
+        .toLocaleString(
+            "fr-CH"
+        ),
+
+
+
+
+
+        client:{
+
+
+            prenom:
+            lireChamp(
+                "prenom"
+            ),
+
+
+
+            nom:
+            lireChamp(
+                "nom"
+            ),
+
+
+
+            telephone:
+            lireChamp(
+                "telephone"
+            ),
+
+
+
+            email:
+            lireChamp(
+                "email"
+            ),
+
+
+
+            adresse:
+            lireChamp(
+                "adresse"
+            ),
+
+
+
+            commentaire:
+            lireChamp(
+                "commentaire"
+            )
+
+
+        },
+
+
+
+
+
+
+        produits:
+
+        panierCommande.map(
+            article => ({
+
+
+                ...article
+
+
+            })
+        ),
+
+
+
+
+
+
+        total:
+
+        calculerTotalCommande()
+
+
+
+    };
+
+
+
+
+
+
+
+
+
+    console.log(
+        "Commande préparée :",
+        commande
+    );
+
+
+
+
+
+
+
+    window.commandeFinale =
+    commande;
+
+
+
+
+
+
+
+    /*
+       Génération PDF
+    */
+
+
+    if(
+        typeof genererPDFCommande
+        ===
+        "function"
+    ){
+
+
+        genererPDFCommande(
+            commande
+        );
+
+
+    }
+
+
+
+
+
+
+
+
+
+    alert(
+        "Merci pour votre commande. Elle a été préparée avec succès."
+    );
+
+
+
+}
+
+
+
+
+
+
+
+
+
+/* ===================================================
+   LECTURE CHAMP FORMULAIRE
+   =================================================== */
+
+
+function lireChamp(id){
+
+
+
+    const champ =
+    document.getElementById(id);
+
+
+
+    if(!champ){
+
+        return "";
+
+    }
+
+
+
+    return champ.value.trim();
+
+
+}
+
+
+
+
+
+
+
+
+
+/* ===================================================
+   CALCUL TOTAL COMMANDE
+   =================================================== */
+
+
+function calculerTotalCommande(){
+
+
+
+    let total = 0;
+
+
+
+    panierCommande.forEach(
+        article => {
+
+
+            total +=
+            Number(
+                article.prix
+            );
+
+
+        }
+
+    );
+
+
+
+
+    return Number(
+        total.toFixed(2)
+    );
+
+
+}
+
+
+
+
+
+
+
+
+
+/* ===================================================
+   EXPORTS POUR AUTRES MODULES
+   =================================================== */
+
+
+window.getPanierCommande =
+function(){
+
+
+    return panierCommande;
+
+
+};
+
+
+
+
+
+window.getTotalCommande =
+function(){
+
+
+    return calculerTotalCommande();
+
+
+};
+
+
+
+
+
+window.calculerTotalCommande =
+calculerTotalCommande;
