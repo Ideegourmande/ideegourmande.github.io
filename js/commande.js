@@ -571,6 +571,58 @@ function calculerPrixArticle(article){
     produits[article.reference];
 
 
+    if(!produit){
+
+        return 0;
+
+    }
+
+
+
+    /*
+       Produit vendu au poids
+    */
+
+    if(article.reference === "saumon-fume"){
+
+
+        return Number(
+            (
+                produit.prix
+                *
+                article.poids
+                /
+                100
+
+            ).toFixed(2)
+        );
+
+
+    }
+
+
+
+    /*
+       Produits à la pièce
+    */
+
+    return Number(
+        (
+            produit.prix
+            *
+            article.quantite
+
+        ).toFixed(2)
+    );
+
+
+}
+
+
+    const produit =
+    produits[article.reference];
+
+
 
     if(!produit){
 
@@ -786,7 +838,16 @@ let nombreArticles = 0;
     panierCommande.forEach(
         (article,index)=>{
 
-nombreArticles++;
+if(article.reference === "saumon-fume"){
+
+    nombreArticles += 1;
+
+}
+else {
+
+    nombreArticles += article.quantite;
+
+}
             total += article.prix;
 
 
@@ -809,15 +870,15 @@ nombreArticles++;
                     <br>
 
 
-                    ${afficherDetailsArticle(article)}
+${afficherDetailsArticle(article)}
 
 <div class="gestion-quantite">
 
 <button
 type="button"
 class="btn-quantite moins"
-data-index="${index}">
--
+onclick="modifierQuantite(${index}, -1)">
+−
 </button>
 
 
@@ -829,35 +890,13 @@ ${article.quantite}
 <button
 type="button"
 class="btn-quantite plus"
-data-index="${index}">
+onclick="modifierQuantite(${index}, 1)">
 +
 </button>
 
 </div>
 
-<div class="gestion-quantite">
 
-<button
-type="button"
-class="btn-quantite moins"
-data-index="${index}">
--
-</button>
-
-
-<span>
-${article.quantite}
-</span>
-
-
-<button
-type="button"
-class="btn-quantite plus"
-data-index="${index}">
-+
-</button>
-
-</div>
 
 
                 </div>
@@ -944,140 +983,7 @@ if(titrePanier){
 
 
     initialiserSuppression();
-/* ===================================================
-   MODIFICATION QUANTITE PANIER
-   =================================================== */
-
-
-function initialiserModificationQuantite(){
-
-
-    const boutonsPlus =
-    document.querySelectorAll(
-        ".btn-quantite.plus"
-    );
-
-
-    const boutonsMoins =
-    document.querySelectorAll(
-        ".btn-quantite.moins"
-    );
-
-
-
-
-    boutonsPlus.forEach(
-        bouton => {
-
-
-            bouton.addEventListener(
-                "click",
-                function(){
-
-
-                    const index =
-                    Number(
-                        bouton.dataset.index
-                    );
-
-
-                    panierCommande[index].quantite++;
-
-
-                    panierCommande[index].prix =
-                    calculerPrixArticle(
-                        panierCommande[index]
-                    );
-
-
-                    afficherPanier();
-
-
-                }
-
-            );
-
-
-        }
-
-    );
-
-
-
-
-
-
-    boutonsMoins.forEach(
-        bouton => {
-
-
-            bouton.addEventListener(
-                "click",
-                function(){
-
-
-                    const index =
-                    Number(
-                        bouton.dataset.index
-                    );
-
-
-
-                    if(
-                        panierCommande[index].quantite > 1
-                    ){
-
-
-                        panierCommande[index].quantite--;
-
-
-                        panierCommande[index].prix =
-                        calculerPrixArticle(
-                            panierCommande[index]
-                        );
-
-
-                    }
-                    else {
-
-
-                        supprimerArticle(index);
-
-
-                        return;
-
-
-                    }
-
-
-
-
-                    afficherPanier();
-
-
-
-                }
-
-            );
-
-
-        }
-
-    );
-
-
-}
-initialiserModificationQuantite();
-
-}
-
-
-
-
-
-
-
-
+   initialiserModificationQuantite();
 
 /* ===================================================
    DETAILS ARTICLE PANIER
@@ -1190,7 +1096,54 @@ function initialiserSuppression(){
 
 
 function supprimerArticle(index){
+/* ===================================================
+   MODIFICATION QUANTITE CENTRALISEE
+   =================================================== */
 
+
+function modifierQuantite(index, variation){
+
+
+    const article = panierCommande[index];
+
+
+    if(!article){
+
+        return;
+
+    }
+
+
+    article.quantite += variation;
+
+
+
+    if(article.quantite <= 0){
+
+
+        supprimerArticle(index);
+
+
+        return;
+
+    }
+
+
+
+    article.prix =
+    calculerPrixArticle(article);
+
+
+
+    window.panierCommande =
+    panierCommande;
+
+
+
+    afficherPanier();
+
+
+}
 
 
     panierCommande.splice(
@@ -1694,3 +1647,5 @@ function(){
 
 
 };
+window.modifierQuantite =
+modifierQuantite;
