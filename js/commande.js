@@ -773,11 +773,11 @@ function afficherPanier(){
 
 
 
-    let contenu = "";
+   let contenu = "";
 
+let total = 0;
 
-
-    let total = 0;
+let nombreArticles = 0;
 
 
 
@@ -788,7 +788,7 @@ function afficherPanier(){
     panierCommande.forEach(
         (article,index)=>{
 
-
+nombreArticles += article.quantite;
             total += article.prix;
 
 
@@ -911,7 +911,28 @@ ${article.prix.toFixed(2)} CHF
 
 
 
+const titrePanier =
+document.getElementById(
+    "titrePanier"
+);
 
+
+if(titrePanier){
+
+
+    titrePanier.textContent =
+    "🛒 Votre panier (" 
+    +
+    nombreArticles
+    +
+    " article"
+    +
+    (nombreArticles > 1 ? "s" : "")
+    +
+    ")";
+
+
+}
 
     zonePanier.innerHTML = contenu;
 
