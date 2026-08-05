@@ -1146,22 +1146,37 @@ document.addEventListener(
 
 
         const bouton =
-        document.getElementById(
-            "btnViderPanier"
+        document.querySelector(
+            "#btnViderPanier"
         );
 
 
+        if(!bouton){
 
-        if(bouton){
-
-
-            bouton.addEventListener(
-                "click",
-                viderPanier
+            console.warn(
+                "Bouton vider panier introuvable"
             );
 
+            return;
 
         }
+
+
+
+        bouton.addEventListener(
+            "click",
+            function(){
+
+                viderPanier();
+
+            }
+
+        );
+
+
+        console.log(
+            "Bouton vider panier activé"
+        );
 
 
     }
