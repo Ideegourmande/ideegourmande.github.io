@@ -382,15 +382,13 @@ function ajouterAuPanier(reference){
 
 
 
-            article.quantite =
-            article.poids / 100;
+            article.quantite = 1;
 
 
 
 
             article.prix =
-            produit.prix *
-            article.quantite;
+(produit.prix * article.poids) / 100;
 
 
 
@@ -788,7 +786,7 @@ let nombreArticles = 0;
     panierCommande.forEach(
         (article,index)=>{
 
-nombreArticles += article.quantite;
+nombreArticles++;
             total += article.prix;
 
 
@@ -1089,10 +1087,7 @@ initialiserModificationQuantite();
 function afficherDetailsArticle(article){
 
 
-
     let details = "";
-
-
 
 
 
@@ -1110,10 +1105,6 @@ function afficherDetailsArticle(article){
 
 
 
-
-
-
-
     if(article.poids){
 
 
@@ -1123,19 +1114,6 @@ function afficherDetailsArticle(article){
         " g";
 
     }
-
-    else {
-
-
-        details +=
-
-        "Quantité : "
-        +
-        article.quantite;
-
-
-    }
-
 
 
 
