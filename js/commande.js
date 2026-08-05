@@ -837,6 +837,30 @@ data-index="${index}">
 
 </div>
 
+<div class="gestion-quantite">
+
+<button
+type="button"
+class="btn-quantite moins"
+data-index="${index}">
+-
+</button>
+
+
+<span>
+${article.quantite}
+</span>
+
+
+<button
+type="button"
+class="btn-quantite plus"
+data-index="${index}">
++
+</button>
+
+</div>
+
 
                 </div>
 
@@ -846,7 +870,12 @@ data-index="${index}">
 
 
                     <strong>
-                    ${article.prix.toFixed(2)} CHF
+                    Sous-total :
+<br>
+
+<strong>
+${article.prix.toFixed(2)} CHF
+</strong>
                     </strong>
 
 
