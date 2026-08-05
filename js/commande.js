@@ -1,3 +1,4 @@
+console.log("COMMANDE.JS CHARGE");
 /* ===================================================
    IDÉE GOURMANDE
    commande.js
