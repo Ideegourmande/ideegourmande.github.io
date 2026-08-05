@@ -682,4 +682,422 @@ function obtenirPoidsSaumon(){
 
 
 }
+/* ===================================================
+   AFFICHAGE DU PANIER
+   =================================================== */
 
+
+function afficherPanier(){
+
+
+    const zonePanier =
+    document.getElementById(
+        "recapCommande"
+    );
+
+
+    const zoneTotal =
+    document.getElementById(
+        "total"
+    );
+
+
+
+    if(!zonePanier || !zoneTotal){
+
+        return;
+
+    }
+
+
+
+    if(panierCommande.length === 0){
+
+
+        zonePanier.innerHTML =
+        "<p>Aucun produit sélectionné.</p>";
+
+
+        zoneTotal.textContent =
+        "0.00 CHF";
+
+
+        mettreAJourTitrePanier(0);
+
+
+        return;
+
+
+    }
+
+
+
+
+    let contenu = "";
+
+    let total = 0;
+
+    let nombreArticles = 0;
+
+
+
+
+    panierCommande.forEach(
+        (article,index)=>{
+
+
+            /*
+              Calcul du nombre réel d'articles
+            */
+
+
+            if(article.reference === "saumon-fume"){
+
+
+                nombreArticles += 1;
+
+
+            }
+            else {
+
+
+                nombreArticles +=
+                Number(article.quantite);
+
+
+            }
+
+
+
+
+
+            total +=
+            Number(article.prix);
+
+
+
+
+
+            contenu += `
+
+
+<div class="ligne-produit">
+
+
+    <div class="infos-produit">
+
+
+        <strong>
+        ${article.nom}
+        </strong>
+
+
+        <br>
+
+
+        ${afficherDetailsArticle(article)}
+
+
+
+        ${
+            article.reference !== "saumon-fume"
+
+            ?
+
+`
+<div class="gestion-quantite">
+
+
+<button
+type="button"
+class="btn-quantite moins"
+onclick="modifierQuantite(${index},-1)">
+−
+</button>
+
+
+
+<span>
+${article.quantite}
+</span>
+
+
+
+<button
+type="button"
+class="btn-quantite plus"
+onclick="modifierQuantite(${index},1)">
++
+</button>
+
+
+</div>
+`
+
+            :
+
+""
+
+        }
+
+
+    </div>
+
+
+
+
+
+    <div class="prix-produit">
+
+
+        <strong>
+        Sous-total :
+        </strong>
+
+
+        <br>
+
+
+        <strong>
+        ${article.prix.toFixed(2)} CHF
+        </strong>
+
+
+        <br><br>
+
+
+        <button
+        type="button"
+        class="btn-supprimer"
+        onclick="supprimerArticle(${index})">
+
+        Supprimer
+
+        </button>
+
+
+    </div>
+
+
+
+</div>
+
+
+`;
+
+
+
+        }
+
+    );
+
+
+
+
+
+    zonePanier.innerHTML =
+    contenu;
+
+
+
+    zoneTotal.textContent =
+    total.toFixed(2)
+    +
+    " CHF";
+
+
+
+    mettreAJourTitrePanier(
+        nombreArticles
+    );
+
+
+}
+
+
+
+
+
+
+
+
+
+/* ===================================================
+   TITRE PANIER
+   =================================================== */
+
+
+function mettreAJourTitrePanier(nombre){
+
+
+    const titre =
+    document.getElementById(
+        "titrePanier"
+    );
+
+
+
+    if(!titre){
+
+        return;
+
+    }
+
+
+
+
+    titre.textContent =
+
+    "🛒 Votre panier ("
+    +
+    nombre
+    +
+    " article"
+    +
+    (
+        nombre > 1
+        ?
+        "s"
+        :
+        ""
+    )
+    +
+    ")";
+
+
+}
+
+
+
+
+
+
+
+
+
+/* ===================================================
+   DETAILS ARTICLE
+   =================================================== */
+
+
+function afficherDetailsArticle(article){
+
+
+    let details = "";
+
+
+
+    if(article.recette){
+
+
+        details +=
+
+        "Recette : "
+        +
+        article.recette
+        +
+        "<br>";
+
+
+    }
+
+
+
+    if(article.poids){
+
+
+        details +=
+
+        article.poids
+        +
+        " g";
+
+
+    }
+
+
+
+    return details;
+
+
+}
+
+
+
+
+
+
+
+
+
+/* ===================================================
+   MODIFICATION QUANTITE
+   =================================================== */
+
+
+function modifierQuantite(index, variation){
+
+
+    const article =
+    panierCommande[index];
+
+
+
+    if(!article){
+
+        return;
+
+    }
+
+
+
+    if(article.reference === "saumon-fume"){
+
+
+        return;
+
+
+    }
+
+
+
+
+
+    article.quantite +=
+    variation;
+
+
+
+
+    if(article.quantite <= 0){
+
+
+        supprimerArticle(index);
+
+
+        return;
+
+
+    }
+
+
+
+
+
+    article.prix =
+    calculerPrixArticle(
+        article
+    );
+
+
+
+
+    window.panierCommande =
+    panierCommande;
+
+
+
+    afficherPanier();
+
+
+}
