@@ -1,6 +1,6 @@
 /* ===================================================
    IDÉE GOURMANDE V2
-   Style principal nettoyé
+   Style principal optimisé
    =================================================== */
 
 
@@ -11,15 +11,19 @@
 :root {
 
     --vert: #7F9275;
-    --vert-fonce: F#5E7055;
+
+    --vert-fonce: #5E7055;
 
     --or: #D4AF37;
+
     --or-fonce: #B89122;
 
     --fond: #F8F5EF;
+
     --blanc: #FFFFFF;
 
     --texte: #333333;
+
     --gris: #666666;
 
     --ombre: 0 8px 25px rgba(0,0,0,.08);
@@ -31,163 +35,199 @@
 }
 
 
+
 /* ===================================================
    RESET GLOBAL
    =================================================== */
 
+
 * {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
+
+    margin:0;
+
+    padding:0;
+
+    box-sizing:border-box;
+
 }
+
 
 
 html {
-    scroll-behavior: smooth;
+
+    scroll-behavior:smooth;
+
 }
+
 
 
 body {
 
-    font-family: Georgia, serif;
+    font-family:Georgia, serif;
 
-    background: var(--fond);
+    background:var(--fond);
 
-    color: var(--texte);
+    color:var(--texte);
 
-    line-height: 1.6;
+    line-height:1.6;
 
 }
+
 
 
 img {
 
-    display: block;
+    display:block;
 
-    max-width: 100%;
+    max-width:100%;
 
-    height: auto;
+    height:auto;
 
 }
+
 
 
 a {
 
-    text-decoration: none;
+    text-decoration:none;
 
-    transition: var(--transition);
+    transition:var(--transition);
 
 }
+
 
 
 ul {
 
-    list-style: none;
+    list-style:none;
 
 }
+
+
+
+
+
 
 
 /* ===================================================
    BANDEAU SUPERIEUR
    =================================================== */
 
+
 .top-banner {
 
-    background: var(--vert);
+    background:var(--vert);
 
-    color: white;
+    color:white;
 
-    padding: 12px;
+    padding:12px;
 
-    text-align: center;
+    text-align:center;
 
-    font-size: .95rem;
+    font-size:.95rem;
 
-    letter-spacing: .3px;
+    letter-spacing:.3px;
 
 }
+
+
+
+
+
 
 
 /* ===================================================
    NAVIGATION
    =================================================== */
 
+
 nav {
 
-    display: flex;
+    display:flex;
 
-    justify-content: space-between;
+    justify-content:space-between;
 
-    align-items: center;
+    align-items:center;
 
-    padding: 18px 8%;
+    padding:18px 8%;
 
-    background: white;
+    background:white;
 
-    box-shadow: 0 2px 10px rgba(0,0,0,.05);
+    box-shadow:0 2px 10px rgba(0,0,0,.05);
 
-    position: sticky;
+    position:sticky;
 
-    top: 0;
+    top:0;
 
-    z-index: 999;
+    z-index:999;
 
 }
+
 
 
 .logo img {
 
-    width: 120px;
+    width:120px;
 
 }
+
 
 
 nav ul {
 
-    display: flex;
+    display:flex;
 
-    align-items: center;
+    align-items:center;
 
-    gap: 35px;
+    gap:35px;
 
 }
+
 
 
 nav a {
 
-    color: var(--texte);
+    color:var(--texte);
 
-    font-weight: bold;
+    font-weight:bold;
 
-    font-size: 1rem;
+    font-size:1rem;
 
 }
+
 
 
 nav a:hover {
 
-    color: var(--or-fonce);
+    color:var(--or-fonce);
 
 }
+
+
+
+
+
+
 
 
 /* ===================================================
    HERO
    =================================================== */
 
+
 .hero {
 
-    min-height: 700px;
+    min-height:700px;
 
-    display: flex;
+    display:flex;
 
-    justify-content: center;
+    justify-content:center;
 
-    align-items: center;
+    align-items:center;
 
-    text-align: center;
+    text-align:center;
 
-    color: white;
+    color:white;
 
     background:
 
@@ -198,1463 +238,1857 @@ nav a:hover {
 
         url("../images/hero.jpg");
 
-    background-size: cover;
+    background-size:cover;
 
-    background-position: center;
+    background-position:center;
 
 }
+
 
 
 .hero-content {
 
-    max-width: 850px;
+    max-width:850px;
 
-    padding: 30px;
+    padding:30px;
 
 }
+
 
 
 .hero h1 {
 
-    font-size: 4.5rem;
+    font-size:4.5rem;
 
-    margin-bottom: 20px;
+    margin-bottom:20px;
 
 }
+
 
 
 .hero h2 {
 
-    color: #F1D78A;
+    color:#F1D78A;
 
-    font-size: 2rem;
+    font-size:2rem;
 
-    margin-bottom: 20px;
+    margin-bottom:20px;
 
 }
+
 
 
 .hero p {
 
-    font-size: 1.25rem;
+    font-size:1.25rem;
 
-    margin-bottom: 40px;
+    margin-bottom:40px;
 
 }
+
+
+
+
+
+
 
 
 /* ===================================================
    BOUTONS GENERAUX
    =================================================== */
 
+
 .btn,
 button {
 
-    background: var(--or-fonce);
+    background:var(--or-fonce);
 
-    color: white;
+    color:white;
 
-    border: none;
+    border:none;
 
-    padding: 15px 36px;
+    padding:15px 36px;
 
-    border-radius: 35px;
+    border-radius:35px;
 
-    font-size: 1rem;
+    font-size:1rem;
 
-    font-weight: bold;
+    font-weight:bold;
 
-    cursor: pointer;
+    cursor:pointer;
 
-    transition: var(--transition);
+    transition:var(--transition);
 
-    display: inline-flex;
+    display:inline-flex;
 
-    align-items: center;
+    align-items:center;
 
-    justify-content: center;
+    justify-content:center;
 
 }
+
 
 
 .btn:hover,
 button:hover {
 
-    background: #94741C;
+    background:#94741C;
 
-    transform: translateY(-3px);
+    transform:translateY(-3px);
 
-    box-shadow: 0 12px 25px rgba(184,145,34,.35);
+    box-shadow:0 12px 25px rgba(184,145,34,.35);
 
 }
+
 
 
 .btn-secondaire {
 
-    background: var(--vert);
+    background:var(--vert);
 
 }
+
 
 
 .btn-secondaire:hover {
 
-    background: var(--vert-fonce);
+    background:var(--vert-fonce);
 
 }
+
+
+
+
+
 
 
 /* ===================================================
    SECTIONS INTRODUCTION
    =================================================== */
 
+
 .presentation {
 
-    padding: 70px 10%;
+    padding:70px 10%;
 
-    text-align: center;
+    text-align:center;
 
 }
+
 
 
 .presentation h1,
 .presentation h2 {
 
-    color: var(--vert);
+    color:var(--vert);
 
-    margin-bottom: 20px;
+    margin-bottom:20px;
 
 }
+
 
 
 .presentation h1 {
 
-    font-size: 3rem;
+    font-size:3rem;
 
 }
+
 
 
 .presentation h2 {
 
-    font-size: 2.3rem;
+    font-size:2.3rem;
 
 }
+
 
 
 .presentation p {
 
-    max-width: 900px;
+    max-width:900px;
 
-    margin: auto;
+    margin:auto;
 
-    font-size: 1.1rem;
+    font-size:1.1rem;
 
-    color: var(--gris);
+    color:var(--gris);
 
 }
+
 /* ===================================================
    VALEURS / BLOCS PREMIUM
    =================================================== */
 
+
 .valeurs {
 
-    display: grid;
+    display:grid;
 
-    grid-template-columns: repeat(3,1fr);
+    grid-template-columns:repeat(3,1fr);
 
-    gap: 30px;
+    gap:30px;
 
-    padding: 60px 8%;
+    padding:60px 8%;
 
 }
+
 
 
 .valeurs div {
 
-    background: white;
+    background:white;
 
-    padding: 35px;
+    padding:35px;
 
-    border-radius: var(--rayon);
+    border-radius:var(--rayon);
 
-    box-shadow: var(--ombre);
+    box-shadow:var(--ombre);
 
-    text-align: center;
+    text-align:center;
 
-    transition: var(--transition);
+    transition:var(--transition);
 
 }
+
 
 
 .valeurs div:hover {
 
-    transform: translateY(-8px);
+    transform:translateY(-8px);
 
-    box-shadow: 0 15px 35px rgba(0,0,0,.12);
+    box-shadow:0 15px 35px rgba(0,0,0,.12);
 
 }
+
 
 
 .valeurs h3 {
 
-    color: var(--vert);
+    color:var(--vert);
 
-    margin-bottom: 15px;
+    margin-bottom:15px;
 
-    font-size: 1.4rem;
+    font-size:1.4rem;
 
 }
+
+
+
+
+
 
 
 /* ===================================================
    CATALOGUE PRODUITS
    =================================================== */
+
+
 .catalogue {
-    padding: 0 8% 60px;
+
+    padding:0 8% 60px;
+
 }
 
+
+
 .produits {
-    display: flex;
-    justify-content: center;
-    flex-wrap: wrap;
-    gap: 30px;
-    margin-bottom: 50px;
+
+    display:flex;
+
+    justify-content:center;
+
+    flex-wrap:wrap;
+
+    gap:30px;
+
+    margin-bottom:50px;
+
 }
+
+
 
 .titre-categorie {
 
-    text-align: center;
+    text-align:center;
 
-    margin: 40px 0 10px;
+    margin:40px 0 10px;
 
-    color: var(--vert);
+    color:var(--vert);
 
 }
 
 
+
+
+
+
+
+
 /* ===================================================
-   CARTE PRODUIT
+   CARTE PRODUIT CATALOGUE
    =================================================== */
+
 
 .produit {
 
-    width: 320px;
+    width:320px;
 
-    background: linear-gradient(
+    background:linear-gradient(
         to bottom,
         #ffffff,
         #fcfaf6
     );
 
-    border-radius: 22px;
+    border-radius:22px;
 
-    overflow: hidden;
+    overflow:hidden;
 
-    border: 1px solid #e9e1d1;
+    border:1px solid #e9e1d1;
 
-    box-shadow: 0 12px 30px rgba(0,0,0,.07);
+    box-shadow:0 12px 30px rgba(0,0,0,.07);
 
-    display: flex;
+    display:flex;
 
-    flex-direction: column;
+    flex-direction:column;
 
-    text-align: center;
+    text-align:center;
 
-    height: 100%;
+    height:100%;
 
-    transition:
-        transform .35s ease,
-        box-shadow .35s ease;
+    transition:var(--transition);
+
 }
+
 
 
 .produit:hover {
 
-    transform: translateY(-12px);
+    transform:translateY(-12px);
 
-    box-shadow: 0 30px 55px rgba(0,0,0,.16);
+    box-shadow:0 30px 55px rgba(0,0,0,.16);
 
 }
 
 
-/* ===================================================
-   IMAGES PRODUITS
-   =================================================== */
+
+
 
 .produit img {
 
-    width: 100%;
+    width:100%;
 
-    height: 220px;
+    height:220px;
 
-    object-fit: cover;
+    object-fit:cover;
 
 }
 
-/* Réglages spécifiques images produits si nécessaire */
 
-
-/* ===================================================
-   CONTENU CARTE PRODUIT
-   =================================================== */
 
 .produit h3 {
 
-    min-height: 70px;
+    min-height:70px;
 
-    display: flex;
+    display:flex;
 
-    align-items: center;
+    align-items:center;
 
-    justify-content: center;
+    justify-content:center;
 
-    padding: 20px;
+    padding:20px;
 
-    color: var(--vert);
+    color:var(--vert);
 
-    font-size: 1.45rem;
+    font-size:1.45rem;
 
-    line-height: 1.3;
+    line-height:1.3;
 
 }
+
 
 
 .produit p {
 
-    margin: 0 20px 15px;
+    margin:0 20px 15px;
 
-    color: var(--gris);
+    color:var(--gris);
 
 }
 
 
-/* Prix */
 
 .prix {
 
-    display: flex;
+    display:flex;
 
-    align-items: center;
+    align-items:center;
 
-    justify-content: center;
+    justify-content:center;
 
-    min-height: 45px;
+    min-height:45px;
 
-    margin: 10px 20px 0;
+    margin:10px 20px 0;
 
-    font-size: 1.45rem;
+    font-size:1.45rem;
 
-    font-weight: bold;
+    font-weight:bold;
 
-    color: var(--or-fonce);
+    color:var(--or-fonce);
 
 }
 
 
-/* Liste recettes */
 
 .recettes {
 
-    margin: 8px 20px 28px;
+    margin:8px 20px 28px;
 
-    padding-left: 22px;
+    padding-left:22px;
 
-    color: #555;
+    color:#555;
 
-    line-height: 1.75;
+    line-height:1.75;
 
-    font-size: 1rem;
+    font-size:1rem;
 
 }
+
 
 
 .recettes li {
 
-    position: relative;
+    position:relative;
 
-    padding-left: 12px;
+    padding-left:12px;
 
-    margin-bottom: 6px;
+    margin-bottom:6px;
 
 }
+
 
 
 .recettes li::before {
 
-    content: "•";
+    content:"•";
 
-    color: var(--or-fonce);
+    color:var(--or-fonce);
 
-    position: absolute;
+    position:absolute;
 
-    left: -8px;
+    left:-8px;
 
 }
 
 
-/* Séparation avant bouton */
 
 .produit::after {
 
-    content: "";
+    content:"";
 
-    display: block;
+    display:block;
 
-    width: 80%;
+    width:80%;
 
-    margin: auto;
+    margin:auto;
 
-    border-top: 1px solid #ece6d8;
+    border-top:1px solid #ece6d8;
 
 }
 
 
-/* Bouton produit */
 
 .produit .btn {
 
-    width: 160px;
+    width:160px;
 
-    height: 55px;
+    height:55px;
 
-    margin: auto auto 20px;
+    margin:auto auto 20px;
 
-    font-size: 1.05rem;
+    font-size:1.05rem;
 
-    letter-spacing: .4px;
+    letter-spacing:.4px;
 
-    box-shadow: 0 8px 18px rgba(184,145,34,.25);
+    box-shadow:0 8px 18px rgba(184,145,34,.25);
 
 }
 
+
+
+
+
+
+
+
+
 /* ===================================================
-   COMMANDES - CARTES
+   COMMANDES - GRILLE PRODUITS
    =================================================== */
+
 
 .commande-grid {
 
-    display: grid;
+    display:grid;
 
-    grid-template-columns: repeat(auto-fit,minmax(270px,1fr));
+    grid-template-columns:repeat(auto-fit,minmax(320px,1fr));
 
-    gap: 30px;
+    gap:35px;
 
-    padding: 50px 8%;
+    align-items:stretch;
 
 }
+
+
+
+
+
+
+/* ===================================================
+   CARTE COMMANDE
+   =================================================== */
 
 
 .commande-card {
 
-    background: white;
+    background:var(--blanc);
 
-    padding: 25px;
+    border-radius:var(--rayon);
 
-    border-radius: var(--rayon);
+    box-shadow:var(--ombre);
 
-    box-shadow: var(--ombre);
+    padding:25px;
 
-    transition: var(--transition);
+    display:flex;
+
+    flex-direction:column;
+
+    height:100%;
+
+    transition:var(--transition);
 
 }
+
 
 
 .commande-card:hover {
 
-    transform: translateY(-8px);
+    transform:translateY(-8px);
 
-    box-shadow: 0 15px 35px rgba(0,0,0,.12);
+    box-shadow:0 15px 35px rgba(0,0,0,.12);
 
 }
+
 
 
 .commande-card img {
 
-    width: 100%;
+    width:100%;
 
-    height: 220px;
+    height:240px;
 
-    object-fit: cover;
+    object-fit:cover;
 
-    border-radius: 15px;
+    border-radius:var(--rayon);
 
-    margin-bottom: 20px;
+    margin-bottom:20px;
 
 }
+
 
 
 .commande-card h3 {
 
-    color: var(--vert);
+    min-height:55px;
 
-    font-size: 1.25rem;
+    margin-bottom:15px;
 
-    margin-bottom: 10px;
+    color:var(--vert);
 
 }
+
 
 
 .commande-card p {
 
-    margin-bottom: 12px;
+    margin-bottom:12px;
 
 }
+
 
 
 .commande-card strong {
 
-    color: var(--or-fonce);
+    color:var(--or-fonce);
 
-    font-size: 1.1rem;
+    font-size:1.1rem;
 
 }
+
 
 
 .commande-card label {
 
-    display: block;
+    display:block;
 
-    font-weight: bold;
+    font-weight:bold;
 
-    margin-top: 15px;
+    margin-top:15px;
 
 }
+
+
+
+
+
+
+
+
+/* ===================================================
+   CHOIX RECETTES
+   =================================================== */
+
+
+.choix-recette {
+
+    display:flex;
+
+    flex-direction:column;
+
+    gap:12px;
+
+    margin:15px 0 20px;
+
+}
+
+
+
+.choix-recette label {
+
+    display:flex;
+
+    align-items:center;
+
+    gap:10px;
+
+    padding:12px;
+
+    background:var(--fond);
+
+    border-radius:12px;
+
+    cursor:pointer;
+
+    font-weight:normal;
+
+    transition:var(--transition);
+
+}
+
+
+
+.choix-recette label:hover {
+
+    background:#efe8da;
+
+}
+
+
+
+.choix-recette input {
+
+    width:auto;
+
+    margin:0;
+
+}
+
+
+
+
+
+
+
+
+/* ===================================================
+   QUANTITES ET POIDS
+   =================================================== */
+
+
+.quantite-produit,
+.poids-produit {
+
+    width:100%;
+
+    padding:12px;
+
+    border-radius:12px;
+
+    border:1px solid #ddd;
+
+    font-size:1rem;
+
+    margin-top:8px;
+
+}
+
+
+
+
+
+
+
+
+/* ===================================================
+   AJOUT PANIER
+   =================================================== */
+
+
+.ajouter-panier {
+
+    width:100%;
+
+    margin-top:auto;
+
+}
+
 /* ===================================================
    FORMULAIRES
    =================================================== */
 
+
 .commande-form {
 
-    background: white;
+    background:white;
 
-    padding: 40px;
+    padding:40px;
 
-    border-radius: var(--rayon);
+    border-radius:var(--rayon);
 
-    box-shadow: var(--ombre);
+    box-shadow:var(--ombre);
 
-    max-width: 1000px;
+    max-width:1000px;
 
-    margin: auto;
+    margin:auto;
 
 }
+
+
+
+#formCommande {
+
+    width:100%;
+
+}
+
 
 
 .form-grid {
 
-    display: grid;
+    display:grid;
 
-    grid-template-columns: repeat(2,1fr);
+    grid-template-columns:repeat(2,1fr);
 
-    gap: 25px;
+    gap:25px;
 
 }
+
 
 
 .full-width {
 
-    grid-column: 1/-1;
+    grid-column:1/-1;
 
 }
+
 
 
 input,
 textarea,
 select {
 
-    width: 100%;
+    width:100%;
 
-    padding: 15px;
+    padding:15px;
 
-    margin-top: 8px;
+    margin-top:8px;
 
-    border: 1px solid #ddd;
+    border:1px solid #ddd;
 
-    border-radius: 12px;
+    border-radius:12px;
 
-    font-family: inherit;
+    font-family:inherit;
 
-    font-size: 1rem;
+    font-size:1rem;
 
-    background: white;
+    background:white;
 
 }
+
 
 
 textarea {
 
-    resize: vertical;
+    resize:vertical;
 
 }
+
 
 
 input:focus,
 textarea:focus,
 select:focus {
 
-    outline: none;
+    outline:none;
 
-    border-color: var(--or);
+    border-color:var(--or);
 
-    box-shadow: 0 0 0 3px rgba(212,175,55,.15);
+    box-shadow:0 0 0 3px rgba(212,175,55,.15);
 
 }
+
+
+
+
+
+
 
 
 /* ===================================================
    SECTION COMMANDE
    =================================================== */
 
+
 .commande-section {
 
-    padding: 60px 8%;
+    padding:60px 8%;
 
 }
+
 
 
 .commande-container {
 
-    max-width: 1200px;
+    max-width:1200px;
 
-    margin: auto;
+    margin:auto;
 
 }
+
+
+
+
+
+
+
 
 
 /* ===================================================
    PANIER
    =================================================== */
 
+
 .panier-section {
 
-    padding: 60px 8%;
+    padding:60px 8%;
 
 }
+
 
 
 .panier-card {
 
-    background: white;
+    background:white;
 
-    padding: 35px;
+    padding:35px;
 
-    border-radius: var(--rayon);
+    border-radius:var(--rayon);
 
-    box-shadow: var(--ombre);
+    box-shadow:var(--ombre);
 
-    max-width: 900px;
+    max-width:900px;
 
-    margin: auto;
+    margin:auto;
 
 }
+
 
 
 .panier-card h2 {
 
-    color: var(--vert);
+    color:var(--vert);
 
-    margin-bottom: 25px;
+    margin-bottom:25px;
 
 }
+
 
 
 #recapCommande {
 
-    padding: 20px;
+    padding:20px;
 
-    background: #fafafa;
+    background:#fafafa;
 
-    border-radius: 15px;
+    border-radius:15px;
 
-    min-height: 80px;
+    min-height:80px;
 
 }
+
+
+
+#recapCommande p {
+
+    margin-bottom:10px;
+
+}
+
 
 
 .total-box {
 
-    display: flex;
+    display:flex;
 
-    justify-content: space-between;
+    justify-content:space-between;
 
-    align-items: center;
+    align-items:center;
 
-    margin-top: 25px;
+    margin-top:25px;
 
-    padding-top: 20px;
+    padding-top:20px;
 
-    border-top: 1px solid #ddd;
+    border-top:1px solid #ddd;
 
-    font-size: 1.2rem;
+    font-size:1.2rem;
 
 }
+
 
 
 .total-box strong {
 
-    font-size: 2rem;
+    font-size:2rem;
 
-    color: var(--vert);
+    color:var(--vert);
 
 }
 
 
-/* Bouton vider panier */
 
 .vider-panier {
 
-    background: #8b3a3a;
+    background:#8b3a3a;
 
-    margin-top: 20px;
+    margin-top:20px;
 
 }
+
 
 
 .vider-panier:hover {
 
-    background: #6c2929;
+    background:#6c2929;
 
 }
+
+
+
+
+
+
 
 
 /* ===================================================
    RESUME COMMANDE
    =================================================== */
 
+
 .resume-commande {
 
-    background: white;
+    background:white;
 
-    padding: 30px;
+    padding:30px;
 
-    border-radius: var(--rayon);
+    border-radius:var(--rayon);
 
-    box-shadow: var(--ombre);
+    box-shadow:var(--ombre);
 
-    margin-top: 40px;
+    margin-top:40px;
 
 }
+
 
 
 .resume-commande h2 {
 
-    color: var(--vert);
+    color:var(--vert);
 
-    margin-bottom: 20px;
+    margin-bottom:20px;
 
 }
+
 
 
 .ligne-produit {
 
-    display: flex;
+    display:flex;
 
-    justify-content: space-between;
+    justify-content:space-between;
 
-    align-items: center;
+    align-items:center;
 
-    padding: 12px 0;
+    padding:12px 0;
 
-    border-bottom: 1px solid #eee;
+    border-bottom:1px solid #eee;
 
 }
+
 
 
 .ligne-produit:last-child {
 
-    border-bottom: none;
+    border-bottom:none;
 
 }
+
 
 
 .ligne-produit span {
 
-    font-size: 1rem;
+    font-size:1rem;
 
 }
+
 
 
 .ligne-produit strong {
 
-    color: var(--or-fonce);
+    color:var(--or-fonce);
 
 }
+
+
+
+
+
+
 
 
 /* ===================================================
    TOTAL COMMANDE
    =================================================== */
 
+
 .total-commande {
 
-    margin-top: 30px;
+    margin-top:30px;
 
-    background: var(--vert);
+    background:var(--vert);
 
-    color: white;
+    color:white;
 
-    padding: 25px;
+    padding:25px;
 
-    border-radius: var(--rayon);
+    border-radius:var(--rayon);
 
-    display: flex;
+    display:flex;
 
-    justify-content: space-between;
+    justify-content:space-between;
 
-    align-items: center;
+    align-items:center;
 
-    font-size: 1.4rem;
+    font-size:1.4rem;
 
 }
+
 
 
 .total-commande strong {
 
-    font-size: 2rem;
+    font-size:2rem;
 
-    color: white;
+    color:white;
 
 }
 
 
-/* Validation */
 
 .validation-commande {
 
-    text-align: center;
+    text-align:center;
 
-    margin-top: 35px;
+    margin-top:35px;
 
 }
+
 
 
 .btn-large {
 
-    font-size: 1.15rem;
+    font-size:1.15rem;
 
-    padding: 18px 50px;
+    padding:18px 50px;
 
 }
+
+
+
+
+
+
 
 
 /* ===================================================
    PAIEMENT TWINT
    =================================================== */
 
+
 .paiement-box {
 
-    margin: 35px auto;
+    margin:35px auto;
 
-    padding: 30px;
+    padding:30px;
 
-    background: #faf7ee;
+    background:#faf7ee;
 
-    border: 1px solid var(--or);
+    border:1px solid var(--or);
 
-    border-radius: var(--rayon);
+    border-radius:var(--rayon);
 
-    text-align: center;
+    text-align:center;
 
 }
+
 
 
 .paiement-box h3 {
 
-    color: var(--vert);
+    color:var(--vert);
 
-    margin-bottom: 15px;
+    margin-bottom:15px;
 
 }
+
 
 
 .twint-number {
 
-    font-size: 1.8rem;
+    font-size:1.8rem;
 
-    font-weight: bold;
+    font-weight:bold;
 
-    color: var(--vert);
+    color:var(--vert);
 
-    margin: 20px;
+    margin:20px;
 
 }
+
 
 
 .twint-info {
 
-    margin-top: 20px;
+    margin-top:20px;
 
-    padding: 15px;
+    padding:15px;
 
-    background: white;
+    background:white;
 
-    border-left: 4px solid var(--or);
+    border-left:4px solid var(--or);
 
-    border-radius: 10px;
+    border-radius:10px;
 
-    font-size: .95rem;
+    font-size:.95rem;
 
-    line-height: 1.6;
+    line-height:1.6;
 
-    color: var(--texte);
+    color:var(--texte);
 
-    box-shadow: 0 2px 8px rgba(0,0,0,.05);
+    box-shadow:0 2px 8px rgba(0,0,0,.05);
 
 }
+
 
 
 .confirmation {
 
-    font-size: .95rem;
+    font-size:.95rem;
 
-    color: var(--gris);
+    color:var(--gris);
 
-    margin-top: 20px;
+    margin-top:20px;
 
 }
+
+
+
+
+
+
 
 
 /* ===================================================
    PAGE CONFIRMATION
    =================================================== */
 
+
 .confirmation-page {
 
-    max-width: 800px;
+    max-width:800px;
 
-    margin: 80px auto;
+    margin:80px auto;
 
-    padding: 45px;
+    padding:45px;
 
-    background: white;
+    background:white;
 
-    border-radius: var(--rayon);
+    border-radius:var(--rayon);
 
-    box-shadow: var(--ombre);
+    box-shadow:var(--ombre);
 
-    text-align: center;
+    text-align:center;
 
 }
+
 
 
 .confirmation-page h1 {
 
-    color: var(--vert);
+    color:var(--vert);
 
-    font-size: 3rem;
+    font-size:3rem;
 
-    margin-bottom: 20px;
+    margin-bottom:20px;
 
 }
+
 
 
 .confirmation-page p {
 
-    font-size: 1.15rem;
+    font-size:1.15rem;
 
-    color: var(--gris);
+    color:var(--gris);
 
 }
+
+
+
+
+
+
 
 
 /* ===================================================
    PDF COMMANDE
    =================================================== */
 
+
 .pdf-box {
 
-    background: #faf7ee;
+    background:#faf7ee;
 
-    border: 1px solid var(--or);
+    border:1px solid var(--or);
 
-    padding: 25px;
+    padding:25px;
 
-    border-radius: var(--rayon);
+    border-radius:var(--rayon);
 
-    margin-top: 30px;
+    margin-top:30px;
 
-    text-align: center;
+    text-align:center;
 
 }
+
 
 
 .pdf-box h3 {
 
-    color: var(--vert);
+    color:var(--vert);
 
-    margin-bottom: 15px;
+    margin-bottom:15px;
 
 }
+
+
+
+
+
+
+
+
 /* ===================================================
    CONTACT
    =================================================== */
 
+
 .contact-card {
 
-    background: white;
+    background:white;
 
-    padding: 40px;
+    padding:40px;
 
-    max-width: 800px;
+    max-width:800px;
 
-    margin: auto;
+    margin:auto;
 
-    border-radius: var(--rayon);
+    border-radius:var(--rayon);
 
-    box-shadow: var(--ombre);
+    box-shadow:var(--ombre);
 
 }
+
 
 
 .contact-card h2 {
 
-    color: var(--vert);
+    color:var(--vert);
 
-    margin-bottom: 20px;
+    margin-bottom:20px;
 
 }
+
 
 
 .contact-info {
 
-    margin-top: 25px;
+    margin-top:25px;
 
-    font-size: 1.1rem;
+    font-size:1.1rem;
 
 }
+
 
 
 .contact-info strong {
 
-    color: var(--or-fonce);
+    color:var(--or-fonce);
 
 }
+
+
+
+
+
+
 
 
 /* ===================================================
    FOOTER
    =================================================== */
 
+
 footer {
 
-    background: #292929;
+    background:#292929;
 
-    color: white;
+    color:white;
 
-    padding: 35px;
+    padding:35px;
 
-    text-align: center;
+    text-align:center;
 
-    margin-top: 60px;
+    margin-top:60px;
 
 }
+
 
 
 footer a {
 
-    color: var(--or);
+    color:var(--or);
 
 }
+
 
 
 footer a:hover {
 
-    color: white;
+    color:white;
 
 }
-
 
 /* ===================================================
    ADMINISTRATION
    =================================================== */
 
+
 .commande-admin {
 
-    background: white;
+    background:white;
 
-    padding: 30px;
+    padding:30px;
 
-    margin-bottom: 25px;
+    margin-bottom:25px;
 
-    border-radius: var(--rayon);
+    border-radius:var(--rayon);
 
-    box-shadow: var(--ombre);
+    box-shadow:var(--ombre);
 
 }
+
 
 
 .commande-admin h3 {
 
-    color: var(--vert);
+    color:var(--vert);
 
-    margin-bottom: 20px;
+    margin-bottom:20px;
 
 }
+
 
 
 .commande-admin p {
 
-    margin-bottom: 12px;
+    margin-bottom:12px;
 
 }
+
 
 
 .commande-admin select {
 
-    max-width: 250px;
+    max-width:250px;
 
 }
+
 
 
 .commande-admin hr {
 
-    margin-top: 25px;
+    margin-top:25px;
 
-    border: none;
+    border:none;
 
-    border-top: 1px solid #eee;
+    border-top:1px solid #eee;
 
 }
 
 
-/* Menu administration */
+
+
+
+
+
+/* ===================================================
+   MENU ADMINISTRATION
+   =================================================== */
+
 
 .admin-menu,
 .menu-admin,
 .dashboard-admin {
 
-    display: flex;
+    display:flex;
 
-    flex-wrap: wrap;
+    flex-wrap:wrap;
 
-    gap: 15px;
+    gap:15px;
 
 }
+
 
 
 .admin-menu .btn,
 .menu-admin .btn,
 .dashboard-admin .btn {
 
-    margin: 8px;
+    margin:8px;
 
-    min-height: 45px;
+    min-height:45px;
 
-    display: inline-flex;
+    display:inline-flex;
 
-    align-items: center;
+    align-items:center;
 
-    justify-content: center;
+    justify-content:center;
 
-    text-align: center;
+    text-align:center;
 
 }
+
+
+
+
+
 
 
 /* ===================================================
    STATISTIQUES ADMIN
    =================================================== */
 
+
 .admin-stats {
 
-    display: grid;
+    display:grid;
 
-    grid-template-columns: repeat(3,1fr);
+    grid-template-columns:repeat(3,1fr);
 
-    gap: 25px;
+    gap:25px;
 
-    margin: 40px 8%;
+    margin:40px 8%;
 
 }
+
 
 
 .stat-card {
 
-    background: white;
+    background:white;
 
-    padding: 30px;
+    padding:30px;
 
-    border-radius: var(--rayon);
+    border-radius:var(--rayon);
 
-    box-shadow: var(--ombre);
+    box-shadow:var(--ombre);
 
-    text-align: center;
+    text-align:center;
 
 }
+
 
 
 .stat-card h3 {
 
-    font-size: 2.5rem;
+    font-size:2.5rem;
 
-    color: var(--vert);
+    color:var(--vert);
 
 }
+
 
 
 .stat-card p {
 
-    color: var(--gris);
+    color:var(--gris);
 
-    font-weight: bold;
+    font-weight:bold;
 
-    margin-top: 10px;
+    margin-top:10px;
 
 }
+
+
+
+
+
+
 
 
 /* ===================================================
    MESSAGES
    =================================================== */
 
+
 .message-success {
 
-    background: #e9f3e5;
+    background:#e9f3e5;
 
-    color: #48613f;
+    color:#48613f;
 
-    padding: 18px;
+    padding:18px;
 
-    border-radius: 15px;
+    border-radius:15px;
 
-    margin: 20px 0;
+    margin:20px 0;
 
 }
+
 
 
 .message-error {
 
-    background: #f9e5e5;
+    background:#f9e5e5;
 
-    color: #8b3a3a;
+    color:#8b3a3a;
 
-    padding: 18px;
+    padding:18px;
 
-    border-radius: 15px;
+    border-radius:15px;
 
-    margin: 20px 0;
+    margin:20px 0;
 
 }
+
+
+
+
+
+
 
 
 /* ===================================================
    GESTION STOCK
    =================================================== */
 
+
 #tableStock {
 
-    width: 100%;
+    width:100%;
 
-    border-collapse: collapse;
+    border-collapse:collapse;
 
-    margin-top: 25px;
+    margin-top:25px;
 
-    background: white;
+    background:white;
 
-    border-radius: 15px;
+    border-radius:15px;
 
-    overflow: hidden;
+    overflow:hidden;
 
 }
+
 
 
 #tableStock th {
 
-    background: var(--vert);
+    background:var(--vert);
 
-    color: white;
+    color:white;
 
-    padding: 15px;
+    padding:15px;
 
-    text-align: center;
+    text-align:center;
 
 }
+
 
 
 #tableStock td {
 
-    padding: 14px;
+    padding:14px;
 
-    border-bottom: 1px solid #eee;
+    border-bottom:1px solid #eee;
 
-    text-align: center;
+    text-align:center;
 
 }
+
 
 
 #tableStock tr:hover {
 
-    background: #faf7ee;
+    background:#faf7ee;
 
 }
 
 
-/* Etats stock */
+
+
+
+
+
+/* ===================================================
+   ETATS STOCK
+   =================================================== */
+
 
 .stock-ok {
 
-    color: #4d7c3f;
+    color:#4d7c3f;
 
-    font-weight: bold;
+    font-weight:bold;
 
 }
+
 
 
 .stock-critique {
 
-    color: #c47a00;
+    color:#c47a00;
 
-    font-weight: bold;
+    font-weight:bold;
 
 }
+
 
 
 .stock-rupture {
 
-    color: #8b3a3a;
+    color:#8b3a3a;
 
-    font-weight: bold;
+    font-weight:bold;
 
 }
 
 
-/* Actions stock */
+
+
+
+
+
+
+/* ===================================================
+   ACTIONS STOCK
+   =================================================== */
+
 
 .action-stock {
 
-    display: flex;
+    display:flex;
 
-    justify-content: center;
+    justify-content:center;
 
-    gap: 10px;
+    gap:10px;
 
 }
+
 
 
 .btn-stock {
 
-    padding: 8px 15px;
+    padding:8px 15px;
 
-    font-size: .9rem;
+    font-size:.9rem;
 
 }
+
+
+
+
+
+
 
 
 /* ===================================================
    POPUP ARTICLE
    =================================================== */
 
+
 .popup {
 
-    position: fixed;
+    position:fixed;
 
-    top: 0;
+    top:0;
 
-    left: 0;
+    left:0;
 
-    width: 100%;
+    width:100%;
 
-    height: 100%;
+    height:100%;
 
-    background: rgba(0,0,0,.55);
+    background:rgba(0,0,0,.55);
 
-    display: flex;
+    display:flex;
 
-    justify-content: center;
+    justify-content:center;
 
-    align-items: center;
+    align-items:center;
 
-    z-index: 2000;
+    z-index:2000;
 
 }
+
 
 
 .popup-content {
 
-    background: white;
+    background:white;
 
-    width: 90%;
+    width:90%;
 
-    max-width: 500px;
+    max-width:500px;
 
-    padding: 35px;
+    padding:35px;
 
-    border-radius: var(--rayon);
+    border-radius:var(--rayon);
 
-    box-shadow: var(--ombre);
+    box-shadow:var(--ombre);
 
 }
+
 
 
 .popup-content h2 {
 
-    color: var(--vert);
+    color:var(--vert);
 
-    margin-bottom: 25px;
+    margin-bottom:25px;
 
-    text-align: center;
+    text-align:center;
 
 }
+
 
 
 .popup-content label {
 
-    display: block;
+    display:block;
 
-    font-weight: bold;
+    font-weight:bold;
 
-    margin-top: 15px;
+    margin-top:15px;
 
 }
+
+
+
+
+
+
 
 
 /* ===================================================
    ALERTES STOCK
    =================================================== */
 
+
 .alertes {
 
-    margin-top: 20px;
+    margin-top:20px;
 
 }
+
 
 
 .alerte-ok {
 
-    background: #e9f3e5;
+    background:#e9f3e5;
 
-    color: #48613f;
+    color:#48613f;
 
-    padding: 15px;
+    padding:15px;
 
-    border-radius: 12px;
+    border-radius:12px;
 
 }
+
 
 
 .alerte-warning {
 
-    background: #fff3d6;
+    background:#fff3d6;
 
-    color: #9a6700;
+    color:#9a6700;
 
-    padding: 15px;
+    padding:15px;
 
-    border-radius: 12px;
+    border-radius:12px;
 
 }
+
 
 
 .alerte-danger {
 
-    background: #f9e5e5;
+    background:#f9e5e5;
 
-    color: #8b3a3a;
+    color:#8b3a3a;
 
-    padding: 15px;
+    padding:15px;
 
-    border-radius: 12px;
+    border-radius:12px;
 
 }
+
+
+
+
+
+
+
+
 /* ===================================================
    RESPONSIVE
    =================================================== */
@@ -1662,187 +2096,201 @@ footer a:hover {
 
 /* Tablette et mobile */
 
-@media (max-width: 768px) {
+@media(max-width:768px) {
 
-
-    /* Navigation */
 
     nav {
 
-        flex-direction: column;
+        flex-direction:column;
 
-        gap: 15px;
+        gap:15px;
 
     }
+
 
 
     nav ul {
 
-        flex-wrap: wrap;
+        flex-wrap:wrap;
 
-        justify-content: center;
+        justify-content:center;
 
-        gap: 15px;
+        gap:15px;
 
     }
 
 
-    /* Hero */
 
     .hero {
 
-        min-height: 500px;
+        min-height:500px;
 
     }
+
 
 
     .hero h1 {
 
-        font-size: 2.8rem;
+        font-size:2.8rem;
 
     }
+
 
 
     .hero h2 {
 
-        font-size: 1.5rem;
+        font-size:1.5rem;
 
     }
 
 
-    /* Présentation */
 
     .presentation {
 
-        padding: 50px 8%;
+        padding:50px 8%;
 
     }
 
 
-    /* Produits */
+
+    .commande-grid {
+
+        grid-template-columns:1fr;
+
+    }
+
+
 
     .produit img {
 
-        height: 220px;
+        height:220px;
 
     }
 
 
-    
 
     .produit h3 {
 
-        min-height: auto;
+        min-height:auto;
 
     }
 
 
-    /* Formulaires */
 
     .form-grid {
 
-        grid-template-columns: 1fr;
+        grid-template-columns:1fr;
 
     }
 
 
-    /* Valeurs */
 
     .valeurs {
 
-        grid-template-columns: 1fr;
+        grid-template-columns:1fr;
 
     }
 
 
-    /* Administration */
 
     .admin-stats {
 
-        grid-template-columns: 1fr;
+        grid-template-columns:1fr;
 
     }
+
 
 
     .admin-menu,
     .menu-admin,
     .dashboard-admin {
 
-        flex-direction: column;
+        flex-direction:column;
 
-        align-items: stretch;
+        align-items:stretch;
 
     }
+
 
 
     .admin-menu .btn,
     .menu-admin .btn,
     .dashboard-admin .btn {
 
-        width: 100%;
+        width:100%;
 
-        margin: 8px 0;
+        margin:8px 0;
 
     }
 
 
-    /* Popup */
 
     .popup-content {
 
-        width: 95%;
+        width:95%;
 
-        padding: 25px;
+        padding:25px;
 
     }
 
 
-    /* Tableau stock */
 
     #tableStock {
 
-        display: block;
+        display:block;
 
-        overflow-x: auto;
+        overflow-x:auto;
 
-        white-space: nowrap;
+        white-space:nowrap;
 
     }
 
 }
 
 
-/* Petit téléphone */
 
-@media (max-width: 600px) {
+
+
+
+
+
+/* ===================================================
+   PETIT TELEPHONE
+   =================================================== */
+
+
+@media(max-width:600px) {
 
 
     .hero-content {
 
-        padding: 20px;
+        padding:20px;
 
     }
+
 
 
     .hero h1 {
 
-        font-size: 2.2rem;
+        font-size:2.2rem;
 
     }
+
 
 
     .btn {
 
-        width: 100%;
+        width:100%;
 
     }
+
 
 
     .commande-form,
     .panier-card,
     .contact-card {
 
-        padding: 25px;
+        padding:25px;
 
     }
 
