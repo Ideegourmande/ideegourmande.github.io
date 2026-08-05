@@ -813,6 +813,30 @@ function afficherPanier(){
 
                     ${afficherDetailsArticle(article)}
 
+<div class="gestion-quantite">
+
+<button
+type="button"
+class="btn-quantite moins"
+data-index="${index}">
+-
+</button>
+
+
+<span>
+${article.quantite}
+</span>
+
+
+<button
+type="button"
+class="btn-quantite plus"
+data-index="${index}">
++
+</button>
+
+</div>
+
 
                 </div>
 
@@ -872,6 +896,130 @@ function afficherPanier(){
 
 
     initialiserSuppression();
+/* ===================================================
+   MODIFICATION QUANTITE PANIER
+   =================================================== */
+
+
+function initialiserModificationQuantite(){
+
+
+    const boutonsPlus =
+    document.querySelectorAll(
+        ".btn-quantite.plus"
+    );
+
+
+    const boutonsMoins =
+    document.querySelectorAll(
+        ".btn-quantite.moins"
+    );
+
+
+
+
+    boutonsPlus.forEach(
+        bouton => {
+
+
+            bouton.addEventListener(
+                "click",
+                function(){
+
+
+                    const index =
+                    Number(
+                        bouton.dataset.index
+                    );
+
+
+                    panierCommande[index].quantite++;
+
+
+                    panierCommande[index].prix =
+                    calculerPrixArticle(
+                        panierCommande[index]
+                    );
+
+
+                    afficherPanier();
+
+
+                }
+
+            );
+
+
+        }
+
+    );
+
+
+
+
+
+
+    boutonsMoins.forEach(
+        bouton => {
+
+
+            bouton.addEventListener(
+                "click",
+                function(){
+
+
+                    const index =
+                    Number(
+                        bouton.dataset.index
+                    );
+
+
+
+                    if(
+                        panierCommande[index].quantite > 1
+                    ){
+
+
+                        panierCommande[index].quantite--;
+
+
+                        panierCommande[index].prix =
+                        calculerPrixArticle(
+                            panierCommande[index]
+                        );
+
+
+                    }
+                    else {
+
+
+                        supprimerArticle(index);
+
+
+                        return;
+
+
+                    }
+
+
+
+
+                    afficherPanier();
+
+
+
+                }
+
+            );
+
+
+        }
+
+    );
+
+
+}
+initialiserModificationQuantite();
 
 }
 
