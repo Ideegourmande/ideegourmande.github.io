@@ -685,6 +685,7 @@ function obtenirPoidsSaumon(){
 /* ===================================================
    AFFICHAGE DU PANIER
    =================================================== */
+console.log("ARRIVEE AVANT AFFICHAGE PANIER");
 console.log("AFFICHAGE PANIER CHARGE");
 
 function afficherPanier(){
