@@ -3,18 +3,17 @@ console.log("PDFCOMMANDE.JS CHARGE");
 
 // ==================================
 // IDÉE GOURMANDE
-// Génération du bon de commande PDF
-// Compatible commande.js nouvelle structure
+// Génération PDF commande client
 // ==================================
 
 
 function genererPDFCommande(commande){
 
 
-    if(!commande){
+    if(!window.jspdf){
 
         console.error(
-            "Aucune commande reçue pour génération PDF"
+            "jsPDF non chargé"
         );
 
         return;
@@ -28,18 +27,6 @@ function genererPDFCommande(commande){
 
 
 
-    if(!jsPDF){
-
-        console.error(
-            "jsPDF non disponible"
-        );
-
-        return;
-
-    }
-
-
-
     const doc =
     new jsPDF();
 
@@ -49,20 +36,12 @@ function genererPDFCommande(commande){
 
 
 
-/* ==================================
-   EN-TÊTE
-================================== */
+    // ==============================
+    // TITRE
+    // ==============================
 
 
-    doc.setFont(
-        "helvetica",
-        "bold"
-    );
-
-
-    doc.setFontSize(
-        20
-    );
+    doc.setFontSize(20);
 
 
     doc.text(
@@ -72,14 +51,11 @@ function genererPDFCommande(commande){
     );
 
 
-
-    y += 10;
-
+    y += 12;
 
 
-    doc.setFontSize(
-        14
-    );
+
+    doc.setFontSize(14);
 
 
     doc.text(
@@ -89,50 +65,17 @@ function genererPDFCommande(commande){
     );
 
 
-
     y += 15;
 
 
 
-    doc.setFont(
-        "helvetica",
-        "normal"
-    );
+
+    // ==============================
+    // CLIENT
+    // ==============================
 
 
-    doc.setFontSize(
-        11
-    );
-
-
-    doc.text(
-        "Date : "
-        +
-        commande.date,
-        20,
-        y
-    );
-
-
-
-    y += 15;
-
-
-
-/* ==================================
-   INFORMATIONS CLIENT
-================================== */
-
-
-    doc.setFont(
-        "helvetica",
-        "bold"
-    );
-
-
-    doc.setFontSize(
-        13
-    );
+    doc.setFontSize(12);
 
 
     doc.text(
@@ -142,70 +85,29 @@ function genererPDFCommande(commande){
     );
 
 
-
     y += 8;
 
 
-
-    doc.setFont(
-        "helvetica",
-        "normal"
-    );
-
-
-    doc.setFontSize(
-        11
-    );
-
-
-
-    const client =
-    commande.client;
+    doc.setFontSize(11);
 
 
 
     doc.text(
-        client.prenom
+        commande.client.prenom
         +
         " "
         +
-        client.nom,
-
+        commande.client.nom,
         20,
         y
     );
 
 
-
     y += 7;
-
-
-
-    if(client.telephone){
-
-
-        doc.text(
-            "Téléphone : "
-            +
-            client.telephone,
-
-            20,
-            y
-        );
-
-
-        y += 7;
-
-
-    }
-
 
 
     doc.text(
-        "Email : "
-        +
-        client.email,
-
+        commande.client.email,
         20,
         y
     );
@@ -214,42 +116,34 @@ function genererPDFCommande(commande){
     y += 7;
 
 
-
-    if(client.adresse){
-
-
-        doc.text(
-            "Adresse : "
-            +
-            client.adresse,
-
-            20,
-            y
-        );
-
-
-        y += 10;
-
-
-    }
- 
-/* ==================================
-   PRODUITS COMMANDÉS
-================================== */
-
-
-    y += 5;
-
-
-    doc.setFont(
-        "helvetica",
-        "bold"
+    doc.text(
+        commande.client.telephone,
+        20,
+        y
     );
 
 
-    doc.setFontSize(
-        13
+    y += 7;
+
+
+    doc.text(
+        commande.client.adresse,
+        20,
+        y
     );
+
+
+    y += 15;
+
+
+
+
+    // ==============================
+    // PRODUITS
+    // ==============================
+
+
+    doc.setFontSize(12);
 
 
     doc.text(
@@ -262,27 +156,152 @@ function genererPDFCommande(commande){
     y += 10;
 
 
+    doc.setFontSize(11);
 
-    doc.setFont(
-        "helvetica",
-        "normal"
+
+
+    commande.produits.forEach(
+        article => {
+
+
+            let ligne =
+            article.nom
+            +
+            " - ";
+
+
+            if(article.poids){
+
+                ligne +=
+                article.poids
+                +
+                " g - ";
+
+            }
+            else {
+
+                ligne +=
+                "Qté "
+                +
+                article.quantite
+                +
+                " - ";
+
+            }
+
+
+
+            ligne +=
+            article.prix.toFixed(2)
+            +
+            " CHF";
+
+
+
+            doc.text(
+                ligne,
+                20,
+                y
+            );
+
+
+            y += 7;
+
+
+            if(article.recette){
+
+
+                doc.text(
+                    "   Recette : "
+                    +
+                    article.recette,
+                    25,
+                    y
+                );
+
+
+                y += 7;
+
+
+            }
+
+
+
+        }
+
     );
 
 
-    doc.setFontSize(
-        11
+
+
+
+
+    y += 10;
+
+
+
+
+    // ==============================
+    // TOTAL
+    // ==============================
+
+
+
+    doc.setFontSize(13);
+
+
+    doc.text(
+        "TOTAL : "
+        +
+        commande.total.toFixed(2)
+        +
+        " CHF",
+        20,
+        y
     );
 
+
+    y += 12;
+
+
+
+
+    // ==============================
+    // PAIEMENT
+    // ==============================
+
+
+    doc.setFontSize(11);
+
+
+    doc.text(
+        "Paiement : TWINT confirmé",
+        20,
+        y
+    );
+
+
+    y += 15;
+
+
+
+    // ==============================
+    // COMMENTAIRE
+    // ==============================
 
 
     if(
-        !commande.produits ||
-        commande.produits.length === 0
+        commande.client.commentaire
+        &&
+        commande.client.commentaire.trim() !== ""
     ){
 
 
+        doc.setFontSize(12);
+
+
         doc.text(
-            "Aucun produit.",
+            "Commentaire",
             20,
             y
         );
@@ -291,164 +310,20 @@ function genererPDFCommande(commande){
         y += 8;
 
 
-    }
-    else {
+        doc.setFontSize(11);
 
 
+        const texte =
+        doc.splitTextToSize(
+            commande.client.commentaire,
+            170
+        );
 
-        commande.produits.forEach(
 
-            function(article){
-
-
-
-                /*
-                   Gestion changement de page
-                */
-
-                if(y > 260){
-
-
-                    doc.addPage();
-
-
-                    y = 20;
-
-
-                }
-
-
-
-
-                doc.setFont(
-                    "helvetica",
-                    "bold"
-                );
-
-
-                doc.text(
-                    article.nom,
-                    20,
-                    y
-                );
-
-
-                y += 6;
-
-
-
-                doc.setFont(
-                    "helvetica",
-                    "normal"
-                );
-
-
-
-                /*
-                   Recette
-                */
-
-
-                if(
-                    article.recette &&
-                    article.recette !== ""
-                ){
-
-
-                    doc.text(
-
-                        "Recette : "
-                        +
-                        article.recette,
-
-                        25,
-                        y
-
-                    );
-
-
-                    y += 6;
-
-
-                }
-
-
-
-
-                /*
-                   Quantité ou poids
-                */
-
-
-                if(
-                    article.reference ===
-                    "saumon-fume"
-                ){
-
-
-                    doc.text(
-
-                        "Poids : "
-                        +
-                        article.poids
-                        +
-                        " g",
-
-                        25,
-                        y
-
-                    );
-
-
-                }
-                else {
-
-
-                    doc.text(
-
-                        "Quantité : "
-                        +
-                        article.quantite,
-
-                        25,
-                        y
-
-                    );
-
-
-                }
-
-
-
-                /*
-                   Prix article
-                */
-
-
-                doc.text(
-
-                    "Prix : "
-                    +
-                    Number(
-                        article.prix
-                    )
-                    .toFixed(2)
-                    +
-                    " CHF",
-
-                    120,
-                    y
-
-                );
-
-
-
-                y += 10;
-
-
-
-            }
-
+        doc.text(
+            texte,
+            20,
+            y
         );
 
 
@@ -456,53 +331,31 @@ function genererPDFCommande(commande){
 
 
 
-/* ==================================
-   TOTAL
-================================== */
+    // ==============================
+    // SAUVEGARDE
+    // ==============================
 
 
-    y += 5;
+    const fichier =
 
-
-
-    doc.line(
-        20,
-        y,
-        190,
-        y
-    );
-
-
-    y += 10;
+    "Commande_Idee_Gourmande_"
+    +
+    Date.now()
+    +
+    ".pdf";
 
 
 
-    doc.setFont(
-        "helvetica",
-        "bold"
-    );
-
-
-    doc.setFontSize(
-        14
+    doc.save(
+        fichier
     );
 
 
 
-    doc.text(
-        "TOTAL : "
-        +
-        Number(
-            commande.total
-        )
-        .toFixed(2)
-        +
-        " CHF",
-
-        20,
-        y
+    console.log(
+        "PDF généré :",
+        fichier
     );
 
 
-
-    y += 15;
+}
