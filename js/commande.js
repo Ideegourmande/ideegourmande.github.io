@@ -507,11 +507,28 @@ function fusionnerArticlePanier(article){
 
 function getRecette(id) {
 
-    const produit = produits.find(p => p.id === id);
+    let listeProduits = produits;
+
+
+    // Si produits vient de la base sous forme d'objet
+    if (!Array.isArray(listeProduits)) {
+
+        listeProduits = Object.values(listeProduits);
+
+    }
+
+
+    const produit = listeProduits.find(
+        p => p.id === id
+    );
+
 
     if (!produit) {
+
         return "";
+
     }
+
 
     return produit.recette || "";
 
