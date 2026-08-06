@@ -1670,3 +1670,49 @@ function(){
 
 window.calculerTotalCommande =
 calculerTotalCommande;
+
+/* ===================================================
+   INITIALISATION FORMULAIRE COMMANDE
+   =================================================== */
+
+
+document.addEventListener(
+    "DOMContentLoaded",
+    function(){
+
+
+        const formulaire =
+        document.getElementById(
+            "formCommande"
+        );
+
+
+        if(formulaire){
+
+
+            formulaire.addEventListener(
+                "submit",
+                envoyerCommande
+            );
+
+
+            console.log(
+                "FORMULAIRE COMMANDE CONNECTÉ"
+            );
+
+
+        }
+        else {
+
+
+            console.error(
+                "Formulaire formCommande introuvable"
+            );
+
+
+        }
+
+
+    }
+
+);
