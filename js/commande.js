@@ -1,5 +1,13 @@
 console.log("COMMANDE.JS CHARGE");
+/* ===================================================
+   PANIER GLOBAL
+   =================================================== */
 
+
+let panierCommande = [];
+
+
+window.panierCommande = panierCommande;
 
 /* ===================================================
    IDÉE GOURMANDE
