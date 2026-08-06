@@ -149,9 +149,15 @@ function initialiserBoutonsPanier(){
                 function(){
 
 
-                    ajouterAuPanier(
-                        bouton.dataset.produit
-                    );
+                    console.log(
+    "CLIC AJOUT PANIER :",
+    bouton.dataset.produit
+);
+
+
+ajouterAuPanier(
+    bouton.dataset.produit
+);
 
 
                 }
