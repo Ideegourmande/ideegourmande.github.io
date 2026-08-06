@@ -1079,12 +1079,10 @@ function getRecette(reference, carte){
 function obtenirQuantite(id){
 
 
-
     const champ =
     document.getElementById(
         id
     );
-
 
 
     if(
@@ -1096,14 +1094,12 @@ function obtenirQuantite(id){
     }
 
 
-
     return Number(
         champ.value
     );
 
 
 }
-
 
 
 
@@ -1119,12 +1115,10 @@ function obtenirQuantite(id){
 function obtenirPoidsSaumon(){
 
 
-
     const champ =
     document.getElementById(
         "saumonPoids"
     );
-
 
 
     if(
@@ -1136,21 +1130,12 @@ function obtenirPoidsSaumon(){
     }
 
 
-
     return Number(
         champ.value
     );
 
 
 }
-
-
-
-
-
-
-
-
 /* ===================================================
    AFFICHAGE PANIER
    =================================================== */
