@@ -548,8 +548,8 @@ function calculerPrixArticle(article){
     .toFixed(2)
 );
 
-}
 
+}
 
 /* ===================================================
    Partie 2/3
