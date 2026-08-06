@@ -919,12 +919,14 @@ function chargerPanier() {
 
     if (sauvegarde) {
 
-        panierCommande =
-            JSON.parse(sauvegarde);
+       panierCommande.splice(
+    0,
+    panierCommande.length,
+    ...JSON.parse(sauvegarde)
+);
 
 
-        window.panierCommande =
-            panierCommande;
+window.panierCommande = panierCommande;
 
     }
 
