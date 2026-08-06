@@ -1519,19 +1519,34 @@ function envoyerCommande(event){
 
 
 
-    if(
-        typeof genererPDFCommande
-        ===
-        "function"
-    ){
+    console.log(
+    "TEST AVANT PDF",
+    typeof genererPDFCommande
+);
 
 
-        genererPDFCommande(
-            commande
-        );
+if(
+    typeof genererPDFCommande === "function"
+){
+
+    console.log(
+        "APPEL GENERATION PDF"
+    );
 
 
-    }
+    genererPDFCommande(
+        commande
+    );
+
+
+}
+else{
+
+    console.error(
+        "PDF NON DISPONIBLE"
+    );
+
+}
 
 
 
