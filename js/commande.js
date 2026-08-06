@@ -102,26 +102,6 @@ const produits = {
    =================================================== */
 
 
-document.addEventListener(
-    "DOMContentLoaded",
-    function(){
-
-
-        initialiserBoutonsPanier();
-
-
-        console.log(
-            "INITIALISATION BOUTONS PANIER OK"
-        );
-
-
-    }
-);
-
-
-
-
-
 
 
 
@@ -397,31 +377,20 @@ console.log(
 
 
 
-    window.panierCommande =
-    panierCommande;
+    window.panierCommande = panierCommande;
 
-
-
-
-
-
-
-    document.addEventListener(
-    "DOMContentLoaded",
-    function(){
-
-        initialiserBoutonsPanier();
-
-        console.log(
-            "INITIALISATION BOUTONS PANIER OK"
-        );
-
-    }
+console.log(
+    "PANIER APRES AJOUT :",
+    panierCommande
 );
 
+console.log(
+    "APPEL afficherPanier()"
+);
+
+afficherPanier();
 
 }
-
 
 
 
