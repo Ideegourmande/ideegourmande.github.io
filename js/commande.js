@@ -4,8 +4,9 @@ console.log("COMMANDE.JS CHARGE");
 /* ===================================================
    IDÉE GOURMANDE
    commande.js
+   Version complète corrigée
    Partie 1/4
-   Gestion panier et ajout produits
+   Gestion produits et ajout panier
    =================================================== */
 
 
@@ -19,6 +20,7 @@ let panierCommande = [];
 
 window.panierCommande =
 panierCommande;
+
 
 
 
@@ -94,6 +96,7 @@ const produits = {
 
 
 
+
 /* ===================================================
    INITIALISATION
    =================================================== */
@@ -120,7 +123,6 @@ document.addEventListener(
 
 
     }
-
 );
 
 
@@ -178,8 +180,6 @@ function initialiserBoutonsPanier(){
 
 
 
-
-
 /* ===================================================
    AJOUT AU PANIER
    =================================================== */
@@ -199,10 +199,9 @@ function ajouterAuPanier(reference){
     ){
 
         console.error(
-            "Produit inconnu : ",
+            "Produit inconnu :",
             reference
         );
-
 
         return;
 
@@ -215,7 +214,6 @@ function ajouterAuPanier(reference){
     document.querySelector(
         `.commande-card[data-produit="${reference}"]`
     );
-
 
 
 
@@ -271,7 +269,6 @@ function ajouterAuPanier(reference){
 
 
 
-
         case "magret":
 
 
@@ -282,7 +279,6 @@ function ajouterAuPanier(reference){
 
 
         break;
-
 
 
 
@@ -301,7 +297,6 @@ function ajouterAuPanier(reference){
 
 
 
-
         case "lard-sec":
 
 
@@ -316,13 +311,11 @@ function ajouterAuPanier(reference){
 
 
 
-
         case "saumon-fume":
 
 
             article.poids =
             obtenirPoidsSaumon();
-
 
 
 
@@ -334,11 +327,9 @@ function ajouterAuPanier(reference){
                     "Veuillez choisir un poids pour le saumon fumé."
                 );
 
-
                 return;
 
             }
-
 
 
             article.quantite = 1;
@@ -347,8 +338,8 @@ function ajouterAuPanier(reference){
         break;
 
 
-
     }
+
 
 
 
@@ -363,10 +354,10 @@ function ajouterAuPanier(reference){
             "Veuillez choisir une quantité valide."
         );
 
-
         return;
 
     }
+
 
 
 
@@ -403,9 +394,7 @@ function ajouterAuPanier(reference){
     afficherPanier();
 
 
-
 }
-
 
 
 
@@ -454,16 +443,12 @@ function fusionnerArticlePanier(article){
 
 
 
-
-
     if(
         existant
     ){
 
-
         existant.quantite +=
         article.quantite;
-
 
 
         existant.prix =
@@ -486,9 +471,7 @@ function fusionnerArticlePanier(article){
 
 
     }
-
-
-}
+ 
 /* ===================================================
    CALCUL PRIX ARTICLE
    =================================================== */
@@ -559,12 +542,56 @@ function calculerPrixArticle(article){
 
 
 
+
+/* ===================================================
+   RECETTE
+   =================================================== */
+
+
+function getRecette(reference, carte){
+
+
+
+    if(
+        !carte
+    ){
+
+        return "";
+
+    }
+
+
+
+
+    const choix =
+    carte.querySelector(
+        ".choix-recette input:checked"
+    );
+
+
+
+    return choix
+    ?
+    choix.value
+    :
+    "";
+
+}
+
+
+
+
+
+
+
+
 /* ===================================================
    QUANTITE
    =================================================== */
 
 
 function obtenirQuantite(id){
+
 
 
     const champ =
@@ -638,221 +665,354 @@ function obtenirPoidsSaumon(){
 
 
 /* ===================================================
-   MODIFICATION QUANTITE
+   AFFICHAGE PANIER
    =================================================== */
 
 
-function modifierQuantite(index, variation){
+function afficherPanier(){
 
 
 
-    const article =
-    panierCommande[index];
-
-
-
-    if(
-        !article
-    ){
-
-        return;
-
-    }
-
-
-
-
-
-    /*
-       Gestion spécifique saumon
-    */
-
-
-    if(
-        article.reference === "saumon-fume"
-    ){
-
-
-
-        article.poids +=
-        variation;
-
-
-
-        if(
-            article.poids < 100
-        ){
-
-            supprimerArticle(index);
-
-            return;
-
-        }
-
-
-
-        article.prix =
-        calculerPrixArticle(
-            article
-        );
-
-
-        afficherPanier();
-
-
-        return;
-
-
-    }
-
-
-
-
-
-    /*
-       Produits classiques
-    */
-
-
-    article.quantite +=
-    variation;
-
-
-
-
-    if(
-        article.quantite <= 0
-    ){
-
-        supprimerArticle(index);
-
-        return;
-
-    }
-
-
-
-
-
-    article.prix =
-    calculerPrixArticle(
-        article
+    const zonePanier =
+    document.getElementById(
+        "recapCommande"
     );
 
 
 
-    afficherPanier();
-
-
-}
-
-
-
-
-
-
-
-
-
-/* ===================================================
-   SUPPRIMER UN ARTICLE
-   =================================================== */
-
-
-function supprimerArticle(index){
-
-
-
-    panierCommande.splice(
-        index,
-        1
+    const zoneTotal =
+    document.getElementById(
+        "total"
     );
 
 
 
-    window.panierCommande =
-    panierCommande;
+    if(
+        !zonePanier
+        ||
+        !zoneTotal
+    ){
 
+        return;
 
-
-    afficherPanier();
-
-
-}
-
-
-
-
+    }
 
 
 
 
 
-/* ===================================================
-   VIDER LE PANIER
-   =================================================== */
+    if(
+        panierCommande.length === 0
+    ){
 
 
-function viderPanier(){
-
-
-
-    panierCommande.length = 0;
+        zonePanier.innerHTML =
+        "<p>Aucun produit sélectionné.</p>";
 
 
 
-    window.panierCommande =
-    panierCommande;
+        zoneTotal.textContent =
+        "0.00 CHF";
 
 
 
-    afficherPanier();
-
-
-}
+        mettreAJourTitrePanier(0);
 
 
 
-
-
-
-
-/* ===================================================
-   BOUTON VIDER PANIER
-   =================================================== */
-
-
-document.addEventListener(
-    "DOMContentLoaded",
-    function(){
-
-
-        const bouton =
-        document.getElementById(
-            "btnViderPanier"
-        );
-
-
-
-        if(
-            bouton
-        ){
-
-
-            bouton.addEventListener(
-                "click",
-                viderPanier
-            );
-
-
-            console.log(
-                "Bouton vider panier activé"
-            );
-
-
-        }
+        return;
 
 
     }
 
-);
+
+
+
+
+
+    let contenu = "";
+
+    let total = 0;
+
+    let nombreArticles = 0;
+
+
+
+
+
+
+    panierCommande.forEach(
+        (article,index)=>{
+
+
+            if(
+                article.reference === "saumon-fume"
+            ){
+
+                nombreArticles += 1;
+
+
+            }
+            else {
+
+
+                nombreArticles +=
+                Number(
+                    article.quantite
+                );
+
+
+            }
+
+
+
+
+
+            total +=
+            Number(
+                article.prix
+            );
+
+
+
+
+
+
+            contenu += `
+
+
+<div class="ligne-produit">
+
+
+<div class="infos-produit">
+
+
+<strong>
+${article.nom}
+</strong>
+
+
+<br>
+
+
+${afficherDetailsArticle(article)}
+
+
+
+<div class="gestion-quantite">
+
+
+<button
+type="button"
+class="btn-quantite moins"
+onclick="modifierQuantite(${index},${article.reference === "saumon-fume" ? -100 : -1})">
+
+−
+
+</button>
+
+
+
+<span>
+
+${
+article.reference === "saumon-fume"
+?
+article.poids + " g"
+:
+article.quantite
+}
+
+</span>
+
+
+
+<button
+type="button"
+class="btn-quantite plus"
+onclick="modifierQuantite(${index},${article.reference === "saumon-fume" ? 100 : 1})">
+
++
+
+</button>
+
+
+
+</div>
+
+
+</div>
+
+
+
+
+
+
+<div class="prix-produit">
+
+
+<strong>
+${article.prix.toFixed(2)} CHF
+</strong>
+
+
+<br><br>
+
+
+<button
+type="button"
+class="btn-supprimer"
+onclick="supprimerArticle(${index})">
+
+Supprimer
+
+</button>
+
+
+</div>
+
+
+</div>
+
+
+`;
+
+
+        }
+
+    );
+
+
+
+
+
+
+    zonePanier.innerHTML =
+    contenu;
+
+
+
+    zoneTotal.textContent =
+    total.toFixed(2)
+    +
+    " CHF";
+
+
+
+    mettreAJourTitrePanier(
+        nombreArticles
+    );
+
+
+}
+
+
+
+
+
+
+
+
+/* ===================================================
+   TITRE PANIER
+   =================================================== */
+
+
+function mettreAJourTitrePanier(nombre){
+
+
+
+    const titre =
+    document.getElementById(
+        "titrePanier"
+    );
+
+
+
+    if(
+        !titre
+    ){
+
+        return;
+
+    }
+
+
+
+
+
+    titre.textContent =
+
+    "🛒 Votre panier ("
+    +
+    nombre
+    +
+    " article"
+    +
+    (
+        nombre > 1
+        ?
+        "s"
+        :
+        ""
+    )
+    +
+    ")";
+
+
+}
+
+
+
+
+
+
+
+
+/* ===================================================
+   DETAILS ARTICLE
+   =================================================== */
+
+
+function afficherDetailsArticle(article){
+
+
+    let details = "";
+
+
+
+    if(
+        article.recette
+    ){
+
+        details +=
+        "Recette : "
+        +
+        article.recette
+        +
+        "<br>";
+
+    }
+
+
+
+
+    if(
+        article.poids
+    ){
+
+        details +=
+        article.poids
+        +
+        " g";
+
+    }
+
+
+
+    return details;
+
+
+}
+
+}
