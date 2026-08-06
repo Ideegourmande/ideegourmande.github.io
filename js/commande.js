@@ -1,12 +1,11 @@
-console.log("COMMANDE.JS VERSION TEST 06-08-2026 14:15");
+console.log("COMMANDE.JS CHARGE");
 
 
 /* ===================================================
    IDÉE GOURMANDE
    commande.js
-   Version complète corrigée
-   Partie 1/4
-   Produits + ajout panier
+   Partie 1/3
+   Gestion produits et ajout panier
    =================================================== */
 
 
@@ -20,7 +19,6 @@ let panierCommande = [];
 
 window.panierCommande =
 panierCommande;
-
 
 
 
@@ -94,12 +92,84 @@ const produits = {
 
 
 
-
-
-
 /* ===================================================
    INITIALISATION
    =================================================== */
+
+
+document.addEventListener(
+    "DOMContentLoaded",
+    function(){
+
+
+        initialiserBoutonsPanier();
+
+
+
+        if(
+            typeof afficherPanier === "function"
+        ){
+
+            afficherPanier();
+
+        }
+
+
+
+        if(
+            typeof initialiserNomTwint === "function"
+        ){
+
+            initialiserNomTwint();
+
+        }
+
+
+
+        const formulaire =
+        document.getElementById(
+            "formCommande"
+        );
+
+
+
+        if(
+            formulaire
+        ){
+
+            formulaire.addEventListener(
+                "submit",
+                envoyerCommande
+            );
+
+        }
+
+
+
+        const boutonVider =
+        document.getElementById(
+            "btnViderPanier"
+        );
+
+
+
+        if(
+            boutonVider
+        ){
+
+            boutonVider.addEventListener(
+                "click",
+                viderPanier
+            );
+
+        }
+
+
+
+    }
+
+);
+
 
 
 
@@ -120,6 +190,13 @@ function initialiserBoutonsPanier(){
 
 
 
+    console.log(
+        "BOUTONS AJOUT PANIER :",
+        boutons.length
+    );
+
+
+
     boutons.forEach(
         bouton => {
 
@@ -129,15 +206,9 @@ function initialiserBoutonsPanier(){
                 function(){
 
 
-                    console.log(
-    "CLIC AJOUT PANIER :",
-    bouton.dataset.produit
-);
-
-
-ajouterAuPanier(
-    bouton.dataset.produit
-);
+                    ajouterAuPanier(
+                        bouton.dataset.produit
+                    );
 
 
                 }
@@ -158,7 +229,6 @@ ajouterAuPanier(
 
 
 
-
 /* ===================================================
    AJOUT AU PANIER
    =================================================== */
@@ -166,15 +236,11 @@ ajouterAuPanier(
 
 function ajouterAuPanier(reference){
 
-    console.log(
-        "AJOUT PANIER APPELE :",
-        reference
-    );
 
 
     const produit =
     produits[reference];
-console.log("PRODUIT :", produit);
+
 
 
     if(
@@ -192,13 +258,10 @@ console.log("PRODUIT :", produit);
 
 
 
-
     const carte =
     document.querySelector(
         `.commande-card[data-produit="${reference}"]`
     );
-
-
 
 
 
@@ -233,10 +296,7 @@ console.log("PRODUIT :", produit);
 
 
 
-
-
     switch(reference){
-
 
 
         case "foie-gras":
@@ -249,8 +309,6 @@ console.log("PRODUIT :", produit);
 
 
         break;
-
-
 
 
 
@@ -267,8 +325,6 @@ console.log("PRODUIT :", produit);
 
 
 
-
-
         case "viande-sechee":
 
 
@@ -282,8 +338,6 @@ console.log("PRODUIT :", produit);
 
 
 
-
-
         case "lard-sec":
 
 
@@ -294,8 +348,6 @@ console.log("PRODUIT :", produit);
 
 
         break;
-
-
 
 
 
@@ -320,7 +372,6 @@ console.log("PRODUIT :", produit);
             }
 
 
-
             article.quantite = 1;
 
 
@@ -328,9 +379,6 @@ console.log("PRODUIT :", produit);
 
 
     }
-
-
-
 
 
 
@@ -350,48 +398,28 @@ console.log("PRODUIT :", produit);
 
 
 
-
-
-
     article.prix =
     calculerPrixArticle(
         article
     );
-console.log("ARTICLE :", article);
-
-
-
 
 
 
     fusionnerArticlePanier(
         article
     );
-console.log(
-    "PANIER APRES AJOUT :",
-    panierCommande
-);
 
 
 
+    window.panierCommande =
+    panierCommande;
 
 
 
-    window.panierCommande = panierCommande;
+    afficherPanier();
 
-console.log(
-    "PANIER APRES AJOUT :",
-    panierCommande
-);
-
-console.log(
-    "APPEL afficherPanier()"
-);
-
-afficherPanier();
 
 }
-
 
 
 
@@ -407,41 +435,25 @@ function fusionnerArticlePanier(article){
 
 
 
-    const recette =
-    (article.recette || "")
-    .trim();
-
-
-
-
     const existant =
     panierCommande.find(
         item =>
 
-
         item.reference === article.reference
 
-
         &&
-
 
         (item.recette || "")
-        .trim()
         ===
-        recette
-
+        (article.recette || "")
 
         &&
-
 
         Number(item.poids || 0)
         ===
         Number(article.poids || 0)
 
-
     );
-
-
 
 
 
@@ -449,10 +461,8 @@ function fusionnerArticlePanier(article){
         existant
     ){
 
-
         existant.quantite +=
         article.quantite;
-
 
 
         existant.prix =
@@ -462,11 +472,7 @@ function fusionnerArticlePanier(article){
 
 
     }
-    else {
-
-
-        article.recette =
-        recette;
+    else{
 
 
         panierCommande.push(
@@ -478,66 +484,10 @@ function fusionnerArticlePanier(article){
 
 
 }
-/* =====================================================
-   PARTIE 2 - PANIER / CALCULS / QUANTITES
-   ===================================================== */
-
-
-/* -----------------------------------------------------
-   RECUPERATION RECETTE PRODUIT
------------------------------------------------------ */
-
-function getRecette(id) {
-
-    const produit = produits[id];
-
-
-    if (!produit) {
-        return "";
-    }
-
-
-    return produit.recette || "";
-
-}
-
-/* -----------------------------------------------------
-   CALCUL PRIX ARTICLE
------------------------------------------------------ */
-
-function calculerPrixArticle(article) {
-
-    if (!article) return 0;
-
-
-    // Produits au poids (ex : saumon fumé)
-    if (article.id === "saumon-fume") {
-
-        let poids = Number(article.poids || 100);
-
-        let prix100g = article.prix || 0;
-
-        return (poids / 100) * prix100g;
-
-    }
-
-
-    // Produits à la pièce
-    let quantite = Number(article.quantite || 1);
-
-    return article.prix * quantite;
-
-}
 
 
 
-/* -----------------------------------------------------
-   CALCUL TOTAL COMMANDE
------------------------------------------------------ */
-/* ===================================================
-   PARTIE 2
-   Calculs + affichage panier
-   =================================================== */
+
 
 
 /* ===================================================
@@ -546,6 +496,7 @@ function calculerPrixArticle(article) {
 
 
 function calculerPrixArticle(article){
+
 
 
     const produit =
@@ -563,24 +514,20 @@ function calculerPrixArticle(article){
 
 
 
-
     if(
         article.reference === "saumon-fume"
     ){
 
 
         return Number(
-
             (
                 produit.prix
                 *
                 article.poids
                 /
                 100
-
             )
             .toFixed(2)
-
         );
 
 
@@ -588,27 +535,18 @@ function calculerPrixArticle(article){
 
 
 
-
     return Number(
-
         (
             produit.prix
             *
             article.quantite
-
         )
         .toFixed(2)
-
     );
-
-
-}
-
-
-
-
-
-
+/* ===================================================
+   Partie 2/3
+   Affichage panier et gestion quantités
+   =================================================== */
 
 
 /* ===================================================
@@ -649,15 +587,11 @@ function getRecette(reference, carte){
 
 
 
-
-
-
 /* ===================================================
-   QUANTITE PRODUIT
+   QUANTITES
    =================================================== */
 
-console.log("PARTIE 2 CHARGEE");
-console.log("AVANT OBTENIR QUANTITE");
+
 function obtenirQuantite(id){
 
 
@@ -684,12 +618,6 @@ function obtenirQuantite(id){
 
 
 }
-
-
-console.log(
-    "TEST FONCTION QUANTITE :",
-    typeof obtenirQuantite
-);
 
 
 
@@ -733,18 +661,12 @@ function obtenirPoidsSaumon(){
 
 
 
-
 /* ===================================================
    AFFICHAGE PANIER
    =================================================== */
 
-console.log("APPEL afficherPanier()");
+
 function afficherPanier(){
-
-
-    console.log(
-        "AFFICHAGE PANIER CHARGE"
-    );
 
 
 
@@ -771,6 +693,7 @@ function afficherPanier(){
         return;
 
     }
+
 
 
 
@@ -817,6 +740,7 @@ function afficherPanier(){
         (article,index)=>{
 
 
+
             if(
                 article.reference === "saumon-fume"
             ){
@@ -835,10 +759,12 @@ function afficherPanier(){
 
 
 
+
             total +=
             Number(
                 article.prix
             );
+
 
 
 
@@ -865,7 +791,53 @@ ${afficherDetailsArticle(article)}
 
 
 
+
+<div class="gestion-quantite">
+
+
+
+<button
+type="button"
+class="btn-quantite moins"
+onclick="modifierQuantite(${index},-1)">
+
+−
+
+</button>
+
+
+
+<span>
+
+${
+article.reference === "saumon-fume"
+?
+article.poids + " g"
+:
+article.quantite
+}
+
+</span>
+
+
+
+
+<button
+type="button"
+class="btn-quantite plus"
+onclick="modifierQuantite(${index},1)">
+
++
+
+</button>
+
+
 </div>
+
+
+
+</div>
+
 
 
 
@@ -874,7 +846,9 @@ ${afficherDetailsArticle(article)}
 
 
 <strong>
+
 ${article.prix.toFixed(2)} CHF
+
 </strong>
 
 
@@ -893,10 +867,13 @@ Supprimer
 </button>
 
 
+
 </div>
 
 
+
 </div>
+
 
 
 `;
@@ -926,59 +903,6 @@ Supprimer
     mettreAJourTitrePanier(
         nombreArticles
     );
-
-
-}
-
-
-
-
-
-
-
-
-/* ===================================================
-   TITRE PANIER
-   =================================================== */
-
-
-function mettreAJourTitrePanier(nombre){
-
-
-    const titre =
-    document.getElementById(
-        "titrePanier"
-    );
-
-
-
-    if(
-        !titre
-    ){
-
-        return;
-
-    }
-
-
-
-    titre.textContent =
-
-    "🛒 Votre panier ("
-    +
-    nombre
-    +
-    " article"
-    +
-    (
-        nombre > 1
-        ?
-        "s"
-        :
-        ""
-    )
-    +
-    ")";
 
 
 }
@@ -1032,6 +956,220 @@ function afficherDetailsArticle(article){
 
 
     return details;
+
+
+}
+
+
+
+
+
+
+
+
+/* ===================================================
+   TITRE PANIER
+   =================================================== */
+
+
+function mettreAJourTitrePanier(nombre){
+
+
+
+    const titre =
+    document.getElementById(
+        "titrePanier"
+    );
+
+
+
+    if(
+        !titre
+    ){
+
+        return;
+
+    }
+
+
+
+    titre.textContent =
+
+    "🛒 Votre panier ("
+    +
+    nombre
+    +
+    " article"
+    +
+    (
+        nombre > 1
+        ?
+        "s"
+        :
+        ""
+    )
+    +
+    ")";
+
+
+}
+
+
+
+
+
+
+
+
+/* ===================================================
+   MODIFICATION QUANTITE
+   =================================================== */
+
+
+function modifierQuantite(index, variation){
+
+
+
+    const article =
+    panierCommande[index];
+
+
+
+    if(
+        !article
+    ){
+
+        return;
+
+    }
+
+
+
+
+    if(
+        article.reference === "saumon-fume"
+    ){
+
+
+        article.poids +=
+        variation * 100;
+
+
+
+        if(
+            article.poids < 100
+        ){
+
+            supprimerArticle(index);
+
+            return;
+
+        }
+
+
+    }
+    else{
+
+
+        article.quantite +=
+        variation;
+
+
+
+        if(
+            article.quantite <= 0
+        ){
+
+            supprimerArticle(index);
+
+            return;
+
+        }
+
+    }
+
+
+
+
+
+    article.prix =
+    calculerPrixArticle(
+        article
+    );
+
+
+
+    window.panierCommande =
+    panierCommande;
+
+
+
+    afficherPanier();
+
+
+}
+
+
+
+
+
+
+
+
+/* ===================================================
+   SUPPRESSION ARTICLE
+   =================================================== */
+
+
+function supprimerArticle(index){
+
+
+
+    panierCommande.splice(
+        index,
+        1
+    );
+
+
+
+    window.panierCommande =
+    panierCommande;
+
+
+
+    afficherPanier();
+
+
+}
+
+
+
+
+
+
+
+
+/* ===================================================
+   VIDER PANIER
+   =================================================== */
+
+
+function viderPanier(){
+
+
+    panierCommande.length = 0;
+
+
+
+    window.panierCommande =
+    panierCommande;
+
+
+
+    afficherPanier();
+
+
+}
 
 
 }
