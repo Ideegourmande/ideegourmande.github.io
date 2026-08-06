@@ -675,6 +675,7 @@ function getRecette(reference, carte){
    =================================================== */
 
 console.log("PARTIE 2 CHARGEE");
+console.log("AVANT OBTENIR QUANTITE");
 function obtenirQuantite(id){
 
 
@@ -703,7 +704,10 @@ function obtenirQuantite(id){
 }
 
 
-
+console.log(
+    "TEST FONCTION QUANTITE :",
+    typeof obtenirQuantite
+);
 
 
 
