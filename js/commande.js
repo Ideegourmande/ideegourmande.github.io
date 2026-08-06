@@ -1642,7 +1642,9 @@ if(
 
     setTimeout(
         function(){
-
+console.log(
+    "OUVERTURE MESSAGERIE"
+);
             window.location.href =
             "mailto:vkloetzli@bluewin.ch"
             +
