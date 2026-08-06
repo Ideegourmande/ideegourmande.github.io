@@ -393,7 +393,18 @@ function ajouterAuPanier(reference){
 
 
 
-    afficherPanier();
+    document.addEventListener(
+    "DOMContentLoaded",
+    function(){
+
+        initialiserBoutonsPanier();
+
+        console.log(
+            "INITIALISATION BOUTONS PANIER OK"
+        );
+
+    }
+);
 
 
 }
