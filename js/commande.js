@@ -489,3 +489,370 @@ function fusionnerArticlePanier(article){
 
 
 }
+/* ===================================================
+   CALCUL PRIX ARTICLE
+   =================================================== */
+
+
+function calculerPrixArticle(article){
+
+
+    const produit =
+    produits[article.reference];
+
+
+
+    if(
+        !produit
+    ){
+
+        return 0;
+
+    }
+
+
+
+
+    if(
+        article.reference === "saumon-fume"
+    ){
+
+
+        return Number(
+
+            (
+                produit.prix
+                *
+                article.poids
+                /
+                100
+
+            )
+            .toFixed(2)
+
+        );
+
+
+    }
+
+
+
+
+    return Number(
+
+        (
+            produit.prix
+            *
+            article.quantite
+
+        )
+        .toFixed(2)
+
+    );
+
+
+}
+
+
+
+
+
+
+
+/* ===================================================
+   QUANTITE
+   =================================================== */
+
+
+function obtenirQuantite(id){
+
+
+    const champ =
+    document.getElementById(
+        id
+    );
+
+
+
+    if(
+        !champ
+    ){
+
+        return 0;
+
+    }
+
+
+
+    return Number(
+        champ.value
+    );
+
+
+}
+
+
+
+
+
+
+
+
+/* ===================================================
+   POIDS SAUMON
+   =================================================== */
+
+
+function obtenirPoidsSaumon(){
+
+
+    const champ =
+    document.getElementById(
+        "saumonPoids"
+    );
+
+
+
+    if(
+        !champ
+    ){
+
+        return 0;
+
+    }
+
+
+
+    return Number(
+        champ.value
+    );
+
+
+}
+
+
+
+
+
+
+
+
+/* ===================================================
+   MODIFICATION QUANTITE
+   =================================================== */
+
+
+function modifierQuantite(index, variation){
+
+
+
+    const article =
+    panierCommande[index];
+
+
+
+    if(
+        !article
+    ){
+
+        return;
+
+    }
+
+
+
+
+
+    /*
+       Gestion spécifique saumon
+    */
+
+
+    if(
+        article.reference === "saumon-fume"
+    ){
+
+
+
+        article.poids +=
+        variation;
+
+
+
+        if(
+            article.poids < 100
+        ){
+
+            supprimerArticle(index);
+
+            return;
+
+        }
+
+
+
+        article.prix =
+        calculerPrixArticle(
+            article
+        );
+
+
+        afficherPanier();
+
+
+        return;
+
+
+    }
+
+
+
+
+
+    /*
+       Produits classiques
+    */
+
+
+    article.quantite +=
+    variation;
+
+
+
+
+    if(
+        article.quantite <= 0
+    ){
+
+        supprimerArticle(index);
+
+        return;
+
+    }
+
+
+
+
+
+    article.prix =
+    calculerPrixArticle(
+        article
+    );
+
+
+
+    afficherPanier();
+
+
+}
+
+
+
+
+
+
+
+
+
+/* ===================================================
+   SUPPRIMER UN ARTICLE
+   =================================================== */
+
+
+function supprimerArticle(index){
+
+
+
+    panierCommande.splice(
+        index,
+        1
+    );
+
+
+
+    window.panierCommande =
+    panierCommande;
+
+
+
+    afficherPanier();
+
+
+}
+
+
+
+
+
+
+
+
+
+/* ===================================================
+   VIDER LE PANIER
+   =================================================== */
+
+
+function viderPanier(){
+
+
+
+    panierCommande.length = 0;
+
+
+
+    window.panierCommande =
+    panierCommande;
+
+
+
+    afficherPanier();
+
+
+}
+
+
+
+
+
+
+
+/* ===================================================
+   BOUTON VIDER PANIER
+   =================================================== */
+
+
+document.addEventListener(
+    "DOMContentLoaded",
+    function(){
+
+
+        const bouton =
+        document.getElementById(
+            "btnViderPanier"
+        );
+
+
+
+        if(
+            bouton
+        ){
+
+
+            bouton.addEventListener(
+                "click",
+                viderPanier
+            );
+
+
+            console.log(
+                "Bouton vider panier activé"
+            );
+
+
+        }
+
+
+    }
+
+);
