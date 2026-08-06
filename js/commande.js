@@ -1,4 +1,4 @@
-console.log("COMMANDE.JS CHARGE");
+console.log("COMMANDE.JS VERSION TEST 06-08-2026 14:15");
 
 
 /* ===================================================
