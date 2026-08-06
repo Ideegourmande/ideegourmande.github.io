@@ -113,7 +113,7 @@ document.addEventListener(
         afficherPanier();
 
 
-        if(typeof initialiserNomTwint === "function"){
+        typeof initialiserNomTwint === "function"){
 
             initialiserNomTwint();
 
@@ -192,7 +192,7 @@ function ajouterAuPanier(reference){
 
 
 
-    if(!produit){
+    !produit){
 
 
         console.error(
@@ -323,7 +323,7 @@ function ajouterAuPanier(reference){
 
 
 
-            if(article.poids <= 0){
+            article.poids <= 0){
 
 
                 alert(
@@ -353,7 +353,7 @@ function ajouterAuPanier(reference){
 
 
 
-    if(article.quantite <= 0){
+    article.quantite <= 0){
 
 
         alert(
@@ -460,7 +460,7 @@ function fusionnerArticlePanier(article){
 
 
 
-    if(existant){
+    existant){
 
 
         existant.quantite +=
@@ -514,7 +514,7 @@ function calculerPrixArticle(article){
 
 
 
-    if(!produit){
+    !produit){
 
 
         return 0;
@@ -525,7 +525,7 @@ function calculerPrixArticle(article){
 
 
 
-    if(article.reference === "saumon-fume"){
+    article.reference === "saumon-fume"){
 
 
 
@@ -582,7 +582,7 @@ function getRecette(reference, carte){
 
 
 
-    if(!carte){
+    !carte){
 
 
         return "";
@@ -629,7 +629,7 @@ function obtenirQuantite(id){
 
 
 
-    if(!champ){
+    !champ){
 
 
         return 0;
@@ -669,7 +669,7 @@ function obtenirPoidsSaumon(){
 
 
 
-    if(!champ){
+    !champ){
 
 
         return 0;
@@ -707,7 +707,7 @@ function afficherPanier(){
 
 
 
-    if(!zonePanier || !zoneTotal){
+    !zonePanier || !zoneTotal){
 
         return;
 
@@ -715,7 +715,7 @@ function afficherPanier(){
 
 
 
-    if(panierCommande.length === 0){
+    panierCommande.length === 0){
 
 
         zonePanier.innerHTML =
@@ -755,7 +755,7 @@ function afficherPanier(){
             */
 
 
-            if(article.reference === "saumon-fume"){
+            article.reference === "saumon-fume"){
 
 
                 nombreArticles += 1;
@@ -956,7 +956,7 @@ function mettreAJourTitrePanier(nombre){
 
 
 
-    if(!titre){
+    !titre){
 
         return;
 
@@ -1006,7 +1006,7 @@ function afficherDetailsArticle(article){
 
 
 
-    if(article.recette){
+    article.recette){
 
 
         details +=
@@ -1022,7 +1022,7 @@ function afficherDetailsArticle(article){
 
 
 
-    if(article.poids){
+    article.poids){
 
 
         details +=
@@ -1062,7 +1062,7 @@ function modifierQuantite(index, variation){
 
 
 
-    if(!article){
+    !article){
 
         return;
 
@@ -1070,11 +1070,11 @@ function modifierQuantite(index, variation){
 
 
 
-   if(article.reference === "saumon-fume"){
+   article.reference === "saumon-fume"){
 
     article.poids += variation;
 
-    if(article.poids < 100){
+    article.poids < 100){
 
         supprimerArticle(index);
         return;
@@ -1101,7 +1101,7 @@ function modifierQuantite(index, variation){
 
 
 
-    if(article.quantite <= 0){
+    article.quantite <= 0){
 
 
         supprimerArticle(index);
@@ -1179,7 +1179,7 @@ document.addEventListener(
         );
 
 
-        if(!bouton){
+        !bouton){
 
             console.warn(
                 "Bouton vider panier introuvable"
@@ -1267,7 +1267,7 @@ function initialiserNomTwint(){
 
 
 
-    if(
+    
         !prenom
         ||
         !nom
@@ -1343,7 +1343,7 @@ document.addEventListener(
 
 
 
-        if(formulaire){
+        formulaire){
 
 
             formulaire.addEventListener(
@@ -1376,7 +1376,7 @@ function envoyerCommande(event){
 
 
 
-    if(panierCommande.length === 0){
+    panierCommande.length === 0){
 
 
         alert(
@@ -1402,7 +1402,7 @@ function envoyerCommande(event){
 
 
 
-    if(
+    
         confirmationTwint
         &&
         !confirmationTwint.checked
@@ -1539,12 +1539,125 @@ if(
     );
 
 
-}
-else{
+    const lignesCommande =
+    panierCommande.map(
+        article => {
 
-    console.error(
-        "PDF NON DISPONIBLE"
+            return (
+                "- "
+                +
+                article.nom
+                +
+                " : "
+                +
+                article.prix.toFixed(2)
+                +
+                " CHF"
+            );
+
+        }
+    ).join("\n");
+
+
+
+    const sujet =
+    encodeURIComponent(
+        "Commande Idée Gourmande - "
+        +
+        commande.client.nom
     );
+
+
+
+    const message =
+
+    "Bonjour,\n\n"
+
+    +
+
+    "Voici ma commande Idée Gourmande.\n\n"
+
+    +
+
+    "Client : "
+    +
+    commande.client.prenom
+    +
+    " "
+    +
+    commande.client.nom
+    +
+    "\n\n"
+
+    +
+
+    "Téléphone : "
+    +
+    commande.client.telephone
+    +
+    "\n"
+
+    +
+
+    "Email : "
+    +
+    commande.client.email
+    +
+    "\n\n"
+
+    +
+
+    "Commande :\n"
+    +
+    lignesCommande
+    +
+    "\n\n"
+
+    +
+
+    "Total : "
+    +
+    commande.total.toFixed(2)
+    +
+    " CHF\n\n"
+
+    +
+
+    "Le fichier PDF a été généré.\n"
+    +
+    "Merci de le joindre avant l'envoi du message.\n\n"
+
+    +
+
+    "Cordialement";
+
+
+
+    const corps =
+    encodeURIComponent(
+        message
+    );
+
+
+
+    setTimeout(
+        function(){
+
+            window.location.href =
+            "mailto:vkloetzli@bluewin.ch"
+            +
+            "?subject="
+            +
+            sujet
+            +
+            "&body="
+            +
+            corps;
+
+        },
+        1500
+    );
+
 
 }
 
@@ -1585,7 +1698,7 @@ function lireChamp(id){
 
 
 
-    if(!champ){
+    !champ){
 
 
         return "";
