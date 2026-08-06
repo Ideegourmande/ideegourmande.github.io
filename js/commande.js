@@ -185,7 +185,10 @@ ajouterAuPanier(
 
 
 function ajouterAuPanier(reference){
-
+console.log(
+    "AJOUT PANIER APPELE :",
+    reference
+);
 
 
     const produit =
