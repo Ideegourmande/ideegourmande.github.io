@@ -22,11 +22,7 @@ window.panierCommande = panierCommande;
    =================================================== */
 
 
-let panierCommande = [];
 
-
-window.panierCommande =
-panierCommande;
 
 
 
@@ -544,13 +540,17 @@ function calculerPrixArticle(article){
 
 
     return Number(
-        (
-            produit.prix
-            *
-            article.quantite
-        )
-        .toFixed(2)
-    );
+    (
+        produit.prix
+        *
+        article.quantite
+    )
+    .toFixed(2)
+);
+
+}
+
+
 /* ===================================================
    Partie 2/3
    Affichage panier et gestion quantités
@@ -1177,8 +1177,5 @@ function viderPanier(){
     afficherPanier();
 
 
-}
-
-   
 }
 
