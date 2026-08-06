@@ -369,8 +369,12 @@ const prenomClient =
     ""
 )
 
-.charAt(0)
-.toUpperCase();
+.trim()
+.toUpperCase()
+.replace(
+    /[^A-Z0-9]/g,
+    ""
+);
 
 
 
