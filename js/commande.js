@@ -507,34 +507,17 @@ function fusionnerArticlePanier(article){
 
 function getRecette(id) {
 
-    let listeProduits = produits;
-
-
-    // Si produits vient de la base sous forme d'objet
-    if (!Array.isArray(listeProduits)) {
-
-        listeProduits = Object.values(listeProduits);
-
-    }
-
-
-    const produit = listeProduits.find(
-        p => p.id === id
-    );
+    const produit = produits[id];
 
 
     if (!produit) {
-
         return "";
-
     }
 
 
     return produit.recette || "";
 
 }
-
-
 
 /* -----------------------------------------------------
    CALCUL PRIX ARTICLE
