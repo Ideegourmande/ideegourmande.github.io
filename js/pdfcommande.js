@@ -340,7 +340,11 @@ function genererPDFCommande(commande){
 // NOM DU FICHIER PDF
 // ==============================
 
-
+console.log(
+    "CLIENT PDF :",
+    commande.client
+);
+    
 const nomClient =
 
 (
