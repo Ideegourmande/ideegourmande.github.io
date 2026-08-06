@@ -336,13 +336,88 @@ function genererPDFCommande(commande){
     // ==============================
 
 
-    const fichier =
+    // ==============================
+// NOM DU FICHIER PDF
+// ==============================
 
-    "Commande_Idee_Gourmande_"
-    +
-    Date.now()
-    +
-    ".pdf";
+
+const nomClient =
+
+(
+    commande.client.nom
+    ||
+    "Client"
+)
+
+.toUpperCase()
+.replace(
+    /[^A-Z0-9]/g,
+    ""
+);
+
+
+
+const prenomClient =
+
+(
+    commande.client.prenom
+    ||
+    ""
+)
+
+.charAt(0)
+.toUpperCase();
+
+
+
+const maintenant =
+new Date();
+
+
+
+const datePDF =
+
+maintenant.getFullYear()
++
+String(
+    maintenant.getMonth() + 1
+)
+.padStart(2,"0")
++
+String(
+    maintenant.getDate()
+)
+.padStart(2,"0")
++
+"_"
++
+String(
+    maintenant.getHours()
+)
+.padStart(2,"0")
++
+String(
+    maintenant.getMinutes()
+)
+.padStart(2,"0");
+
+
+
+const fichier =
+
+"Commande_"
++
+nomClient
++
+"_"
++
+prenomClient
++
+"_"
++
+datePDF
++
+".pdf";
 
 
 
