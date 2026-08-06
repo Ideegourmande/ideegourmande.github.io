@@ -194,19 +194,18 @@ function ajouterAuPanier(reference){
 
 
 
-    !produit){
+   if(
+    !produit
+){
 
+    console.error(
+        "Produit inconnu : ",
+        reference
+    );
 
-        console.error(
-            "Produit inconnu : ",
-            reference
-        );
+    return;
 
-
-        return;
-
-
-    }
+}
 
 
 
@@ -325,18 +324,17 @@ function ajouterAuPanier(reference){
 
 
 
-            article.poids <= 0){
+            if(
+    article.poids <= 0
+){
 
+    alert(
+        "Veuillez choisir un poids pour le saumon fumé."
+    );
 
-                alert(
-                    "Veuillez choisir un poids pour le saumon fumé."
-                );
+    return;
 
-
-                return;
-
-
-            }
+}
 
 
 
@@ -355,18 +353,17 @@ function ajouterAuPanier(reference){
 
 
 
-    article.quantite <= 0){
+    if(
+    article.quantite <= 0
+){
 
+    alert(
+        "Veuillez choisir une quantité valide."
+    );
 
-        alert(
-            "Veuillez choisir une quantité valide."
-        );
+    return;
 
-
-        return;
-
-
-    }
+}
 
 
 
