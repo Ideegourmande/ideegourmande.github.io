@@ -674,7 +674,7 @@ function getRecette(reference, carte){
    QUANTITE PRODUIT
    =================================================== */
 
-
+console.log("PARTIE 2 CHARGEE");
 function obtenirQuantite(id){
 
 
