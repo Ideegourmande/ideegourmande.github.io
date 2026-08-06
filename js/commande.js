@@ -194,7 +194,7 @@ function ajouterAuPanier(reference){
 
     const produit =
     produits[reference];
-
+console.log("PRODUIT :", produit);
 
 
     if(
@@ -377,7 +377,7 @@ function ajouterAuPanier(reference){
     calculerPrixArticle(
         article
     );
-
+console.log("ARTICLE :", article);
 
 
 
@@ -387,7 +387,10 @@ function ajouterAuPanier(reference){
     fusionnerArticlePanier(
         article
     );
-
+console.log(
+    "PANIER APRES AJOUT :",
+    panierCommande
+);
 
 
 
@@ -766,7 +769,7 @@ function obtenirPoidsSaumon(){
    AFFICHAGE PANIER
    =================================================== */
 
-
+console.log("APPEL afficherPanier()");
 function afficherPanier(){
 
 
