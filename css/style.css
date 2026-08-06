@@ -2338,3 +2338,77 @@ footer a:hover {
 .infos-produit{
     min-height:140px;
 }
+/* ===================================================
+   CORRECTION AFFICHAGE PANIER COMMANDE
+   =================================================== */
+
+
+.panier-section {
+
+    width:100%;
+
+    padding:40px 20px;
+
+    box-sizing:border-box;
+
+}
+
+
+
+.panier-card {
+
+    width:100%;
+
+    max-width:900px;
+
+    margin:0 auto;
+
+    box-sizing:border-box;
+
+}
+
+
+
+#recapCommande {
+
+    width:100%;
+
+}
+
+
+
+.ligne-produit {
+
+    width:100%;
+
+    display:flex;
+
+    justify-content:space-between;
+
+    align-items:center;
+
+    gap:20px;
+
+    padding:15px;
+
+    box-sizing:border-box;
+
+}
+
+
+
+.infos-produit {
+
+    flex:1;
+
+}
+
+
+
+.prix-produit {
+
+    min-width:150px;
+
+    text-align:right;
+
+}
