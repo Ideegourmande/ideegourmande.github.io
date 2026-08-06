@@ -1,22 +1,52 @@
-// ==================================
+// ===================================================
 // IDÉE GOURMANDE
-// Génération du bon de commande PDF
-// ==================================
+// pdfcommande.js
+// Partie 1 / 3
+// ===================================================
 
-function genererPDFCommande(data) {
+console.log("PDFCOMMANDE.JS CHARGE");
 
+/* ===================================================
+   GENERATION PDF
+   =================================================== */
+
+function genererPDFCommande(commande){
+
+    if(!commande){
+
+        console.error("Commande absente.");
+
+        return;
+
+    }
+
+    if(!window.jspdf){
+
+        console.error("jsPDF non chargé.");
+
+        return;
+
+    }
 
     const { jsPDF } = window.jspdf;
 
+    const doc = new jsPDF({
 
-    const doc = new jsPDF();
+        orientation: "portrait",
 
+        unit: "mm",
 
-    let y = 20;
+        format: "a4"
 
+    });
 
-    // Titre
+    let y = 18;
 
+    /* ===================================================
+       EN-TETE
+       =================================================== */
+
+    doc.setFont("helvetica","bold");
     doc.setFontSize(20);
 
     doc.text(
@@ -25,9 +55,7 @@ function genererPDFCommande(data) {
         y
     );
 
-
-    y += 12;
-
+    y += 8;
 
     doc.setFontSize(14);
 
@@ -37,25 +65,38 @@ function genererPDFCommande(data) {
         y
     );
 
+    y += 10;
 
-    y += 15;
-
-
-    doc.setFontSize(11);
-
+    doc.setFont("helvetica","normal");
+    doc.setFontSize(10);
 
     doc.text(
-        "Date : " + new Date().toLocaleDateString("fr-FR"),
+        "Date : " + commande.date,
         20,
         y
     );
 
+    y += 6;
 
-    y += 15;
+    const numeroCommande =
+    "CMD-" +
+    new Date().getFullYear() +
+    "-" +
+    Date.now().toString().slice(-6);
 
+    doc.text(
+        "Commande : " + numeroCommande,
+        20,
+        y
+    );
 
-    // Client
+    y += 12;
 
+    /* ===================================================
+       CLIENT
+       =================================================== */
+
+    doc.setFont("helvetica","bold");
     doc.setFontSize(13);
 
     doc.text(
@@ -64,44 +105,58 @@ function genererPDFCommande(data) {
         y
     );
 
-
     y += 8;
 
-
+    doc.setFont("helvetica","normal");
     doc.setFontSize(11);
 
     doc.text(
-        data.nom,
+        commande.client.prenom +
+        " " +
+        commande.client.nom,
         20,
         y
     );
 
-
-    y += 7;
-
+    y += 6;
 
     doc.text(
-        data.email,
+        commande.client.telephone,
         20,
         y
     );
 
-
-    y += 7;
-
+    y += 6;
 
     doc.text(
-        data.adresse,
+        commande.client.email,
         20,
         y
     );
 
+    y += 6;
 
-    y += 15;
+    const adresse =
+    doc.splitTextToSize(
+        commande.client.adresse,
+        160
+    );
 
+    doc.text(
+        adresse,
+        20,
+        y
+    );
 
-    // Commande
+    y +=
+    adresse.length * 6 +
+    8;
 
+    /* ===================================================
+       PRODUITS
+       =================================================== */
+
+    doc.setFont("helvetica","bold");
     doc.setFontSize(13);
 
     doc.text(
@@ -110,56 +165,330 @@ function genererPDFCommande(data) {
         y
     );
 
-
-    y += 10;
-
+    y += 8;
 
     doc.setFontSize(11);
 
+/* ===================================================
+   LISTE DES PRODUITS
+   =================================================== */
 
-    data.recap.split("\n").forEach(function(ligne){
+    commande.produits.forEach(
+        function(article){
 
-        doc.text(
-            ligne,
-            20,
-            y
-        );
+            let description =
+            article.nom;
 
-        y += 7;
+            if(article.recette){
 
-    });
+                description +=
+                " (" +
+                article.recette +
+                ")";
+
+            }
+
+            doc.setFont(
+                "helvetica",
+                "bold"
+            );
+
+            doc.text(
+                description,
+                20,
+                y
+            );
+
+            y += 6;
+
+            doc.setFont(
+                "helvetica",
+                "normal"
+            );
+
+            /*
+               Quantité ou poids
+            */
+
+            if(
+                article.reference ===
+                "saumon-fume"
+            ){
+
+                doc.text(
+
+                    "Poids : "
+                    +
+                    article.poids
+                    +
+                    " g",
+
+                    25,
+                    y
+
+                );
+
+            }
+            else{
+
+                doc.text(
+
+                    "Quantité : "
+                    +
+                    article.quantite,
+
+                    25,
+                    y
+
+                );
+
+            }
+
+            /*
+               Prix
+            */
+
+            doc.text(
+
+                article.prix.toFixed(2)
+                +
+                " CHF",
+
+                165,
+                y,
+                {
+                    align:"right"
+                }
+
+            );
+
+            y += 8;
+
+            /*
+               Nouvelle page
+            */
+
+            if(y > 265){
+
+                doc.addPage();
+
+                y = 20;
+
+            }
+
+        }
+
+    );
 
 
-    y += 10;
 
+/* ===================================================
+   TOTAL
+   =================================================== */
 
-    doc.setFontSize(14);
+    y += 4;
 
+    doc.setDrawColor(
+        180
+    );
+
+    doc.line(
+        20,
+        y,
+        190,
+        y
+    );
+
+    y += 8;
+
+    doc.setFont(
+        "helvetica",
+        "bold"
+    );
+
+    doc.setFontSize(
+        14
+    );
 
     doc.text(
-        "TOTAL : " + data.total + " CHF",
+
+        "TOTAL",
+
+        20,
+
+        y
+
+    );
+
+    doc.text(
+
+        commande.total.toFixed(2)
+        +
+        " CHF",
+
+        190,
+
+        y,
+
+        {
+            align:"right"
+        }
+
+    );
+
+    y += 15;
+    /* ===================================================
+   PAIEMENT
+   =================================================== */
+
+    doc.setFont(
+        "helvetica",
+        "bold"
+    );
+
+    doc.setFontSize(
+        12
+    );
+
+    doc.text(
+        "Paiement",
         20,
         y
     );
 
+    y += 8;
+
+    doc.setFont(
+        "helvetica",
+        "normal"
+    );
+
+    doc.text(
+        "TWINT : confirmé",
+        20,
+        y
+    );
 
     y += 12;
 
 
-    doc.setFontSize(11);
+/* ===================================================
+   COMMENTAIRE CLIENT
+   =================================================== */
 
+    if(
+        commande.client.commentaire &&
+        commande.client.commentaire.trim() !== ""
+    ){
+
+        doc.setFont(
+            "helvetica",
+            "bold"
+        );
+
+        doc.text(
+            "Commentaire",
+            20,
+            y
+        );
+
+        y += 8;
+
+        doc.setFont(
+            "helvetica",
+            "normal"
+        );
+
+        const commentaire =
+        doc.splitTextToSize(
+            commande.client.commentaire,
+            170
+        );
+
+        doc.text(
+            commentaire,
+            20,
+            y
+        );
+
+        y +=
+        commentaire.length * 6 +
+        10;
+
+    }
+
+
+/* ===================================================
+   REMERCIEMENTS
+   =================================================== */
+
+    doc.setDrawColor(
+        180
+    );
+
+    doc.line(
+        20,
+        y,
+        190,
+        y
+    );
+
+    y += 10;
+
+    doc.setFont(
+        "helvetica",
+        "italic"
+    );
+
+    doc.setFontSize(
+        11
+    );
 
     doc.text(
-        "Paiement : TWINT confirmé",
+        "Merci pour votre confiance.",
+        20,
+        y
+    );
+
+    y += 6;
+
+    doc.text(
+        "Votre commande sera préparée artisanalement.",
+        20,
+        y
+    );
+
+    y += 6;
+
+    doc.text(
+        "Idée Gourmande - Genève",
         20,
         y
     );
 
 
-    // Création du fichier
+/* ===================================================
+   ENREGISTREMENT
+   =================================================== */
+
+    const maintenant =
+    new Date();
+
+    const nomFichier =
+        "Commande_" +
+        maintenant.getFullYear() +
+        String(maintenant.getMonth()+1).padStart(2,"0") +
+        String(maintenant.getDate()).padStart(2,"0") +
+        "_" +
+        String(maintenant.getHours()).padStart(2,"0") +
+        String(maintenant.getMinutes()).padStart(2,"0") +
+        String(maintenant.getSeconds()).padStart(2,"0") +
+        ".pdf";
 
     doc.save(
-        "Bon_de_commande_Idee_Gourmande.pdf"
+        nomFichier
     );
+
+    return true;
 
 }
