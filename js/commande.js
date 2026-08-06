@@ -113,7 +113,9 @@ document.addEventListener(
         afficherPanier();
 
 
-        typeof initialiserNomTwint === "function"){
+        if(
+            typeof initialiserNomTwint === "function"
+        ){
 
             initialiserNomTwint();
 
