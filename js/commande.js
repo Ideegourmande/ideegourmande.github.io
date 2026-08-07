@@ -188,6 +188,8 @@ function initialiserBoutonsPanier(){
 
     );
 
+   
+
 
 }
 
@@ -1115,16 +1117,75 @@ function envoyerCommande(e){
 
 
 
-    console.log(
-        "COMMANDE PREPAREE :",
-        commande
-    );
+   console.log(
+    "COMMANDE PREPAREE :",
+    commande
+);
+
+
+// Enregistrement dans la base de données
+ajouterCommande({
+
+    id: Date.now(),
+
+    date:
+    new Date().toLocaleDateString("fr-FR"),
+
+
+    client:
+    commande.client.prenom
+    +
+    " "
+    +
+    commande.client.nom,
+
+
+    telephone:
+    commande.client.telephone,
+
+
+    email:
+    commande.client.email,
+
+
+    adresse:
+    commande.client.adresse,
+
+
+    commentaire:
+    commande.client.commentaire,
+
+
+    produits:
+    commande.produits
+    .map(article =>
+        article.nom
+        +
+        (
+            article.poids
+            ?
+            " (" + article.poids + " g)"
+            :
+            " x" + article.quantite
+        )
+    )
+    .join("\n"),
+
+
+    total:
+    commande.total,
+
+
+    statut:
+    "Nouvelle"
+
+});
 
 
 
-    genererPDFCommande(
-        commande
-    );
+genererPDFCommande(
+    commande
+);
 
 
 
