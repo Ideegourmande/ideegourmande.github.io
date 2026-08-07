@@ -357,34 +357,65 @@ afficherStatistiques();
 
 function imprimerCommande(index){
 
-let commandes =
-obtenirCommandes();
+    let commandes =
+    obtenirCommandes();
 
 
-let cmd =
-commandes[index];
+    let cmd =
+    commandes[index];
 
 
-if(!cmd){
+    if(!cmd){
 
-return;
+        return;
 
-}
+    }
 
 
-genererPDFCommande({
+    let noms =
+    (cmd.client || "")
+    .split(" ");
 
-nom: cmd.client,
 
-email: cmd.email,
 
-adresse: cmd.adresse,
+    genererPDFCommande({
 
-recap: cmd.produits || "",
+        client:{
 
-total: cmd.total
+            prenom:
+            noms[0] || "",
 
-});
+
+            nom:
+            noms.slice(1).join(" ") || "",
+
+
+            email:
+            cmd.email || "",
+
+
+            telephone:
+            cmd.telephone || "",
+
+
+            adresse:
+            cmd.adresse || "",
+
+
+            commentaire:
+            cmd.commentaire || ""
+
+        },
+
+
+        produits:
+        cmd.produits || [],
+
+
+        total:
+        Number(cmd.total) || 0
+
+    });
 
 
 }
