@@ -408,8 +408,8 @@ function imprimerCommande(index){
         },
 
 
-        produits:
-        cmd.produits || [],
+       produits:
+cmd.produitsListe || [],
 
 
         total:
