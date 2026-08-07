@@ -95,7 +95,14 @@ doc.text(
 
 
 y += 8;
+// CADRE INFORMATIONS CLIENT
 
+doc.rect(
+    15,
+    y - 5,
+    180,
+    45
+);
 
 // cadre client
 
