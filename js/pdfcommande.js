@@ -30,42 +30,52 @@ function genererPDFCommande(commande){
     const doc =
     new jsPDF();
 
+// ==============================
+// LOGO
+// ==============================
+
+const logo =
+new Image();
+
+logo.src =
+"images/logo.png";
+
+doc.addImage(
+    logo,
+    "PNG",
+    20,
+    10,
+    45,
+    25
+);
+
+    let y = 45;
 
 
-    let y = 20;
+// ==============================
+// TITRE
+// ==============================
+
+doc.setFontSize(18);
+
+doc.text(
+    "IDÉE GOURMANDE",
+    20,
+    y
+);
+
+y += 10;
 
 
+doc.setFontSize(13);
 
-    // ==============================
-    // TITRE
-    // ==============================
+doc.text(
+    "Bon de commande",
+    20,
+    y
+);
 
-
-    doc.setFontSize(20);
-
-
-    doc.text(
-        "IDÉE GOURMANDE",
-        20,
-        y
-    );
-
-
-    y += 12;
-
-
-
-    doc.setFontSize(14);
-
-
-    doc.text(
-        "Bon de commande",
-        20,
-        y
-    );
-
-
-    y += 15;
+y += 15;
 
 
 
