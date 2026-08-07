@@ -1125,10 +1125,12 @@ function envoyerCommande(e){
 
     // Test disponibilité fonction ajout base
 
-    console.log(
-        "TEST AJOUT COMMANDE",
-        typeof ajouterCommande
-    );
+    alert("PASSAGE AVANT AJOUT COMMANDE");
+
+console.log(
+    "TEST AJOUT COMMANDE",
+    typeof ajouterCommande
+);
 
 
     // Enregistrement dans la base de données
