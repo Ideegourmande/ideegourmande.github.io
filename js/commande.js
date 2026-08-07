@@ -428,7 +428,7 @@ function calculerPrixArticle(article){
         return 0;
 
     }
-
+   }
 
 
     if(
