@@ -1150,3 +1150,5 @@ supprimerArticle;
 window.viderPanier =
 viderPanier;
 
+window.envoyerCommande =
+envoyerCommande;
