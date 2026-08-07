@@ -80,71 +80,83 @@ y += 15;
 
 
 
-    // ==============================
-    // CLIENT
-    // ==============================
+// ==============================
+// CLIENT
+// ==============================
 
 
-    doc.setFontSize(12);
+doc.setFontSize(13);
+
+doc.text(
+    "Informations client",
+    20,
+    y
+);
 
 
-    doc.text(
-        "Client",
-        20,
-        y
-    );
+y += 8;
 
 
-    y += 8;
+// cadre client
+
+doc.rect(
+    20,
+    y,
+    170,
+    42
+);
 
 
-    doc.setFontSize(11);
+let clientY = y + 10;
 
 
-
-    doc.text(
-        commande.client.prenom
-        +
-        " "
-        +
-        commande.client.nom,
-        20,
-        y
-    );
+doc.setFontSize(11);
 
 
-    y += 7;
+doc.text(
+    "Nom : " +
+    commande.client.prenom +
+    " " +
+    commande.client.nom,
+    25,
+    clientY
+);
 
 
-    doc.text(
-        commande.client.email,
-        20,
-        y
-    );
+clientY += 8;
 
 
-    y += 7;
+doc.text(
+    "Email : " +
+    commande.client.email,
+    25,
+    clientY
+);
 
 
-    doc.text(
-        commande.client.telephone,
-        20,
-        y
-    );
+clientY += 8;
 
 
-    y += 7;
+doc.text(
+    "Téléphone : " +
+    commande.client.telephone,
+    25,
+    clientY
+);
 
 
-    doc.text(
-        commande.client.adresse,
-        20,
-        y
-    );
+clientY += 8;
 
 
-    y += 15;
+doc.text(
+    "Adresse : " +
+    commande.client.adresse,
+    25,
+    clientY
+);
 
+
+y += 55;
 
 
 
