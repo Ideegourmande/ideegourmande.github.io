@@ -409,7 +409,7 @@ function imprimerCommande(index){
 
 
        produits:
-cmd.produitsListe || [],
+       cmd.produitsListe || [],
 
 
         total:
