@@ -404,13 +404,17 @@ function ajouterOuFusionner(article){
     }
     else{
 
+    panierCommande.push(
+        article
+    );
 
-        panierCommande.push(
-            article
-        );
+}
 
+} // <-- à ajouter ici
 
-    }
+/* ===================================================
+   CALCUL PRIX ARTICLE
+   =================================================== */
 /* ===================================================
    CALCUL PRIX ARTICLE
    =================================================== */
@@ -427,7 +431,6 @@ function calculerPrixArticle(article){
 
         return 0;
 
-    }
    }
 
 
@@ -1059,4 +1062,3 @@ supprimerArticle;
 window.viderPanier =
 viderPanier;
 
-}
