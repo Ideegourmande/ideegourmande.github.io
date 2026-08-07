@@ -1168,19 +1168,23 @@ console.log(
 
 
         produits:
-        commande.produits
-        .map(article =>
-            article.nom
-            +
-            (
-                article.poids
-                ?
-                " (" + article.poids + " g)"
-                :
-                " x" + article.quantite
-            )
-        )
-        .join("\n"),
+commande.produits
+.map(article =>
+    article.nom
+    +
+    (
+        article.poids
+        ?
+        " (" + article.poids + " g)"
+        :
+        " x" + article.quantite
+    )
+)
+.join("\n"),
+
+
+produitsListe:
+commande.produits,
 
 
         total:
