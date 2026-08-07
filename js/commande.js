@@ -1045,7 +1045,95 @@ function viderPanier(){
 /* ===================================================
    EXPORT GLOBAL BOUTONS HTML
    =================================================== */
+/* ===================================================
+ENVOI COMMANDE
+=================================================== */
 
+function envoyerCommande(e){
+
+    e.preventDefault();
+
+
+    if(panierCommande.length === 0){
+
+        alert(
+            "Votre panier est vide."
+        );
+
+        return;
+
+    }
+
+
+
+    const commande = {
+
+
+        client:{
+
+
+            prenom:
+            document.getElementById("prenom").value,
+
+
+            nom:
+            document.getElementById("nom").value,
+
+
+            telephone:
+            document.getElementById("telephone").value,
+
+
+            email:
+            document.getElementById("email").value,
+
+
+            adresse:
+            document.getElementById("adresse").value,
+
+
+            commentaire:
+            document.getElementById("commentaire").value
+
+
+        },
+
+
+        produits:
+        panierCommande,
+
+
+        total:
+        panierCommande.reduce(
+            (somme, article) =>
+            somme + article.prix,
+            0
+        )
+
+
+    };
+
+
+
+    console.log(
+        "COMMANDE PREPAREE :",
+        commande
+    );
+
+
+
+    genererPDFCommande(
+        commande
+    );
+
+
+
+    alert(
+        "Votre commande a été générée."
+    );
+
+
+}
 
 window.ajouterAuPanier =
 ajouterAuPanier;
