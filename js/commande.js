@@ -1117,75 +1117,84 @@ function envoyerCommande(e){
 
 
 
-   console.log(
-    "COMMANDE PREPAREE :",
-    commande
-);
+    console.log(
+        "COMMANDE PREPAREE :",
+        commande
+    );
 
 
-// Enregistrement dans la base de données
-ajouterCommande({
+    // Test disponibilité fonction ajout base
 
-    id: Date.now(),
-
-    date:
-    new Date().toLocaleDateString("fr-FR"),
-
-
-    client:
-    commande.client.prenom
-    +
-    " "
-    +
-    commande.client.nom,
+    console.log(
+        "TEST AJOUT COMMANDE",
+        typeof ajouterCommande
+    );
 
 
-    telephone:
-    commande.client.telephone,
+    // Enregistrement dans la base de données
+
+    ajouterCommande({
+
+        id: Date.now(),
+
+        date:
+        new Date().toLocaleDateString("fr-FR"),
 
 
-    email:
-    commande.client.email,
-
-
-    adresse:
-    commande.client.adresse,
-
-
-    commentaire:
-    commande.client.commentaire,
-
-
-    produits:
-    commande.produits
-    .map(article =>
-        article.nom
+        client:
+        commande.client.prenom
         +
-        (
-            article.poids
-            ?
-            " (" + article.poids + " g)"
-            :
-            " x" + article.quantite
+        " "
+        +
+        commande.client.nom,
+
+
+        telephone:
+        commande.client.telephone,
+
+
+        email:
+        commande.client.email,
+
+
+        adresse:
+        commande.client.adresse,
+
+
+        commentaire:
+        commande.client.commentaire,
+
+
+        produits:
+        commande.produits
+        .map(article =>
+            article.nom
+            +
+            (
+                article.poids
+                ?
+                " (" + article.poids + " g)"
+                :
+                " x" + article.quantite
+            )
         )
-    )
-    .join("\n"),
+        .join("\n"),
 
 
-    total:
-    commande.total,
+        total:
+        commande.total,
 
 
-    statut:
-    "Nouvelle"
+        statut:
+        "Nouvelle"
 
-});
+    });
 
 
 
-genererPDFCommande(
-    commande
-);
+    genererPDFCommande(
+        commande
+    );
 
 
 
@@ -1193,20 +1202,18 @@ genererPDFCommande(
         "Votre commande a été générée."
     );
 
-
 }
+
+
 
 window.ajouterAuPanier =
 ajouterAuPanier;
 
-
 window.modifierQuantite =
 modifierQuantite;
 
-
 window.supprimerArticle =
 supprimerArticle;
-
 
 window.viderPanier =
 viderPanier;
