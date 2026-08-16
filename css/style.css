@@ -2626,3 +2626,8 @@ footer a:hover {
     color: #555555;
     border-color: #bbbbbb;
 }
+.commande-admin-statut select {
+    background: red !important;
+    color: white !important;
+    border: 3px solid black !important;
+}
