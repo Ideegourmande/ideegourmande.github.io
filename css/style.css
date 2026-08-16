@@ -2626,8 +2626,48 @@ footer a:hover {
     color: #555555;
     border-color: #bbbbbb;
 }
+/* ===================================================
+   ADMIN - COULEUR DU STATUT ACTIF
+   =================================================== */
+
 .commande-admin-statut select {
-    background: red !important;
-    color: white !important;
-    border: 3px solid black !important;
+    width: auto !important;
+    min-width: 190px;
+    margin-top: 0 !important;
+    padding: 10px 15px;
+    border-radius: 10px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+/* NOUVELLE */
+
+.commande-admin-statut select.statut-nouvelle {
+    background-color: #e9f3e5 !important;
+    color: #48613f !important;
+    border: 2px solid #9bbb8f !important;
+}
+
+/* EN PRÉPARATION */
+
+.commande-admin-statut select.statut-preparation {
+    background-color: #fff3d6 !important;
+    color: #9a6700 !important;
+    border: 2px solid #e0b85c !important;
+}
+
+/* PRÊTE */
+
+.commande-admin-statut select.statut-prete {
+    background-color: #e5eef9 !important;
+    color: #456b95 !important;
+    border: 2px solid #8eafd0 !important;
+}
+
+/* LIVRÉE */
+
+.commande-admin-statut select.statut-livree {
+    background-color: #eeeeee !important;
+    color: #555555 !important;
+    border: 2px solid #bbbbbb !important;
 }
