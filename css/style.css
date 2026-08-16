@@ -2599,3 +2599,73 @@ footer a:hover {
     color: #555555 !important;
     border: 2px solid #bbbbbb !important;
 }
+/* ===================================================
+   ADMIN - TRI DES COMMANDES
+   =================================================== */
+
+.tri-commandes {
+
+    display:flex;
+    align-items:center;
+    gap:12px;
+
+    margin:20px 0;
+
+    padding:15px;
+
+    background:#faf7ee;
+
+    border-radius:12px;
+
+}
+
+.tri-commandes label {
+
+    font-weight:bold;
+
+    color:var(--vert-fonce);
+
+    white-space:nowrap;
+
+}
+
+.tri-commandes select {
+
+    width:auto !important;
+
+    min-width:240px;
+
+    margin-top:0 !important;
+
+    padding:10px 15px;
+
+    border:2px solid #d4af37;
+
+    border-radius:10px;
+
+    background:white;
+
+    color:#555;
+
+    font-weight:bold;
+
+    cursor:pointer;
+
+}
+@media(max-width:600px) {
+
+    .tri-commandes {
+
+        flex-direction:column;
+
+        align-items:stretch;
+
+    }
+
+    .tri-commandes select {
+
+        width:100% !important;
+
+    }
+
+}
