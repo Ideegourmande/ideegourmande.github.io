@@ -2554,3 +2554,29 @@ footer a:hover {
     border: none;
     border-top: 1px solid #eee;
 }
+/* ===================================================
+   ADMIN - STATUT COMMANDE
+   =================================================== */
+
+.commande-admin-statut {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin: 20px 0;
+    padding: 15px;
+    background: #faf7ee;
+    border-radius: 12px;
+}
+
+.commande-admin-statut strong {
+    color: var(--vert-fonce);
+    white-space: nowrap;
+}
+
+.commande-admin-statut select {
+    width: auto !important;
+    min-width: 190px;
+    margin-top: 0 !important;
+    font-weight: bold;
+    cursor: pointer;
+}
