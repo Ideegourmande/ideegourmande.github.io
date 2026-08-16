@@ -424,20 +424,7 @@ function genererPDFCommande(commande) {
         );
 
 
-        // Ligne de séparation
-        doc.setDrawColor(
-            210,
-            210,
-            210
-        );
-
-
-        doc.line(
-            20,
-            y + hauteur - 2,
-            190,
-            y + hauteur - 2
-        );
+// Pas de ligne entre les articles
 
 
         y += hauteur;
