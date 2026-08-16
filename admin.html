@@ -131,6 +131,43 @@ id="rechercheCommande"
 placeholder="Rechercher un client..."
 oninput="rechercherCommande()">
 
+
+<div class="tri-commandes">
+
+    <label for="triCommandes">
+        Trier par :
+    </label>
+
+    <select
+        id="triCommandes"
+        onchange="trierCommandes()"
+    >
+
+        <option value="anciennes">
+            🕐 Plus anciennes
+        </option>
+
+        <option value="recentes">
+            🆕 Plus récentes
+        </option>
+
+        <option value="attente">
+            🟠 Nouvelles / en préparation
+        </option>
+
+        <option value="pretes">
+            🔵 Prêtes
+        </option>
+
+        <option value="livrees">
+            ⚪ Livrées
+        </option>
+
+    </select>
+
+</div>
+
+
 <div id="listeCommandes">
 Chargement...
 </div>
