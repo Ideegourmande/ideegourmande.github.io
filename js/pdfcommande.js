@@ -505,65 +505,65 @@ function genererPDFCommande(commande) {
     y += 16;
 
 
-    // ==========================================
-    // COMMENTAIRE
-    // ==========================================
+// ==========================================
+// REMARQUE - COMMUNICATION
+// ==========================================
 
-    if (
-        commande.client?.commentaire &&
-        commande.client.commentaire.trim() !== ""
-    ) {
+if (
+    commande.client?.commentaire &&
+    commande.client.commentaire.trim() !== ""
+) {
 
-        if (y > 245) {
+    if (y > 245) {
 
-            ajouterPiedDePage(doc);
+        ajouterPiedDePage(doc);
 
-            doc.addPage();
+        doc.addPage();
 
-            y = 25;
-
-        }
-
-
-        doc.setFontSize(11);
-
-        doc.setFont(undefined, "bold");
-
-
-        doc.text(
-            "COMMENTAIRE",
-            margeGauche,
-            y
-        );
-
-
-        y += 7;
-
-
-        doc.setFont(undefined, "normal");
-
-        doc.setFontSize(10);
-
-
-        const commentaire =
-            doc.splitTextToSize(
-                commande.client.commentaire,
-                165
-            );
-
-
-        doc.text(
-            commentaire,
-            margeGauche,
-            y
-        );
-
-
-        y +=
-            commentaire.length * 5 +
-            5;
+        y = 25;
 
     }
+
+
+    doc.setFontSize(11);
+
+    doc.setFont(undefined, "bold");
+
+
+    doc.text(
+        "REMARQUE - COMMUNICATION",
+        margeGauche,
+        y
+    );
+
+
+    y += 7;
+
+
+    doc.setFont(undefined, "normal");
+
+    doc.setFontSize(10);
+
+
+    const remarque =
+        doc.splitTextToSize(
+            commande.client.commentaire,
+            165
+        );
+
+
+    doc.text(
+        remarque,
+        margeGauche,
+        y
+    );
+
+
+    y +=
+        remarque.length * 5 +
+        5;
+
+}
 
 
     // ==========================================
