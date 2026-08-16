@@ -1,183 +1,104 @@
 console.log("PDFCOMMANDE.JS CHARGE");
 
-
-// ==================================
+// ==========================================
 // IDÉE GOURMANDE
-// Génération PDF commande client
-// ==================================
+// Génération PDF professionnel
+// ==========================================
 
+function genererPDFCommande(commande) {
 
-function genererPDFCommande(commande){
+    // ==========================================
+    // VÉRIFICATION jsPDF
+    // ==========================================
 
+    if (!window.jspdf) {
 
-    if(!window.jspdf){
-
-        console.error(
-            "jsPDF non chargé"
-        );
+        console.error("jsPDF non chargé");
 
         return;
-
     }
 
+    const { jsPDF } = window.jspdf;
+
+    const doc = new jsPDF();
 
 
-    const { jsPDF } =
-    window.jspdf;
+    // ==========================================
+    // LOGO
+    // ==========================================
+
+    const logo = new Image();
+
+    logo.src = "images/logo.png";
 
 
+    // ==========================================
+    // VARIABLES
+    // ==========================================
 
-    const doc =
-    new jsPDF();
+    let y = 20;
 
-// ==============================
-// LOGO
-// ==============================
-
-const logo =
-new Image();
-
-logo.src =
-"images/logo.png";
-
-doc.addImage(
-    logo,
-    "PNG",
-    20,
-    10,
-    45,
-    25
-);
-
-    let y = 45;
+    const margeGauche = 20;
+    const largeurPage = 170;
 
 
-// ==============================
-// TITRE
-// ==============================
+    // ==========================================
+    // EN-TÊTE
+    // ==========================================
 
-doc.setFontSize(18);
-
-doc.text(
-    "IDÉE GOURMANDE",
-    20,
-    y
-);
-
-y += 10;
-
-
-doc.setFontSize(13);
-
-doc.text(
-    "Bon de commande",
-    20,
-    y
-);
-
-y += 15;
+    doc.addImage(
+        logo,
+        "PNG",
+        20,
+        10,
+        45,
+        25
+    );
 
 
+    doc.setFontSize(18);
+
+    doc.setFont(undefined, "bold");
+
+    doc.text(
+        "IDÉE GOURMANDE",
+        75,
+        18
+    );
 
 
-// ==============================
-// CLIENT
-// ==============================
+    doc.setFontSize(10);
 
+    doc.setFont(undefined, "normal");
 
-doc.setFontSize(13);
-
-doc.text(
-    "Informations client",
-    20,
-    y
-);
-
-
-y += 8;
-// CADRE INFORMATIONS CLIENT
-
-doc.rect(
-    15,
-    y - 5,
-    180,
-    45
-);
-
-// cadre client
-
-doc.rect(
-    20,
-    y,
-    170,
-    42
-);
-
-
-let clientY = y + 10;
-
-
-doc.setFontSize(11);
-
-
-doc.text(
-    "Nom : " +
-    commande.client.prenom +
-    " " +
-    commande.client.nom,
-    25,
-    clientY
-);
-
-
-clientY += 8;
-
-
-doc.text(
-    "Email : " +
-    commande.client.email,
-    25,
-    clientY
-);
-
-
-clientY += 8;
-
-
-doc.text(
-    "Téléphone : " +
-    commande.client.telephone,
-    25,
-    clientY
-);
-
-
-clientY += 8;
-
-
-doc.text(
-    "Adresse : " +
-    commande.client.adresse,
-    25,
-    clientY
-);
-
-
-y += 55;
-
-
-
-    // ==============================
-    // PRODUITS
-    // ==============================
-
-
-    doc.setFontSize(12);
+    doc.text(
+        "Genève",
+        75,
+        25
+    );
 
 
     doc.text(
-        "Produits commandés",
-        20,
+        "TWINT : 079 592 78 82",
+        75,
+        31
+    );
+
+
+    // ==========================================
+    // TITRE
+    // ==========================================
+
+    y = 50;
+
+
+    doc.setFontSize(18);
+
+    doc.setFont(undefined, "bold");
+
+    doc.text(
+        "BON DE COMMANDE",
+        margeGauche,
         y
     );
 
@@ -185,107 +106,50 @@ y += 55;
     y += 10;
 
 
-    doc.setFontSize(11);
+    // ==========================================
+    // NUMÉRO ET DATE
+    // ==========================================
+
+    const maintenant = new Date();
 
 
-
-    commande.produits.forEach(
-        article => {
-
-
-            let ligne =
-            article.nom
-            +
-            " - ";
+    const dateTexte =
+        maintenant.toLocaleDateString("fr-FR");
 
 
-            if(article.poids){
-
-                ligne +=
-                article.poids
-                +
-                " g - ";
-
+    const heureTexte =
+        maintenant.toLocaleTimeString(
+            "fr-FR",
+            {
+                hour: "2-digit",
+                minute: "2-digit"
             }
-            else {
-
-                ligne +=
-                "Qté "
-                +
-                article.quantite
-                +
-                " - ";
-
-            }
+        );
 
 
-
-            ligne +=
-            article.prix.toFixed(2)
-            +
-            " CHF";
-
-
-
-            doc.text(
-                ligne,
-                20,
-                y
-            );
+    const numeroCommande =
+        commande.id ||
+        (
+            "IG-" +
+            maintenant.getTime()
+        );
 
 
-            y += 7;
+    doc.setFontSize(10);
 
-
-            if(article.recette){
-
-
-                doc.text(
-                    "   Recette : "
-                    +
-                    article.recette,
-                    25,
-                    y
-                );
-
-
-                y += 7;
-
-
-            }
-
-
-
-        }
-
-    );
-
-
-
-
-
-
-    y += 10;
-
-
-
-
-    // ==============================
-    // TOTAL
-    // ==============================
-
-
-
-    doc.setFontSize(13);
+    doc.setFont(undefined, "normal");
 
 
     doc.text(
-        "TOTAL : "
-        +
-        commande.total.toFixed(2)
-        +
-        " CHF",
-        20,
+        "N° commande : " + numeroCommande,
+        margeGauche,
+        y
+    );
+
+
+    doc.text(
+        "Date : " + dateTexte + " à " + heureTexte,
+        120,
         y
     );
 
@@ -293,181 +157,572 @@ y += 55;
     y += 12;
 
 
+    // ==========================================
+    // CADRE CLIENT
+    // ==========================================
+
+    const hauteurClient = 48;
 
 
-    // ==============================
-    // PAIEMENT
-    // ==============================
+    doc.setDrawColor(100, 100, 100);
+
+    doc.rect(
+        margeGauche,
+        y,
+        largeurPage,
+        hauteurClient
+    );
 
 
-    doc.setFontSize(11);
+    doc.setFontSize(12);
+
+    doc.setFont(undefined, "bold");
+
+    doc.text(
+        "INFORMATIONS CLIENT",
+        margeGauche + 5,
+        y + 8
+    );
+
+
+    doc.setFontSize(10);
+
+    doc.setFont(undefined, "normal");
+
+
+    const nomClient =
+        (
+            commande.client?.prenom || ""
+        ) +
+        " " +
+        (
+            commande.client?.nom || ""
+        );
 
 
     doc.text(
-        "Paiement : TWINT confirmé",
-        20,
+        "Client : " + nomClient.trim(),
+        margeGauche + 5,
+        y + 17
+    );
+
+
+    doc.text(
+        "Email : " +
+        (commande.client?.email || ""),
+        margeGauche + 5,
+        y + 25
+    );
+
+
+    doc.text(
+        "Téléphone : " +
+        (commande.client?.telephone || ""),
+        margeGauche + 5,
+        y + 33
+    );
+
+
+    doc.text(
+        "Adresse : " +
+        (commande.client?.adresse || ""),
+        margeGauche + 5,
+        y + 41
+    );
+
+
+    y += hauteurClient + 12;
+
+
+    // ==========================================
+    // PRODUITS
+    // ==========================================
+
+    doc.setFontSize(13);
+
+    doc.setFont(undefined, "bold");
+
+    doc.text(
+        "PRODUITS COMMANDÉS",
+        margeGauche,
         y
     );
 
 
-    y += 15;
+    y += 8;
 
 
+    // ==========================================
+    // TABLEAU
+    // ==========================================
 
-    // ==============================
-    // COMMENTAIRE
-    // ==============================
-
-
-    if(
-        commande.client.commentaire
-        &&
-        commande.client.commentaire.trim() !== ""
-    ){
+    const xProduit = 20;
+    const xRecette = 85;
+    const xQuantite = 130;
+    const xPrix = 165;
 
 
-        doc.setFontSize(12);
+    doc.setFillColor(230, 230, 230);
+
+    doc.rect(
+        20,
+        y - 5,
+        170,
+        10,
+        "F"
+    );
+
+
+    doc.setFontSize(9);
+
+    doc.setFont(undefined, "bold");
+
+
+    doc.text(
+        "Produit",
+        xProduit + 3,
+        y + 1
+    );
+
+
+    doc.text(
+        "Recette",
+        xRecette,
+        y + 1
+    );
+
+
+    doc.text(
+        "Qté / poids",
+        xQuantite,
+        y + 1
+    );
+
+
+    doc.text(
+        "Prix",
+        xPrix,
+        y + 1
+    );
+
+
+    y += 10;
+
+
+    doc.setFont(undefined, "normal");
+
+    doc.setFontSize(9);
+
+
+    // ==========================================
+    // PRODUITS
+    // ==========================================
+
+    const produits =
+        Array.isArray(commande.produits)
+            ? commande.produits
+            : [];
+
+
+    produits.forEach(function(article) {
+
+        // Nouvelle page si nécessaire
+        if (y > 265) {
+
+            ajouterPiedDePage(doc);
+
+            doc.addPage();
+
+            y = 25;
+
+        }
+
+
+        // Produit
+        const nom =
+            article.nom || "Produit";
+
+
+        // Recette
+        const recette =
+            article.recette || "-";
+
+
+        // Quantité / poids
+        let quantite = "";
+
+
+        if (article.poids) {
+
+            quantite =
+                article.poids + " g";
+
+        }
+        else {
+
+            quantite =
+                "x " +
+                (
+                    article.quantite || 1
+                );
+
+        }
+
+
+        // Prix
+        const prix =
+            Number(article.prix) || 0;
+
+
+        // Lignes multi-lignes
+        const nomLignes =
+            doc.splitTextToSize(
+                nom,
+                60
+            );
+
+
+        const recetteLignes =
+            doc.splitTextToSize(
+                recette,
+                42
+            );
+
+
+        const hauteur =
+            Math.max(
+                nomLignes.length,
+                recetteLignes.length
+            ) * 5 + 5;
 
 
         doc.text(
-            "Commentaire",
-            20,
+            nomLignes,
+            xProduit + 3,
             y
         );
 
 
-        y += 8;
+        doc.text(
+            recetteLignes,
+            xRecette,
+            y
+        );
+
+
+        doc.text(
+            quantite,
+            xQuantite,
+            y
+        );
+
+
+        doc.text(
+            prix.toFixed(2) + " CHF",
+            xPrix,
+            y
+        );
+
+
+        // Ligne de séparation
+        doc.setDrawColor(
+            210,
+            210,
+            210
+        );
+
+
+        doc.line(
+            20,
+            y + hauteur - 2,
+            190,
+            y + hauteur - 2
+        );
+
+
+        y += hauteur;
+
+    });
+
+
+    // ==========================================
+    // TOTAL
+    // ==========================================
+
+    y += 5;
+
+
+    doc.setDrawColor(80, 80, 80);
+
+
+    doc.line(
+        110,
+        y,
+        190,
+        y
+    );
+
+
+    y += 8;
+
+
+    doc.setFontSize(14);
+
+    doc.setFont(undefined, "bold");
+
+
+    const total =
+        Number(commande.total) || 0;
+
+
+    doc.text(
+        "TOTAL",
+        125,
+        y
+    );
+
+
+    doc.text(
+        total.toFixed(2) + " CHF",
+        165,
+        y
+    );
+
+
+    y += 12;
+
+
+    // ==========================================
+    // PAIEMENT
+    // ==========================================
+
+    doc.setFontSize(10);
+
+    doc.setFont(undefined, "normal");
+
+
+    doc.text(
+        "Paiement : TWINT",
+        margeGauche,
+        y
+    );
+
+
+    doc.text(
+        "079 592 78 82",
+        margeGauche,
+        y + 6
+    );
+
+
+    y += 16;
+
+
+    // ==========================================
+    // COMMENTAIRE
+    // ==========================================
+
+    if (
+        commande.client?.commentaire &&
+        commande.client.commentaire.trim() !== ""
+    ) {
+
+        if (y > 245) {
+
+            ajouterPiedDePage(doc);
+
+            doc.addPage();
+
+            y = 25;
+
+        }
 
 
         doc.setFontSize(11);
 
-
-        const texte =
-        doc.splitTextToSize(
-            commande.client.commentaire,
-            170
-        );
+        doc.setFont(undefined, "bold");
 
 
         doc.text(
-            texte,
-            20,
+            "COMMENTAIRE",
+            margeGauche,
             y
         );
 
 
+        y += 7;
+
+
+        doc.setFont(undefined, "normal");
+
+        doc.setFontSize(10);
+
+
+        const commentaire =
+            doc.splitTextToSize(
+                commande.client.commentaire,
+                165
+            );
+
+
+        doc.text(
+            commentaire,
+            margeGauche,
+            y
+        );
+
+
+        y +=
+            commentaire.length * 5 +
+            5;
+
     }
 
 
+    // ==========================================
+    // PIED DE PAGE
+    // ==========================================
 
-    // ==============================
-    // SAUVEGARDE
-    // ==============================
-
-
-    // ==============================
-// NOM DU FICHIER PDF
-// ==============================
-
-console.log(
-    "CLIENT PDF :",
-    commande.client
-);
-    
-const nomClient =
-
-(
-    commande.client.nom
-    ||
-    "Client"
-)
-
-.toUpperCase()
-.replace(
-    /[^A-Z0-9]/g,
-    ""
-);
+    ajouterPiedDePage(doc);
 
 
+    // ==========================================
+    // NOM DU FICHIER
+    // ==========================================
 
-const prenomClient =
-
-(
-    commande.client.prenom
-    ||
-    ""
-)
-
-.trim()
-.toUpperCase()
-.replace(
-    /[^A-Z0-9]/g,
-    ""
-);
-
-
-
-const maintenant =
-new Date();
-
-
-
-const datePDF =
-
-maintenant.getFullYear()
-+
-String(
-    maintenant.getMonth() + 1
-)
-.padStart(2,"0")
-+
-String(
-    maintenant.getDate()
-)
-.padStart(2,"0")
-+
-"_"
-+
-String(
-    maintenant.getHours()
-)
-.padStart(2,"0")
-+
-String(
-    maintenant.getMinutes()
-)
-.padStart(2,"0");
-
-
-
-const fichier =
-
-"Commande_"
-+
-nomClient
-+
-"_"
-+
-prenomClient
-+
-"_"
-+
-datePDF
-+
-".pdf";
-
-
-
-    doc.save(
-        fichier
+    console.log(
+        "CLIENT PDF :",
+        commande.client
     );
 
+
+    const nomClientFichier =
+        (
+            commande.client?.nom ||
+            "Client"
+        )
+        .toUpperCase()
+        .replace(
+            /[^A-Z0-9]/g,
+            ""
+        );
+
+
+    const prenomClientFichier =
+        (
+            commande.client?.prenom ||
+            ""
+        )
+        .trim()
+        .toUpperCase()
+        .replace(
+            /[^A-Z0-9]/g,
+            ""
+        );
+
+
+    const datePDF =
+        maintenant.getFullYear() +
+        String(
+            maintenant.getMonth() + 1
+        ).padStart(2, "0") +
+        String(
+            maintenant.getDate()
+        ).padStart(2, "0") +
+        "_" +
+        String(
+            maintenant.getHours()
+        ).padStart(2, "0") +
+        String(
+            maintenant.getMinutes()
+        ).padStart(2, "0");
+
+
+    const fichier =
+        "Commande_" +
+        nomClientFichier +
+        "_" +
+        prenomClientFichier +
+        "_" +
+        datePDF +
+        ".pdf";
+
+
+    // ==========================================
+    // SAUVEGARDE
+    // ==========================================
+
+    doc.save(fichier);
 
 
     console.log(
         "PDF généré :",
         fichier
     );
+}
 
 
+// ==========================================
+// PIED DE PAGE
+// ==========================================
+
+function ajouterPiedDePage(doc) {
+
+    const nombrePages =
+        doc.internal.getNumberOfPages();
+
+
+    for (
+        let page = 1;
+        page <= nombrePages;
+        page++
+    ) {
+
+        doc.setPage(page);
+
+
+        doc.setFontSize(8);
+
+        doc.setFont(undefined, "normal");
+
+
+        doc.setDrawColor(
+            180,
+            180,
+            180
+        );
+
+
+        doc.line(
+            20,
+            285,
+            190,
+            285
+        );
+
+
+        doc.text(
+            "Idée Gourmande - Genève",
+            20,
+            291
+        );
+
+
+        doc.text(
+            "TWINT : 079 592 78 82",
+            85,
+            291
+        );
+
+
+        doc.text(
+            "Page " +
+            page +
+            " / " +
+            nombrePages,
+            160,
+            291
+        );
+
+    }
 }
