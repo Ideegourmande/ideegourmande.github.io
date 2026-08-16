@@ -400,30 +400,28 @@ afficherStatistiques();
 
 function supprimerCommande(index){
 
+    if(!confirm(
+        "Supprimer cette commande ?"
+    )){
 
-if(!confirm(
-"Supprimer cette commande ?"
-)){
+        return;
 
-return;
+    }
 
-}
+    let commandes =
+    obtenirCommandes();
 
+    commandes.splice(index,1);
 
-let commandes =
-obtenirCommandes();
+    sauvegarderDB();
 
+    afficherCommandes();
 
-commandes.splice(index,1);
+    afficherStatistiques();
 
+    afficherAlertes();
 
-sauvegarderDB();
-
-
-afficherCommandes();
-
-afficherStatistiques();
-
+    afficherDernieresCommandes();
 
 }
 
