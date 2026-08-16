@@ -82,66 +82,145 @@ let html = "";
 commandes.forEach(function(cmd,index){
 
 
+// ==================================
+// COULEUR DU STATUT
+// ==================================
+
+let classeStatut =
+"statut-nouvelle";
+
+
+if(cmd.statut === "En préparation"){
+
+classeStatut =
+"statut-preparation";
+
+}
+
+
+if(cmd.statut === "Prête"){
+
+classeStatut =
+"statut-prete";
+
+}
+
+
+if(cmd.statut === "Livrée"){
+
+classeStatut =
+"statut-livree";
+
+}
+
+
+
+// ==================================
+// AFFICHAGE COMMANDE
+// ==================================
+
 html += `
 
 <div class="commande-admin">
 
 
+<div class="commande-admin-entete">
+
+<div>
+
 <h3>
-📦 Commande ${cmd.id}
+📦 Commande ${cmd.id || "-"}
 </h3>
 
-
-<p>
-<strong>Date :</strong><br>
+<span class="commande-date">
 ${cmd.date || "-"}
-</p>
+</span>
 
+</div>
+
+
+<div class="commande-total">
+
+${Number(cmd.total || 0).toFixed(2)} CHF
+
+</div>
+
+</div>
+
+
+
+<div class="commande-admin-infos">
+
+
+<div>
+
+<strong>👤 Client</strong>
 
 <p>
-<strong>Client :</strong><br>
 ${cmd.client || "-"}
 </p>
 
+</div>
+
+
+<div>
+
+<strong>📞 Téléphone</strong>
 
 <p>
-<strong>Téléphone :</strong><br>
 ${cmd.telephone || "-"}
 </p>
 
+</div>
+
+
+<div>
+
+<strong>✉️ Email</strong>
 
 <p>
-<strong>Email :</strong><br>
 ${cmd.email || "-"}
 </p>
 
+</div>
+
+
+<div>
+
+<strong>📍 Adresse</strong>
 
 <p>
-<strong>Adresse :</strong><br>
 ${cmd.adresse || "-"}
 </p>
 
+</div>
+
+</div>
+
+
+
+<div class="commande-admin-produits">
+
+<strong>🛒 Commande</strong>
 
 <p>
-<strong>Commande :</strong><br>
 ${(cmd.produits || "")
 .replace(/\n/g,"<br>")}
 </p>
 
-
-<p>
-<strong>Total :</strong>
-${cmd.total || 0} CHF
-</p>
+</div>
 
 
 
-<p>
+<div class="commande-admin-statut">
 
 <strong>Statut :</strong>
 
 
-<select onchange="changerStatut(${index},this.value)">
+<select
+class="${classeStatut}"
+onchange="changerStatut(${index},this.value)"
+>
 
 
 <option value="Nouvelle"
@@ -170,28 +249,29 @@ Livrée
 
 </select>
 
-</p>
+</div>
 
+
+
+<div class="commande-admin-actions">
 
 
 <button
 class="btn"
 onclick="imprimerCommande(${index})">
 
-🖨 Imprimer PDF
+🖨 PDF
 
 </button>
-
 
 
 <button
 class="btn"
 onclick="renvoyerEmail(${index})">
 
-📧 Renvoyer email
+📧 Email
 
 </button>
-
 
 
 ${cmd.statut==="Livrée" ? `
@@ -207,7 +287,6 @@ onclick="archiverCommande(${index})">
 ` : ""}
 
 
-
 <button
 class="btn"
 onclick="supprimerCommande(${index})">
@@ -217,7 +296,7 @@ onclick="supprimerCommande(${index})">
 </button>
 
 
-<hr>
+</div>
 
 
 </div>
@@ -228,7 +307,6 @@ onclick="supprimerCommande(${index})">
 
 
 zone.innerHTML = html;
-
 
 }
 
