@@ -2580,3 +2580,49 @@ footer a:hover {
     font-weight: bold;
     cursor: pointer;
 }
+/* ===================================================
+   ADMIN - STATUTS COLORES
+   =================================================== */
+
+.commande-admin-statut select {
+    width: auto !important;
+    min-width: 190px;
+    margin-top: 0 !important;
+    padding: 10px 15px;
+    border: 2px solid;
+    border-radius: 10px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+/* Nouvelle */
+
+.commande-admin-statut select.statut-nouvelle {
+    background: #e9f3e5;
+    color: #48613f;
+    border-color: #9bbb8f;
+}
+
+/* En préparation */
+
+.commande-admin-statut select.statut-preparation {
+    background: #fff3d6;
+    color: #9a6700;
+    border-color: #e0b85c;
+}
+
+/* Prête */
+
+.commande-admin-statut select.statut-prete {
+    background: #e5eef9;
+    color: #456b95;
+    border-color: #8eafd0;
+}
+
+/* Livrée */
+
+.commande-admin-statut select.statut-livree {
+    background: #eeeeee;
+    color: #555555;
+    border-color: #bbbbbb;
+}
