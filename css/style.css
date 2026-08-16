@@ -2506,3 +2506,51 @@ footer a:hover {
     min-width: 150px;
 
 }
+/* ===================================================
+   ADMIN - CARTES COMMANDES AMELIOREES
+   =================================================== */
+
+.commande-admin {
+    background: white;
+    padding: 30px;
+    margin: 25px auto;
+    max-width: 1000px;
+    border-radius: var(--rayon);
+    box-shadow: var(--ombre);
+    border-left: 5px solid var(--vert);
+}
+
+.commande-admin h3 {
+    color: var(--vert);
+    font-size: 1.35rem;
+    margin-bottom: 25px;
+    padding-bottom: 15px;
+    border-bottom: 1px solid #eee;
+}
+
+.commande-admin p {
+    margin-bottom: 15px;
+}
+
+.commande-admin strong {
+    color: var(--vert-fonce);
+}
+
+.commande-admin select {
+    max-width: 250px;
+    margin-top: 5px;
+}
+
+/* Séparation des actions */
+
+.commande-admin .btn {
+    margin: 5px 8px 5px 0;
+}
+
+/* Séparation finale */
+
+.commande-admin hr {
+    margin-top: 25px;
+    border: none;
+    border-top: 1px solid #eee;
+}
