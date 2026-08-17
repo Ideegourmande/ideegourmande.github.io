@@ -934,6 +934,36 @@ zone.innerHTML = html;
 
 }
 // ==================================
+// ALLER AUX COMMANDES À PRÉPARER
+// ==================================
+
+function allerAuxCommandesApreparer(){
+
+    const select =
+    document.getElementById("triCommandes");
+
+    if(select){
+
+        select.value = "attente";
+
+        trierCommandes();
+
+    }
+
+    const zone =
+    document.getElementById("listeCommandes");
+
+    if(zone){
+
+        zone.scrollIntoView({
+            behavior:"smooth",
+            block:"start"
+        });
+
+    }
+
+}
+// ==================================
 // DERNIERES COMMANDES
 // ==================================
 
