@@ -847,9 +847,12 @@ cmd.statut === "En préparation";
 if(commandesAttente > 0){
 
 html +=
-"<p>🟠 " +
-commandesAttente +
-" commande(s) à préparer</p>";
+`<p
+    class="alerte-cliquable"
+    onclick="allerAuxCommandesApreparer()"
+>
+    🟠 ${commandesAttente} commande(s) à préparer
+</p>`;
 
 }
 
