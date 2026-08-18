@@ -1749,3 +1749,297 @@ window.addEventListener(
 
     }
 );
+// ======================================
+// SAUVEGARDE DE LA BASE DANS UN FICHIER
+// ======================================
+
+function sauvegarderBaseFichier(){
+
+    try{
+
+        // On récupère toujours la base actuelle
+        const base =
+            obtenirDB();
+
+        // Conversion en JSON lisible
+        const contenu =
+            JSON.stringify(
+                base,
+                null,
+                4
+            );
+
+        // Création du fichier
+        const blob =
+            new Blob(
+                [contenu],
+                {
+                    type:
+                        "application/json"
+                }
+            );
+
+        // Création du lien temporaire
+        const url =
+            URL.createObjectURL(
+                blob
+            );
+
+        const lien =
+            document.createElement("a");
+
+        lien.href = url;
+
+        // Nom du fichier
+        const date =
+            new Date()
+            .toISOString()
+            .replace(
+                /[:.]/g,
+                "-"
+            );
+
+        lien.download =
+            "idee-gourmande-sauvegarde-" +
+            date +
+            ".json";
+
+        // Téléchargement
+        document.body.appendChild(
+            lien
+        );
+
+        lien.click();
+
+        // Nettoyage
+        lien.remove();
+
+        URL.revokeObjectURL(
+            url
+        );
+
+        alert(
+            "✅ Sauvegarde effectuée avec succès."
+        );
+
+        console.log(
+            "💾 SAUVEGARDE EFFECTUÉE",
+            base
+        );
+
+    }
+    catch(erreur){
+
+        console.error(
+            "❌ ERREUR SAUVEGARDE :",
+            erreur
+        );
+
+        alert(
+            "❌ Impossible de créer la sauvegarde."
+        );
+
+    }
+
+}
+
+
+
+// ======================================
+// RESTAURATION DE LA BASE
+// ======================================
+
+function restaurerBaseFichier(
+    evenement
+){
+
+    const fichier =
+        evenement.target.files[0];
+
+
+    if(!fichier){
+
+        return;
+
+    }
+
+
+    // Confirmation avant remplacement
+    const confirmation =
+        confirm(
+
+            "⚠️ ATTENTION\n\n" +
+
+            "La restauration va remplacer " +
+            "la base actuellement utilisée.\n\n" +
+
+            "Voulez-vous continuer ?"
+
+        );
+
+
+    if(!confirmation){
+
+        evenement.target.value = "";
+
+        return;
+
+    }
+
+
+    const lecteur =
+        new FileReader();
+
+
+    lecteur.onload =
+        function(){
+
+            try{
+
+                const baseRestauree =
+                    JSON.parse(
+                        lecteur.result
+                    );
+
+
+                // ==================================
+                // VERIFICATION MINIMALE
+                // ==================================
+
+                if(
+                    !baseRestauree
+                    ||
+                    typeof baseRestauree !== "object"
+                ){
+
+                    throw new Error(
+                        "Fichier de sauvegarde invalide."
+                    );
+
+                }
+
+
+                if(
+                    !Array.isArray(
+                        baseRestauree.commandes
+                    )
+                    ||
+                    !Array.isArray(
+                        baseRestauree.articles
+                    )
+                    ||
+                    !Array.isArray(
+                        baseRestauree.achats
+                    )
+                ){
+
+                    throw new Error(
+                        "Structure de base invalide."
+                    );
+
+                }
+
+
+                // ==================================
+                // SAUVEGARDE D'UNE COPIE DE SÉCURITÉ
+                // ==================================
+
+                const ancienneBase =
+                    localStorage.getItem(
+                        "ideeGourmandeDB"
+                    );
+
+
+                if(ancienneBase){
+
+                    localStorage.setItem(
+                        "ideeGourmandeDB_avant_restauration",
+                        ancienneBase
+                    );
+
+                }
+
+
+                // ==================================
+                // INSTALLATION NOUVELLE BASE
+                // ==================================
+
+                localStorage.setItem(
+
+                    "ideeGourmandeDB",
+
+                    JSON.stringify(
+                        baseRestauree
+                    )
+
+                );
+
+
+                console.log(
+                    "📥 BASE RESTAURÉE :",
+                    baseRestauree
+                );
+
+
+                alert(
+
+                    "✅ Restauration terminée.\n\n" +
+
+                    "La page va être rechargée."
+
+                );
+
+
+                // Rechargement complet
+                window.location.reload();
+
+            }
+            catch(erreur){
+
+                console.error(
+                    "❌ ERREUR RESTAURATION :",
+                    erreur
+                );
+
+
+                alert(
+
+                    "❌ Impossible de restaurer cette sauvegarde.\n\n" +
+
+                    erreur.message
+
+                );
+
+            }
+
+        };
+
+
+    lecteur.onerror =
+        function(){
+
+            alert(
+                "❌ Impossible de lire le fichier."
+            );
+
+        };
+
+
+    lecteur.readAsText(
+        fichier
+    );
+
+}
+
+
+
+// ======================================
+// EXPORTS
+// ======================================
+
+window.sauvegarderBaseFichier =
+    sauvegarderBaseFichier;
+
+
+window.restaurerBaseFichier =
+    restaurerBaseFichier;
