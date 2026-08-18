@@ -2375,3 +2375,8 @@ window.restaurerBaseFichier =
 
 window.reinitialiserCommandesEtAchats =
     reinitialiserCommandesEtAchats;
+
+console.log(
+    "TEST REMISE A ZERO :",
+    typeof reinitialiserCommandesEtAchats
+);
