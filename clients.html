@@ -8,7 +8,10 @@
 
 <title>Clients - Idée Gourmande</title>
 
-<link rel="stylesheet" href="css/style.css">
+<link
+    rel="stylesheet"
+    href="css/style.css"
+>
 
 </head>
 
@@ -18,121 +21,185 @@
 
 <script>
 
-if(localStorage.getItem("adminConnecte") !== "oui"){
-    window.location.href="admin-login.html";
+/* ==================================
+   PROTECTION ADMINISTRATION
+================================== */
+
+if(
+    localStorage.getItem("adminConnecte") !== "oui"
+){
+
+    window.location.href =
+        "admin-login.html";
+
 }
 
 </script>
 
 
 
+<!-- ==================================
+     EN-TÊTE
+================================== -->
+
 <header>
 
-<div class="top-banner">
-👥 Gestion des clients - Idée Gourmande
-</div>
+    <div class="top-banner">
+
+        👥 Gestion des clients - Idée Gourmande
+
+    </div>
 
 </header>
 
 
 
+<!-- ==================================
+     NAVIGATION
+================================== -->
+
 <section class="presentation">
 
+    <h1>
 
-<h1>
-Gestion des clients
-</h1>
+        Gestion des clients
+
+    </h1>
 
 
-<a href="admin.html" class="btn">
-⬅ Retour administration
-</a>
+    <a
+        href="admin.html"
+        class="btn"
+    >
 
+        ⬅ Retour administration
+
+    </a>
 
 </section>
 
 
 
+<!-- ==================================
+     LISTE CLIENTS
+================================== -->
 
 <section class="panier-section">
 
-
-<div class="panier-card">
-
-
-<h2>
-👥 Liste des clients
-</h2>
+    <div class="panier-card">
 
 
-<input
-type="search"
-id="rechercheClient"
-placeholder="Rechercher un client..."
-oninput="rechercherClient()">
+        <h2>
+
+            👥 Liste des clients
+
+        </h2>
 
 
+        <input
+            type="search"
+            id="rechercheClient"
+            placeholder="Rechercher un client..."
+            oninput="rechercherClient()"
+            autocomplete="off"
+        >
 
-<div id="listeClients">
 
-Chargement...
+        <div id="listeClients">
 
-</div>
+            Chargement...
+
+        </div>
 
 
-
-</div>
-
+    </div>
 
 </section>
 
 
 
-
+<!-- ==================================
+     PIED DE PAGE
+================================== -->
 
 <footer>
 
-<p>
-© Idée Gourmande - Genève
-</p>
+    <p>
+
+        © Idée Gourmande - Genève
+
+    </p>
 
 
-<p>
-Version 2.4.0
-</p>
+    <p>
 
+        Version 2.8.0
+
+    </p>
 
 </footer>
 
 
 
+<!-- ==================================
+     BASE DE DONNÉES
+================================== -->
+
 <script src="js/database.js"></script>
 
+
+<!-- ==================================
+     GESTION CLIENTS
+================================== -->
+
 <script src="js/clients.js"></script>
+
+
 
 <!-- ==================================
      HISTORIQUE CLIENT
 ================================== -->
 
-<div id="fenetreHistorique" class="modal-admin" style="display:none;">
+<div
+    id="fenetreHistorique"
+    class="modal-admin"
+    style="display:none;"
+>
 
     <div class="modal-admin-contenu">
 
-        <h2>📂 Historique client</h2>
 
-        <div id="contenuHistorique"></div>
+        <h2>
+
+            📂 Historique client
+
+        </h2>
+
+
+        <div id="contenuHistorique">
+
+        </div>
+
 
         <br>
 
+
         <button
-        class="btn"
-        onclick="fermerHistorique()">
-        Fermer
+            type="button"
+            class="btn"
+            onclick="fermerHistorique()"
+        >
+
+            Fermer
+
         </button>
+
 
     </div>
 
 </div>
+
+
 </body>
 
 </html>
