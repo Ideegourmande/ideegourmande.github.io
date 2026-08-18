@@ -1,103 +1,104 @@
 console.log("COMMANDE.JS CHARGE");
 
 
-/* ===================================================
-   IDÉE GOURMANDE
-   commande.js
-   Gestion complète du panier
-   =================================================== */
+// ======================================
+// IDEE GOURMANDE
+// commande.js
+// Gestion complète du panier
+// Version 2.1.0
+// ======================================
 
 
-/* ===================================================
-   PANIER GLOBAL
-   =================================================== */
-
+// ======================================
+// PANIER GLOBAL
+// ======================================
 
 let panierCommande = [];
 
-window.panierCommande = panierCommande;
+window.panierCommande =
+    panierCommande;
 
 
-
-/* ===================================================
-   BASE PRODUITS
-   =================================================== */
-
+// ======================================
+// BASE PRODUITS
+// ======================================
 
 const produits = {
 
-
     "foie-gras": {
 
-        nom: "Foie gras de canard au torchon",
+        nom:
+            "Foie gras de canard au torchon",
 
-        prix: 35
+        prix:
+            35
 
     },
 
 
     "magret": {
 
-        nom: "Magret de canard fumé et séché",
+        nom:
+            "Magret de canard fumé et séché",
 
-        prix: 25
+        prix:
+            25
 
     },
 
 
     "viande-sechee": {
 
-        nom: "Viande séchée artisanale",
+        nom:
+            "Viande séchée artisanale",
 
-        prix: 45
+        prix:
+            45
 
     },
 
 
     "lard-sec": {
 
-        nom: "Lard sec légèrement fumé",
+        nom:
+            "Lard sec légèrement fumé",
 
-        prix: 20
+        prix:
+            20
 
     },
 
 
     "saumon-fume": {
 
-        nom: "Cœur de saumon fumé",
+        nom:
+            "Cœur de saumon fumé",
 
-        prix: 8
+        prix:
+            8
 
     }
-
 
 };
 
 
-
-
-/* ===================================================
-   INITIALISATION PAGE
-   =================================================== */
-
+// ======================================
+// INITIALISATION PAGE
+// ======================================
 
 document.addEventListener(
     "DOMContentLoaded",
     () => {
 
-
         initialiserBoutonsPanier();
-
 
         afficherPanier();
 
 
-
         const boutonVider =
-        document.getElementById(
-            "btnViderPanier"
-        );
+            document.getElementById(
+                "btnViderPanier"
+            );
 
 
         if(boutonVider){
@@ -110,11 +111,10 @@ document.addEventListener(
         }
 
 
-
         const formulaire =
-        document.getElementById(
-            "formCommande"
-        );
+            document.getElementById(
+                "formCommande"
+            );
 
 
         if(formulaire){
@@ -127,35 +127,29 @@ document.addEventListener(
         }
 
 
-
         if(
-            typeof initialiserNomTwint === "function"
+            typeof initialiserNomTwint ===
+            "function"
         ){
 
             initialiserNomTwint();
 
         }
 
-
     }
-
 );
 
 
-
-
-/* ===================================================
-   BOUTONS AJOUT PANIER
-   =================================================== */
-
+// ======================================
+// BOUTONS AJOUT PANIER
+// ======================================
 
 function initialiserBoutonsPanier(){
 
-
     const boutons =
-    document.querySelectorAll(
-        ".ajouter-panier"
-    );
+        document.querySelectorAll(
+            ".ajouter-panier"
+        );
 
 
     console.log(
@@ -164,49 +158,36 @@ function initialiserBoutonsPanier(){
     );
 
 
-
     boutons.forEach(
         bouton => {
-
 
             bouton.addEventListener(
                 "click",
                 () => {
 
-
                     ajouterAuPanier(
                         bouton.dataset.produit
                     );
 
-
                 }
-
             );
 
-
         }
-
     );
-
-   
-
 
 }
 
 
+// ======================================
+// AJOUT ARTICLE
+// ======================================
 
-
-
-/* ===================================================
-   AJOUT ARTICLE
-   =================================================== */
-
-
-function ajouterAuPanier(reference){
-
+function ajouterAuPanier(
+    reference
+){
 
     const produit =
-    produits[reference];
+        produits[reference];
 
 
     if(!produit){
@@ -221,87 +202,85 @@ function ajouterAuPanier(reference){
     }
 
 
-
     const carte =
-    document.querySelector(
-        `.commande-card[data-produit="${reference}"]`
-    );
-
+        document.querySelector(
+            `.commande-card[data-produit="${reference}"]`
+        );
 
 
     const article = {
 
         reference,
 
-        nom: produit.nom,
+        nom:
+            produit.nom,
 
         recette:
-        getRecette(carte),
+            getRecette(carte),
 
-        quantite:1,
+        quantite:
+            1,
 
-        poids:null,
+        poids:
+            null,
 
-        prix:0
+        prix:
+            0
 
     };
 
 
-
     switch(reference){
-
 
         case "foie-gras":
 
             article.quantite =
-            lireQuantite(
-                "foieQuantite"
-            );
+                lireQuantite(
+                    "foieQuantite"
+                );
 
-        break;
-
+            break;
 
 
         case "magret":
 
             article.quantite =
-            lireQuantite(
-                "magretQuantite"
-            );
+                lireQuantite(
+                    "magretQuantite"
+                );
 
-        break;
-
+            break;
 
 
         case "viande-sechee":
 
             article.quantite =
-            lireQuantite(
-                "viandeQuantite"
-            );
+                lireQuantite(
+                    "viandeQuantite"
+                );
 
-        break;
-
+            break;
 
 
         case "lard-sec":
 
             article.quantite =
-            lireQuantite(
-                "lardQuantite"
-            );
+                lireQuantite(
+                    "lardQuantite"
+                );
 
-        break;
-
+            break;
 
 
         case "saumon-fume":
 
             article.poids =
-            lirePoidsSaumon();
+                lirePoidsSaumon();
 
 
-            if(article.poids < 100){
+            if(
+                article.poids < 100
+            ){
 
                 alert(
                     "Veuillez choisir un poids pour le saumon."
@@ -311,15 +290,16 @@ function ajouterAuPanier(reference){
 
             }
 
-        break;
-
+            break;
 
     }
 
 
-
     if(
-        article.quantite <=0
+        reference !==
+        "saumon-fume"
+        &&
+        article.quantite <= 0
     ){
 
         alert(
@@ -331,12 +311,10 @@ function ajouterAuPanier(reference){
     }
 
 
-
     article.prix =
-    calculerPrixArticle(
-        article
-    );
-
+        calculerPrixArticle(
+            article
+        );
 
 
     ajouterOuFusionner(
@@ -344,140 +322,173 @@ function ajouterAuPanier(reference){
     );
 
 
-
     window.panierCommande =
-    panierCommande;
-
+        panierCommande;
 
 
     afficherPanier();
 
-
 }
 
 
+// ======================================
+// FUSION ARTICLES IDENTIQUES
+// ======================================
 
-
-
-
-/* ===================================================
-   FUSION ARTICLES IDENTIQUES
-   =================================================== */
-
-
-function ajouterOuFusionner(article){
-
+function ajouterOuFusionner(
+    article
+){
 
     const existant =
-    panierCommande.find(
-        a =>
+        panierCommande.find(
+            a =>
 
-        a.reference === article.reference
+                a.reference ===
+                article.reference
 
-        &&
+                &&
 
-        (a.recette || "")
-        ===
-        (article.recette || "")
+                (
+                    a.recette || ""
+                )
+                ===
+                (
+                    article.recette || ""
+                )
 
-        &&
+                &&
 
-        Number(a.poids || 0)
-        ===
-        Number(article.poids || 0)
-
-    );
-
+                Number(
+                    a.poids || 0
+                )
+                ===
+                Number(
+                    article.poids || 0
+                )
+        );
 
 
     if(existant){
 
+        if(
+            article.reference ===
+            "saumon-fume"
+        ){
 
-        existant.quantite +=
-        article.quantite;
+            // Pour le saumon, chaque ajout
+            // correspond au poids sélectionné.
+
+            existant.poids =
+                (
+                    Number(
+                        existant.poids
+                    ) || 0
+                )
+                +
+                (
+                    Number(
+                        article.poids
+                    ) || 0
+                );
+
+        }
+        else{
+
+            existant.quantite +=
+                article.quantite;
+
+        }
 
 
         existant.prix =
-        calculerPrixArticle(
-            existant
-        );
-
+            calculerPrixArticle(
+                existant
+            );
 
     }
     else{
 
-    panierCommande.push(
-        article
-    );
+        panierCommande.push(
+            article
+        );
+
+    }
 
 }
 
-} // <-- à ajouter ici
 
-/* ===================================================
-   CALCUL PRIX ARTICLE
-   =================================================== */
-/* ===================================================
-   CALCUL PRIX ARTICLE
-   =================================================== */
+// ======================================
+// CALCUL PRIX ARTICLE
+// ======================================
 
-
-function calculerPrixArticle(article){
-
+function calculerPrixArticle(
+    article
+){
 
     const produit =
-    produits[article.reference];
+        produits[
+            article.reference
+        ];
 
 
     if(!produit){
 
         return 0;
 
-   }
+    }
 
+
+    // Saumon : prix pour 100 g
 
     if(
-        article.reference === "saumon-fume"
+        article.reference ===
+        "saumon-fume"
     ){
 
         return Number(
+
             (
                 produit.prix
                 *
-                article.poids
+                Number(
+                    article.poids
+                )
                 /
                 100
             )
             .toFixed(2)
+
         );
 
     }
 
 
+    // Autres produits :
+    // prix par unité
 
     return Number(
+
         (
             produit.prix
             *
-            article.quantite
+            Number(
+                article.quantite
+            )
         )
         .toFixed(2)
-    );
 
+    );
 
 }
 
 
+// ======================================
+// RECETTE
+// ======================================
 
-
-
-/* ===================================================
-   RECETTE
-   =================================================== */
-
-
-function getRecette(carte){
-
+function getRecette(
+    carte
+){
 
     if(!carte){
 
@@ -486,39 +497,33 @@ function getRecette(carte){
     }
 
 
-
     const choix =
-    carte.querySelector(
-        ".choix-recette input:checked"
-    );
-
+        carte.querySelector(
+            ".choix-recette input:checked"
+        );
 
 
     return choix
-    ?
-    choix.value
-    :
-    "";
+        ?
+        choix.value
+        :
+        "";
 
 }
 
 
+// ======================================
+// LECTURE QUANTITE
+// ======================================
 
-
-
-
-/* ===================================================
-   LECTURE QUANTITES
-   =================================================== */
-
-
-function lireQuantite(id){
-
+function lireQuantite(
+    id
+){
 
     const champ =
-    document.getElementById(
-        id
-    );
+        document.getElementById(
+            id
+        );
 
 
     if(!champ){
@@ -528,32 +533,23 @@ function lireQuantite(id){
     }
 
 
-
     return Number(
         champ.value
-    );
-
+    ) || 0;
 
 }
 
 
-
-
-
-
-
-/* ===================================================
-   LECTURE POIDS SAUMON
-   =================================================== */
-
+// ======================================
+// LECTURE POIDS SAUMON
+// ======================================
 
 function lirePoidsSaumon(){
 
-
     const champ =
-    document.getElementById(
-        "saumonPoids"
-    );
+        document.getElementById(
+            "saumonPoids"
+        );
 
 
     if(!champ){
@@ -563,40 +559,29 @@ function lirePoidsSaumon(){
     }
 
 
-
     return Number(
         champ.value
-    );
-
+    ) || 0;
 
 }
 
 
-
-
-
-
-
-/* ===================================================
-   AFFICHAGE PANIER
-   =================================================== */
-
+// ======================================
+// AFFICHAGE PANIER
+// ======================================
 
 function afficherPanier(){
 
-
-
     const zone =
-    document.getElementById(
-        "recapCommande"
-    );
+        document.getElementById(
+            "recapCommande"
+        );
 
 
     const totalZone =
-    document.getElementById(
-        "total"
-    );
-
+        document.getElementById(
+            "total"
+        );
 
 
     if(
@@ -610,34 +595,26 @@ function afficherPanier(){
     }
 
 
-
-
-
     if(
         panierCommande.length === 0
     ){
 
-
         zone.innerHTML =
-        "<p>Aucun produit sélectionné.</p>";
-
+            "<p>Aucun produit sélectionné.</p>";
 
 
         totalZone.textContent =
-        "0.00 CHF";
+            "0.00 CHF";
 
 
-
-        mettreAJourTitrePanier(0);
+        mettreAJourTitrePanier(
+            0
+        );
 
 
         return;
 
     }
-
-
-
-
 
 
     let html = "";
@@ -647,15 +624,13 @@ function afficherPanier(){
     let compteur = 0;
 
 
-
-
-
     panierCommande.forEach(
-        (article,index)=>{
+        (article,index) => {
 
 
             if(
-                article.reference === "saumon-fume"
+                article.reference ===
+                "saumon-fume"
             ){
 
                 compteur++;
@@ -664,203 +639,197 @@ function afficherPanier(){
             else{
 
                 compteur +=
-                article.quantite;
+                    Number(
+                        article.quantite
+                    ) || 0;
 
             }
 
 
-
             total +=
-            article.prix;
-
-
-
+                Number(
+                    article.prix
+                ) || 0;
 
 
             html += `
 
-
-<div class="ligne-produit">
-
-
-<div class="infos-produit">
+            <div class="ligne-produit">
 
 
-<strong>
-${article.nom}
-</strong>
+                <div class="infos-produit">
 
 
-<br>
+                    <strong>
+
+                        ${article.nom}
+
+                    </strong>
 
 
-${afficherDetailsArticle(article)}
+                    <br>
 
 
-
-<div class="gestion-quantite">
-
-
-<button
-type="button"
-class="btn-quantite moins"
-onclick="modifierQuantite(${index},-1)">
-−
-</button>
+                    ${afficherDetailsArticle(article)}
 
 
-
-<span>
-
-${
-article.reference === "saumon-fume"
-?
-article.poids + " g"
-:
-article.quantite
-}
-
-</span>
+                    <div class="gestion-quantite">
 
 
+                        <button
+                            type="button"
+                            class="btn-quantite moins"
+                            onclick="modifierQuantite(${index},-1)"
+                        >
 
-<button
-type="button"
-class="btn-quantite plus"
-onclick="modifierQuantite(${index},1)">
-+
-</button>
+                            −
 
-
-</div>
-
-
-</div>
+                        </button>
 
 
+                        <span>
+
+                            ${
+                                article.reference ===
+                                "saumon-fume"
+
+                                ?
+
+                                article.poids + " g"
+
+                                :
+
+                                article.quantite
+                            }
+
+                        </span>
 
 
-<div class="prix-produit">
+                        <button
+                            type="button"
+                            class="btn-quantite plus"
+                            onclick="modifierQuantite(${index},1)"
+                        >
+
+                            +
+
+                        </button>
 
 
-<strong>
-${article.prix.toFixed(2)} CHF
-</strong>
+                    </div>
 
 
-
-<br><br>
-
+                </div>
 
 
-<button
-type="button"
-class="btn-supprimer"
-onclick="supprimerArticle(${index})">
-
-Supprimer
-
-</button>
+                <div class="prix-produit">
 
 
+                    <strong>
 
-</div>
+                        ${article.prix.toFixed(2)}
+                        CHF
+
+                    </strong>
 
 
-</div>
+                    <br><br>
 
 
-`;
+                    <button
+                        type="button"
+                        class="btn-supprimer"
+                        onclick="supprimerArticle(${index})"
+                    >
 
+                        Supprimer
+
+                    </button>
+
+
+                </div>
+
+
+            </div>
+
+            `;
 
         }
-
     );
 
 
-
-
-
     zone.innerHTML =
-    html;
-
+        html;
 
 
     totalZone.textContent =
-    total.toFixed(2)
-    +
-    " CHF";
-
+        total.toFixed(2)
+        +
+        " CHF";
 
 
     mettreAJourTitrePanier(
         compteur
     );
 
-
 }
 
 
+// ======================================
+// DETAILS ARTICLE
+// ======================================
 
-
-
-
-
-/* ===================================================
-   DETAILS ARTICLE
-   =================================================== */
-
-
-function afficherDetailsArticle(article){
-
+function afficherDetailsArticle(
+    article
+){
 
     let texte = "";
 
 
-
     if(article.recette){
 
-
         texte +=
-        "Recette : "
-        +
-        article.recette
-        +
-        "<br>";
+            "Recette : "
+            +
+            article.recette
+            +
+            "<br>";
 
     }
 
 
-
-    if(article.poids){
-
-
-        texte +=
+    if(
+        article.reference ===
+        "saumon-fume"
+        &&
         article.poids
-        +
-        " g";
+    ){
+
+        texte +=
+            article.poids
+            +
+            " g";
 
     }
-
 
 
     return texte;
 
-
 }
 
-/* ===================================================
-   TITRE PANIER
-   =================================================== */
 
+// ======================================
+// TITRE PANIER
+// ======================================
 
-function mettreAJourTitrePanier(nombre){
-
+function mettreAJourTitrePanier(
+    nombre
+){
 
     const titre =
-    document.getElementById(
-        "titrePanier"
-    );
+        document.getElementById(
+            "titrePanier"
+        );
 
 
     if(!titre){
@@ -870,43 +839,37 @@ function mettreAJourTitrePanier(nombre){
     }
 
 
-
     titre.textContent =
-    "🛒 Votre panier ("
-    +
-    nombre
-    +
-    " article"
-    +
-    (
-        nombre > 1
-        ?
-        "s"
-        :
-        ""
-    )
-    +
-    ")";
-
+        "🛒 Votre panier ("
+        +
+        nombre
+        +
+        " article"
+        +
+        (
+            nombre > 1
+            ?
+            "s"
+            :
+            ""
+        )
+        +
+        ")";
 
 }
 
 
+// ======================================
+// MODIFIER QUANTITE
+// ======================================
 
-
-
-
-
-/* ===================================================
-   MODIFIER QUANTITE
-   =================================================== */
-
-
-function modifierQuantite(index, variation){
-
+function modifierQuantite(
+    index,
+    variation
+){
 
     const article =
-    panierCommande[index];
+        panierCommande[index];
 
 
     if(!article){
@@ -916,82 +879,80 @@ function modifierQuantite(index, variation){
     }
 
 
-
     if(
-        article.reference === "saumon-fume"
+        article.reference ===
+        "saumon-fume"
     ){
 
-
-        article.poids +=
-        variation * 100;
-
+        article.poids =
+            (
+                Number(
+                    article.poids
+                ) || 0
+            )
+            +
+            (
+                variation *
+                100
+            );
 
 
         if(
             article.poids < 100
         ){
 
-            supprimerArticle(index);
+            supprimerArticle(
+                index
+            );
 
             return;
 
         }
 
-
     }
     else{
 
-
         article.quantite +=
-        variation;
-
+            variation;
 
 
         if(
             article.quantite <= 0
         ){
 
-            supprimerArticle(index);
+            supprimerArticle(
+                index
+            );
 
             return;
 
         }
 
-
     }
 
 
-
     article.prix =
-    calculerPrixArticle(
-        article
-    );
-
+        calculerPrixArticle(
+            article
+        );
 
 
     window.panierCommande =
-    panierCommande;
-
+        panierCommande;
 
 
     afficherPanier();
 
-
 }
 
 
+// ======================================
+// SUPPRESSION ARTICLE
+// ======================================
 
-
-
-
-
-/* ===================================================
-   SUPPRESSION ARTICLE
-   =================================================== */
-
-
-function supprimerArticle(index){
-
+function supprimerArticle(
+    index
+){
 
     panierCommande.splice(
         index,
@@ -999,64 +960,47 @@ function supprimerArticle(index){
     );
 
 
-
     window.panierCommande =
-    panierCommande;
-
+        panierCommande;
 
 
     afficherPanier();
 
-
 }
 
 
-
-
-
-
-
-/* ===================================================
-   VIDER PANIER
-   =================================================== */
-
+// ======================================
+// VIDER PANIER
+// ======================================
 
 function viderPanier(){
-
 
     panierCommande.length = 0;
 
 
-
     window.panierCommande =
-    panierCommande;
-
+        panierCommande;
 
 
     afficherPanier();
 
-
 }
 
 
+// ======================================
+// ENVOI COMMANDE
+// ======================================
 
-
-
-
-
-/* ===================================================
-   EXPORT GLOBAL BOUTONS HTML
-   =================================================== */
-/* ===================================================
-ENVOI COMMANDE
-=================================================== */
-
-function envoyerCommande(e){
+function envoyerCommande(
+    e
+){
 
     e.preventDefault();
 
 
-    if(panierCommande.length === 0){
+    if(
+        panierCommande.length === 0
+    ){
 
         alert(
             "Votre panier est vide."
@@ -1067,54 +1011,67 @@ function envoyerCommande(e){
     }
 
 
+    const getValue =
+        id =>
+            document.getElementById(id)
+            ?.value
+            ?.trim()
+            ||
+            "";
+
 
     const commande = {
 
-
-        client:{
-
+        client: {
 
             prenom:
-            document.getElementById("prenom").value,
-
+                getValue("prenom"),
 
             nom:
-            document.getElementById("nom").value,
-
+                getValue("nom"),
 
             telephone:
-            document.getElementById("telephone").value,
-
+                getValue("telephone"),
 
             email:
-            document.getElementById("email").value,
-
+                getValue("email"),
 
             adresse:
-            document.getElementById("adresse").value,
-
+                getValue("adresse"),
 
             commentaire:
-            document.getElementById("commentaire").value
-
+                getValue("commentaire")
 
         },
 
 
         produits:
-        panierCommande,
+            panierCommande.map(
+                article => ({
+                    ...article
+                })
+            ),
 
 
         total:
-        panierCommande.reduce(
-            (somme, article) =>
-            somme + article.prix,
-            0
-        )
+            panierCommande.reduce(
+                (
+                    somme,
+                    article
+                ) =>
 
+                    somme
+                    +
+                    (
+                        Number(
+                            article.prix
+                        ) || 0
+                    ),
+
+                0
+            )
 
     };
-
 
 
     console.log(
@@ -1123,91 +1080,170 @@ function envoyerCommande(e){
     );
 
 
-    // Test disponibilité fonction ajout base
+    // ==================================
+    // ENREGISTREMENT BASE
+    // ==================================
 
-    alert("PASSAGE AVANT AJOUT COMMANDE");
+    if(
+        typeof ajouterCommande !==
+        "function"
+    ){
 
-console.log(
-    "TEST AJOUT COMMANDE",
-    typeof ajouterCommande
-);
+        console.error(
+            "ajouterCommande() est introuvable. database.js doit être chargé avant commande.js."
+        );
 
 
-    // Enregistrement dans la base de données
+        alert(
+            "Impossible d'enregistrer la commande. La base de données n'est pas disponible."
+        );
 
-    ajouterCommande({
 
-        id: Date.now(),
+        return;
+
+    }
+
+
+    const commandeEnregistree = {
+
+        id:
+            Date.now(),
 
         date:
-        new Date().toLocaleDateString("fr-FR"),
-
+            new Date()
+            .toLocaleDateString(
+                "fr-FR"
+            ),
 
         client:
-        commande.client.prenom
-        +
-        " "
-        +
-        commande.client.nom,
-
+            commande.client.prenom
+            +
+            " "
+            +
+            commande.client.nom,
 
         telephone:
-        commande.client.telephone,
-
+            commande.client.telephone,
 
         email:
-        commande.client.email,
-
+            commande.client.email,
 
         adresse:
-        commande.client.adresse,
-
+            commande.client.adresse,
 
         commentaire:
-        commande.client.commentaire,
+            commande.client.commentaire,
 
 
-produits:
-commande.produits
-.map(article =>
-    article.nom
-    +
-    (
-        article.poids
-        ?
-        " (" + article.poids + " g)"
-        :
-        (
-            article.quantite > 1
-            ?
-            " x" + article.quantite
-            :
-            ""
-        )
-    )
-)
-.join("\n"),
+        // Texte pour l'affichage
+        // des anciennes interfaces.
+
+        produits:
+            commande.produits
+            .map(
+                article =>
+
+                    article.nom
+
+                    +
+
+                    (
+                        article.reference ===
+                        "saumon-fume"
+
+                        ?
+
+                        " (" +
+                        article.poids +
+                        " g)"
+
+                        :
+
+                        (
+                            article.quantite > 1
+
+                            ?
+
+                            " x" +
+                            article.quantite
+
+                            :
+
+                            ""
+                        )
+                    )
+            )
+            .join("\n"),
 
 
-produitsListe:
-commande.produits,
+        // Structure complète utilisée
+        // par database.js.
+
+        produitsListe:
+            commande.produits,
 
 
         total:
-        commande.total,
-
+            commande.total,
 
         statut:
-        "Nouvelle"
+            "Nouvelle",
 
-    });
+        stockTraite:
+            false,
+
+        stockErreur:
+            false
+
+    };
 
 
+    const resultat =
+        ajouterCommande(
+            commandeEnregistree
+        );
 
-    genererPDFCommande(
-        commande
-    );
 
+    if(!resultat){
+
+        alert(
+            "La commande n'a pas pu être enregistrée."
+        );
+
+        return;
+
+    }
+
+
+    // ==================================
+    // PDF
+    // ==================================
+
+    if(
+        typeof genererPDFCommande ===
+        "function"
+    ){
+
+        genererPDFCommande(
+            commande
+        );
+
+    }
+
+
+    // ==================================
+    // NETTOYAGE PANIER
+    // ==================================
+
+    panierCommande.length =
+        0;
+
+
+    window.panierCommande =
+        panierCommande;
+
+
+    afficherPanier();
 
 
     alert(
@@ -1217,18 +1253,30 @@ commande.produits,
 }
 
 
+// ======================================
+// EXPORT GLOBAL
+// ======================================
 
 window.ajouterAuPanier =
-ajouterAuPanier;
+    ajouterAuPanier;
 
 window.modifierQuantite =
-modifierQuantite;
+    modifierQuantite;
 
 window.supprimerArticle =
-supprimerArticle;
+    supprimerArticle;
 
 window.viderPanier =
-viderPanier;
+    viderPanier;
 
 window.envoyerCommande =
-envoyerCommande;
+    envoyerCommande;
+
+
+// ======================================
+// FIN
+// ======================================
+
+console.log(
+    "COMMANDE.JS 2.1.0 CHARGE"
+);
