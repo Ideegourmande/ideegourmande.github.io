@@ -555,7 +555,9 @@ function supprimerCommande(index){
 
     if(
         !confirm(
-            "Supprimer cette commande ?"
+            "Supprimer cette commande ?\n\n" +
+            "L'achat automatique associé sera également supprimé.\n" +
+            "Les achats manuels seront conservés."
         )
     ){
         return;
@@ -564,10 +566,17 @@ function supprimerCommande(index){
     const commandes =
         obtenirCommandes();
 
-    if(!commandes[index]){
+    const cmd =
+        commandes[index];
+
+    if(!cmd){
         return;
     }
 
+    // Supprimer l'achat automatique lié
+    supprimerAchatsAutomatiquesCommande(cmd);
+
+    // Supprimer la commande
     commandes.splice(
         index,
         1
@@ -581,6 +590,7 @@ function supprimerCommande(index){
     afficherStatistiques();
     afficherAlertes();
     afficherDernieresCommandes();
+    afficherResumeAchats();
 }
 
 
