@@ -11,7 +11,6 @@
 // CONSTANTE BASE
 // ==================================
 
-const CLE_BASE = "ideeGourmandeDB";
 const CLE_SECURITE_RESTAURATION =
     "ideeGourmandeDB_avant_restauration";
 
