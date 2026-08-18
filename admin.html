@@ -12,15 +12,24 @@
 
 </head>
 
+
 <body>
+
 
 <script>
 
+/* ==================================
+   PROTECTION ADMINISTRATION
+================================== */
+
 if(localStorage.getItem("adminConnecte") !== "oui"){
+
     window.location.href = "admin-login.html";
+
 }
 
 </script>
+
 
 
 <!-- =========================
@@ -30,10 +39,13 @@ if(localStorage.getItem("adminConnecte") !== "oui"){
 <header>
 
     <div class="top-banner">
+
         🔐 Administration des commandes - Idée Gourmande
+
     </div>
 
 </header>
+
 
 
 <!-- =========================
@@ -42,65 +54,149 @@ if(localStorage.getItem("adminConnecte") !== "oui"){
 
 <section class="presentation">
 
+
     <h1>
+
         Tableau de bord
+
     </h1>
 
 
+
+    <!-- DÉCONNEXION -->
+
     <button
+        type="button"
         class="btn"
         onclick="deconnexion()"
     >
+
         🚪 Déconnexion
+
     </button>
 
+
+
+    <!-- ARCHIVES -->
 
     <a
         href="archives.html"
         class="btn"
     >
+
         📂 Archives
+
     </a>
 
+
+
+    <!-- STOCK -->
 
     <a
         href="stock.html"
         class="btn"
     >
+
         📦 Gestion du stock
+
     </a>
 
+
+
+    <!-- BESOINS D'ACHAT -->
 
     <a
         href="besoins.html"
         class="btn"
     >
+
         🛒 Besoins d'achat
+
     </a>
 
+
+
+    <!-- STATISTIQUES -->
 
     <a
         href="statistiques.html"
         class="btn"
     >
+
         📊 Statistiques
+
     </a>
 
+
+
+    <!-- CLIENTS -->
 
     <a
         href="clients.html"
         class="btn"
     >
+
         👥 Clients
+
     </a>
 
+
+
+    <!-- ACCUEIL -->
 
     <a
         href="index.html"
         class="btn"
     >
+
         🏠 Accueil
+
     </a>
+
+
+
+    <!-- =========================
+         SAUVEGARDE
+    ========================= -->
+
+
+    <button
+        type="button"
+        class="btn"
+        onclick="sauvegarderBaseFichier()"
+    >
+
+        💾 Sauvegarder la base
+
+    </button>
+
+
+
+    <!-- =========================
+         RESTAURATION
+    ========================= -->
+
+
+    <button
+        type="button"
+        class="btn"
+        onclick="document.getElementById('fichierSauvegarde').click()"
+    >
+
+        📥 Restaurer une sauvegarde
+
+    </button>
+
+
+
+    <input
+        type="file"
+        id="fichierSauvegarde"
+        accept=".json"
+        style="display:none"
+        onchange="restaurerBaseFichier(event)"
+    >
+
 
 </section>
 
@@ -113,84 +209,127 @@ if(localStorage.getItem("adminConnecte") !== "oui"){
 <section class="stats">
 
 
+
+    <!-- COMMANDES -->
+
     <div class="stat-card">
 
         <h3>
+
             Commandes
+
         </h3>
+
 
         <strong id="nbCommandes">
+
             0
+
         </strong>
 
     </div>
 
 
 
+    <!-- CHIFFRE D'AFFAIRES -->
+
     <div class="stat-card">
 
         <h3>
+
             Chiffre d'affaires
+
         </h3>
+
 
         <strong id="caTotal">
+
             0 CHF
+
         </strong>
 
     </div>
 
 
 
+    <!-- AUJOURD'HUI -->
+
     <div class="stat-card">
 
         <h3>
+
             Aujourd'hui
+
         </h3>
+
 
         <strong id="commandeJour">
+
             0
+
         </strong>
 
     </div>
 
 
 
+    <!-- ARTICLES À ACHETER -->
+
     <div class="stat-card">
 
         <h3>
+
             Articles à acheter
+
         </h3>
+
 
         <strong id="nbAchats">
+
             0
+
         </strong>
 
     </div>
 
 
 
+    <!-- STOCK CRITIQUE -->
+
     <div class="stat-card">
 
         <h3>
+
             Stock critique
+
         </h3>
+
 
         <strong id="stockCritique">
+
             0
+
         </strong>
 
     </div>
 
 
 
+    <!-- SESSION -->
+
     <div class="stat-card">
 
         <h3>
+
             Session en cours
+
         </h3>
 
+
         <strong id="sessionActive">
+
             Aucune
+
         </strong>
 
     </div>
@@ -206,10 +345,14 @@ if(localStorage.getItem("adminConnecte") !== "oui"){
 
 <section class="panier-section">
 
+
     <div class="panier-card">
 
+
         <h2>
+
             🕒 Dernières commandes
+
         </h2>
 
 
@@ -219,7 +362,9 @@ if(localStorage.getItem("adminConnecte") !== "oui"){
 
         </div>
 
+
     </div>
+
 
 </section>
 
@@ -231,14 +376,21 @@ if(localStorage.getItem("adminConnecte") !== "oui"){
 
 <section class="panier-section">
 
+
     <div class="panier-card">
 
+
         <h2>
+
             📦 Commandes reçues
+
         </h2>
 
 
-        <!-- RECHERCHE -->
+
+        <!-- =========================
+             RECHERCHE
+        ========================= -->
 
         <input
             type="search"
@@ -248,9 +400,13 @@ if(localStorage.getItem("adminConnecte") !== "oui"){
         >
 
 
-        <!-- TRI -->
+
+        <!-- =========================
+             TRI
+        ========================= -->
 
         <div class="tri-commandes">
+
 
             <label for="triCommandes">
 
@@ -259,16 +415,19 @@ if(localStorage.getItem("adminConnecte") !== "oui"){
             </label>
 
 
+
             <select
                 id="triCommandes"
                 onchange="trierCommandes()"
             >
+
 
                 <option value="anciennes">
 
                     🕐 Plus anciennes
 
                 </option>
+
 
 
                 <option value="recentes">
@@ -278,11 +437,13 @@ if(localStorage.getItem("adminConnecte") !== "oui"){
                 </option>
 
 
+
                 <option value="attente">
 
                     🟠 Nouvelles / en préparation
 
                 </option>
+
 
 
                 <option value="pretes">
@@ -292,18 +453,24 @@ if(localStorage.getItem("adminConnecte") !== "oui"){
                 </option>
 
 
+
                 <option value="livrees">
 
                     ⚪ Livrées
 
                 </option>
 
+
             </select>
+
 
         </div>
 
 
-        <!-- LISTE -->
+
+        <!-- =========================
+             LISTE COMMANDES
+        ========================= -->
 
         <div id="listeCommandes">
 
@@ -311,7 +478,9 @@ if(localStorage.getItem("adminConnecte") !== "oui"){
 
         </div>
 
+
     </div>
+
 
 </section>
 
@@ -323,22 +492,33 @@ if(localStorage.getItem("adminConnecte") !== "oui"){
 
 <section class="panier-section">
 
+
     <div class="panier-card">
 
+
         <h2>
+
             🔔 Alertes
+
         </h2>
+
 
 
         <div id="listeAlertes">
 
+
             <p>
+
                 ✅ Aucune alerte.
+
             </p>
+
 
         </div>
 
+
     </div>
+
 
 </section>
 
@@ -350,16 +530,22 @@ if(localStorage.getItem("adminConnecte") !== "oui"){
 
 <section class="panier-section">
 
+
     <div class="panier-card">
 
+
         <h2>
+
             📦 Résumé du stock
+
         </h2>
+
 
 
         <p>
 
             Nombre d'articles :
+
 
             <strong id="totalArticlesStock">
 
@@ -370,9 +556,11 @@ if(localStorage.getItem("adminConnecte") !== "oui"){
         </p>
 
 
+
         <p>
 
             Valeur estimée :
+
 
             <strong id="valeurStock">
 
@@ -383,9 +571,11 @@ if(localStorage.getItem("adminConnecte") !== "oui"){
         </p>
 
 
+
         <p>
 
             Articles en stock critique :
+
 
             <strong id="stockCritiqueStock">
 
@@ -395,7 +585,9 @@ if(localStorage.getItem("adminConnecte") !== "oui"){
 
         </p>
 
+
     </div>
+
 
 </section>
 
@@ -407,16 +599,22 @@ if(localStorage.getItem("adminConnecte") !== "oui"){
 
 <section class="panier-section">
 
+
     <div class="panier-card">
 
+
         <h2>
+
             🛒 Résumé des achats
+
         </h2>
+
 
 
         <p>
 
             Achats en attente :
+
 
             <strong id="achatsEnAttente">
 
@@ -427,9 +625,11 @@ if(localStorage.getItem("adminConnecte") !== "oui"){
         </p>
 
 
+
         <p>
 
             Achats réceptionnés :
+
 
             <strong id="achatsReceptionnes">
 
@@ -440,9 +640,11 @@ if(localStorage.getItem("adminConnecte") !== "oui"){
         </p>
 
 
+
         <p>
 
             Fournisseurs :
+
 
             <strong id="nombreFournisseurs">
 
@@ -453,16 +655,21 @@ if(localStorage.getItem("adminConnecte") !== "oui"){
         </p>
 
 
+
         <!--
+
             Le montant des achats en attente
-            a volontairement été supprimé.
+            n'est volontairement pas affiché.
 
             Les prix d'achat peuvent varier
             selon le fournisseur et selon
             la commande.
+
         -->
 
+
     </div>
+
 
 </section>
 
@@ -474,21 +681,28 @@ if(localStorage.getItem("adminConnecte") !== "oui"){
 
 <footer>
 
+
     <p>
+
         © Idée Gourmande - Genève
+
     </p>
+
 
 
     <p>
+
         Version 2.8.0
+
     </p>
+
 
 </footer>
 
 
 
 <!-- =========================
-     BIBLIOTHÈQUES
+     BIBLIOTHÈQUE jsPDF
 ========================= -->
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
@@ -504,6 +718,7 @@ if(localStorage.getItem("adminConnecte") !== "oui"){
 <script src="js/pdfcommande.js"></script>
 
 <script src="js/admin.js"></script>
+
 
 
 </body>
