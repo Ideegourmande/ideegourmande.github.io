@@ -257,9 +257,10 @@ function genererPDFCommande(commande) {
     // ==========================================
 
     const xProduit = 20;
-    const xRecette = 85;
-    const xQuantite = 130;
-    const xPrix = 165;
+    const xRecette = 78;
+    const xNombre = 125;
+    const xPoids = 145;
+    const xPrix = 170;
 
 
     doc.setFillColor(230, 230, 230);
@@ -293,8 +294,15 @@ function genererPDFCommande(commande) {
 
 
     doc.text(
-        "Qté / poids",
-        xQuantite,
+        "Nombre",
+        xNombre,
+        y + 1
+    );
+
+
+    doc.text(
+        "Poids",
+        xPoids,
         y + 1
     );
 
@@ -338,47 +346,134 @@ function genererPDFCommande(commande) {
         }
 
 
-        // Produit
+        // ======================================
+        // PRODUIT
+        // ======================================
+
         const nom =
             article.nom || "Produit";
 
 
-        // Recette
+        // ======================================
+        // RECETTE
+        // ======================================
+
         const recette =
             article.recette || "-";
 
 
-        // Quantité / poids
-        let quantite = "";
+        // ======================================
+        // NOMBRE
+        // ======================================
+
+        let nombre = "";
 
 
-        if (article.poids) {
+        if (
+            article.reference === "saumon-fume"
+        ) {
 
-            quantite =
-                article.poids + " g";
+            nombre = "-";
 
         }
         else {
 
-            quantite =
-                "x " +
-                (
+            nombre =
+                String(
                     article.quantite || 1
                 );
 
         }
 
 
-        // Prix
+        // ======================================
+        // POIDS TOTAL
+        // ======================================
+
+        let poids = "";
+
+
+        if (
+            article.reference === "saumon-fume"
+        ) {
+
+            // Saumon :
+            // poids directement saisi
+            poids =
+                article.poids
+                ? article.poids + " g"
+                : "";
+
+        }
+        else if (
+            article.reference === "foie-gras"
+        ) {
+
+            // Foie gras :
+            // 200 g par article
+            poids =
+                (
+                    Number(article.quantite || 1)
+                    * 200
+                )
+                + " g";
+
+        }
+        else if (
+            article.reference === "viande-sechee"
+        ) {
+
+            // Viande séchée :
+            // 500 g par portion
+            poids =
+                (
+                    Number(article.quantite || 1)
+                    * 500
+                )
+                + " g";
+
+        }
+        else if (
+            article.reference === "lard-sec"
+        ) {
+
+            // Lard sec :
+            // 500 g par portion
+            poids =
+                (
+                    Number(article.quantite || 1)
+                    * 500
+                )
+                + " g";
+
+        }
+        else if (
+            article.reference === "magret"
+        ) {
+
+            // Magret :
+            // vendu à la pièce
+            poids = "-";
+
+        }
+
+
+        // ======================================
+        // PRIX
+        // ======================================
+
         const prix =
             Number(article.prix) || 0;
 
 
-        // Lignes multi-lignes
+        // ======================================
+        // LIGNES MULTI-LIGNES
+        // ======================================
+
         const nomLignes =
             doc.splitTextToSize(
                 nom,
-                60
+                55
             );
 
 
@@ -396,6 +491,10 @@ function genererPDFCommande(commande) {
             ) * 5 + 5;
 
 
+        // ======================================
+        // AFFICHAGE
+        // ======================================
+
         doc.text(
             nomLignes,
             xProduit + 3,
@@ -411,8 +510,15 @@ function genererPDFCommande(commande) {
 
 
         doc.text(
-            quantite,
-            xQuantite,
+            nombre,
+            xNombre,
+            y
+        );
+
+
+        doc.text(
+            poids,
+            xPoids,
             y
         );
 
@@ -422,9 +528,6 @@ function genererPDFCommande(commande) {
             xPrix,
             y
         );
-
-
-// Pas de ligne entre les articles
 
 
         y += hauteur;
@@ -505,65 +608,65 @@ function genererPDFCommande(commande) {
     y += 16;
 
 
-// ==========================================
-// REMARQUE - COMMUNICATION
-// ==========================================
+    // ==========================================
+    // REMARQUE - COMMUNICATION
+    // ==========================================
 
-if (
-    commande.client?.commentaire &&
-    commande.client.commentaire.trim() !== ""
-) {
+    if (
+        commande.client?.commentaire &&
+        commande.client.commentaire.trim() !== ""
+    ) {
 
-    if (y > 245) {
+        if (y > 245) {
 
-        ajouterPiedDePage(doc);
+            ajouterPiedDePage(doc);
 
-        doc.addPage();
+            doc.addPage();
 
-        y = 25;
+            y = 25;
 
-    }
-
-
-    doc.setFontSize(11);
-
-    doc.setFont(undefined, "bold");
+        }
 
 
-    doc.text(
-        "REMARQUE - COMMUNICATION",
-        margeGauche,
-        y
-    );
+        doc.setFontSize(11);
+
+        doc.setFont(undefined, "bold");
 
 
-    y += 7;
-
-
-    doc.setFont(undefined, "normal");
-
-    doc.setFontSize(10);
-
-
-    const remarque =
-        doc.splitTextToSize(
-            commande.client.commentaire,
-            165
+        doc.text(
+            "REMARQUE - COMMUNICATION",
+            margeGauche,
+            y
         );
 
 
-    doc.text(
-        remarque,
-        margeGauche,
-        y
-    );
+        y += 7;
 
 
-    y +=
-        remarque.length * 5 +
-        5;
+        doc.setFont(undefined, "normal");
 
-}
+        doc.setFontSize(10);
+
+
+        const remarque =
+            doc.splitTextToSize(
+                commande.client.commentaire,
+                165
+            );
+
+
+        doc.text(
+            remarque,
+            margeGauche,
+            y
+        );
+
+
+        y +=
+            remarque.length * 5 +
+            5;
+
+    }
 
 
     // ==========================================
