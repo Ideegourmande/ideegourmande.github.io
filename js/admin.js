@@ -1309,13 +1309,26 @@ function afficherResumeAchats(){
 
     if(typeof db === "undefined"){
 
+        console.error(
+            "❌ db n'est pas disponible"
+        );
+
         return;
 
     }
 
 
-    let achats =
-        db.achats || [];
+    // Sécurité
+
+    if(!Array.isArray(db.achats)){
+
+        db.achats = [];
+
+    }
+
+
+    const achats =
+        db.achats;
 
 
     let attente = 0;
@@ -1325,10 +1338,25 @@ function afficherResumeAchats(){
     let montantAttente = 0;
 
 
+    // ==================================
+    // CALCUL ACHATS
+    // ==================================
+
     achats.forEach(function(achat){
 
+        if(!achat){
+
+            return;
+
+        }
+
+
+        const statut =
+            achat.statut || "En attente";
+
+
         if(
-            achat.statut === "Réceptionné"
+            statut === "Réceptionné"
         ){
 
             receptionnes++;
@@ -1339,23 +1367,35 @@ function afficherResumeAchats(){
             attente++;
 
             montantAttente +=
-                Number(achat.total) || 0;
+                Number(
+                    achat.total
+                ) || 0;
 
         }
 
     });
 
 
-    let fournisseurs =
+    // ==================================
+    // FOURNISSEURS
+    // ==================================
+
+    const fournisseurs =
         (db.clients || [])
         .filter(function(client){
 
-            return client.type === "Fournisseur";
+            return (
+                client.type === "Fournisseur"
+            );
 
         });
 
 
-    let zoneAttente =
+    // ==================================
+    // AFFICHAGE
+    // ==================================
+
+    const zoneAttente =
         document.getElementById(
             "achatsEnAttente"
         );
@@ -1369,7 +1409,7 @@ function afficherResumeAchats(){
     }
 
 
-    let zoneReception =
+    const zoneReception =
         document.getElementById(
             "achatsReceptionnes"
         );
@@ -1383,7 +1423,7 @@ function afficherResumeAchats(){
     }
 
 
-    let zoneFournisseurs =
+    const zoneFournisseurs =
         document.getElementById(
             "nombreFournisseurs"
         );
@@ -1397,7 +1437,7 @@ function afficherResumeAchats(){
     }
 
 
-    let zoneMontant =
+    const zoneMontant =
         document.getElementById(
             "montantAchatsAttente"
         );
@@ -1407,9 +1447,25 @@ function afficherResumeAchats(){
 
         zoneMontant.textContent =
             montantAttente.toFixed(2)
-            + " CHF";
+            +
+            " CHF";
 
     }
+
+
+    // ==================================
+    // DEBUG
+    // ==================================
+
+    console.log(
+        "📊 RÉSUMÉ ACHATS",
+        {
+            total: achats.length,
+            attente: attente,
+            receptionnes: receptionnes,
+            montantAttente: montantAttente
+        }
+    );
 
 }
 
