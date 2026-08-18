@@ -5,15 +5,12 @@
 // Commandes + stock + achats automatiques
 // Clients + archives
 // Migration ancienne base intégrée
-// Gestion des poids par article
 // ======================================
 
 
 // ======================================
 // CONSTANTES
 // ======================================
-
-const VERSION_DATABASE = "3.1.0";
 
 const CLE_BASE =
     "ideeGourmandeDB";
@@ -24,60 +21,8 @@ const CLE_ANCIENNES_COMMANDES =
 const CLE_ANCIENNES_ARCHIVES =
     "commandesArchivees";
 
-
-// ======================================
-// POIDS STANDARD DES ARTICLES
-// ======================================
-
-const poidsArticles = {
-
-    "foie gras aux pimets":
-        200,
-
-    "fois gras aux figues":
-        200,
-
-    "viande séchée":
-        500,
-
-    "lard sec fumé":
-        500
-
-};
-
-
-// ======================================
-// ARTICLES VENDUS A LA PIECE
-// ======================================
-
-const articlesAlaPiece = [
-
-    "magret au herbes",
-
-    "magret aux pimets"
-
-];
-
-
-// ======================================
-// ARTICLES VENDUS AU GRAMME
-// ======================================
-
-const articlesAuGramme = [
-
-    "saumon aux piments",
-
-    "saumon à l'aneth",
-
-    "foie gras aux pimets",
-
-    "fois gras aux figues",
-
-    "viande séchée",
-
-    "lard sec fumé"
-
-];
+const VERSION_DATABASE =
+    "3.1.0";
 
 
 // ======================================
@@ -86,14 +31,12 @@ const articlesAuGramme = [
 
 let db = null;
 
-
 try {
 
     const contenu =
         localStorage.getItem(
             CLE_BASE
         );
-
 
     if (contenu) {
 
@@ -116,7 +59,6 @@ catch (erreur) {
 
 }
 
-
 console.log(
     "DATABASE - BASE CHARGEE",
     db
@@ -130,15 +72,10 @@ console.log(
 const emplacementsDefaut = [
 
     "Congélateur du réduit",
-
     "Congélateur bahut",
-
     "Congélateur GI",
-
     "Chambre froide",
-
     "Cave",
-
     "Réserve sèche"
 
 ];
@@ -169,7 +106,12 @@ const structureDB = {
 
     statistiques: {},
 
-    parametres: {}
+    parametres: {
+
+        versionDatabase:
+            VERSION_DATABASE
+
+    }
 
 };
 
@@ -179,13 +121,9 @@ const structureDB = {
 // ======================================
 
 if (
-
     !db ||
-
     typeof db !== "object" ||
-
     Array.isArray(db)
-
 ) {
 
     db = {
@@ -211,7 +149,12 @@ if (
 
         statistiques: {},
 
-        parametres: {}
+        parametres: {
+
+            versionDatabase:
+                VERSION_DATABASE
+
+        }
 
     };
 
@@ -229,31 +172,26 @@ Object.keys(
     function (cle) {
 
         if (
-
             db[cle] === undefined ||
-
             db[cle] === null
-
         ) {
 
             if (
-
                 Array.isArray(
                     structureDB[cle]
                 )
-
             ) {
 
                 db[cle] = [
-
                     ...structureDB[cle]
-
                 ];
 
             }
             else {
 
-                db[cle] = {};
+                db[cle] = {
+                    ...structureDB[cle]
+                };
 
             }
 
@@ -270,19 +208,12 @@ Object.keys(
 const tableaux = [
 
     "commandes",
-
     "articles",
-
     "emplacements",
-
     "mouvements",
-
     "achats",
-
     "sessions",
-
     "archives",
-
     "clients"
 
 ];
@@ -292,11 +223,9 @@ tableaux.forEach(
     function (cle) {
 
         if (
-
             !Array.isArray(
                 db[cle]
             )
-
         ) {
 
             db[cle] = [];
@@ -312,13 +241,9 @@ tableaux.forEach(
 // ======================================
 
 if (
-
     !db.statistiques ||
-
     typeof db.statistiques !== "object" ||
-
     Array.isArray(db.statistiques)
-
 ) {
 
     db.statistiques = {};
@@ -327,13 +252,9 @@ if (
 
 
 if (
-
     !db.parametres ||
-
     typeof db.parametres !== "object" ||
-
     Array.isArray(db.parametres)
-
 ) {
 
     db.parametres = {};
@@ -354,15 +275,11 @@ db.parametres.versionDatabase =
 // ======================================
 
 if (
-
     db.emplacements.length === 0
-
 ) {
 
     db.emplacements = [
-
         ...emplacementsDefaut
-
     ];
 
 }
@@ -372,9 +289,7 @@ if (
 // NORMALISATION TEXTE
 // ======================================
 
-function normaliserNomArticle(
-    nom
-) {
+function normaliserNomArticle(nom) {
 
     return String(
         nom || ""
@@ -398,9 +313,7 @@ function normaliserNomArticle(
 // NORMALISATION RECETTE
 // ======================================
 
-function normaliserRecette(
-    recette
-) {
+function normaliserRecette(recette) {
 
     return normaliserNomArticle(
         recette
@@ -415,245 +328,6 @@ function normaliserRecette(
 
 
 // ======================================
-// OBTENIR POIDS STANDARD ARTICLE
-// ======================================
-
-function obtenirPoidsStandardArticle(
-    article
-) {
-
-    if (!article) {
-
-        return 0;
-
-    }
-
-
-    const nom =
-        normaliserNomArticle(
-            article.nom
-        );
-
-
-    const poids =
-        Number(
-            poidsArticles[nom]
-        );
-
-
-    if (
-        poids > 0
-    ) {
-
-        return poids;
-
-    }
-
-
-    return 0;
-
-}
-
-
-// ======================================
-// DETERMINER MODE DE VENTE
-// ======================================
-
-function obtenirModeVenteArticle(
-    article
-) {
-
-    if (!article) {
-
-        return "inconnu";
-
-    }
-
-
-    const nom =
-        normaliserNomArticle(
-            article.nom
-        );
-
-
-    if (
-        articlesAlaPiece.includes(
-            nom
-        )
-    ) {
-
-        return "piece";
-
-    }
-
-
-    if (
-        articlesAuGramme.includes(
-            nom
-        )
-    ) {
-
-        return "gramme";
-
-    }
-
-
-    if (
-        String(
-            article.unite || ""
-        )
-        .toLowerCase()
-        ===
-        "pièce"
-    ) {
-
-        return "piece";
-
-    }
-
-
-    if (
-        String(
-            article.unite || ""
-        )
-        .toLowerCase()
-        ===
-        "g"
-    ) {
-
-        return "gramme";
-
-    }
-
-
-    return "inconnu";
-
-}
-
-
-// ======================================
-// QUANTITE COMMANDEE
-// ======================================
-
-function calculerQuantiteCommande(
-    articleCommande,
-    articleStock
-) {
-
-    if (!articleCommande) {
-
-        return 0;
-
-    }
-
-
-    // ==================================
-    // SAUMON / VENTE AU GRAMME
-    // ==================================
-
-    if (
-        articleStock &&
-        obtenirModeVenteArticle(
-            articleStock
-        )
-        ===
-        "gramme"
-        &&
-        (
-            normaliserNomArticle(
-                articleStock.nom
-            )
-            ===
-            normaliserNomArticle(
-                "Saumon aux piments"
-            )
-
-            ||
-
-            normaliserNomArticle(
-                articleStock.nom
-            )
-            ===
-            normaliserNomArticle(
-                "Saumon à l'aneth"
-            )
-        )
-    ) {
-
-        return (
-
-            Number(
-                articleCommande.poids
-            )
-
-            || 0
-
-        );
-
-    }
-
-
-    // ==================================
-    // ARTICLES AU POIDS STANDARD
-    // ==================================
-
-    if (
-        articleStock &&
-        obtenirModeVenteArticle(
-            articleStock
-        )
-        ===
-        "gramme"
-    ) {
-
-        const poids =
-            obtenirPoidsStandardArticle(
-                articleStock
-            );
-
-
-        if (
-            poids > 0
-        ) {
-
-            return (
-
-                (
-                    Number(
-                        articleCommande.quantite
-                    )
-                    || 0
-                )
-
-                *
-
-                poids
-
-            );
-
-        }
-
-    }
-
-
-    // ==================================
-    // ARTICLES A LA PIECE
-    // ==================================
-
-    return (
-
-        Number(
-            articleCommande.quantite
-        )
-
-        || 0
-
-    );
-
-}
-
-
-// ======================================
 // IDENTIFICATION COMMANDE
 // ======================================
 
@@ -662,28 +336,20 @@ function obtenirIdentifiantCommandeMigration(
 ) {
 
     if (
-
         !commande ||
-
         typeof commande !== "object"
-
     ) {
 
         return "";
 
     }
 
-
     return String(
 
         commande.id
-
         ||
-
         commande.numero
-
         ||
-
         ""
 
     )
@@ -702,11 +368,8 @@ function commandeExisteDeja(
 ) {
 
     if (
-
         !Array.isArray(liste) ||
-
         !commande
-
     ) {
 
         return false;
@@ -726,15 +389,11 @@ function commandeExisteDeja(
             function (element) {
 
                 return (
-
                     obtenirIdentifiantCommandeMigration(
                         element
                     )
-
                     ===
-
                     id
-
                 );
 
             }
@@ -752,15 +411,12 @@ function commandeExisteDeja(
 
             }
 
-
             return (
 
                 String(
                     element.client || ""
                 )
-
                 ===
-
                 String(
                     commande.client || ""
                 )
@@ -786,9 +442,7 @@ function commandeExisteDeja(
                 String(
                     element.date || ""
                 )
-
                 ===
-
                 String(
                     commande.date || ""
                 )
@@ -798,9 +452,7 @@ function commandeExisteDeja(
                 Number(
                     element.total || 0
                 )
-
                 ===
-
                 Number(
                     commande.total || 0
                 )
@@ -1060,44 +712,6 @@ function migrerAnciennesArchives() {
 
 
 // ======================================
-// MIGRATION GENERALE
-// ======================================
-
-function migrerAnciennesDonnees() {
-
-    console.log(
-        "🔄 DEMARRAGE MIGRATION ANCIENNES DONNEES"
-    );
-
-
-    migrerAnciennesCommandes();
-
-    migrerAnciennesArchives();
-
-
-    sauvegarderDB();
-
-
-    console.log(
-        "✅ MIGRATION TERMINEE",
-        {
-
-            commandes:
-                db.commandes.length,
-
-            archives:
-                db.archives.length,
-
-            clients:
-                db.clients.length
-
-        }
-    );
-
-}
-
-
-// ======================================
 // SAUVEGARDE CENTRALE
 // ======================================
 
@@ -1115,7 +729,6 @@ function sauvegarderDB() {
 
         );
 
-
         return true;
 
     }
@@ -1131,6 +744,58 @@ function sauvegarderDB() {
     }
 
 }
+
+
+// ======================================
+// MIGRATION GENERALE
+// ======================================
+
+function migrerAnciennesDonnees() {
+
+    console.log(
+        "🔄 DEMARRAGE MIGRATION ANCIENNES DONNEES"
+    );
+
+
+    migrerAnciennesCommandes();
+
+    migrerAnciennesArchives();
+
+
+    db.parametres.versionDatabase =
+        VERSION_DATABASE;
+
+
+    sauvegarderDB();
+
+
+    console.log(
+        "✅ MIGRATION TERMINEE",
+        {
+
+            commandes:
+                db.commandes.length,
+
+            archives:
+                db.archives.length,
+
+            clients:
+                db.clients.length,
+
+            version:
+                db.parametres.versionDatabase
+
+        }
+    );
+
+}
+
+
+// ======================================
+// EXECUTION MIGRATION
+// ======================================
+
+migrerAnciennesDonnees();
 
 
 // ======================================
@@ -1293,22 +958,19 @@ function trouverArticleStock(
     );
 
 
+    // ==================================
+    // REFERENCE + RECETTE
+    // ==================================
+
     const correspondance =
         correspondancesProduits[
             reference
         ];
 
 
-    // ==================================
-    // REFERENCE + RECETTE
-    // ==================================
-
     if (
-
         correspondance &&
-
         typeof correspondance === "object"
-
     ) {
 
         const nomCorrespondant =
@@ -1324,17 +986,13 @@ function trouverArticleStock(
                     function (a) {
 
                         return (
-
                             normaliserNomArticle(
                                 a.nom
                             )
-
                             ===
-
                             normaliserNomArticle(
                                 nomCorrespondant
                             )
-
                         );
 
                     }
@@ -1370,17 +1028,13 @@ function trouverArticleStock(
                 function (a) {
 
                     return (
-
                         normaliserNomArticle(
                             a.nom
                         )
-
                         ===
-
                         normaliserNomArticle(
                             correspondance
                         )
-
                     );
 
                 }
@@ -1410,15 +1064,11 @@ function trouverArticleStock(
             function (a) {
 
                 return (
-
                     normaliserNomArticle(
                         a.nom
                     )
-
                     ===
-
                     nomCommande
-
                 );
 
             }
@@ -1456,52 +1106,37 @@ function trouverArticleStock(
                 ) {
 
                     if (
-
                         recette === "piment" ||
-
                         recette === "piments"
-
                     ) {
 
                         return (
-
                             nomStock.includes(
                                 "foie gras"
                             )
-
                             &&
-
                             nomStock.includes(
                                 "pimet"
                             )
-
                         );
 
                     }
 
 
                     if (
-
                         recette === "figue" ||
-
                         recette === "figues" ||
-
                         recette === "aux figues"
-
                     ) {
 
                         return (
-
                             nomStock.includes(
                                 "foie gras"
                             )
-
                             &&
-
                             nomStock.includes(
                                 "figue"
                             )
-
                         );
 
                     }
@@ -1514,52 +1149,37 @@ function trouverArticleStock(
                 ) {
 
                     if (
-
                         recette === "herbe" ||
-
                         recette === "herbes" ||
-
                         recette === "aux herbes"
-
                     ) {
 
                         return (
-
                             nomStock.includes(
                                 "magret"
                             )
-
                             &&
-
                             nomStock.includes(
                                 "herbe"
                             )
-
                         );
 
                     }
 
 
                     if (
-
                         recette === "piment" ||
-
                         recette === "piments"
-
                     ) {
 
                         return (
-
                             nomStock.includes(
                                 "magret"
                             )
-
                             &&
-
                             nomStock.includes(
                                 "pimet"
                             )
-
                         );
 
                     }
@@ -1572,10 +1192,8 @@ function trouverArticleStock(
                 ) {
 
                     return (
-
                         nomStock ===
                         "viande sechee"
-
                     );
 
                 }
@@ -1586,10 +1204,8 @@ function trouverArticleStock(
                 ) {
 
                     return (
-
                         nomStock ===
                         "lard sec fume"
-
                     );
 
                 }
@@ -1600,11 +1216,8 @@ function trouverArticleStock(
                 ) {
 
                     if (
-
                         recette === "aneth" ||
-
                         recette === "a l'aneth"
-
                     ) {
 
                         return (
@@ -1625,11 +1238,8 @@ function trouverArticleStock(
 
 
                     if (
-
                         recette === "piment" ||
-
                         recette === "piments"
-
                     ) {
 
                         return (
@@ -1678,6 +1288,152 @@ function trouverArticleStock(
 
 
     return null;
+
+}
+
+
+// ======================================
+// QUANTITE COMMANDEE
+// ======================================
+//
+// REGLES 3.1.0
+//
+// Foie gras aux pimets  = 200 g / pièce
+// Fois gras aux figues  = 200 g / pièce
+// Viande séchée         = 500 g / pièce
+// Lard sec fumé         = 500 g / pièce
+// Saumon                = poids choisi par client
+// Magret                = 1 pièce
+//
+// ======================================
+
+function calculerQuantiteCommande(
+    articleCommande,
+    articleStock
+) {
+
+    if (!articleCommande) {
+
+        return 0;
+
+    }
+
+
+    const reference =
+        String(
+            articleCommande.reference || ""
+        )
+        .trim()
+        .toLowerCase();
+
+
+    const nomStock =
+        normaliserNomArticle(
+            articleStock
+                ? articleStock.nom
+                : ""
+        );
+
+
+    const quantite =
+        Number(
+            articleCommande.quantite
+        ) || 0;
+
+
+    // ==================================
+    // SAUMON
+    // POIDS CHOISI PAR LE CLIENT
+    // ==================================
+
+    if (
+        reference === "saumon-fume"
+    ) {
+
+        return Number(
+            articleCommande.poids
+        ) || 0;
+
+    }
+
+
+    // ==================================
+    // FOIE GRAS
+    // 200 G PAR ARTICLE
+    // ==================================
+
+    if (
+        nomStock ===
+            "foie gras aux pimets"
+        ||
+        nomStock ===
+            "fois gras aux figues"
+    ) {
+
+        return (
+            quantite * 200
+        );
+
+    }
+
+
+    // ==================================
+    // VIANDE SECHEE
+    // 500 G PAR ARTICLE
+    // ==================================
+
+    if (
+        nomStock ===
+        "viande sechee"
+    ) {
+
+        return (
+            quantite * 500
+        );
+
+    }
+
+
+    // ==================================
+    // LARD SEC FUME
+    // 500 G PAR ARTICLE
+    // ==================================
+
+    if (
+        nomStock ===
+        "lard sec fume"
+    ) {
+
+        return (
+            quantite * 500
+        );
+
+    }
+
+
+    // ==================================
+    // MAGRET
+    // 1 PIECE PAR ARTICLE
+    // ==================================
+
+    if (
+        nomStock ===
+            "magret au herbes"
+        ||
+        nomStock ===
+            "magret aux pimets"
+    ) {
+
+        return quantite;
+
+    }
+
+
+    // ==================================
+    // SECURITE
+    // ==================================
+
+    return quantite;
 
 }
 
@@ -1764,17 +1520,13 @@ function trouverAchatAutomatique(
                     function (ligne) {
 
                         return (
-
                             normaliserNomArticle(
                                 ligne.article
                             )
-
                             ===
-
                             normaliserNomArticle(
                                 article.nom
                             )
-
                         );
 
                     }
@@ -1805,11 +1557,8 @@ function recalculerTotalAchat(
 
 
     achat.total =
-
         (
-
             achat.articles || []
-
         )
         .reduce(
             function (
@@ -1824,23 +1573,17 @@ function recalculerTotalAchat(
                     +
 
                     (
-
                         Number(
                             ligne.quantite
-                        )
-                        || 0
-
+                        ) || 0
                     )
 
                     *
 
                     (
-
                         Number(
                             ligne.prix
-                        )
-                        || 0
-
+                        ) || 0
                     )
 
                 );
@@ -1853,7 +1596,7 @@ function recalculerTotalAchat(
 
 
 // ======================================
-// CREATION / COMPLEMENT ACHAT AUTOMATIQUE
+// CREATION ACHAT AUTOMATIQUE
 // ======================================
 
 function creerOuCompleterAchatAutomatique(
@@ -1862,11 +1605,8 @@ function creerOuCompleterAchatAutomatique(
 ) {
 
     if (
-
         !article ||
-
         Number(quantite) <= 0
-
     ) {
 
         return null;
@@ -1883,18 +1623,13 @@ function creerOuCompleterAchatAutomatique(
     console.log(
         "🛒 CREATION / COMPLETION ACHAT AUTOMATIQUE",
         {
-
             article:
                 article.nom,
 
             quantite,
 
-            unite:
-                article.unite,
-
             stock:
                 article.stock
-
         }
     );
 
@@ -1912,17 +1647,13 @@ function creerOuCompleterAchatAutomatique(
                 function (ligne) {
 
                     return (
-
                         normaliserNomArticle(
                             ligne.article
                         )
-
                         ===
-
                         normaliserNomArticle(
                             article.nom
                         )
-
                     );
 
                 }
@@ -1932,18 +1663,12 @@ function creerOuCompleterAchatAutomatique(
         if (ligne) {
 
             ligne.quantite =
-
                 (
-
                     Number(
                         ligne.quantite
-                    )
-                    || 0
-
+                    ) || 0
                 )
-
                 +
-
                 quantite;
 
         }
@@ -1962,8 +1687,7 @@ function creerOuCompleterAchatAutomatique(
                 prix:
                     Number(
                         article.prixAchatMoyen
-                    )
-                    || 0
+                    ) || 0
 
             });
 
@@ -2055,8 +1779,7 @@ function creerOuCompleterAchatAutomatique(
                 prix:
                     Number(
                         article.prixAchatMoyen
-                    )
-                    || 0
+                    ) || 0
 
             }
 
@@ -2119,8 +1842,14 @@ function creerOuCompleterAchatAutomatique(
 
 
     console.log(
-        "✅ ACHAT AUTOMATIQUE AJOUTE :",
+        "✅ ACHAT AUTOMATIQUE AJOUTE A db.achats :",
         achat
+    );
+
+
+    console.log(
+        "📦 NOMBRE TOTAL D'ACHATS :",
+        db.achats.length
     );
 
 
@@ -2179,7 +1908,6 @@ function traiterStockCommande(
         :
 
         (
-
             Array.isArray(
                 commande.produits
             )
@@ -2191,7 +1919,6 @@ function traiterStockCommande(
             :
 
             []
-
         );
 
 
@@ -2233,10 +1960,8 @@ function traiterStockCommande(
     // ==================================
 
     for (
-
         const articleCommande
         of produits
-
     ) {
 
         const articleStock =
@@ -2264,17 +1989,11 @@ function traiterStockCommande(
                 +
 
                 (
-
                     articleCommande.nom
-
                     ||
-
                     articleCommande.reference
-
                     ||
-
                     "Article inconnu"
-
                 );
 
 
@@ -2288,22 +2007,34 @@ function traiterStockCommande(
 
         const quantiteCommandee =
             calculerQuantiteCommande(
-
                 articleCommande,
-
                 articleStock
-
             );
+
+
+        console.log(
+            "📏 QUANTITE STOCK CALCULEE",
+            {
+
+                article:
+                    articleStock.nom,
+
+                commande:
+                    articleCommande.quantite,
+
+                poids:
+                    articleCommande.poids,
+
+                quantiteStock:
+                    quantiteCommandee
+
+            }
+        );
 
 
         if (
             quantiteCommandee <= 0
         ) {
-
-            console.warn(
-                "⚠️ QUANTITE COMMANDEE INVALIDE :",
-                articleCommande
-            );
 
             continue;
 
@@ -2344,8 +2075,7 @@ function traiterStockCommande(
             const ancienStock =
                 Number(
                     article.stock
-                )
-                || 0;
+                ) || 0;
 
 
             const stockDisponible =
@@ -2357,35 +2087,26 @@ function traiterStockCommande(
 
             const consommation =
                 Math.min(
-
                     stockDisponible,
-
                     quantiteCommandee
-
                 );
 
 
             const quantiteManquante =
                 Math.max(
-
                     0,
-
                     quantiteCommandee
                     -
                     consommation
-
                 );
 
 
             const nouveauStock =
                 Math.max(
-
                     0,
-
                     ancienStock
                     -
                     consommation
-
                 );
 
 
@@ -2432,9 +2153,6 @@ function traiterStockCommande(
 
                         article:
                             article.nom,
-
-                        unite:
-                            article.unite,
 
                         stock:
                             ancienStock,
@@ -2490,6 +2208,12 @@ function traiterStockCommande(
     console.log(
         "✅ STOCK + ACHATS TRAITES :",
         commande.id
+    );
+
+
+    console.log(
+        "📦 ACHATS ACTUELS :",
+        db.achats
     );
 
 
@@ -2561,6 +2285,10 @@ function enregistrerClientCommande(
     }
 
 
+    // ==================================
+    // CLIENT EXISTANT
+    // ==================================
+
     if (clientExiste) {
 
         if (
@@ -2597,6 +2325,10 @@ function enregistrerClientCommande(
 
     }
 
+
+    // ==================================
+    // NOUVEAU CLIENT
+    // ==================================
 
     db.clients.push({
 
@@ -2641,6 +2373,10 @@ function ajouterCommande(
 
     }
 
+
+    // ==================================
+    // SECURISATION
+    // ==================================
 
     if (
         !Array.isArray(
@@ -2776,6 +2512,12 @@ function ajouterCommande(
     );
 
 
+    console.log(
+        "📊 ETAT ACHATS APRES COMMANDE :",
+        db.achats
+    );
+
+
     return true;
 
 }
@@ -2907,41 +2649,46 @@ function obtenirDB() {
 window.db =
     db;
 
+
 window.ajouterCommande =
     ajouterCommande;
+
 
 window.sauvegarderDB =
     sauvegarderDB;
 
+
 window.traiterStockCommande =
     traiterStockCommande;
+
 
 window.retraiterStockCommande =
     retraiterStockCommande;
 
+
 window.trouverArticleStock =
     trouverArticleStock;
 
-window.creerOuCompleterAchatAutomatique =
-    creerOuCompleterAchatAutomatique;
-
-window.normaliserNomArticle =
-    normaliserNomArticle;
-
-window.normaliserRecette =
-    normaliserRecette;
 
 window.calculerQuantiteCommande =
     calculerQuantiteCommande;
 
-window.obtenirPoidsStandardArticle =
-    obtenirPoidsStandardArticle;
 
-window.obtenirModeVenteArticle =
-    obtenirModeVenteArticle;
+window.creerOuCompleterAchatAutomatique =
+    creerOuCompleterAchatAutomatique;
+
+
+window.normaliserNomArticle =
+    normaliserNomArticle;
+
+
+window.normaliserRecette =
+    normaliserRecette;
+
 
 window.securiserTexte =
     securiserTexte;
+
 
 window.obtenirDB =
     obtenirDB;
@@ -2954,18 +2701,13 @@ window.obtenirDB =
 window.migrerAnciennesDonnees =
     migrerAnciennesDonnees;
 
+
 window.migrerAnciennesCommandes =
     migrerAnciennesCommandes;
 
+
 window.migrerAnciennesArchives =
     migrerAnciennesArchives;
-
-
-// ======================================
-// EXECUTION MIGRATION
-// ======================================
-
-migrerAnciennesDonnees();
 
 
 // ======================================
@@ -2977,7 +2719,7 @@ console.log(
     {
 
         version:
-            VERSION_DATABASE,
+            db.parametres.versionDatabase,
 
         commandes:
             db.commandes.length,
