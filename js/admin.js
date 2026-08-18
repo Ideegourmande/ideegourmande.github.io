@@ -1,7 +1,8 @@
 // ==================================
 // IDÉE GOURMANDE
-// Administration commandes
-// Version 2.4.0
+// Administration
+// Version 2.5.0
+// Commandes + Stock + Achats
 // ==================================
 
 
@@ -59,8 +60,7 @@ function afficherCommandes(){
 function afficherProduitsCommande(cmd){
 
     /*
-        On utilise produitsListe car il contient
-        les informations structurées :
+        produitsListe contient :
 
         - nom
         - recette
@@ -76,9 +76,7 @@ function afficherProduitsCommande(cmd){
             : [];
 
 
-    // Si produitsListe n'existe pas,
-    // on conserve l'ancien affichage
-    // pour les anciennes commandes.
+    // Anciennes commandes
 
     if(produits.length === 0){
 
@@ -92,7 +90,6 @@ function afficherProduitsCommande(cmd){
 
 
     produits.forEach(function(article){
-
 
         const nom =
             article.nom || "Produit";
@@ -172,7 +169,6 @@ function afficherProduitsCommande(cmd){
             </div>
         `;
 
-
     });
 
 
@@ -200,7 +196,11 @@ function afficherListeCommandes(commandes){
     }
 
 
-    if(commandes.length === 0){
+    if(
+        !Array.isArray(commandes)
+        ||
+        commandes.length === 0
+    ){
 
         zone.innerHTML =
             "<p>Aucune commande enregistrée.</p>";
@@ -214,7 +214,6 @@ function afficherListeCommandes(commandes){
 
 
     commandes.forEach(function(cmd,index){
-
 
         // ==================================
         // COULEUR DU STATUT
@@ -353,30 +352,36 @@ function afficherListeCommandes(commandes){
                     onchange="changerStatut(${index},this.value)"
                 >
 
-
-                    <option value="Nouvelle"
-                    ${(cmd.statut || "Nouvelle")==="Nouvelle"?"selected":""}>
+                    <option
+                        value="Nouvelle"
+                        ${(cmd.statut || "Nouvelle")==="Nouvelle"?"selected":""}
+                    >
                         Nouvelle
                     </option>
 
 
-                    <option value="En préparation"
-                    ${cmd.statut==="En préparation"?"selected":""}>
+                    <option
+                        value="En préparation"
+                        ${cmd.statut==="En préparation"?"selected":""}
+                    >
                         En préparation
                     </option>
 
 
-                    <option value="Prête"
-                    ${cmd.statut==="Prête"?"selected":""}>
+                    <option
+                        value="Prête"
+                        ${cmd.statut==="Prête"?"selected":""}
+                    >
                         Prête
                     </option>
 
 
-                    <option value="Livrée"
-                    ${cmd.statut==="Livrée"?"selected":""}>
+                    <option
+                        value="Livrée"
+                        ${cmd.statut==="Livrée"?"selected":""}
+                    >
                         Livrée
                     </option>
-
 
                 </select>
 
@@ -407,7 +412,7 @@ function afficherListeCommandes(commandes){
 
 
                 ${
-                    cmd.statut==="Livrée"
+                    cmd.statut === "Livrée"
                     ?
 
                     `
@@ -465,25 +470,27 @@ function changerStatut(index,valeur){
         obtenirCommandes();
 
 
-    if(commandes[index]){
+    if(!commandes[index]){
 
-
-        commandes[index].statut =
-            valeur;
-
-
-        sauvegarderDB();
-
-
-        afficherCommandes();
-
-        afficherStatistiques();
-
-        afficherAlertes();
-
-        afficherDernieresCommandes();
+        return;
 
     }
+
+
+    commandes[index].statut =
+        valeur;
+
+
+    sauvegarderDB();
+
+
+    afficherCommandes();
+
+    afficherStatistiques();
+
+    afficherAlertes();
+
+    afficherDernieresCommandes();
 
 }
 
@@ -537,6 +544,10 @@ function archiverCommande(index){
     afficherCommandes();
 
     afficherStatistiques();
+
+    afficherAlertes();
+
+    afficherDernieresCommandes();
 
 }
 
@@ -606,6 +617,17 @@ function imprimerCommande(index){
         .split(" ");
 
 
+    if(typeof genererPDFCommande !== "function"){
+
+        alert(
+            "La fonction de génération PDF n'est pas disponible."
+        );
+
+        return;
+
+    }
+
+
     genererPDFCommande({
 
         id:
@@ -616,32 +638,25 @@ function imprimerCommande(index){
             prenom:
                 noms[0] || "",
 
-
             nom:
                 noms.slice(1).join(" ") || "",
-
 
             email:
                 cmd.email || "",
 
-
             telephone:
                 cmd.telephone || "",
 
-
             adresse:
                 cmd.adresse || "",
-
 
             commentaire:
                 cmd.commentaire || ""
 
         },
 
-
         produits:
             cmd.produitsListe || [],
-
 
         total:
             Number(cmd.total) || 0
@@ -822,8 +837,11 @@ function afficherStatistiques(){
         (db.articles || []).forEach(function(article){
 
             if(
-                article.stock > 0 &&
-                article.stock <= article.minimum
+                Number(article.stock) > 0
+                &&
+                Number(article.stock)
+                <=
+                Number(article.minimum)
             ){
 
                 stockCritique++;
@@ -901,7 +919,9 @@ function rechercherCommande(){
 
 
     let recherche =
-        champ.value.toLowerCase();
+        champ.value
+        .toLowerCase()
+        .trim();
 
 
     let commandes =
@@ -985,8 +1005,10 @@ function afficherAlertes(){
     let commandesAttente =
         commandes.filter(function(cmd){
 
-            return !cmd.statut ||
-                cmd.statut === "Nouvelle" ||
+            return !cmd.statut
+                ||
+                cmd.statut === "Nouvelle"
+                ||
                 cmd.statut === "En préparation";
 
         }).length;
@@ -1042,11 +1064,13 @@ function afficherAlertes(){
         // ==================================
 
         let achatsAttente =
-            (db.achats || []).filter(function(achat){
+            (db.achats || [])
+            .filter(function(achat){
 
                 return achat.statut !== "Réceptionné";
 
-            }).length;
+            })
+            .length;
 
 
         if(achatsAttente > 0){
@@ -1097,7 +1121,11 @@ function allerAuxCommandesApreparer(){
             "attente";
 
 
-        trierCommandes();
+        if(typeof trierCommandes === "function"){
+
+            trierCommandes();
+
+        }
 
     }
 
@@ -1111,8 +1139,13 @@ function allerAuxCommandesApreparer(){
     if(zone){
 
         zone.scrollIntoView({
-            behavior:"smooth",
-            block:"start"
+
+            behavior:
+                "smooth",
+
+            block:
+                "start"
+
         });
 
     }
@@ -1153,7 +1186,7 @@ function afficherDernieresCommandes(){
     }
 
 
-    // prendre les 5 dernières
+    // 5 dernières commandes
 
     let dernieres =
         commandes
@@ -1171,7 +1204,7 @@ function afficherDernieresCommandes(){
         <div class="commande-admin">
 
             <strong>
-                📦 Commande ${cmd.id}
+                📦 Commande ${cmd.id || "-"}
             </strong>
 
             <br>
@@ -1218,7 +1251,9 @@ function afficherResumeStock(){
 
 
     let articles =
-        db.articles || [];
+        Array.isArray(db.articles)
+            ? db.articles
+            : [];
 
 
     let totalArticles =
@@ -1245,7 +1280,8 @@ function afficherResumeStock(){
 
 
         if(
-            stock > 0 &&
+            stock > 0
+            &&
             stock <= Number(article.minimum)
         ){
 
@@ -1318,7 +1354,9 @@ function afficherResumeAchats(){
     }
 
 
-    // Sécurité
+    // ==================================
+    // SECURITE
+    // ==================================
 
     if(!Array.isArray(db.achats)){
 
@@ -1334,8 +1372,6 @@ function afficherResumeAchats(){
     let attente = 0;
 
     let receptionnes = 0;
-
-    let montantAttente = 0;
 
 
     // ==================================
@@ -1366,11 +1402,6 @@ function afficherResumeAchats(){
 
             attente++;
 
-            montantAttente +=
-                Number(
-                    achat.total
-                ) || 0;
-
         }
 
     });
@@ -1381,7 +1412,10 @@ function afficherResumeAchats(){
     // ==================================
 
     const fournisseurs =
-        (db.clients || [])
+        (Array.isArray(db.clients)
+            ? db.clients
+            : []
+        )
         .filter(function(client){
 
             return (
@@ -1392,7 +1426,7 @@ function afficherResumeAchats(){
 
 
     // ==================================
-    // AFFICHAGE
+    // ACHATS EN ATTENTE
     // ==================================
 
     const zoneAttente =
@@ -1409,6 +1443,10 @@ function afficherResumeAchats(){
     }
 
 
+    // ==================================
+    // ACHATS RECEPTIONNES
+    // ==================================
+
     const zoneReception =
         document.getElementById(
             "achatsReceptionnes"
@@ -1422,6 +1460,10 @@ function afficherResumeAchats(){
 
     }
 
+
+    // ==================================
+    // FOURNISSEURS
+    // ==================================
 
     const zoneFournisseurs =
         document.getElementById(
@@ -1437,52 +1479,42 @@ function afficherResumeAchats(){
     }
 
 
-    const zoneMontant =
-        document.getElementById(
-            "montantAchatsAttente"
-        );
-
-
-    if(zoneMontant){
-
-        zoneMontant.textContent =
-            montantAttente.toFixed(2)
-            +
-            " CHF";
-
-    }
-
-
     // ==================================
-    // DEBUG
+    // IMPORTANT
     // ==================================
+    //
+    // Le montant des achats en attente
+    // n'est volontairement PAS calculé.
+    //
+    // Les prix pouvant varier selon les
+    // fournisseurs, ce montant n'est pas
+    // pertinent dans le tableau de bord.
+    //
+    // L'ancien élément :
+    //
+    // montantAchatsAttente
+    //
+    // n'est donc plus utilisé.
+    //
+    // ==================================
+
 
     console.log(
         "📊 RÉSUMÉ ACHATS",
         {
-            total: achats.length,
-            attente: attente,
-            receptionnes: receptionnes,
-            montantAttente: montantAttente
+            total:
+                achats.length,
+
+            attente:
+                attente,
+
+            receptionnes:
+                receptionnes,
+
+            fournisseurs:
+                fournisseurs.length
         }
     );
-
-}
-
-
-// ==================================
-// DECONNEXION ADMIN
-// ==================================
-
-function deconnexion(){
-
-    localStorage.removeItem(
-        "adminConnecte"
-    );
-
-
-    window.location.href =
-        "admin-login.html";
 
 }
 
@@ -1509,41 +1541,57 @@ document.addEventListener(
 
     }
 );
+
+
+// ==================================
+// SYNCHRONISATION ENTRE LES PAGES
+// ==================================
+
 window.addEventListener(
     "storage",
     function(e){
 
         if(
-            e.key === "ideeGourmandeDB"
+            e.key !== "ideeGourmandeDB"
         ){
 
-            console.log(
-                "🔄 Base mise à jour depuis une autre page"
-            );
-
-            // Recharger la base
-
-            db =
-                JSON.parse(
-                    localStorage.getItem(
-                        "ideeGourmandeDB"
-                    )
-                ) || {};
-
-
-            afficherResumeAchats();
-
-            afficherResumeStock();
-
-            afficherStatistiques();
-
-            afficherAlertes();
-
-            afficherDernieresCommandes();
-
-            afficherCommandes();
+            return;
 
         }
+
+
+        console.log(
+            "🔄 Base mise à jour depuis une autre page"
+        );
+
+
+        // ==================================
+        // RECHARGEMENT BASE
+        // ==================================
+
+        db =
+            JSON.parse(
+                localStorage.getItem(
+                    "ideeGourmandeDB"
+                )
+            ) || {};
+
+
+        // ==================================
+        // RAFRAICHISSEMENT
+        // ==================================
+
+        afficherResumeAchats();
+
+        afficherResumeStock();
+
+        afficherStatistiques();
+
+        afficherAlertes();
+
+        afficherDernieresCommandes();
+
+        afficherCommandes();
 
     }
 );
