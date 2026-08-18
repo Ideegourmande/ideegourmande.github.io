@@ -12,184 +12,562 @@
 
 </head>
 
+
 <body>
+
 
 <script>
 
 if(localStorage.getItem("adminConnecte") !== "oui"){
-    window.location.href="admin-login.html";
+
+    window.location.href = "admin-login.html";
+
 }
 
 </script>
 
 
+
+<!-- =========================
+     EN-TÊTE
+========================= -->
+
 <header>
 
-<div class="top-banner">
+    <div class="top-banner">
 
-🛒 Besoins d'achat
+        🛒 Besoins d'achat
 
-</div>
+    </div>
 
 </header>
 
 
+
+<!-- =========================
+     NAVIGATION
+========================= -->
+
 <section class="presentation">
 
-<h1>
-Liste de courses
-</h1>
+    <h1>
+
+        Liste de courses
+
+    </h1>
 
 
-<a href="admin.html" class="btn">
-⬅ Retour Administration
-</a>
+    <a
+        href="admin.html"
+        class="btn"
+    >
+
+        ⬅ Retour Administration
+
+    </a>
 
 </section>
 
 
+
+<!-- =========================
+     LISTE DE COURSES
+========================= -->
 
 <section class="panier-section">
 
-<div class="panier-card">
+    <div class="panier-card">
 
 
-<h2>
-Articles à acheter
-</h2>
+        <h2>
+
+            🛒 Articles à acheter
+
+        </h2>
 
 
-<table>
 
-<thead>
+        <table>
 
-<tr>
+            <thead>
 
-<th>Article</th>
+                <tr>
 
-<th>Stock actuel</th>
+                    <th>
+                        Article
+                    </th>
 
-<th>Minimum</th>
+                    <th>
+                        Stock actuel
+                    </th>
 
-<th>À acheter</th>
+                    <th>
+                        Minimum
+                    </th>
 
-</tr>
+                    <th>
+                        À acheter
+                    </th>
 
-</thead>
+                    <th>
+                        Origine
+                    </th>
+
+                </tr>
+
+            </thead>
 
 
-<tbody id="listeBesoins">
+            <tbody id="listeBesoins">
 
-</tbody>
+            </tbody>
+
+        </table>
 
 
-</table>
-
-
-</div>
+    </div>
 
 </section>
 
 
 
+<!-- =========================
+     PIED DE PAGE
+========================= -->
+
 <footer>
 
-<p>
-© Idée Gourmande - Genève
-</p>
+    <p>
+
+        © Idée Gourmande - Genève
+
+    </p>
 
 </footer>
 
 
 
+<!-- =========================
+     BASE DE DONNÉES
+========================= -->
+
 <script src="js/database.js"></script>
+
 
 
 <script>
 
 
+// ======================================
+// AFFICHAGE LISTE DE COURSES
+// ======================================
+
 function afficherBesoins(){
 
 
-const zone =
-document.getElementById("listeBesoins");
+    const zone =
+        document.getElementById(
+            "listeBesoins"
+        );
 
 
-zone.innerHTML="";
+    if(!zone){
+
+        return;
+
+    }
 
 
-let compteur=0;
+    zone.innerHTML = "";
 
 
+    // ==================================
+    // SECURITE
+    // ==================================
 
-db.articles.forEach(article=>{
+    if(
+        typeof db === "undefined"
+    ){
 
+        zone.innerHTML = `
 
-if(article.stock <= article.minimum){
+            <tr>
 
+                <td colspan="5">
 
-const manque =
-article.minimum - article.stock;
+                    ❌ Base de données indisponible
 
+                </td>
 
+            </tr>
 
-zone.innerHTML += `
+        `;
 
-<tr>
+        return;
 
-<td>${article.nom}</td>
-
-<td>${article.stock} ${article.unite || ""}</td>
-
-<td>${article.minimum} ${article.unite || ""}</td>
-
-<td>
-<strong>${manque} ${article.unite || ""}</strong>
-</td>
-
-</tr>
-
-`;
+    }
 
 
-compteur++;
+    if(
+        !Array.isArray(db.achats)
+    ){
 
+        db.achats = [];
+
+    }
+
+
+    // ==================================
+    // ACHATS EN ATTENTE
+    // ==================================
+
+    const achatsEnAttente =
+
+        db.achats.filter(
+            achat =>
+
+                achat
+
+                &&
+
+                achat.statut !== "Réceptionné"
+
+                &&
+
+                Array.isArray(
+                    achat.articles
+                )
+
+        );
+
+
+    // ==================================
+    // AUCUN ACHAT
+    // ==================================
+
+    if(
+        achatsEnAttente.length === 0
+    ){
+
+        zone.innerHTML = `
+
+            <tr>
+
+                <td colspan="5">
+
+                    ✅ Aucun besoin d'achat
+
+                </td>
+
+            </tr>
+
+        `;
+
+        return;
+
+    }
+
+
+    // ==================================
+    // CONSTRUCTION DE LA LISTE
+    // ==================================
+
+    let compteur = 0;
+
+
+    achatsEnAttente.forEach(
+        achat => {
+
+
+            achat.articles.forEach(
+                ligne => {
+
+
+                    if(!ligne){
+
+                        return;
+
+                    }
+
+
+                    const quantite =
+                        Number(
+                            ligne.quantite
+                        ) || 0;
+
+
+                    if(
+                        quantite <= 0
+                    ){
+
+                        return;
+
+                    }
+
+
+                    // ==================================
+                    // RECHERCHE ARTICLE STOCK
+                    // ==================================
+
+                    const articleStock =
+
+                        Array.isArray(
+                            db.articles
+                        )
+
+                        ?
+
+                        db.articles.find(
+                            article =>
+
+                                String(
+                                    article.nom || ""
+                                )
+                                .trim()
+                                .toLowerCase()
+
+                                ===
+
+                                String(
+                                    ligne.article || ""
+                                )
+                                .trim()
+                                .toLowerCase()
+
+                        )
+
+                        :
+
+                        null;
+
+
+                    const stock =
+
+                        articleStock
+
+                        ?
+
+                        Number(
+                            articleStock.stock
+                        ) || 0
+
+                        :
+
+                        0;
+
+
+                    const minimum =
+
+                        articleStock
+
+                        ?
+
+                        Number(
+                            articleStock.minimum
+                        ) || 0
+
+                        :
+
+                        0;
+
+
+                    const unite =
+
+                        articleStock
+
+                        ?
+
+                        (
+                            articleStock.unite
+                            || ""
+                        )
+
+                        :
+
+                        "";
+
+
+                    compteur++;
+
+
+                    zone.innerHTML += `
+
+                        <tr>
+
+
+                            <td>
+
+                                <strong>
+
+                                    ${
+                                        ligne.article
+                                        ||
+                                        "Article"
+
+                                    }
+
+                                </strong>
+
+
+                                ${
+                                    ligne.reference
+
+                                    ?
+
+                                    `<br>
+
+                                    <small>
+                                        Réf. :
+                                        ${ligne.reference}
+                                    </small>`
+
+                                    :
+
+                                    ""
+
+                                }
+
+                            </td>
+
+
+                            <td>
+
+                                ${stock}
+
+                                ${unite}
+
+                            </td>
+
+
+                            <td>
+
+                                ${minimum}
+
+                                ${unite}
+
+                            </td>
+
+
+                            <td>
+
+                                <strong>
+
+                                    ${quantite}
+
+                                    ${unite}
+
+                                </strong>
+
+                            </td>
+
+
+                            <td>
+
+                                🛒 Commande client
+
+                                <br>
+
+                                <small>
+
+                                    ${
+                                        achat.numero
+                                        ||
+                                        "Achat"
+
+                                    }
+
+                                </small>
+
+                            </td>
+
+
+                        </tr>
+
+                    `;
+
+                }
+
+            );
+
+        }
+
+    );
+
+
+    // ==================================
+    // AUCUN ARTICLE VALIDE
+    // ==================================
+
+    if(
+        compteur === 0
+    ){
+
+        zone.innerHTML = `
+
+            <tr>
+
+                <td colspan="5">
+
+                    ✅ Aucun besoin d'achat
+
+                </td>
+
+            </tr>
+
+        `;
+
+    }
 
 }
 
 
-});
 
-
-
-if(compteur===0){
-
-
-zone.innerHTML = `
-
-<tr>
-
-<td colspan="4">
-
-✅ Aucun besoin d'achat
-
-</td>
-
-</tr>
-
-`;
-
-
-}
-
-
-}
-
-
+// ======================================
+// INITIALISATION
+// ======================================
 
 document.addEventListener(
-"DOMContentLoaded",
-afficherBesoins
+    "DOMContentLoaded",
+    function(){
+
+        afficherBesoins();
+
+    }
+);
+
+
+
+// ======================================
+// SYNCHRONISATION ENTRE LES PAGES
+// ======================================
+
+window.addEventListener(
+    "storage",
+    function(e){
+
+        if(
+            e.key !== "ideeGourmandeDB"
+        ){
+
+            return;
+
+        }
+
+
+        // Recharge la base
+
+        db =
+            JSON.parse(
+                localStorage.getItem(
+                    "ideeGourmandeDB"
+                )
+            )
+            || {};
+
+
+        afficherBesoins();
+
+    }
 );
 
 
