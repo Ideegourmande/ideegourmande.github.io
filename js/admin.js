@@ -1509,3 +1509,41 @@ document.addEventListener(
 
     }
 );
+window.addEventListener(
+    "storage",
+    function(e){
+
+        if(
+            e.key === "ideeGourmandeDB"
+        ){
+
+            console.log(
+                "🔄 Base mise à jour depuis une autre page"
+            );
+
+            // Recharger la base
+
+            db =
+                JSON.parse(
+                    localStorage.getItem(
+                        "ideeGourmandeDB"
+                    )
+                ) || {};
+
+
+            afficherResumeAchats();
+
+            afficherResumeStock();
+
+            afficherStatistiques();
+
+            afficherAlertes();
+
+            afficherDernieresCommandes();
+
+            afficherCommandes();
+
+        }
+
+    }
+);
