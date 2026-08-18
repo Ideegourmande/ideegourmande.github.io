@@ -63,86 +63,9 @@ if(localStorage.getItem("adminConnecte") !== "oui"){
 
 
 
-    <!-- DÉCONNEXION -->
-
-    <button
-        type="button"
-        class="btn"
-        onclick="deconnexion()"
-    >
-
-        🚪 Déconnexion
-
-    </button>
-
-
-
-    <!-- ARCHIVES -->
-
-    <a
-        href="archives.html"
-        class="btn"
-    >
-
-        📂 Archives
-
-    </a>
-
-
-
-    <!-- STOCK -->
-
-    <a
-        href="stock.html"
-        class="btn"
-    >
-
-        📦 Gestion du stock
-
-    </a>
-
-
-
-    <!-- BESOINS D'ACHAT -->
-
-    <a
-        href="besoins.html"
-        class="btn"
-    >
-
-        🛒 Besoins d'achat
-
-    </a>
-
-
-
-    <!-- STATISTIQUES -->
-
-    <a
-        href="statistiques.html"
-        class="btn"
-    >
-
-        📊 Statistiques
-
-    </a>
-
-
-
-    <!-- CLIENTS -->
-
-    <a
-        href="clients.html"
-        class="btn"
-    >
-
-        👥 Clients
-
-    </a>
-
-
-
-    <!-- ACCUEIL -->
+    <!-- =========================
+         ACCUEIL
+    ========================= -->
 
     <a
         href="index.html"
@@ -156,9 +79,83 @@ if(localStorage.getItem("adminConnecte") !== "oui"){
 
 
     <!-- =========================
-         SAUVEGARDE
+         STOCK
     ========================= -->
 
+    <a
+        href="stock.html"
+        class="btn"
+    >
+
+        📦 Gestion du stock
+
+    </a>
+
+
+
+    <!-- =========================
+         BESOINS D'ACHAT
+    ========================= -->
+
+    <a
+        href="besoins.html"
+        class="btn"
+    >
+
+        🛒 Besoins d'achat
+
+    </a>
+
+
+
+    <!-- =========================
+         CLIENTS
+    ========================= -->
+
+    <a
+        href="clients.html"
+        class="btn"
+    >
+
+        👥 Clients
+
+    </a>
+
+
+
+    <!-- =========================
+         ARCHIVES
+    ========================= -->
+
+    <a
+        href="archives.html"
+        class="btn"
+    >
+
+        📂 Archives
+
+    </a>
+
+
+
+    <!-- =========================
+         STATISTIQUES
+    ========================= -->
+
+    <a
+        href="statistiques.html"
+        class="btn"
+    >
+
+        📊 Statistiques
+
+    </a>
+
+
+
+    <!-- =========================
+         SAUVEGARDE
+    ========================= -->
 
     <button
         type="button"
@@ -175,7 +172,6 @@ if(localStorage.getItem("adminConnecte") !== "oui"){
     <!-- =========================
          RESTAURATION
     ========================= -->
-
 
     <button
         type="button"
@@ -196,6 +192,22 @@ if(localStorage.getItem("adminConnecte") !== "oui"){
         style="display:none"
         onchange="restaurerBaseFichier(event)"
     >
+
+
+
+    <!-- =========================
+         DÉCONNEXION
+    ========================= -->
+
+    <button
+        type="button"
+        class="btn"
+        onclick="deconnexion()"
+    >
+
+        🚪 Déconnexion
+
+    </button>
 
 
 </section>
@@ -673,13 +685,51 @@ if(localStorage.getItem("adminConnecte") !== "oui"){
 
 </section>
 
-<button
-    type="button"
-    class="btn"
-    onclick="reinitialiserCommandesEtAchats()"
->
-    🧹 Réinitialiser commandes + achats automatiques
-</button>
+
+
+<!-- =========================
+     REMISE À ZÉRO TEST
+========================= -->
+
+<section class="panier-section">
+
+
+    <div class="panier-card">
+
+
+        <h2>
+
+            🧹 Remise à zéro
+
+        </h2>
+
+
+        <p>
+
+            Supprime les commandes et les achats
+            automatiques afin de recommencer
+            un test proprement.
+
+        </p>
+
+
+        <button
+            type="button"
+            class="btn"
+            onclick="reinitialiserCommandesEtAchats()"
+        >
+
+            🧹 Réinitialiser commandes + achats automatiques
+
+        </button>
+
+
+    </div>
+
+
+</section>
+
+
 
 <!-- =========================
      PIED DE PAGE
