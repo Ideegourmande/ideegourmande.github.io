@@ -472,14 +472,21 @@ function archiverCommande(index){
 
     if(
         !confirm(
-            "Archiver cette commande ?"
+            "Archiver cette commande ?\n\n" +
+            "L'achat automatique associé sera supprimé.\n" +
+            "Les achats manuels seront conservés."
         )
     ){
         return;
     }
 
+    // Supprimer l'achat automatique lié
+    supprimerAchatsAutomatiquesCommande(cmd);
+
+    // Archiver la commande
     archives.push(cmd);
 
+    // Retirer des commandes actives
     commandes.splice(
         index,
         1
@@ -493,8 +500,8 @@ function archiverCommande(index){
     afficherStatistiques();
     afficherAlertes();
     afficherDernieresCommandes();
+    afficherResumeAchats();
 }
-
 // ==================================
 // SUPPRIMER LES ACHATS AUTOMATIQUES
 // LIÉS À UNE COMMANDE
