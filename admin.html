@@ -17,294 +17,495 @@
 <script>
 
 if(localStorage.getItem("adminConnecte") !== "oui"){
-    window.location.href="admin-login.html";
+    window.location.href = "admin-login.html";
 }
 
 </script>
 
+
+<!-- =========================
+     EN-TÊTE
+========================= -->
+
 <header>
 
-<div class="top-banner">
-🔐 Administration des commandes - Idée Gourmande
-</div>
+    <div class="top-banner">
+        🔐 Administration des commandes - Idée Gourmande
+    </div>
 
 </header>
 
+
+<!-- =========================
+     NAVIGATION
+========================= -->
+
 <section class="presentation">
 
-<h1>
-Tableau de bord
-</h1>
-
-<button class="btn" onclick="deconnexion()">
-🚪 Déconnexion
-</button>
-
-<a href="archives.html" class="btn">
-📂 Archives
-</a>
-
-<a href="stock.html" class="btn">
-📦 Gestion du stock
-</a>
-
-<a href="besoins.html" class="btn">
-🛒 Besoins d'achat
-</a>
-
-<a href="statistiques.html" class="btn">
-📊 Statistiques
-</a>
-<a href="clients.html" class="btn">
-👥 Clients
-</a>
-<a href="index.html" class="btn">
-🏠 Accueil
-</a>
-
-</section>
+    <h1>
+        Tableau de bord
+    </h1>
 
 
-<section class="stats">
-
-<div class="stat-card">
-<h3>Commandes</h3>
-<strong id="nbCommandes">0</strong>
-</div>
-
-<div class="stat-card">
-<h3>Chiffre d'affaires</h3>
-<strong id="caTotal">0 CHF</strong>
-</div>
-
-<div class="stat-card">
-<h3>Aujourd'hui</h3>
-<strong id="commandeJour">0</strong>
-</div>
-
-<div class="stat-card">
-<h3>Articles à acheter</h3>
-<strong id="nbAchats">0</strong>
-</div>
-
-<div class="stat-card">
-<h3>Stock critique</h3>
-<strong id="stockCritique">0</strong>
-</div>
-
-<div class="stat-card">
-<h3>Session en cours</h3>
-<strong id="sessionActive">Aucune</strong>
-</div>
-
-</section>
-
-
-<section class="panier-section">
-
-<div class="panier-card">
-
-<h2>
-🕒 Dernières commandes
-</h2>
-
-<div id="dernieresCommandes">
-
-Chargement...
-
-</div>
-
-</div>
-
-</section>
-<section class="panier-section">
-
-<div class="panier-card">
-
-<h2>
-📦 Commandes reçues
-</h2>
-
-<input
-type="search"
-id="rechercheCommande"
-placeholder="Rechercher un client..."
-oninput="rechercherCommande()">
-
-
-<div class="tri-commandes">
-
-    <label for="triCommandes">
-        Trier par :
-    </label>
-
-    <select
-        id="triCommandes"
-        onchange="trierCommandes()"
+    <button
+        class="btn"
+        onclick="deconnexion()"
     >
-
-        <option value="anciennes">
-            🕐 Plus anciennes
-        </option>
-
-        <option value="recentes">
-            🆕 Plus récentes
-        </option>
-
-        <option value="attente">
-            🟠 Nouvelles / en préparation
-        </option>
-
-        <option value="pretes">
-            🔵 Prêtes
-        </option>
-
-        <option value="livrees">
-            ⚪ Livrées
-        </option>
-
-    </select>
-
-</div>
+        🚪 Déconnexion
+    </button>
 
 
-<div id="listeCommandes">
-Chargement...
-</div>
-
-</div>
-
-</section>
-
+    <a
+        href="archives.html"
+        class="btn"
+    >
+        📂 Archives
+    </a>
 
 
-<section class="panier-section">
+    <a
+        href="stock.html"
+        class="btn"
+    >
+        📦 Gestion du stock
+    </a>
 
-<div class="panier-card">
 
-<h2>
-🔔 Alertes
-</h2>
+    <a
+        href="besoins.html"
+        class="btn"
+    >
+        🛒 Besoins d'achat
+    </a>
 
-<div id="listeAlertes">
 
-<p>✅ Aucune alerte.</p>
+    <a
+        href="statistiques.html"
+        class="btn"
+    >
+        📊 Statistiques
+    </a>
 
-</div>
 
-</div>
+    <a
+        href="clients.html"
+        class="btn"
+    >
+        👥 Clients
+    </a>
+
+
+    <a
+        href="index.html"
+        class="btn"
+    >
+        🏠 Accueil
+    </a>
 
 </section>
 
 
 
 <!-- =========================
-DERNIERES COMMANDES
+     STATISTIQUES PRINCIPALES
+========================= -->
+
+<section class="stats">
+
+
+    <div class="stat-card">
+
+        <h3>
+            Commandes
+        </h3>
+
+        <strong id="nbCommandes">
+            0
+        </strong>
+
+    </div>
+
+
+
+    <div class="stat-card">
+
+        <h3>
+            Chiffre d'affaires
+        </h3>
+
+        <strong id="caTotal">
+            0 CHF
+        </strong>
+
+    </div>
+
+
+
+    <div class="stat-card">
+
+        <h3>
+            Aujourd'hui
+        </h3>
+
+        <strong id="commandeJour">
+            0
+        </strong>
+
+    </div>
+
+
+
+    <div class="stat-card">
+
+        <h3>
+            Articles à acheter
+        </h3>
+
+        <strong id="nbAchats">
+            0
+        </strong>
+
+    </div>
+
+
+
+    <div class="stat-card">
+
+        <h3>
+            Stock critique
+        </h3>
+
+        <strong id="stockCritique">
+            0
+        </strong>
+
+    </div>
+
+
+
+    <div class="stat-card">
+
+        <h3>
+            Session en cours
+        </h3>
+
+        <strong id="sessionActive">
+            Aucune
+        </strong>
+
+    </div>
+
+
+</section>
+
+
+
+<!-- =========================
+     DERNIÈRES COMMANDES
 ========================= -->
 
 <section class="panier-section">
 
+    <div class="panier-card">
+
+        <h2>
+            🕒 Dernières commandes
+        </h2>
+
+
+        <div id="dernieresCommandes">
+
+            Chargement...
+
+        </div>
+
+    </div>
+
+</section>
+
+
+
+<!-- =========================
+     COMMANDES REÇUES
+========================= -->
+
+<section class="panier-section">
+
+    <div class="panier-card">
+
+        <h2>
+            📦 Commandes reçues
+        </h2>
+
+
+        <!-- RECHERCHE -->
+
+        <input
+            type="search"
+            id="rechercheCommande"
+            placeholder="Rechercher un client..."
+            oninput="rechercherCommande()"
+        >
+
+
+        <!-- TRI -->
+
+        <div class="tri-commandes">
+
+            <label for="triCommandes">
+
+                Trier par :
+
+            </label>
+
+
+            <select
+                id="triCommandes"
+                onchange="trierCommandes()"
+            >
+
+                <option value="anciennes">
+
+                    🕐 Plus anciennes
+
+                </option>
+
+
+                <option value="recentes">
+
+                    🆕 Plus récentes
+
+                </option>
+
+
+                <option value="attente">
+
+                    🟠 Nouvelles / en préparation
+
+                </option>
+
+
+                <option value="pretes">
+
+                    🔵 Prêtes
+
+                </option>
+
+
+                <option value="livrees">
+
+                    ⚪ Livrées
+
+                </option>
+
+            </select>
+
+        </div>
+
+
+        <!-- LISTE -->
+
+        <div id="listeCommandes">
+
+            Chargement...
+
+        </div>
+
+    </div>
+
+</section>
+
+
+
+<!-- =========================
+     ALERTES
+========================= -->
+
+<section class="panier-section">
+
+    <div class="panier-card">
+
+        <h2>
+            🔔 Alertes
+        </h2>
+
+
+        <div id="listeAlertes">
+
+            <p>
+                ✅ Aucune alerte.
+            </p>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+
+<!-- =========================
+     RÉSUMÉ DU STOCK
+========================= -->
+
+<section class="panier-section">
+
+    <div class="panier-card">
+
+        <h2>
+            📦 Résumé du stock
+        </h2>
+
+
+        <p>
+
+            Nombre d'articles :
+
+            <strong id="totalArticlesStock">
+
+                0
+
+            </strong>
+
+        </p>
+
+
+        <p>
+
+            Valeur estimée :
+
+            <strong id="valeurStock">
+
+                0 CHF
+
+            </strong>
+
+        </p>
+
+
+        <p>
+
+            Articles en stock critique :
+
+            <strong id="stockCritiqueStock">
+
+                0
+
+            </strong>
+
+        </p>
+
+    </div>
+
+</section>
+
+
+
+<!-- =========================
+     RÉSUMÉ DES ACHATS
+========================= -->
+
+<section class="panier-section">
+
+    <div class="panier-card">
+
+        <h2>
+            🛒 Résumé des achats
+        </h2>
+
+
+        <p>
+
+            Achats en attente :
+
+            <strong id="achatsEnAttente">
+
+                0
+
+            </strong>
+
+        </p>
+
+
+        <p>
+
+            Achats réceptionnés :
+
+            <strong id="achatsReceptionnes">
+
+                0
+
+            </strong>
+
+        </p>
+
+
+        <p>
+
+            Fournisseurs :
+
+            <strong id="nombreFournisseurs">
+
+                0
+
+            </strong>
+
+        </p>
+
+
+        <!--
+            Le montant des achats en attente
+            a volontairement été supprimé.
+
+            Les prix d'achat peuvent varier
+            selon le fournisseur et selon
+            la commande.
+        -->
+
+    </div>
+
+</section>
+
+
+
+<!-- =========================
+     PIED DE PAGE
+========================= -->
 
 <footer>
 
-<p>
-© Idée Gourmande - Genève
-</p>
+    <p>
+        © Idée Gourmande - Genève
+    </p>
 
-<p>
-Version 2.3.0
-</p>
+
+    <p>
+        Version 2.8.0
+    </p>
 
 </footer>
 
 
+
+<!-- =========================
+     BIBLIOTHÈQUES
+========================= -->
+
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 
+
+
+<!-- =========================
+     JAVASCRIPT
+========================= -->
+
 <script src="js/database.js"></script>
+
 <script src="js/pdfcommande.js"></script>
+
 <script src="js/admin.js"></script>
 
 
 </body>
 
 </html>
-<section class="panier-section">
-
-<div class="panier-card">
-
-<h2>
-📦 Résumé du stock
-</h2>
-
-
-<p>
-Nombre d'articles :
-<strong id="totalArticlesStock">
-0
-</strong>
-</p>
-
-
-<p>
-Valeur estimée :
-<strong id="valeurStock">
-0 CHF
-</strong>
-</p>
-
-
-<p>
-Articles en stock critique :
-<strong id="stockCritiqueStock">
-0
-</strong>
-</p>
-
-
-</div>
-
-</section>
-<section class="panier-section">
-
-<div class="panier-card">
-
-<h2>
-🛒 Résumé des achats
-</h2>
-
-
-<p>
-Achats en attente :
-<strong id="achatsEnAttente">
-0
-</strong>
-</p>
-
-
-<p>
-Achats réceptionnés :
-<strong id="achatsReceptionnes">
-0
-</strong>
-</p>
-
-
-<p>
-Fournisseurs :
-<strong id="nombreFournisseurs">
-0
-</strong>
-</p>
-
-
-<p>
-Montant des achats en attente :
-<strong id="montantAchatsAttente">
-0 CHF
-</strong>
-</p>
-
-
-</div>
-
-</section>
