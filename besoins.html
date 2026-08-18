@@ -223,22 +223,29 @@ function afficherBesoins(){
 
     const achatsEnAttente =
 
-        db.achats.filter(
-            achat =>
+    db.achats.filter(function(achat){
 
-                achat
+        if(!achat){
+            return false;
+        }
 
-                &&
+        // On ne montre pas les achats manuels
+        if(achat.automatique !== true){
+            return false;
+        }
 
-                achat.statut !== "Réceptionné"
+        // Achat déjà réceptionné
+        if(achat.statut === "Réceptionné"){
+            return false;
+        }
 
-                &&
+        // Achat sans articles
+        if(!Array.isArray(achat.articles)){
+            return false;
+        }
 
-                Array.isArray(
-                    achat.articles
-                )
-
-        );
+        return true;
+    });
 
 
     // ==================================
@@ -469,10 +476,7 @@ function afficherBesoins(){
 
                                 <small>
 
-                                    ${
-                                        achat.numero
-                                        ||
-                                        "Achat"
+                                    ${achat.numero || achat.commandeId || "Commande client"}
 
                                     }
 
