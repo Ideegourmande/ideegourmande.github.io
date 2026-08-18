@@ -1,9 +1,8 @@
 // ======================================
-// IDEE GOURMANDE - GESTION DES ACHATS
-// Version 1.3.0
-// Compatible database.js 2.1.0
-// Compatible js-stock.js 2.2.0
-// Compatible js-fournisseurs.js 1.1.1
+// IDEE GOURMANDE
+// GESTION DES ACHATS
+// Version 1.4.0
+// Achats manuels + automatiques
 // ======================================
 
 
@@ -12,12 +11,11 @@ let achatEdition = -1;
 let lignesAchat = [];
 
 
-//--------------------------------------
-// Vérification base de données
-//--------------------------------------
+// ======================================
+// VERIFICATION BASE
+// ======================================
 
 function verifierAchatsDB(){
-
 
     if(typeof db === "undefined"){
 
@@ -31,11 +29,8 @@ function verifierAchatsDB(){
 
 
     db.achats ??= [];
-
     db.mouvements ??= [];
-
     db.articles ??= [];
-
     db.clients ??= [];
 
 
@@ -44,64 +39,56 @@ function verifierAchatsDB(){
 }
 
 
-
-//--------------------------------------
-// Sauvegarde centrale
-//--------------------------------------
+// ======================================
+// SAUVEGARDE
+// ======================================
 
 function sauvegarderAchats(){
 
-
-    if(typeof sauvegarderDB === "function"){
+    if(
+        typeof sauvegarderDB ===
+        "function"
+    ){
 
         sauvegarderDB();
 
     }
 
-
 }
 
 
-
-//--------------------------------------
-// Génération numéro achat
-//--------------------------------------
+// ======================================
+// NUMERO ACHAT
+// ======================================
 
 function genererNumeroAchat(){
 
-
     return "ACH-" + Date.now();
-
 
 }
 
 
-
-//--------------------------------------
-// Nouveau achat
-//--------------------------------------
+// ======================================
+// NOUVEL ACHAT
+// ======================================
 
 function nouvelAchat(){
 
-
     achatEdition = -1;
-
 
     lignesAchat = [];
 
 
-
     const fournisseur =
-    document.getElementById(
-        "achatFournisseur"
-    );
+        document.getElementById(
+            "achatFournisseur"
+        );
 
 
     const date =
-    document.getElementById(
-        "achatDate"
-    );
-
+        document.getElementById(
+            "achatDate"
+        );
 
 
     if(fournisseur){
@@ -111,71 +98,57 @@ function nouvelAchat(){
     }
 
 
-
     if(date){
 
         date.value =
-
-        new Date()
-
-        .toISOString()
-
-        .split("T")[0];
+            new Date()
+            .toISOString()
+            .split("T")[0];
 
     }
-
 
 
     afficherLignesAchat();
 
 
-
     const popup =
-
-    document.getElementById(
-        "popupAchat"
-    );
-
+        document.getElementById(
+            "popupAchat"
+        );
 
 
     if(popup){
 
-        popup.style.display = "flex";
+        popup.style.display =
+            "flex";
 
     }
-
 
 }
 
 
-
-//--------------------------------------
-// Ajouter ligne achat
-//--------------------------------------
+// ======================================
+// AJOUT LIGNE ACHAT
+// ======================================
 
 function ajouterLigneAchat(){
 
-
     const selectArticle =
-
-    document.getElementById(
-        "achatArticle"
-    );
+        document.getElementById(
+            "achatArticle"
+        );
 
 
     const inputQuantite =
-
-    document.getElementById(
-        "achatQuantite"
-    );
+        document.getElementById(
+            "achatQuantite"
+        );
 
 
     const inputPrix =
-
-    document.getElementById(
-        "achatPrix"
-    );
-
+        document.getElementById(
+            "achatPrix"
+        );
 
 
     if(
@@ -189,65 +162,53 @@ function ajouterLigneAchat(){
     }
 
 
-
     const article =
-
-    selectArticle.value;
-
+        selectArticle.value;
 
 
     const quantite =
-
-    Number(inputQuantite.value) || 0;
-
+        Number(
+            inputQuantite.value
+        ) || 0;
 
 
     const prix =
-
-    Number(inputPrix.value) || 0;
-
+        Number(
+            inputPrix.value
+        ) || 0;
 
 
     if(article === ""){
-
 
         alert(
             "Sélectionnez un article."
         );
 
-
         return;
 
     }
 
 
-
     if(quantite <= 0){
-
 
         alert(
             "La quantité doit être supérieure à zéro."
         );
 
-
         return;
 
     }
 
 
-
     if(prix < 0){
-
 
         alert(
             "Le prix est incorrect."
         );
 
-
         return;
 
     }
-
 
 
     lignesAchat.push({
@@ -261,27 +222,21 @@ function ajouterLigneAchat(){
     });
 
 
-
     afficherLignesAchat();
-
 
 }
 
 
-
-//--------------------------------------
-// Affichage lignes achat
-//--------------------------------------
+// ======================================
+// AFFICHAGE LIGNES
+// ======================================
 
 function afficherLignesAchat(){
 
-
     const zone =
-
-    document.getElementById(
-        "listeAchat"
-    );
-
+        document.getElementById(
+            "listeAchat"
+        );
 
 
     if(!zone){
@@ -291,321 +246,254 @@ function afficherLignesAchat(){
     }
 
 
-
     zone.innerHTML = "";
-
 
 
     let total = 0;
 
 
+    lignesAchat.forEach(
+        (ligne,index) => {
 
-    lignesAchat.forEach((ligne,index)=>{
-
-
-        const montant =
-
-        ligne.quantite *
-
-        ligne.prix;
+            const montant =
+                ligne.quantite *
+                ligne.prix;
 
 
-
-        total += montant;
-
+            total += montant;
 
 
-        zone.innerHTML += `
+            zone.innerHTML += `
+
+            <div class="ligne-produit">
+
+                <span>
+
+                    ${ligne.article}
+
+                    (${ligne.quantite})
+
+                </span>
 
 
-        <div class="ligne-produit">
+                <strong>
+
+                    ${montant.toFixed(2)} CHF
+
+                </strong>
 
 
-            <span>
+                <button
+                    onclick="supprimerLigneAchat(${index})"
+                >
 
-                ${ligne.article}
+                    ❌
 
-                (${ligne.quantite})
+                </button>
 
-            </span>
+            </div>
 
+            `;
 
-
-            <strong>
-
-                ${montant.toFixed(2)} CHF
-
-            </strong>
-
-
-
-            <button onclick="supprimerLigneAchat(${index})">
-
-                ❌
-
-            </button>
-
-
-        </div>
-
-
-        `;
-
-
-    });
-
+        }
+    );
 
 
     const totalZone =
-
-    document.getElementById(
-        "totalAchat"
-    );
-
+        document.getElementById(
+            "totalAchat"
+        );
 
 
     if(totalZone){
 
         totalZone.textContent =
-
-        total.toFixed(2) + " CHF";
+            total.toFixed(2)
+            +
+            " CHF";
 
     }
-
 
 }
 
 
+// ======================================
+// SUPPRIMER LIGNE
+// ======================================
 
-//--------------------------------------
-// Supprimer ligne achat
-//--------------------------------------
-
-function supprimerLigneAchat(index){
-
+function supprimerLigneAchat(
+    index
+){
 
     lignesAchat.splice(
-
         index,
-
         1
-
     );
 
 
     afficherLignesAchat();
 
-
 }
-//--------------------------------------
-// Enregistrer achat
-//--------------------------------------
+
+
+// ======================================
+// ENREGISTRER ACHAT MANUEL
+// ======================================
 
 function enregistrerAchat(){
-
 
     if(!verifierAchatsDB())
         return;
 
 
-
     const fournisseurNom =
-
-    document.getElementById(
-        "achatFournisseur"
-    )
-    ?.value
-    ?.trim();
-
+        document.getElementById(
+            "achatFournisseur"
+        )
+        ?.value
+        ?.trim();
 
 
     if(!fournisseurNom){
-
 
         alert(
             "Veuillez saisir le fournisseur."
         );
 
-
         return;
 
     }
 
 
-
     if(lignesAchat.length === 0){
-
 
         alert(
             "Ajoutez au moins un article."
         );
 
-
         return;
 
     }
 
 
-
-
-    //----------------------------------
-    // Recherche fournisseur existant
-    //----------------------------------
+    // Recherche fournisseur
 
     let fournisseur =
+        db.clients.find(
+            client =>
 
-    db.clients.find(client =>
+                client.type ===
+                "Fournisseur"
 
+                &&
 
-        client.type === "Fournisseur"
-
-        &&
-
-        client.nom?.toLowerCase()
-
-        ===
-
-        fournisseurNom.toLowerCase()
-
-
-    );
+                client.nom?.toLowerCase()
+                ===
+                fournisseurNom.toLowerCase()
+        );
 
 
-
-    //----------------------------------
-    // Création fournisseur automatique
-    //----------------------------------
+    // Création fournisseur
 
     if(!fournisseur){
 
-
         fournisseur = {
 
-
             id:
-            Date.now(),
-
+                Date.now(),
 
             nom:
-            fournisseurNom,
-
+                fournisseurNom,
 
             type:
-            "Fournisseur",
+                "Fournisseur",
 
+            telephone:
+                "",
 
-            telephone:"",
-            email:"",
-            adresse:"",
-            notes:"",
+            email:
+                "",
 
+            adresse:
+                "",
+
+            notes:
+                "",
 
             dateCreation:
-
-            new Date()
-            .toLocaleString()
-
+                new Date()
+                .toLocaleString()
 
         };
-
 
 
         db.clients.push(
             fournisseur
         );
 
-
     }
 
 
-
-    //----------------------------------
     // Création achat
-    //----------------------------------
 
     const achat = {
 
-
         id:
-
-        Date.now(),
-
-
+            Date.now(),
 
         numero:
-
-        genererNumeroAchat(),
-
-
+            genererNumeroAchat(),
 
         date:
-
-        document.getElementById(
-            "achatDate"
-        )
-        ?.value
-
-        ||
-
-        new Date()
-        .toISOString()
-        .split("T")[0],
-
-
+            document.getElementById(
+                "achatDate"
+            )
+            ?.value
+            ||
+            new Date()
+            .toISOString()
+            .split("T")[0],
 
         fournisseur:
-
-        fournisseur.nom,
-
-
+            fournisseur.nom,
 
         fournisseurId:
-
-        fournisseur.id,
-
-
+            fournisseur.id,
 
         articles:
-
-        [...lignesAchat],
-
-
+            [...lignesAchat],
 
         total:
+            lignesAchat.reduce(
+                (
+                    total,
+                    ligne
+                ) =>
 
-        lignesAchat.reduce(
+                    total
+                    +
+                    (
+                        ligne.quantite
+                        *
+                        ligne.prix
+                    ),
 
-            (total,ligne)=>
-
-            total +
-
-            (
-
-                ligne.quantite *
-
-                ligne.prix
-
+                0
             ),
 
-            0
-
-        ),
-
-
-
         statut:
-
-        "En attente",
-
-
+            "En attente",
 
         dateReception:
+            null,
 
-        null
+        automatique:
+            false,
 
+        origine:
+            "Saisie manuelle"
 
     };
-
 
 
     db.achats.push(
@@ -613,273 +501,302 @@ function enregistrerAchat(){
     );
 
 
-
-
-
     db.mouvements.push({
 
-
         date:
-
-        new Date()
-        .toLocaleString(),
-
-
+            new Date()
+            .toLocaleString(),
 
         action:
-
-        "Création achat",
-
-
+            "Création achat",
 
         achat:
-
-        achat.numero,
-
-
+            achat.numero,
 
         fournisseur:
-
-        fournisseur.nom,
-
-
+            fournisseur.nom,
 
         fournisseurId:
-
-        fournisseur.id,
-
-
+            fournisseur.id,
 
         montant:
+            achat.total,
 
-        achat.total
-
+        origine:
+            "Saisie manuelle"
 
     });
-
-
-
 
 
     lignesAchat = [];
 
 
-
     sauvegarderAchats();
-
 
 
     afficherAchats();
 
 
-
     fermerPopupAchat();
-
 
 }
 
 
-
-
-
-
-//--------------------------------------
-// Affichage liste achats
-//--------------------------------------
+// ======================================
+// AFFICHAGE ACHATS
+// ======================================
 
 function afficherAchats(){
-
 
     if(!verifierAchatsDB())
         return;
 
 
-
     const zone =
-
-    document.getElementById(
-        "listeAchats"
-    );
-
+        document.getElementById(
+            "listeAchats"
+        );
 
 
     if(!zone)
         return;
 
 
-
     zone.innerHTML = "";
 
 
+    db.achats.forEach(
+        (achat,index) => {
 
-    db.achats.forEach((achat,index)=>{
-
-
-
-        achat.numero ??=
-
-        "ACH-" + achat.id;
+            achat.numero ??=
+                "ACH-" + achat.id;
 
 
-
-        achat.dateReception ??=
-
-        null;
+            achat.dateReception ??=
+                null;
 
 
-
-        achat.total =
-
-        Number(achat.total) || 0;
+            achat.statut ??=
+                "En attente";
 
 
-
-        zone.innerHTML += `
-
-
-        <div class="commande-admin">
-
-
-            <h3>
-
-                ${achat.numero}
-
-            </h3>
+            achat.total =
+                Number(
+                    achat.total
+                ) || 0;
 
 
+            const badgeAutomatique =
 
-            <p>
-
-            Fournisseur :
-
-            <strong>
-
-            ${achat.fournisseur || "-"}
-
-            </strong>
-
-            </p>
-
-
-
-            <p>
-
-            Date :
-
-            ${achat.date || "-"}
-
-            </p>
-
-
-
-            <p>
-
-            Total :
-
-            <strong>
-
-            ${achat.total.toFixed(2)} CHF
-
-            </strong>
-
-            </p>
-
-
-
-            <p>
-
-            Statut :
-
-            ${achat.statut || "En attente"}
-
-            </p>
-
-
-
-
-
-            ${
-                achat.statut !== "Réceptionné"
+                achat.automatique === true
 
                 ?
 
                 `
 
-                <button onclick="receptionnerAchat(${index})">
-
-                    📦 Réceptionner
-
-                </button>
-
-                `
-
-                :
-
-                `
-
                 <p>
 
-                ✅ Réceptionné le :
+                    🤖
 
-                ${achat.dateReception || "-"}
+                    <strong>
+                        Achat automatique
+                    </strong>
+
+                    ${
+                        achat.origine
+                        ?
+                        `(${achat.origine})`
+                        :
+                        ""
+                    }
 
                 </p>
 
                 `
 
-            }
+                :
+
+                "";
 
 
+            const articlesHTML =
+
+                Array.isArray(
+                    achat.articles
+                )
+
+                ?
+
+                achat.articles
+                    .map(
+                        ligne =>
+                            `
+                            ${ligne.article}
+                            (${ligne.quantite})
+                            `
+                    )
+                    .join(", ")
+
+                :
+
+                "-";
 
 
+            zone.innerHTML += `
 
-            <button onclick="supprimerAchat(${index})">
+            <div class="commande-admin">
 
-                🗑 Supprimer
+                <h3>
 
-            </button>
+                    ${achat.numero}
 
-
-
-        </div>
-
-
-        `;
+                </h3>
 
 
+                ${badgeAutomatique}
 
-    });
 
+                <p>
+
+                    Fournisseur :
+
+                    <strong>
+
+                        ${
+                            achat.fournisseur
+                            ||
+                            "À définir"
+                        }
+
+                    </strong>
+
+                </p>
+
+
+                <p>
+
+                    Date :
+
+                    ${achat.date || "-"}
+
+                </p>
+
+
+                <p>
+
+                    Articles :
+
+                    ${articlesHTML}
+
+                </p>
+
+
+                <p>
+
+                    Total :
+
+                    <strong>
+
+                        ${achat.total.toFixed(2)}
+                        CHF
+
+                    </strong>
+
+                </p>
+
+
+                <p>
+
+                    Statut :
+
+                    ${achat.statut}
+
+                </p>
+
+
+                ${
+                    achat.statut !==
+                    "Réceptionné"
+
+                    ?
+
+                    `
+
+                    <button
+                        onclick="receptionnerAchat(${index})"
+                    >
+
+                        📦 Réceptionner
+
+                    </button>
+
+                    `
+
+                    :
+
+                    `
+
+                    <p>
+
+                        ✅ Réceptionné le :
+
+                        ${
+                            achat.dateReception
+                            ||
+                            "-"
+                        }
+
+                    </p>
+
+                    `
+                }
+
+
+                <button
+                    onclick="supprimerAchat(${index})"
+                >
+
+                    🗑 Supprimer
+
+                </button>
+
+
+            </div>
+
+            `;
+
+        }
+    );
 
 }
 
 
+// ======================================
+// PRIX MOYEN ACHAT
+// ======================================
 
-
-
-//--------------------------------------
-// Calcul prix moyen achat
-//--------------------------------------
-
-function calculerPrixMoyen(article,quantiteAjoutee,prixAchat){
-
+function calculerPrixMoyen(
+    article,
+    quantiteAjoutee,
+    prixAchat
+){
 
     const ancienStock =
-
-    Number(article.stock) || 0;
-
+        Number(
+            article.stock
+        ) || 0;
 
 
     const ancienPrix =
-
-    Number(article.prixAchatMoyen) || 0;
-
+        Number(
+            article.prixAchatMoyen
+        ) || 0;
 
 
     const nouveauStock =
-
-    ancienStock + quantiteAjoutee;
-
+        ancienStock
+        +
+        quantiteAjoutee;
 
 
     if(nouveauStock <= 0){
@@ -889,17 +806,18 @@ function calculerPrixMoyen(article,quantiteAjoutee,prixAchat){
     }
 
 
-
     return (
 
         (
-
-            ancienStock * ancienPrix
+            ancienStock
+            *
+            ancienPrix
 
             +
 
-            quantiteAjoutee * prixAchat
-
+            quantiteAjoutee
+            *
+            prixAchat
         )
 
         /
@@ -908,629 +826,735 @@ function calculerPrixMoyen(article,quantiteAjoutee,prixAchat){
 
     );
 
+}
+
+
+// ======================================
+// RECHERCHE ARTICLE RECEPTION
+// ======================================
+
+function trouverArticlePourReception(
+    ligne
+){
+
+    if(!ligne){
+
+        return null;
+
+    }
+
+
+    // Par référence
+
+    if(ligne.reference){
+
+        const reference =
+            String(
+                ligne.reference
+            )
+            .trim()
+            .toLowerCase();
+
+
+        const articleParReference =
+            db.articles.find(
+                article =>
+
+                    String(
+                        article.reference
+                        ||
+                        ""
+                    )
+                    .trim()
+                    .toLowerCase()
+                    ===
+                    reference
+            );
+
+
+        if(articleParReference){
+
+            return articleParReference;
+
+        }
+
+    }
+
+
+    // Par nom normalisé
+
+    const nomLigne =
+
+        typeof normaliserNomArticle ===
+        "function"
+
+        ?
+
+        normaliserNomArticle(
+            ligne.article
+        )
+
+        :
+
+        String(
+            ligne.article || ""
+        )
+        .trim()
+        .toLowerCase();
+
+
+    const article =
+        db.articles.find(
+            article => {
+
+                const nomArticle =
+
+                    typeof normaliserNomArticle ===
+                    "function"
+
+                    ?
+
+                    normaliserNomArticle(
+                        article.nom
+                    )
+
+                    :
+
+                    String(
+                        article.nom || ""
+                    )
+                    .trim()
+                    .toLowerCase();
+
+
+                return (
+                    nomArticle
+                    ===
+                    nomLigne
+                );
+
+            }
+        );
+
+
+    if(article){
+
+        return article;
+
+    }
+
+
+    return db.articles.find(
+        article =>
+            article.nom
+            ===
+            ligne.article
+    ) || null;
 
 }
-//--------------------------------------
-// Réception achat → Stock
-//--------------------------------------
 
-function receptionnerAchat(index){
 
+// ======================================
+// RECEPTION ACHAT → STOCK
+// ======================================
+
+function receptionnerAchat(
+    index
+){
 
     if(!verifierAchatsDB())
         return;
 
 
-
     const achat =
-
-    db.achats[index];
-
+        db.achats[index];
 
 
     if(!achat)
         return;
 
 
-
-    if(achat.statut === "Réceptionné"){
-
+    if(
+        achat.statut ===
+        "Réceptionné"
+    ){
 
         alert(
             "Cet achat est déjà réceptionné."
         );
 
+        return;
+
+    }
+
+
+    if(
+        !Array.isArray(
+            achat.articles
+        )
+        ||
+        achat.articles.length === 0
+    ){
+
+        alert(
+            "Cet achat ne contient aucun article."
+        );
 
         return;
 
     }
 
 
+    // ==================================
+    // VERIFICATION COMPLETE AVANT
+    // DE MODIFIER LE STOCK
+    // ==================================
 
-    achat.articles.forEach(ligne=>{
+    const lignesValidees = [];
 
+
+    for(
+        const ligne
+        of achat.articles
+    ){
 
         const article =
-
-        db.articles.find(a =>
-
-            a.nom === ligne.article
-
-        );
+            trouverArticlePourReception(
+                ligne
+            );
 
 
+        if(!article){
 
-        if(article){
+            alert(
 
+                "Impossible de réceptionner l'achat.\n\n"
 
-            const ancienStock =
+                +
 
-            Number(article.stock) || 0;
+                "Article introuvable dans le stock : "
 
+                +
 
-
-            const ancienPrix =
-
-            Number(article.prixAchatMoyen) || 0;
-
-
-
-            article.prixAchatMoyen =
-
-            calculerPrixMoyen(
-
-                article,
-
-                ligne.quantite,
-
-                ligne.prix
+                (
+                    ligne.article
+                    ||
+                    ligne.reference
+                    ||
+                    "Article inconnu"
+                )
 
             );
 
 
-
-            article.stock =
-
-            ancienStock +
-
-            ligne.quantite;
+            console.error(
+                "ARTICLE INTROUVABLE :",
+                ligne
+            );
 
 
-
-            db.mouvements.push({
-
-
-                date:
-
-                new Date()
-                .toLocaleString(),
-
-
-
-                action:
-
-                "Réception achat",
-
-
-
-                article:
-
-                article.nom,
-
-
-
-                ancienStock,
-
-
-
-                nouveauStock:
-
-                article.stock,
-
-
-
-                ancienPrix,
-
-
-
-                nouveauPrix:
-
-                article.prixAchatMoyen,
-
-
-
-                difference:
-
-                ligne.quantite
-
-
-            });
-
-
+            return;
 
         }
 
 
-    });
+        const quantite =
+            Number(
+                ligne.quantite
+            ) || 0;
 
 
+        if(quantite <= 0){
+
+            alert(
+
+                "Quantité incorrecte pour : "
+
+                +
+
+                article.nom
+
+            );
 
 
+            return;
+
+        }
+
+
+        lignesValidees.push({
+
+            ligne,
+
+            article,
+
+            quantite
+
+        });
+
+    }
+
+
+    // ==================================
+    // APPLICATION RECEPTION
+    // ==================================
+
+    lignesValidees.forEach(
+        operation => {
+
+            const ligne =
+                operation.ligne;
+
+
+            const article =
+                operation.article;
+
+
+            const quantite =
+                operation.quantite;
+
+
+            const ancienStock =
+                Number(
+                    article.stock
+                ) || 0;
+
+
+            const ancienPrix =
+                Number(
+                    article.prixAchatMoyen
+                ) || 0;
+
+
+            const prix =
+                Number(
+                    ligne.prix
+                ) || 0;
+
+
+            article.prixAchatMoyen =
+
+                calculerPrixMoyen(
+
+                    article,
+
+                    quantite,
+
+                    prix
+
+                );
+
+
+            article.stock =
+                ancienStock
+                +
+                quantite;
+
+
+            db.mouvements.push({
+
+                date:
+                    new Date()
+                    .toLocaleString(),
+
+                action:
+                    "Réception achat",
+
+                article:
+                    article.nom,
+
+                achat:
+                    achat.numero,
+
+                ancienStock,
+
+                nouveauStock:
+                    article.stock,
+
+                ancienPrix,
+
+                nouveauPrix:
+                    article.prixAchatMoyen,
+
+                difference:
+                    quantite,
+
+                origine:
+                    achat.automatique === true
+                    ?
+                    "Achat automatique"
+                    :
+                    "Achat manuel"
+
+            });
+
+        }
+    );
+
+
+    // ==================================
+    // FINALISATION ACHAT
+    // ==================================
 
     achat.statut =
-
-    "Réceptionné";
-
+        "Réceptionné";
 
 
     achat.dateReception =
-
-    new Date()
-    .toLocaleString();
-
-
-
+        new Date()
+        .toLocaleString();
 
 
     db.mouvements.push({
 
-
         date:
-
-        new Date()
-        .toLocaleString(),
-
-
+            new Date()
+            .toLocaleString(),
 
         action:
-
-        "Achat réceptionné",
-
-
+            "Achat réceptionné",
 
         achat:
-
-        achat.numero,
-
-
+            achat.numero,
 
         fournisseur:
-
-        achat.fournisseur,
-
-
+            achat.fournisseur,
 
         fournisseurId:
-
-        achat.fournisseurId,
-
-
+            achat.fournisseurId,
 
         montant:
+            achat.total,
 
-        achat.total
+        automatique:
+            achat.automatique === true,
 
+        origine:
+            achat.origine
+            ||
+            "Achat manuel"
 
     });
-
-
-
 
 
     sauvegarderAchats();
 
 
-
     afficherAchats();
 
 
-
-    if(typeof afficherStock === "function"){
-
+    if(
+        typeof afficherStock ===
+        "function"
+    ){
 
         afficherStock();
 
-
     }
-
 
 }
 
 
+// ======================================
+// SUPPRIMER ACHAT
+// ======================================
 
-
-
-
-//--------------------------------------
-// Supprimer achat
-//--------------------------------------
-
-function supprimerAchat(index){
-
+function supprimerAchat(
+    index
+){
 
     if(!verifierAchatsDB())
         return;
 
 
-
     const achat =
-
-    db.achats[index];
-
+        db.achats[index];
 
 
     if(!achat)
         return;
 
 
-
     let message =
-
-    "Supprimer cet achat ?";
-
+        "Supprimer cet achat ?";
 
 
-    if(achat.statut === "Réceptionné"){
-
+    if(
+        achat.statut ===
+        "Réceptionné"
+    ){
 
         message =
 
-        "Cet achat a déjà été réceptionné.\n\n" +
+            "Cet achat a déjà été réceptionné.\n\n"
 
-        "Le stock ajouté ne sera pas retiré.\n\n" +
+            +
 
-        "Continuer ?";
+            "Le stock ajouté ne sera pas retiré.\n\n"
 
+            +
+
+            "Continuer ?";
 
     }
-
 
 
     if(!confirm(message))
         return;
 
 
-
-
     db.mouvements.push({
 
-
         date:
-
-        new Date()
-        .toLocaleString(),
-
-
+            new Date()
+            .toLocaleString(),
 
         action:
-
-        "Suppression achat",
-
-
+            "Suppression achat",
 
         achat:
-
-        achat.numero ?? achat.id,
-
-
+            achat.numero
+            ??
+            achat.id,
 
         fournisseur:
-
-        achat.fournisseur,
-
-
+            achat.fournisseur,
 
         fournisseurId:
-
-        achat.fournisseurId,
-
+            achat.fournisseurId,
 
         statut:
+            achat.statut,
 
-        achat.statut
+        automatique:
+            achat.automatique === true,
 
+        origine:
+            achat.origine
+            ||
+            "Achat manuel"
 
     });
 
 
-
-
-
     db.achats.splice(
-
         index,
-
         1
-
     );
-
 
 
     sauvegarderAchats();
 
 
-
     afficherAchats();
-
 
 }
 
 
+// ======================================
+// ANNULATION RECEPTION
+// ======================================
 
-
-
-
-//--------------------------------------
-// Annulation réception future
-//--------------------------------------
-
-function annulerReceptionAchat(index){
-
+function annulerReceptionAchat(
+    index
+){
 
     const achat =
-
-    db.achats[index];
-
+        db.achats[index];
 
 
     if(!achat)
         return;
 
 
-
-    if(achat.statut !== "Réceptionné"){
-
+    if(
+        achat.statut !==
+        "Réceptionné"
+    ){
 
         alert(
             "Cet achat n'est pas réceptionné."
         );
 
-
         return;
 
     }
 
 
-
     alert(
-
         "Fonction prévue dans une prochaine version."
-
     );
-
 
 }
 
 
-
-
-
-
-//--------------------------------------
-// Fermer popup achat
-//--------------------------------------
+// ======================================
+// FERMER POPUP
+// ======================================
 
 function fermerPopupAchat(){
 
-
     const popup =
-
-    document.getElementById(
-        "popupAchat"
-    );
-
+        document.getElementById(
+            "popupAchat"
+        );
 
 
     if(popup){
 
-        popup.style.display = "none";
+        popup.style.display =
+            "none";
 
     }
-
 
 }
 
 
-
-
-
-
-//--------------------------------------
-// Charger articles
-//--------------------------------------
+// ======================================
+// CHARGER ARTICLES
+// ======================================
 
 function chargerArticlesAchat(){
-
 
     if(!verifierAchatsDB())
         return;
 
 
-
     const liste =
-
-    document.getElementById(
-        "achatArticle"
-    );
-
+        document.getElementById(
+            "achatArticle"
+        );
 
 
     if(!liste)
         return;
-
 
 
     liste.innerHTML = "";
 
 
+    db.articles.forEach(
+        article => {
 
-    db.articles.forEach(article=>{
+            liste.innerHTML += `
 
+            <option value="${article.nom}">
 
-        liste.innerHTML += `
+                ${article.nom}
 
-        <option value="${article.nom}">
+            </option>
 
-            ${article.nom}
+            `;
 
-        </option>
-
-        `;
-
-
-    });
-
+        }
+    );
 
 }
 
 
-
-
-
-
-//--------------------------------------
-// Charger fournisseurs
-//--------------------------------------
+// ======================================
+// CHARGER FOURNISSEURS
+// ======================================
 
 function chargerFournisseursAchat(){
-
 
     if(!verifierAchatsDB())
         return;
 
 
-
     const liste =
-
-    document.getElementById(
-        "achatFournisseur"
-    );
-
+        document.getElementById(
+            "achatFournisseur"
+        );
 
 
     if(!liste)
         return;
 
 
-
-    if(liste.tagName === "SELECT"){
-
+    if(
+        liste.tagName ===
+        "SELECT"
+    ){
 
         liste.innerHTML = "";
 
 
-
         db.clients
-
-        .filter(client =>
-
-            client.type === "Fournisseur"
-
+        .filter(
+            client =>
+                client.type ===
+                "Fournisseur"
         )
+        .forEach(
+            fournisseur => {
 
-        .forEach(fournisseur=>{
+                liste.innerHTML += `
 
+                <option value="${fournisseur.nom}">
 
-            liste.innerHTML += `
+                    ${fournisseur.nom}
 
+                </option>
 
-            <option value="${fournisseur.nom}">
+                `;
 
-                ${fournisseur.nom}
-
-            </option>
-
-
-            `;
-
-
-        });
-
+            }
+        );
 
     }
-
 
 }
 
 
-
-
-
-
-//--------------------------------------
-// Actualisation module achats
-//--------------------------------------
+// ======================================
+// ACTUALISATION MODULE
+// ======================================
 
 function actualiserModuleAchats(){
 
-
     chargerArticlesAchat();
-
 
     chargerFournisseursAchat();
 
-
     afficherAchats();
-
 
 }
 
 
-
-
-
-
-//--------------------------------------
-// Initialisation
-//--------------------------------------
+// ======================================
+// INITIALISATION
+// ======================================
 
 document.addEventListener(
+    "DOMContentLoaded",
+    () => {
 
-"DOMContentLoaded",
-
-()=>{
-
-
-    if(!verifierAchatsDB())
-        return;
+        if(!verifierAchatsDB())
+            return;
 
 
+        chargerArticlesAchat();
 
-    chargerArticlesAchat();
+        chargerFournisseursAchat();
 
-
-
-    chargerFournisseursAchat();
-
+        afficherAchats();
 
 
-    afficherAchats();
+        const bouton =
+            document.getElementById(
+                "btnNouvelAchat"
+            );
 
 
+        if(bouton){
 
+            bouton.addEventListener(
+                "click",
+                nouvelAchat
+            );
 
-    const bouton =
-
-    document.getElementById(
-        "btnNouvelAchat"
-    );
-
-
-
-    if(bouton){
-
-
-        bouton.addEventListener(
-
-            "click",
-
-            nouvelAchat
-
-        );
-
+        }
 
     }
-
-
-
-});
+);
