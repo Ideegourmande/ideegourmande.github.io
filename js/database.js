@@ -240,108 +240,230 @@ function trouverArticleStock(articleCommande){
         .toLowerCase();
 
 
-    const nom =
+    const recette =
+        normaliserNomArticle(
+            articleCommande.recette
+        );
+
+
+    const nomCommande =
         normaliserNomArticle(
             articleCommande.nom
         );
 
 
-    // Recherche par nom
-
-    let article =
-        db.articles.find(
-            a =>
-                normaliserNomArticle(a.nom)
-                ===
-                nom
-        );
-
-
-    if(article){
-
-        return article;
-
-    }
+    console.log(
+        "🔎 RECHERCHE ARTICLE STOCK",
+        {
+            reference,
+            recette,
+            nomCommande
+        }
+    );
 
 
-    // Correspondances produits
+    // ==================================
+    // CORRESPONDANCES EXACTES
+    // ==================================
 
     const correspondances = {
 
-        "foie-gras":
-            "foie gras de canard au torchon",
 
-        "magret":
-            "magret de canard fumé et séché",
+        "foie-gras": {
+
+            "aux pimets":
+                "foie gras aux pimets",
+
+            "aux piments":
+                "foie gras aux pimets",
+
+            "aux figues":
+                "fois gras aux figues",
+
+            "figues":
+                "fois gras aux figues"
+
+        },
+
+
+        "magret": {
+
+            "aux herbes":
+                "magret au herbes",
+
+            "au herbes":
+                "magret au herbes",
+
+            "aux pimets":
+                "magret aux pimets",
+
+            "aux piments":
+                "magret aux pimets"
+
+        },
+
 
         "viande-sechee":
-            "viande séchée artisanale",
+
+            "viande séchée",
+
 
         "lard-sec":
-            "lard sec légèrement fumé",
 
-        "saumon-fume":
-            "cœur de saumon fumé"
+            "lard sec fumé",
+
+
+        "saumon-fume": {
+
+            "aux piments":
+                "saumon aux piments",
+
+            "aux pimets":
+                "saumon aux piments",
+
+            "à l'aneth":
+                "saumon à l'aneth",
+
+            "a l'aneth":
+                "saumon à l'aneth",
+
+            "aneth":
+                "saumon à l'aneth"
+
+        }
 
     };
 
 
-    if(correspondances[reference]){
+    // ==================================
+    // RECHERCHE AVEC REFERENCE + RECETTE
+    // ==================================
+
+    if(
+        correspondances[reference]
+        &&
+        typeof correspondances[reference] === "object"
+    ){
 
         const nomCorrespondant =
-            normaliserNomArticle(
-                correspondances[reference]
-            );
+            correspondances[reference][recette];
 
 
-        article =
-            db.articles.find(
-                a =>
-                    normaliserNomArticle(a.nom)
-                    ===
-                    nomCorrespondant
-            );
+        if(nomCorrespondant){
+
+            const article =
+                db.articles.find(
+                    a =>
+                        normaliserNomArticle(
+                            a.nom
+                        )
+                        ===
+                        normaliserNomArticle(
+                            nomCorrespondant
+                        )
+                );
 
 
-        if(article){
+            if(article){
 
-            return article;
+                console.log(
+                    "✅ ARTICLE STOCK TROUVÉ :",
+                    article.nom
+                );
+
+
+                return article;
+
+            }
 
         }
 
     }
 
 
-    // Recherche par référence
+    // ==================================
+    // PRODUITS SANS VARIANTE
+    // ==================================
 
-    if(reference){
+    if(
+        typeof correspondances[reference] === "string"
+    ){
 
-        article =
+        const nomCorrespondant =
+            correspondances[reference];
+
+
+        const article =
             db.articles.find(
                 a =>
-                    String(
-                        a.reference || ""
+                    normaliserNomArticle(
+                        a.nom
                     )
-                    .trim()
-                    .toLowerCase()
                     ===
-                    reference
+                    normaliserNomArticle(
+                        nomCorrespondant
+                    )
             );
 
 
         if(article){
+
+            console.log(
+                "✅ ARTICLE STOCK TROUVÉ :",
+                article.nom
+            );
+
 
             return article;
 
         }
 
     }
+
+
+    // ==================================
+    // RECHERCHE PAR NOM EXACT
+    // ==================================
+
+    const articleParNom =
+        db.articles.find(
+            a =>
+                normaliserNomArticle(
+                    a.nom
+                )
+                ===
+                nomCommande
+        );
+
+
+    if(articleParNom){
+
+        console.log(
+            "✅ ARTICLE STOCK TROUVÉ PAR NOM :",
+            articleParNom.nom
+        );
+
+
+        return articleParNom;
+
+    }
+
+
+    // ==================================
+    // ARTICLE INTROUVABLE
+    // ==================================
+
+    console.error(
+        "❌ ARTICLE STOCK INTROUVABLE :",
+        articleCommande.nom,
+        articleCommande.reference,
+        articleCommande.recette
+    );
 
 
     return null;
 
 }
-
 
 // ======================================
 // QUANTITE COMMANDEE
