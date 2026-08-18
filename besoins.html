@@ -18,9 +18,16 @@
 
 <script>
 
-if(localStorage.getItem("adminConnecte") !== "oui"){
+/* ======================================
+   PROTECTION ADMINISTRATION
+====================================== */
 
-    window.location.href = "admin-login.html";
+if(
+    localStorage.getItem("adminConnecte") !== "oui"
+){
+
+    window.location.href =
+        "admin-login.html";
 
 }
 
@@ -85,6 +92,13 @@ if(localStorage.getItem("adminConnecte") !== "oui"){
 
         </h2>
 
+
+        <p>
+
+            Cette liste contient uniquement les besoins
+            générés automatiquement par les commandes clients.
+
+        </p>
 
 
         <table>
@@ -182,11 +196,12 @@ function afficherBesoins(){
 
 
     // ==================================
-    // SECURITE
+    // SECURITE BASE
     // ==================================
 
     if(
-        typeof db === "undefined"
+        typeof db === "undefined" ||
+        !db
     ){
 
         zone.innerHTML = `
@@ -208,6 +223,10 @@ function afficherBesoins(){
     }
 
 
+    // ==================================
+    // SECURITE ACHATS
+    // ==================================
+
     if(
         !Array.isArray(db.achats)
     ){
@@ -218,34 +237,95 @@ function afficherBesoins(){
 
 
     // ==================================
-    // ACHATS EN ATTENTE
+    // SECURITE ARTICLES
+    // ==================================
+
+    if(
+        !Array.isArray(db.articles)
+    ){
+
+        db.articles = [];
+
+    }
+
+
+    // ==================================
+    // ACHATS AUTOMATIQUES EN ATTENTE
     // ==================================
 
     const achatsEnAttente =
 
-    db.achats.filter(function(achat){
+        db.achats.filter(
+            function(achat){
 
-        if(!achat){
-            return false;
-        }
+                if(!achat){
 
-        // On ne montre pas les achats manuels
-        if(achat.automatique !== true){
-            return false;
-        }
+                    return false;
 
-        // Achat déjà réceptionné
-        if(achat.statut === "Réceptionné"){
-            return false;
-        }
+                }
 
-        // Achat sans articles
-        if(!Array.isArray(achat.articles)){
-            return false;
-        }
 
-        return true;
-    });
+                /*
+                    Uniquement les achats
+                    créés automatiquement.
+                */
+
+                if(
+                    achat.automatique !== true
+                ){
+
+                    return false;
+
+                }
+
+
+                /*
+                    Sécurité supplémentaire :
+                    l'origine doit être une
+                    commande client.
+                */
+
+                if(
+                    achat.origine !== "Commande client"
+                ){
+
+                    return false;
+
+                }
+
+
+                /*
+                    Achat déjà réceptionné.
+                */
+
+                if(
+                    achat.statut === "Réceptionné"
+                ){
+
+                    return false;
+
+                }
+
+
+                /*
+                    Achat sans lignes.
+                */
+
+                if(
+                    !Array.isArray(
+                        achat.articles
+                    )
+                ){
+
+                    return false;
+
+                }
+
+
+                return true;
+
+            }
+        );
 
 
     // ==================================
@@ -276,18 +356,18 @@ function afficherBesoins(){
 
 
     // ==================================
-    // CONSTRUCTION DE LA LISTE
+    // REGROUPEMENT DES ARTICLES
     // ==================================
 
-    let compteur = 0;
+    const besoins = [];
 
 
     achatsEnAttente.forEach(
-        achat => {
+        function(achat){
 
 
             achat.articles.forEach(
-                ligne => {
+                function(ligne){
 
 
                     if(!ligne){
@@ -312,189 +392,129 @@ function afficherBesoins(){
                     }
 
 
-                    // ==================================
-                    // RECHERCHE ARTICLE STOCK
-                    // ==================================
-
-                    const articleStock =
-
-                        Array.isArray(
-                            db.articles
+                    const nomArticle =
+                        String(
+                            ligne.article || ""
                         )
+                        .trim();
 
-                        ?
 
-                        db.articles.find(
-                            article =>
+                    if(
+                        nomArticle === ""
+                    ){
 
-                                String(
-                                    article.nom || ""
-                                )
-                                .trim()
-                                .toLowerCase()
+                        return;
 
-                                ===
+                    }
 
-                                String(
-                                    ligne.article || ""
-                                )
-                                .trim()
-                                .toLowerCase()
 
+                    const reference =
+                        String(
+                            ligne.reference || ""
                         )
-
-                        :
-
-                        null;
+                        .trim();
 
 
-                    const stock =
+                    /*
+                        Recherche d'une ligne
+                        déjà présente.
+                    */
 
-                        articleStock
+                    const existant =
+                        besoins.find(
+                            function(besoin){
 
-                        ?
+                                return (
 
-                        Number(
-                            articleStock.stock
-                        ) || 0
+                                    String(
+                                        besoin.article
+                                    )
+                                    .trim()
+                                    .toLowerCase()
 
-                        :
+                                    ===
 
-                        0;
+                                    nomArticle
+                                        .trim()
+                                        .toLowerCase()
 
+                                    &&
 
-                    const minimum =
+                                    String(
+                                        besoin.reference
+                                    )
+                                    .trim()
+                                    .toLowerCase()
 
-                        articleStock
+                                    ===
 
-                        ?
+                                    reference
+                                        .trim()
+                                        .toLowerCase()
 
-                        Number(
-                            articleStock.minimum
-                        ) || 0
+                                );
 
-                        :
-
-                        0;
-
-
-                    const unite =
-
-                        articleStock
-
-                        ?
-
-                        (
-                            articleStock.unite
-                            || ""
-                        )
-
-                        :
-
-                        "";
+                            }
+                        );
 
 
-                    compteur++;
+                    if(existant){
+
+                        existant.quantite +=
+                            quantite;
 
 
-                    zone.innerHTML += `
+                        existant.origines.push({
 
-                        <tr>
+                            numero:
+                                achat.numero ||
+                                achat.id ||
+                                "Achat",
 
+                            quantite:
+                                quantite
 
-                            <td>
-
-                                <strong>
-
-                                    ${
-                                        ligne.article
-                                        ||
-                                        "Article"
-
-                                    }
-
-                                </strong>
+                        });
 
 
-                                ${
-                                    ligne.reference
+                    }
+                    else{
 
-                                    ?
+                        besoins.push({
 
-                                    `<br>
+                            article:
+                                nomArticle,
 
-                                    <small>
-                                        Réf. :
-                                        ${ligne.reference}
-                                    </small>`
+                            reference:
+                                reference,
 
-                                    :
+                            quantite:
+                                quantite,
 
-                                    ""
+                            origines: [
+
+                                {
+
+                                    numero:
+                                        achat.numero ||
+                                        achat.id ||
+                                        "Achat",
+
+                                    quantite:
+                                        quantite
 
                                 }
 
-                            </td>
+                            ]
 
+                        });
 
-                            <td>
-
-                                ${stock}
-
-                                ${unite}
-
-                            </td>
-
-
-                            <td>
-
-                                ${minimum}
-
-                                ${unite}
-
-                            </td>
-
-
-                            <td>
-
-                                <strong>
-
-                                    ${quantite}
-
-                                    ${unite}
-
-                                </strong>
-
-                            </td>
-
-
-                            <td>
-
-                                🛒 Commande client
-
-                                <br>
-
-                                <small>
-
-                                    ${achat.numero || achat.commandeId || "Commande client"}
-
-                                    }
-
-                                </small>
-
-                            </td>
-
-
-                        </tr>
-
-                    `;
+                    }
 
                 }
-
             );
 
         }
-
     );
 
 
@@ -503,7 +523,7 @@ function afficherBesoins(){
     // ==================================
 
     if(
-        compteur === 0
+        besoins.length === 0
     ){
 
         zone.innerHTML = `
@@ -520,7 +540,358 @@ function afficherBesoins(){
 
         `;
 
+        return;
+
     }
+
+
+    // ==================================
+    // CONSTRUCTION TABLEAU
+    // ==================================
+
+    let html = "";
+
+
+    besoins.forEach(
+        function(besoin){
+
+
+            // ==================================
+            // RECHERCHE ARTICLE STOCK
+            // ==================================
+
+            let articleStock = null;
+
+
+            /*
+                On utilise en priorité la fonction
+                centrale de database.js.
+
+                Elle gère les références,
+                variantes et recettes.
+            */
+
+            if(
+                typeof trouverArticleStock === "function"
+            ){
+
+                articleStock =
+                    trouverArticleStock({
+
+                        nom:
+                            besoin.article,
+
+                        reference:
+                            besoin.reference
+
+                    });
+
+            }
+
+
+            /*
+                Si aucune correspondance n'est
+                trouvée, recherche classique
+                par nom.
+            */
+
+            if(
+                !articleStock
+            ){
+
+                articleStock =
+                    db.articles.find(
+                        function(article){
+
+                            if(!article){
+
+                                return false;
+
+                            }
+
+
+                            return (
+
+                                String(
+                                    article.nom || ""
+                                )
+                                .trim()
+                                .toLowerCase()
+
+                                ===
+
+                                besoin.article
+                                    .trim()
+                                    .toLowerCase()
+
+                            );
+
+                        }
+                    )
+                    || null;
+
+            }
+
+
+            // ==================================
+            // INFORMATIONS STOCK
+            // ==================================
+
+            const stock =
+
+                articleStock
+
+                ?
+
+                (
+                    Number(
+                        articleStock.stock
+                    ) || 0
+                )
+
+                :
+
+                0;
+
+
+            const minimum =
+
+                articleStock
+
+                ?
+
+                (
+                    Number(
+                        articleStock.minimum
+                    ) || 0
+                )
+
+                :
+
+                0;
+
+
+            const unite =
+
+                articleStock
+
+                ?
+
+                String(
+                    articleStock.unite || ""
+                )
+
+                :
+
+                "";
+
+
+            // ==================================
+            // TEXTE SECURISE
+            // ==================================
+
+            const nomAffiche =
+
+                typeof securiserTexte === "function"
+
+                ?
+
+                securiserTexte(
+                    besoin.article
+                )
+
+                :
+
+                besoin.article;
+
+
+            const referenceAffiche =
+
+                typeof securiserTexte === "function"
+
+                ?
+
+                securiserTexte(
+                    besoin.reference
+                )
+
+                :
+
+                besoin.reference;
+
+
+            const uniteAffiche =
+
+                typeof securiserTexte === "function"
+
+                ?
+
+                securiserTexte(
+                    unite
+                )
+
+                :
+
+                unite;
+
+
+            // ==================================
+            // ORIGINES
+            // ==================================
+
+            const originesHTML =
+
+                besoin.origines
+                .map(
+                    function(origine){
+
+                        const numero =
+
+                            typeof securiserTexte === "function"
+
+                            ?
+
+                            securiserTexte(
+                                String(
+                                    origine.numero
+                                )
+                            )
+
+                            :
+
+                            String(
+                                origine.numero
+                            );
+
+
+                        return `
+
+                            <div>
+
+                                🛒 ${numero}
+
+                                <small>
+
+                                    (${origine.quantite}${uniteAffiche})
+
+                                </small>
+
+                            </div>
+
+                        `;
+
+                    }
+                )
+                .join("");
+
+
+            // ==================================
+            // LIGNE TABLEAU
+            // ==================================
+
+            html += `
+
+                <tr>
+
+
+                    <!-- ARTICLE -->
+
+                    <td>
+
+                        <strong>
+
+                            ${nomAffiche}
+
+                        </strong>
+
+
+                        ${
+                            referenceAffiche
+
+                            ?
+
+                            `
+
+                            <br>
+
+                            <small>
+
+                                Réf. :
+                                ${referenceAffiche}
+
+                            </small>
+
+                            `
+
+                            :
+
+                            ""
+
+                        }
+
+                    </td>
+
+
+                    <!-- STOCK -->
+
+                    <td>
+
+                        ${stock}
+
+                        ${uniteAffiche}
+
+                    </td>
+
+
+                    <!-- MINIMUM -->
+
+                    <td>
+
+                        ${minimum}
+
+                        ${uniteAffiche}
+
+                    </td>
+
+
+                    <!-- A ACHETER -->
+
+                    <td>
+
+                        <strong>
+
+                            ${besoin.quantite}
+
+                            ${uniteAffiche}
+
+                        </strong>
+
+                    </td>
+
+
+                    <!-- ORIGINE -->
+
+                    <td>
+
+                        ${originesHTML}
+
+                    </td>
+
+
+                </tr>
+
+            `;
+
+        }
+    );
+
+
+    // ==================================
+    // AFFICHAGE
+    // ==================================
+
+    zone.innerHTML =
+        html;
 
 }
 
@@ -549,6 +920,7 @@ window.addEventListener(
     "storage",
     function(e){
 
+
         if(
             e.key !== "ideeGourmandeDB"
         ){
@@ -558,18 +930,59 @@ window.addEventListener(
         }
 
 
-        // Recharge la base
+        try{
 
-        db =
-            JSON.parse(
+
+            const nouvelleBase =
                 localStorage.getItem(
                     "ideeGourmandeDB"
-                )
-            )
-            || {};
+                );
 
 
-        afficherBesoins();
+            if(!nouvelleBase){
+
+                return;
+
+            }
+
+
+            const baseChargee =
+                JSON.parse(
+                    nouvelleBase
+                );
+
+
+            if(
+                !baseChargee ||
+                typeof baseChargee !== "object"
+            ){
+
+                return;
+
+            }
+
+
+            /*
+                Mise à jour de la variable
+                centrale utilisée par la page.
+            */
+
+            db =
+                baseChargee;
+
+
+            afficherBesoins();
+
+
+        }
+        catch(erreur){
+
+            console.error(
+                "❌ Impossible de recharger la base :",
+                erreur
+            );
+
+        }
 
     }
 );
