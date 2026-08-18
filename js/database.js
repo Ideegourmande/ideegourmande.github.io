@@ -14,7 +14,7 @@ let db = JSON.parse(
     localStorage.getItem("ideeGourmandeDB")
 );
 
-console.log("DATABASE OK", db);
+console.log("DATABASE 2.5.0 - CHARGEMENT", db);
 
 
 // ======================================
@@ -66,7 +66,7 @@ const structureDB = {
 // CREATION PREMIERE BASE
 // ======================================
 
-if(!db){
+if (!db) {
 
     db = {
 
@@ -94,6 +94,8 @@ if(!db){
 
     };
 
+    sauvegarderDB();
+
 }
 
 
@@ -101,27 +103,25 @@ if(!db){
 // VERIFICATION ANCIENNES VERSIONS
 // ======================================
 
-else{
+else {
 
     Object.keys(structureDB).forEach(
         cle => {
 
-            if(
-                db[cle] === undefined
-            ){
+            if (db[cle] === undefined) {
 
-                if(
+                if (
                     Array.isArray(
                         structureDB[cle]
                     )
-                ){
+                ) {
 
                     db[cle] = [
                         ...structureDB[cle]
                     ];
 
                 }
-                else{
+                else {
 
                     db[cle] = {};
 
@@ -132,49 +132,159 @@ else{
         }
     );
 
+
+    // ==================================
+    // SECURITE COMMANDES
+    // ==================================
+
+    if (!Array.isArray(db.commandes)) {
+
+        db.commandes = [];
+
+    }
+
+
+    // ==================================
+    // SECURITE ARCHIVES
+    // ==================================
+
+    if (!Array.isArray(db.archives)) {
+
+        db.archives = [];
+
+    }
+
+
+    // ==================================
+    // SECURITE ACHATS
+    // ==================================
+
+    if (!Array.isArray(db.achats)) {
+
+        db.achats = [];
+
+    }
+
+
+    // ==================================
+    // SECURITE SESSIONS
+    // ==================================
+
+    if (!Array.isArray(db.sessions)) {
+
+        db.sessions = [];
+
+    }
+
+
+    // ==================================
+    // SECURITE CLIENTS
+    // ==================================
+
+    if (!Array.isArray(db.clients)) {
+
+        db.clients = [];
+
+    }
+
+
+    // ==================================
+    // SECURITE STOCK
+    // ==================================
+
+    if (!Array.isArray(db.articles)) {
+
+        db.articles = [];
+
+    }
+
+
+    // ==================================
+    // SECURITE MOUVEMENTS
+    // ==================================
+
+    if (!Array.isArray(db.mouvements)) {
+
+        db.mouvements = [];
+
+    }
+
+
+    // ==================================
+    // SECURITE EMPLACEMENTS
+    // ==================================
+
+    if (
+        !Array.isArray(db.emplacements)
+        ||
+        db.emplacements.length === 0
+    ) {
+
+        db.emplacements = [
+            ...emplacementsDefaut
+        ];
+
+    }
+
+
+    sauvegarderDB();
+
 }
 
 
 // ======================================
-// SECURITE DES TABLEAUX
+// MIGRATION ANCIENNES COMMANDES
 // ======================================
 
-if(!Array.isArray(db.commandes))
-    db.commandes = [];
+function migrerAnciennesCommandes() {
 
-if(!Array.isArray(db.articles))
-    db.articles = [];
+    let anciennes =
+        JSON.parse(
+            localStorage.getItem(
+                "commandes"
+            )
+        ) || [];
 
-if(!Array.isArray(db.emplacements))
-    db.emplacements = [...emplacementsDefaut];
 
-if(!Array.isArray(db.mouvements))
-    db.mouvements = [];
+    if (
 
-if(!Array.isArray(db.achats))
-    db.achats = [];
+        anciennes.length > 0
 
-if(!Array.isArray(db.sessions))
-    db.sessions = [];
+        &&
 
-if(!Array.isArray(db.archives))
-    db.archives = [];
+        db.commandes.length === 0
 
-if(!Array.isArray(db.clients))
-    db.clients = [];
+    ) {
 
-if(typeof db.statistiques !== "object" || db.statistiques === null)
-    db.statistiques = {};
+        db.commandes = [
+            ...anciennes
+        ];
 
-if(typeof db.parametres !== "object" || db.parametres === null)
-    db.parametres = {};
+
+        localStorage.removeItem(
+            "commandes"
+        );
+
+
+        sauvegarderDB();
+
+    }
+
+}
+
+
+// ======================================
+// LANCEMENT MIGRATION
+// ======================================
+
+migrerAnciennesCommandes();
 
 
 // ======================================
 // SAUVEGARDE CENTRALE
 // ======================================
 
-function sauvegarderDB(){
+function sauvegarderDB() {
 
     localStorage.setItem(
 
@@ -188,145 +298,32 @@ function sauvegarderDB(){
 
 
 // ======================================
-// MIGRATION ANCIENNES COMMANDES
-// ======================================
-
-function migrerAnciennesCommandes(){
-
-    let anciennes =
-        JSON.parse(
-            localStorage.getItem(
-                "commandes"
-            )
-        ) || [];
-
-
-    if(
-
-        anciennes.length > 0
-
-        &&
-
-        db.commandes.length === 0
-
-    ){
-
-        db.commandes =
-            [...anciennes];
-
-
-        localStorage.removeItem(
-            "commandes"
-        );
-
-    }
-
-}
-
-
-migrerAnciennesCommandes();
-
-
-// ======================================
 // NORMALISATION NOM ARTICLE
 // ======================================
 
-function normaliserNomArticle(nom){
+function normaliserNomArticle(nom) {
 
     return String(
         nom || ""
     )
-    .trim()
-    .toLowerCase()
-    .normalize("NFD")
-    .replace(
-        /[\u0300-\u036f]/g,
-        ""
-    );
+        .trim()
+        .toLowerCase()
+        .normalize("NFD")
+        .replace(
+            /[\u0300-\u036f]/g,
+            ""
+        );
 
 }
-
-
-// ======================================
-// CORRESPONDANCES PRODUITS
-// ======================================
-
-const correspondancesProduits = {
-
-    "foie-gras":
-        "foie gras de canard au torchon",
-
-    "magret":
-        "magret de canard fumé et séché",
-
-    "viande-sechee":
-        "viande séchée artisanale",
-
-    "lard-sec":
-        "lard sec légèrement fumé",
-
-    "saumon-fume":
-        "cœur de saumon fumé"
-
-};
-
-
-// ======================================
-// UNITES / CONSOMMATION PAR PRODUIT
-// ======================================
-
-const reglesStockProduits = {
-
-    "foie-gras": {
-
-        unite: "g",
-
-        poidsParArticle: 200
-
-    },
-
-    "magret": {
-
-        unite: "pièce",
-
-        poidsParArticle: 1
-
-    },
-
-    "viande-sechee": {
-
-        unite: "g",
-
-        poidsParArticle: 500
-
-    },
-
-    "lard-sec": {
-
-        unite: "g",
-
-        poidsParArticle: 500
-
-    },
-
-    "saumon-fume": {
-
-        unite: "g",
-
-        poidsParArticle: null
-
-    }
-
-};
 
 
 // ======================================
 // RECHERCHE ARTICLE STOCK
 // ======================================
 
-function trouverArticleStock(articleCommande){
+function trouverArticleStock(articleCommande) {
 
-    if(!articleCommande){
+    if (!articleCommande) {
 
         return null;
 
@@ -334,10 +331,9 @@ function trouverArticleStock(articleCommande){
 
 
     const reference =
-        String(
-            articleCommande.reference || ""
-        )
-        .trim();
+        normaliserNomArticle(
+            articleCommande.reference
+        );
 
 
     const nom =
@@ -346,44 +342,60 @@ function trouverArticleStock(articleCommande){
         );
 
 
-    // ----------------------------------
-    // 1. Recherche par nom
-    // ----------------------------------
+    // ==================================
+    // RECHERCHE PAR NOM
+    // ==================================
 
     let article =
         db.articles.find(
             a =>
-
                 normaliserNomArticle(
                     a.nom
-                )
-                ===
-                nom
-
+                ) === nom
         );
 
 
-    if(article){
+    if (article) {
 
         return article;
 
     }
 
 
-    // ----------------------------------
-    // 2. Recherche par référence connue
-    // ----------------------------------
+    // ==================================
+    // CORRESPONDANCES REFERENCES
+    // ==================================
 
-    if(
-        correspondancesProduits[
-            reference
+    const correspondances = {
+
+        "foie-gras":
+            "foie gras de canard au torchon",
+
+        "magret":
+            "magret de canard fumé et séché",
+
+        "viande-sechee":
+            "viande séchée artisanale",
+
+        "lard-sec":
+            "lard sec légèrement fumé",
+
+        "saumon-fume":
+            "cœur de saumon fumé"
+
+    };
+
+
+    if (
+        correspondances[
+            articleCommande.reference
         ]
-    ){
+    ) {
 
         const nomCorrespondant =
             normaliserNomArticle(
-                correspondancesProduits[
-                    reference
+                correspondances[
+                    articleCommande.reference
                 ]
             );
 
@@ -391,17 +403,15 @@ function trouverArticleStock(articleCommande){
         article =
             db.articles.find(
                 a =>
-
                     normaliserNomArticle(
                         a.nom
                     )
                     ===
                     nomCorrespondant
-
             );
 
 
-        if(article){
+        if (article) {
 
             return article;
 
@@ -410,28 +420,24 @@ function trouverArticleStock(articleCommande){
     }
 
 
-    // ----------------------------------
-    // 3. Recherche par référence stock
-    // ----------------------------------
+    // ==================================
+    // DERNIERE RECHERCHE PAR REFERENCE
+    // ==================================
 
-    if(reference){
+    if (reference) {
 
         article =
             db.articles.find(
                 a =>
-
                     normaliserNomArticle(
                         a.reference
                     )
                     ===
-                    normaliserNomArticle(
-                        reference
-                    )
-
+                    reference
             );
 
 
-        if(article){
+        if (article) {
 
             return article;
 
@@ -446,38 +452,30 @@ function trouverArticleStock(articleCommande){
 
 
 // ======================================
-// DETERMINER CONSOMMATION STOCK
+// CALCUL QUANTITE COMMANDEE
 // ======================================
 
-function calculerConsommationStock(
+function calculerQuantiteCommande(
+    articleCommande
+) {
 
-    articleCommande,
-
-    articleStock
-
-){
-
-    if(!articleCommande){
+    if (!articleCommande) {
 
         return 0;
 
     }
 
 
-    const reference =
-        String(
-            articleCommande.reference || ""
-        )
-        .trim();
-
-
     // ==================================
     // SAUMON
     // ==================================
+    // Le saumon est géré en grammes.
 
-    if(
-        reference === "saumon-fume"
-    ){
+    if (
+        articleCommande.reference
+        ===
+        "saumon-fume"
+    ) {
 
         return Number(
             articleCommande.poids
@@ -487,97 +485,139 @@ function calculerConsommationStock(
 
 
     // ==================================
+    // AUTRES PRODUITS
+    // ==================================
+    // 1 = une pièce / portion.
+
+    return Number(
+        articleCommande.quantite
+    ) || 1;
+
+}
+
+
+// ======================================
+// INFORMATIONS DE PORTION
+// ======================================
+
+function obtenirInformationsPortion(
+    articleCommande
+) {
+
+    if (!articleCommande) {
+
+        return {
+            unite: "pièce",
+            poidsUnitaire: 0
+        };
+
+    }
+
+
+    const reference =
+        normaliserNomArticle(
+            articleCommande.reference
+        );
+
+
+    // ==================================
     // FOIE GRAS
-    // 200 g par article
     // ==================================
 
-    if(
-        reference === "foie-gras"
-    ){
+    if (reference === "foie-gras") {
 
-        const quantite =
-            Number(
-                articleCommande.quantite
-            ) || 0;
+        return {
 
+            unite: "pièce",
 
-        return (
-            quantite *
-            200
-        );
+            poidsUnitaire: 200
+
+        };
 
     }
 
 
     // ==================================
     // VIANDE SECHEE
-    // 500 g par article
     // ==================================
 
-    if(
-        reference === "viande-sechee"
-    ){
+    if (reference === "viande-sechee") {
 
-        const quantite =
-            Number(
-                articleCommande.quantite
-            ) || 0;
+        return {
 
+            unite: "pièce",
 
-        return (
-            quantite *
-            500
-        );
+            poidsUnitaire: 500
+
+        };
 
     }
 
 
     // ==================================
-    // LARD SEC
-    // 500 g par article
+    // LARD
     // ==================================
 
-    if(
-        reference === "lard-sec"
-    ){
+    if (reference === "lard-sec") {
 
-        const quantite =
-            Number(
-                articleCommande.quantite
-            ) || 0;
+        return {
 
+            unite: "pièce",
 
-        return (
-            quantite *
-            500
-        );
+            poidsUnitaire: 500
+
+        };
 
     }
 
 
     // ==================================
     // MAGRET
-    // 1 PIECE PAR ARTICLE
     // ==================================
 
-    if(
-        reference === "magret"
-    ){
+    if (reference === "magret") {
 
-        return Number(
-            articleCommande.quantite
-        ) || 0;
+        return {
+
+            unite: "pièce",
+
+            poidsUnitaire: 0
+
+        };
 
     }
 
 
     // ==================================
-    // SECURITE PRODUITS INCONNUS
+    // SAUMON
     // ==================================
 
-    return Number(
-        articleCommande.quantite
-    ) || 0;
+    if (reference === "saumon-fume") {
+
+        return {
+
+            unite: "g",
+
+            poidsUnitaire: 1
+
+        };
+
+    }
+
+
+    return {
+
+        unite:
+            articleCommande.unite
+            ||
+            "pièce",
+
+        poidsUnitaire:
+            Number(
+                articleCommande.poidsUnitaire
+            ) || 0
+
+    };
 
 }
 
@@ -594,19 +634,17 @@ function enregistrerMouvementCommande(
 
     nouveauStock,
 
-    consommation,
+    quantiteConsommee,
 
-    commande,
+    commande
 
-    articleCommande
-
-){
+) {
 
     db.mouvements.push({
 
         date:
             new Date()
-            .toLocaleString(),
+                .toLocaleString(),
 
         action:
             "Commande client",
@@ -624,23 +662,7 @@ function enregistrerMouvementCommande(
             nouveauStock,
 
         difference:
-            -consommation,
-
-        unite:
-            article.unite || "",
-
-        reference:
-            articleCommande.reference || "",
-
-        quantiteCommande:
-            Number(
-                articleCommande.quantite
-            ) || 0,
-
-        poidsCommande:
-            Number(
-                articleCommande.poids
-            ) || 0,
+            -quantiteConsommee,
 
         origine:
             "Commande client"
@@ -651,102 +673,101 @@ function enregistrerMouvementCommande(
 
 
 // ======================================
-// CREATION / MISE A JOUR ACHAT
+// RECHERCHE ACHAT EXISTANT
 // ======================================
 
-function verifierBesoinAchat(article){
+function trouverAchatOuvert(article) {
 
-    if(!article){
+    if (!article) {
 
-        return;
-
-    }
-
-
-    const stock =
-        Number(
-            article.stock
-        ) || 0;
-
-
-    const minimum =
-        Number(
-            article.minimum
-        ) || 0;
-
-
-    // ----------------------------------
-    // Stock suffisant
-    // ----------------------------------
-
-    if(
-        stock > minimum
-    ){
-
-        return;
+        return null;
 
     }
 
 
-    // ----------------------------------
-    // Quantité nécessaire
-    // ----------------------------------
+    return db.achats.find(
 
-    let quantiteACommander =
-        minimum - stock;
+        achat =>
+
+            achat.statut !== "Réceptionné"
+
+            &&
+
+            Array.isArray(
+                achat.articles
+            )
+
+            &&
+
+            achat.articles.some(
+
+                ligne =>
+
+                    normaliserNomArticle(
+                        ligne.article
+                    )
+                    ===
+                    normaliserNomArticle(
+                        article.nom
+                    )
+
+            )
+
+    ) || null;
+
+}
 
 
-    if(
-        quantiteACommander <= 0
-    ){
+// ======================================
+// CREATION ACHAT AUTOMATIQUE
+// ======================================
 
-        quantiteACommander = 1;
+function creerAchatAutomatique(
+
+    article,
+
+    quantiteManquante,
+
+    articleCommande,
+
+    commande
+
+) {
+
+    if (
+
+        !article
+
+        ||
+
+        quantiteManquante <= 0
+
+    ) {
+
+        return null;
 
     }
 
 
-    // ----------------------------------
-    // Recherche achat automatique ouvert
-    // ----------------------------------
+    // ==================================
+    // RECHERCHE ACHAT EXISTANT
+    // ==================================
 
     let achatExistant =
-        db.achats.find(
-            achat =>
-
-                achat.automatique === true
-
-                &&
-
-                achat.statut !== "Réceptionné"
-
-                &&
-
-                Array.isArray(
-                    achat.articles
-                )
-
-                &&
-
-                achat.articles.some(
-                    ligne =>
-
-                        normaliserNomArticle(
-                            ligne.article
-                        )
-                        ===
-                        normaliserNomArticle(
-                            article.nom
-                        )
-
-                )
-
+        trouverAchatOuvert(
+            article
         );
 
 
-    if(achatExistant){
+    // ==================================
+    // SI ACHAT EXISTE DEJA
+    // ==================================
+
+    if (achatExistant) {
 
         const ligne =
             achatExistant.articles.find(
+
                 ligne =>
 
                     normaliserNomArticle(
@@ -760,58 +781,75 @@ function verifierBesoinAchat(article){
             );
 
 
-        if(ligne){
+        if (ligne) {
 
             ligne.quantite =
-                Math.max(
-                    Number(
-                        ligne.quantite
-                    ) || 0,
+                Number(
+                    ligne.quantite
+                ) +
+                quantiteManquante;
 
-                    quantiteACommander
-                );
+        }
+        else {
+
+            achatExistant.articles.push({
+
+                article:
+                    article.nom,
+
+                quantite:
+                    quantiteManquante,
+
+                prix:
+                    Number(
+                        article.prixAchatMoyen
+                    ) || 0
+
+            });
 
         }
 
 
-        achatExistant.total =
-            achatExistant.articles.reduce(
-
-                (
-                    total,
-                    ligne
-                ) =>
-
-                    total
-                    +
-
-                    (
-                        Number(
-                            ligne.quantite
-                        ) || 0
-                    )
-
-                    *
-
-                    (
-                        Number(
-                            ligne.prix
-                        ) || 0
-                    ),
-
-                0
-
-            );
+        recalculerTotalAchat(
+            achatExistant
+        );
 
 
-        return;
+        db.mouvements.push({
+
+            date:
+                new Date()
+                    .toLocaleString(),
+
+            action:
+                "Mise à jour achat automatique",
+
+            achat:
+                achatExistant.numero,
+
+            article:
+                article.nom,
+
+            quantite:
+                quantiteManquante,
+
+            commande:
+                commande.id,
+
+            origine:
+                "Commande client - stock insuffisant"
+
+        });
+
+
+        return achatExistant;
 
     }
 
 
-    // ----------------------------------
-    // Création nouvel achat
-    // ----------------------------------
+    // ==================================
+    // CREATION NOUVEL ACHAT
+    // ==================================
 
     const id =
         Date.now();
@@ -821,28 +859,29 @@ function verifierBesoinAchat(article){
         "ACH-" + id;
 
 
+    const infosPortion =
+        obtenirInformationsPortion(
+            articleCommande
+        );
+
+
     const achat = {
 
         id:
-
             id,
 
         numero:
-
             numero,
 
         date:
-
             new Date()
-            .toISOString()
-            .split("T")[0],
+                .toISOString()
+                .split("T")[0],
 
         fournisseur:
-
             "À définir",
 
         fournisseurId:
-
             null,
 
         articles: [
@@ -853,41 +892,47 @@ function verifierBesoinAchat(article){
                     article.nom,
 
                 quantite:
-                    quantiteACommander,
-
-                unite:
-                    article.unite || "",
+                    quantiteManquante,
 
                 prix:
                     Number(
                         article.prixAchatMoyen
-                    ) || 0
+                    ) || 0,
+
+                unite:
+                    infosPortion.unite,
+
+                poidsUnitaire:
+                    infosPortion.poidsUnitaire
 
             }
 
         ],
 
         total:
-
             0,
 
         statut:
-
             "À commander",
 
         dateReception:
-
             null,
 
         automatique:
-
             true,
 
         origine:
+            "Commande client",
 
-            "Commande client"
+        commandeOrigine:
+            commande.id
 
     };
+
+
+    recalculerTotalAchat(
+        achat
+    );
 
 
     db.achats.push(
@@ -895,11 +940,15 @@ function verifierBesoinAchat(article){
     );
 
 
+    // ==================================
+    // MOUVEMENT
+    // ==================================
+
     db.mouvements.push({
 
         date:
             new Date()
-            .toLocaleString(),
+                .toLocaleString(),
 
         action:
             "Création achat automatique",
@@ -911,15 +960,79 @@ function verifierBesoinAchat(article){
             article.nom,
 
         quantite:
-            quantiteACommander,
+            quantiteManquante,
 
-        unite:
-            article.unite || "",
+        commande:
+            commande.id,
 
         origine:
-            "Stock sous minimum"
+            "Commande client - stock insuffisant"
 
     });
+
+
+    console.log(
+        "ACHAT AUTOMATIQUE CREE :",
+        achat
+    );
+
+
+    return achat;
+
+}
+
+
+// ======================================
+// RECALCUL TOTAL ACHAT
+// ======================================
+
+function recalculerTotalAchat(achat) {
+
+    if (!achat) {
+
+        return;
+
+    }
+
+
+    if (
+        !Array.isArray(
+            achat.articles
+        )
+    ) {
+
+        achat.articles = [];
+
+    }
+
+
+    achat.total =
+        achat.articles.reduce(
+
+            (
+                total,
+                ligne
+            ) =>
+
+                total +
+
+                (
+                    Number(
+                        ligne.quantite
+                    ) || 0
+                )
+
+                *
+
+                (
+                    Number(
+                        ligne.prix
+                    ) || 0
+                ),
+
+            0
+
+        );
 
 }
 
@@ -930,9 +1043,9 @@ function verifierBesoinAchat(article){
 
 function traiterStockCommande(
     commande
-){
+) {
 
-    if(!commande){
+    if (!commande) {
 
         return false;
 
@@ -940,12 +1053,12 @@ function traiterStockCommande(
 
 
     // ==================================
-    // PROTECTION DOUBLE TRAITEMENT
+    // SECURITE DOUBLE TRAITEMENT
     // ==================================
 
-    if(
+    if (
         commande.stockTraite === true
-    ){
+    ) {
 
         console.log(
             "STOCK DEJA TRAITE :",
@@ -967,11 +1080,11 @@ function traiterStockCommande(
             commande.produitsListe
         )
 
-        ?
+            ?
 
         commande.produitsListe
 
-        :
+            :
 
         (
 
@@ -979,24 +1092,27 @@ function traiterStockCommande(
                 commande.produits
             )
 
-            ?
+                ?
 
             commande.produits
 
-            :
+                :
 
             []
 
         );
 
 
-    if(
+    if (
         produits.length === 0
-    ){
+    ) {
 
         console.warn(
+
             "Aucun produit à traiter pour la commande",
+
             commande.id
+
         );
 
         return false;
@@ -1011,10 +1127,10 @@ function traiterStockCommande(
     const operations = [];
 
 
-    for(
+    for (
         const articleCommande
         of produits
-    ){
+    ) {
 
         const articleStock =
             trouverArticleStock(
@@ -1022,7 +1138,7 @@ function traiterStockCommande(
             );
 
 
-        if(!articleStock){
+        if (!articleStock) {
 
             console.warn(
 
@@ -1035,28 +1151,25 @@ function traiterStockCommande(
             );
 
 
-            commande.stockErreurArticle =
-                articleCommande.nom;
-
+            /*
+                On arrête ici afin de ne pas
+                traiter partiellement la commande.
+            */
 
             return false;
 
         }
 
 
-        const consommation =
-            calculerConsommationStock(
-
-                articleCommande,
-
-                articleStock
-
+        const quantiteDemandee =
+            calculerQuantiteCommande(
+                articleCommande
             );
 
 
-        if(
-            consommation <= 0
-        ){
+        if (
+            quantiteDemandee <= 0
+        ) {
 
             continue;
 
@@ -1071,8 +1184,8 @@ function traiterStockCommande(
             stock:
                 articleStock,
 
-            consommation:
-                consommation
+            quantiteDemandee:
+                quantiteDemandee
 
         });
 
@@ -1080,18 +1193,19 @@ function traiterStockCommande(
 
 
     // ==================================
-    // APPLICATION STOCK
+    // APPLICATION STOCK + ACHATS
     // ==================================
 
     operations.forEach(
+
         operation => {
 
             const article =
                 operation.stock;
 
 
-            const consommation =
-                operation.consommation;
+            const quantiteDemandee =
+                operation.quantiteDemandee;
 
 
             const ancienStock =
@@ -1100,52 +1214,159 @@ function traiterStockCommande(
                 ) || 0;
 
 
-            const nouveauStock =
-                ancienStock -
-                consommation;
+            /*
+                ==================================
+                QUANTITE PRISE DANS LE STOCK
+                ==================================
+            */
 
+            const quantiteDisponible =
+                Math.min(
 
-            // ----------------------------------
-            // Le stock ne descend pas sous zéro
-            // ----------------------------------
+                    ancienStock,
 
-            article.stock =
-                Math.max(
-                    0,
-                    nouveauStock
+                    quantiteDemandee
+
                 );
 
 
-            // ----------------------------------
-            // Mouvement
-            // ----------------------------------
+            /*
+                ==================================
+                MANQUE
+                ==================================
+            */
 
-            enregistrerMouvementCommande(
+            const quantiteManquante =
+                Math.max(
 
-                article,
+                    0,
 
-                ancienStock,
+                    quantiteDemandee
+                    -
+                    quantiteDisponible
 
-                article.stock,
-
-                consommation,
-
-                commande,
-
-                operation.commande
-
-            );
+                );
 
 
-            // ----------------------------------
-            // Vérification achat
-            // ----------------------------------
+            /*
+                ==================================
+                NOUVEAU STOCK
+                ==================================
+            */
 
-            verifierBesoinAchat(
-                article
-            );
+            const nouveauStock =
+                Math.max(
+
+                    0,
+
+                    ancienStock
+                    -
+                    quantiteDisponible
+
+                );
+
+
+            article.stock =
+                nouveauStock;
+
+
+            /*
+                ==================================
+                MOUVEMENT STOCK
+                ==================================
+            */
+
+            if (
+                quantiteDisponible > 0
+            ) {
+
+                enregistrerMouvementCommande(
+
+                    article,
+
+                    ancienStock,
+
+                    nouveauStock,
+
+                    quantiteDisponible,
+
+                    commande
+
+                );
+
+            }
+
+
+            /*
+                ==================================
+                ACHAT AUTOMATIQUE
+                ==================================
+            */
+
+            if (
+                quantiteManquante > 0
+            ) {
+
+                creerAchatAutomatique(
+
+                    article,
+
+                    quantiteManquante,
+
+                    operation.commande,
+
+                    commande
+
+                );
+
+            }
+
+
+            /*
+                ==================================
+                CAS STOCK ZERO
+                ==================================
+            */
+
+            if (
+                ancienStock === 0
+                &&
+                quantiteManquante > 0
+            ) {
+
+                db.mouvements.push({
+
+                    date:
+                        new Date()
+                            .toLocaleString(),
+
+                    action:
+                        "Stock insuffisant",
+
+                    article:
+                        article.nom,
+
+                    commande:
+                        commande.id,
+
+                    stock:
+                        0,
+
+                    quantiteDemandee:
+                        quantiteDemandee,
+
+                    quantiteManquante:
+                        quantiteManquante,
+
+                    origine:
+                        "Commande client"
+
+                });
+
+            }
 
         }
+
     );
 
 
@@ -1157,13 +1378,13 @@ function traiterStockCommande(
         true;
 
 
-    commande.stockErreur =
-        false;
-
-
     commande.stockTraiteDate =
         new Date()
-        .toLocaleString();
+            .toLocaleString();
+
+
+    commande.stockErreur =
+        false;
 
 
     // ==================================
@@ -1174,8 +1395,11 @@ function traiterStockCommande(
 
 
     console.log(
-        "STOCK COMMANDE TRAITE :",
+
+        "STOCK + ACHATS COMMANDE TRAITES :",
+
         commande.id
+
     );
 
 
@@ -1185,14 +1409,14 @@ function traiterStockCommande(
 
 
 // ======================================
-// AJOUT COMMANDE + CLIENT
+// AJOUT COMMANDE + CLIENT AUTOMATIQUE
 // ======================================
 
 function ajouterCommande(
     commande
-){
+) {
 
-    if(!commande){
+    if (!commande) {
 
         console.error(
             "Impossible d'ajouter une commande vide."
@@ -1204,39 +1428,39 @@ function ajouterCommande(
 
 
     // ==================================
-    // SECURITE
+    // SECURITE TABLEAUX
     // ==================================
 
-    if(
+    if (
         !Array.isArray(db.commandes)
-    ){
+    ) {
 
         db.commandes = [];
 
     }
 
 
-    if(
+    if (
         !Array.isArray(db.achats)
-    ){
+    ) {
 
         db.achats = [];
 
     }
 
 
-    if(
+    if (
         !Array.isArray(db.mouvements)
-    ){
+    ) {
 
         db.mouvements = [];
 
     }
 
 
-    if(
+    if (
         !Array.isArray(db.clients)
-    ){
+    ) {
 
         db.clients = [];
 
@@ -1253,11 +1477,12 @@ function ajouterCommande(
 
 
     // ==================================
-    // CLIENT
+    // CREATION CLIENT
     // ==================================
 
     let clientExiste =
         db.clients.find(
+
             c =>
 
                 c.email ===
@@ -1266,7 +1491,7 @@ function ajouterCommande(
         );
 
 
-    if(!clientExiste){
+    if (!clientExiste) {
 
         db.clients.push({
 
@@ -1300,27 +1525,25 @@ function ajouterCommande(
         );
 
 
-    if(
+    if (
         stockTraite === false
-    ){
+    ) {
 
         commande.stockTraite =
             false;
 
-
         commande.stockErreur =
             true;
 
-
         commande.stockErreurDate =
             new Date()
-            .toLocaleString();
+                .toLocaleString();
 
     }
 
 
     // ==================================
-    // SAUVEGARDE COMPLETE
+    // SAUVEGARDE
     // ==================================
 
     sauvegarderDB();
@@ -1335,15 +1558,16 @@ function ajouterCommande(
 
 
 // ======================================
-// RETRAITEMENT MANUEL STOCK
+// RETRAITEMENT MANUEL
 // ======================================
 
 function retraiterStockCommande(
     idCommande
-){
+) {
 
     const commande =
         db.commandes.find(
+
             cmd =>
 
                 String(cmd.id)
@@ -1353,7 +1577,7 @@ function retraiterStockCommande(
         );
 
 
-    if(!commande){
+    if (!commande) {
 
         console.warn(
             "Commande introuvable :",
@@ -1365,9 +1589,9 @@ function retraiterStockCommande(
     }
 
 
-    if(
+    if (
         commande.stockTraite === true
-    ){
+    ) {
 
         alert(
             "Le stock de cette commande a déjà été traité."
@@ -1400,7 +1624,7 @@ function retraiterStockCommande(
 // ACCES BASE COMPLETE
 // ======================================
 
-function obtenirDB(){
+function obtenirDB() {
 
     return db;
 
@@ -1413,36 +1637,36 @@ function obtenirDB(){
 
 function securiserTexte(
     texte
-){
+) {
 
     return String(
         texte
     )
 
-    .replace(
-        /&/g,
-        "&amp;"
-    )
+        .replace(
+            /&/g,
+            "&amp;"
+        )
 
-    .replace(
-        /</g,
-        "&lt;"
-    )
+        .replace(
+            /</g,
+            "&lt;"
+        )
 
-    .replace(
-        />/g,
-        "&gt;"
-    )
+        .replace(
+            />/g,
+            "&gt;"
+        )
 
-    .replace(
-        /"/g,
-        "&quot;"
-    )
+        .replace(
+            /"/g,
+            "&quot;"
+        )
 
-    .replace(
-        /'/g,
-        "&#039;"
-    );
+        .replace(
+            /'/g,
+            "&#039;"
+        );
 
 }
 
@@ -1450,9 +1674,6 @@ function securiserTexte(
 // ======================================
 // FIN
 // ======================================
-
-sauvegarderDB();
-
 
 console.log(
     "DATABASE.JS 2.5.0 CHARGE - DB =",
