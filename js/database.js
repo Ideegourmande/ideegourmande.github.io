@@ -355,11 +355,10 @@ const correspondancesProduits = {
 
 // ======================================
 // RECHERCHE ARTICLE STOCK
+// VERSION CORRIGEE 2.7.1
 // ======================================
 
-function trouverArticleStock(
-    articleCommande
-){
+function trouverArticleStock(articleCommande){
 
     if(!articleCommande){
 
@@ -377,7 +376,7 @@ function trouverArticleStock(
 
 
     const recette =
-        normaliserRecette(
+        normaliserNomArticle(
             articleCommande.recette
         );
 
@@ -399,100 +398,175 @@ function trouverArticleStock(
 
 
     // ==================================
-    // 1. RECHERCHE REFERENCE SI PRESENTE
+    // CORRESPONDANCES PRODUITS
     // ==================================
 
-    const parReference =
-        db.articles.find(
-            article => {
-
-                const refStock =
-                    String(
-                        article.reference || ""
-                    )
-                    .trim()
-                    .toLowerCase();
-
-                return (
-                    reference !== ""
-                    &&
-                    refStock === reference
-                );
-
-            }
-        );
+    const correspondances = {
 
 
-    if(parReference){
+        // ==================================
+        // FOIE GRAS
+        // ==================================
 
-        console.log(
-            "✅ ARTICLE TROUVE PAR REFERENCE :",
-            parReference.nom
-        );
+        "foie-gras": {
 
-        return parReference;
+            "piment":
+                "foie gras aux pimets",
 
-    }
+            "piments":
+                "foie gras aux pimets",
+
+            "pimets":
+                "foie gras aux pimets",
+
+            "aux piment":
+                "foie gras aux pimets",
+
+            "aux piments":
+                "foie gras aux pimets",
+
+            "aux pimets":
+                "foie gras aux pimets",
+
+            "figue":
+                "fois gras aux figues",
+
+            "figues":
+                "fois gras aux figues",
+
+            "aux figues":
+                "fois gras aux figues"
+
+        },
+
+
+        // ==================================
+        // MAGRET
+        // ==================================
+
+        "magret": {
+
+            "herbe":
+                "magret au herbes",
+
+            "herbes":
+                "magret au herbes",
+
+            "aux herbes":
+                "magret au herbes",
+
+            "au herbes":
+                "magret au herbes",
+
+            "piment":
+                "magret aux pimets",
+
+            "piments":
+                "magret aux pimets",
+
+            "pimets":
+                "magret aux pimets",
+
+            "aux piment":
+                "magret aux pimets",
+
+            "aux piments":
+                "magret aux pimets",
+
+            "aux pimets":
+                "magret aux pimets"
+
+        },
+
+
+        // ==================================
+        // VIANDE SECHEE
+        // ==================================
+
+        "viande-sechee":
+            "viande séchée",
+
+
+        // ==================================
+        // LARD SEC
+        // ==================================
+
+        "lard-sec":
+            "lard sec fumé",
+
+
+        // ==================================
+        // SAUMON
+        // ==================================
+
+        "saumon-fume": {
+
+            "piment":
+                "saumon aux piments",
+
+            "piments":
+                "saumon aux piments",
+
+            "pimets":
+                "saumon aux piments",
+
+            "aux piment":
+                "saumon aux piments",
+
+            "aux piments":
+                "saumon aux piments",
+
+            "aux pimets":
+                "saumon aux piments",
+
+            "aneth":
+                "saumon à l'aneth",
+
+            "a l'aneth":
+                "saumon à l'aneth",
+
+            "à l'aneth":
+                "saumon à l'aneth"
+
+        }
+
+    };
 
 
     // ==================================
-    // 2. RECHERCHE PAR CORRESPONDANCE
+    // RECHERCHE REFERENCE + RECETTE
     // ==================================
-
-    const correspondance =
-        correspondancesProduits[
-            reference
-        ];
-
 
     if(
-        correspondance
+        correspondances[reference]
+        &&
+        typeof correspondances[reference] === "object"
     ){
 
-        let nomRecherche = null;
+        const nomCorrespondant =
+            correspondances[reference][recette];
 
 
-        if(
-            typeof correspondance === "string"
-        ){
-
-            nomRecherche =
-                correspondance;
-
-        }
-        else if(
-            typeof correspondance === "object"
-        ){
-
-            nomRecherche =
-                correspondance[recette];
-
-        }
-
-
-        if(nomRecherche){
+        if(nomCorrespondant){
 
             const article =
                 db.articles.find(
                     a =>
-
-                        normaliserNomArticle(
-                            a.nom
-                        )
+                        normaliserNomArticle(a.nom)
                         ===
                         normaliserNomArticle(
-                            nomRecherche
+                            nomCorrespondant
                         )
-
                 );
 
 
             if(article){
 
                 console.log(
-                    "✅ ARTICLE TROUVE PAR CORRESPONDANCE :",
+                    "✅ ARTICLE STOCK TROUVÉ :",
                     article.nom
                 );
+
 
                 return article;
 
@@ -504,28 +578,63 @@ function trouverArticleStock(
 
 
     // ==================================
-    // 3. RECHERCHE PAR NOM EXACT
+    // PRODUITS SANS VARIANTE
+    // ==================================
+
+    if(
+        typeof correspondances[reference] === "string"
+    ){
+
+        const nomCorrespondant =
+            correspondances[reference];
+
+
+        const article =
+            db.articles.find(
+                a =>
+                    normaliserNomArticle(a.nom)
+                    ===
+                    normaliserNomArticle(
+                        nomCorrespondant
+                    )
+            );
+
+
+        if(article){
+
+            console.log(
+                "✅ ARTICLE STOCK TROUVÉ :",
+                article.nom
+            );
+
+
+            return article;
+
+        }
+
+    }
+
+
+    // ==================================
+    // RECHERCHE PAR NOM EXACT
     // ==================================
 
     const articleParNom =
         db.articles.find(
             a =>
-
-                normaliserNomArticle(
-                    a.nom
-                )
+                normaliserNomArticle(a.nom)
                 ===
                 nomCommande
-
         );
 
 
     if(articleParNom){
 
         console.log(
-            "✅ ARTICLE TROUVE PAR NOM :",
+            "✅ ARTICLE STOCK TROUVÉ PAR NOM :",
             articleParNom.nom
         );
+
 
         return articleParNom;
 
@@ -533,70 +642,141 @@ function trouverArticleStock(
 
 
     // ==================================
-    // 4. RECHERCHE PARTIELLE
+    // RECHERCHE PLUS SOUPLE
     // ==================================
 
-    if(
-        nomCommande.length >= 5
-    ){
+    /*
+       Permet de récupérer certaines anciennes
+       commandes même si la formulation du nom
+       diffère légèrement.
+    */
 
-        const articlePartiel =
-            db.articles.find(
-                a => {
+    const articleParReference =
+        db.articles.find(
+            a => {
 
-                    const nomStock =
-                        normaliserNomArticle(
-                            a.nom
-                        );
+                const nomStock =
+                    normaliserNomArticle(a.nom);
+
+
+                if(reference === "foie-gras"){
 
                     return (
-
-                        nomStock.includes(
-                            nomCommande
+                        nomStock.includes("foie gras")
+                        &&
+                        (
+                            recette === "piment"
+                            ||
+                            recette === "piments"
+                            ||
+                            recette === "pimets"
                         )
-
-                        ||
-
-                        nomCommande.includes(
-                            nomStock
-                        )
-
+                        &&
+                        nomStock.includes("pimet")
                     );
 
                 }
-            );
 
 
-        if(articlePartiel){
+                if(reference === "magret"){
 
-            console.log(
-                "✅ ARTICLE TROUVE PAR NOM PARTIEL :",
-                articlePartiel.nom
-            );
+                    return (
+                        nomStock.includes("magret")
+                        &&
+                        (
+                            recette === "piment"
+                            ||
+                            recette === "piments"
+                            ||
+                            recette === "pimets"
+                        )
+                        &&
+                        nomStock.includes("pimet")
+                    );
 
-            return articlePartiel;
+                }
 
-        }
+
+                if(reference === "viande-sechee"){
+
+                    return nomStock ===
+                        "viande sechee";
+
+                }
+
+
+                if(reference === "lard-sec"){
+
+                    return nomStock ===
+                        "lard sec fume";
+
+                }
+
+
+                if(reference === "saumon-fume"){
+
+                    if(
+                        recette === "aneth"
+                        ||
+                        recette === "a l'aneth"
+                    ){
+
+                        return (
+                            nomStock.includes("saumon")
+                            &&
+                            nomStock.includes("aneth")
+                        );
+
+                    }
+
+
+                    if(
+                        recette === "piment"
+                        ||
+                        recette === "piments"
+                        ||
+                        recette === "pimets"
+                    ){
+
+                        return (
+                            nomStock.includes("saumon")
+                            &&
+                            nomStock.includes("piment")
+                        );
+
+                    }
+
+                }
+
+
+                return false;
+
+            }
+        );
+
+
+    if(articleParReference){
+
+        console.log(
+            "✅ ARTICLE STOCK TROUVÉ PAR RECHERCHE SOUPLE :",
+            articleParReference.nom
+        );
+
+
+        return articleParReference;
 
     }
 
 
     // ==================================
-    // INTROUVABLE
+    // ARTICLE INTROUVABLE
     // ==================================
 
     console.error(
         "❌ ARTICLE STOCK INTROUVABLE :",
-        {
-            nom:
-                articleCommande.nom,
-
-            reference:
-                articleCommande.reference,
-
-            recette:
-                articleCommande.recette
-        }
+        articleCommande.nom,
+        articleCommande.reference,
+        articleCommande.recette
     );
 
 
