@@ -1167,7 +1167,7 @@ console.log(
         commande.client.commentaire,
 
 
-        produits:
+produits:
 commande.produits
 .map(article =>
     article.nom
@@ -1177,7 +1177,13 @@ commande.produits
         ?
         " (" + article.poids + " g)"
         :
-        " x" + article.quantite
+        (
+            article.quantite > 1
+            ?
+            " x" + article.quantite
+            :
+            ""
+        )
     )
 )
 .join("\n"),
