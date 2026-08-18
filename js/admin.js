@@ -495,7 +495,58 @@ function archiverCommande(index){
     afficherDernieresCommandes();
 }
 
+// ==================================
+// SUPPRIMER LES ACHATS AUTOMATIQUES
+// LIÉS À UNE COMMANDE
+// ==================================
 
+function supprimerAchatsAutomatiquesCommande(cmd){
+
+    if(
+        !cmd ||
+        typeof db === "undefined" ||
+        !db
+    ){
+        return;
+    }
+
+    if(!Array.isArray(db.achats)){
+        db.achats = [];
+        return;
+    }
+
+    const idCommande =
+        String(cmd.id || "").trim();
+
+    if(!idCommande){
+        return;
+    }
+
+    db.achats =
+        db.achats.filter(function(achat){
+
+            if(!achat){
+                return false;
+            }
+
+            // Les achats manuels sont conservés
+            if(achat.automatique !== true){
+                return true;
+            }
+
+            const numeroAchat =
+                String(
+                    achat.numero ||
+                    achat.commandeId ||
+                    achat.idCommande ||
+                    ""
+                ).trim();
+
+            // Supprime uniquement l'achat automatique
+            // correspondant à cette commande
+            return numeroAchat !== idCommande;
+        });
+}
 // ==================================
 // SUPPRIMER COMMANDE
 // ==================================
