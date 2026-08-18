@@ -1826,11 +1826,6 @@ function retraiterStockCommande(
 // ACCES BASE
 // ======================================
 
-function obtenirDB(){
-
-    return db;
-
-}
 
 
 // ======================================
@@ -1874,10 +1869,6 @@ function securiserTexte(
 
 window.ajouterCommande =
     ajouterCommande;
-
-
-window.obtenirDB =
-    obtenirDB;
 
 
 window.sauvegarderDB =
