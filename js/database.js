@@ -1,8 +1,8 @@
 // ======================================
 // IDEE GOURMANDE
 // Base de données centrale
-// Version 2.5.0
-// Gestion commandes + stock + achats
+// Version 2.6.0
+// Commandes + stock + achats automatiques
 // ======================================
 
 
@@ -96,7 +96,7 @@ if(!db){
 
 
 // ======================================
-// VERIFICATION ANCIENNES VERSIONS
+// VERIFICATION / MIGRATION
 // ======================================
 
 else{
@@ -124,8 +124,6 @@ else{
         }
     );
 
-
-    // Sécurité tableaux
 
     if(!Array.isArray(db.commandes))
         db.commandes = [];
@@ -189,11 +187,9 @@ function migrerAnciennesCommandes(){
             ...anciennes
         ];
 
-
         localStorage.removeItem(
             "commandes"
         );
-
 
         sauvegarderDB();
 
@@ -230,7 +226,9 @@ function normaliserNomArticle(nom){
 function trouverArticleStock(articleCommande){
 
     if(!articleCommande){
+
         return null;
+
     }
 
 
@@ -248,9 +246,7 @@ function trouverArticleStock(articleCommande){
         );
 
 
-    // ==================================
-    // RECHERCHE PAR NOM
-    // ==================================
+    // Recherche par nom
 
     let article =
         db.articles.find(
@@ -262,13 +258,13 @@ function trouverArticleStock(articleCommande){
 
 
     if(article){
+
         return article;
+
     }
 
 
-    // ==================================
-    // CORRESPONDANCES PRODUITS
-    // ==================================
+    // Correspondances produits
 
     const correspondances = {
 
@@ -308,15 +304,15 @@ function trouverArticleStock(articleCommande){
 
 
         if(article){
+
             return article;
+
         }
 
     }
 
 
-    // ==================================
-    // RECHERCHE PAR REFERENCE
-    // ==================================
+    // Recherche par référence
 
     if(reference){
 
@@ -334,7 +330,9 @@ function trouverArticleStock(articleCommande){
 
 
         if(article){
+
             return article;
+
         }
 
     }
@@ -354,11 +352,13 @@ function calculerQuantiteCommande(
 ){
 
     if(!articleCommande){
+
         return 0;
+
     }
 
 
-    // Le saumon est géré en grammes
+    // Le saumon est géré en grammes.
 
     if(
         articleCommande.reference
@@ -385,13 +385,11 @@ function calculerQuantiteCommande(
 // ======================================
 
 function enregistrerMouvementCommande(
-
     article,
     ancienStock,
     nouveauStock,
     consommation,
     commande
-
 ){
 
     db.mouvements.push({
@@ -408,11 +406,9 @@ function enregistrerMouvementCommande(
         commande:
             commande.id,
 
-        ancienStock:
-            ancienStock,
+        ancienStock,
 
-        nouveauStock:
-            nouveauStock,
+        nouveauStock,
 
         difference:
             -consommation,
@@ -426,13 +422,15 @@ function enregistrerMouvementCommande(
 
 
 // ======================================
-// RECHERCHE ACHAT AUTOMATIQUE EXISTANT
+// RECHERCHE ACHAT AUTOMATIQUE
 // ======================================
 
 function trouverAchatAutomatique(article){
 
     if(!article){
+
         return null;
+
     }
 
 
@@ -464,20 +462,59 @@ function trouverAchatAutomatique(article){
                         article.nom
                     )
             )
+
     ) || null;
 
 }
 
 
 // ======================================
-// AJOUT / MISE A JOUR ACHAT AUTOMATIQUE
+// RECALCUL TOTAL ACHAT
+// ======================================
+
+function recalculerTotalAchat(achat){
+
+    if(!achat){
+
+        return;
+
+    }
+
+
+    achat.total =
+        (achat.articles || [])
+        .reduce(
+
+            (total, ligne) =>
+
+                total
+                +
+                (
+                    Number(
+                        ligne.quantite
+                    ) || 0
+                )
+                *
+                (
+                    Number(
+                        ligne.prix
+                    ) || 0
+                ),
+
+            0
+
+        );
+
+}
+
+
+// ======================================
+// CREATION / COMPLETION ACHAT AUTOMATIQUE
 // ======================================
 
 function creerOuCompleterAchatAutomatique(
-
     article,
     quantite
-
 ){
 
     if(
@@ -486,7 +523,7 @@ function creerOuCompleterAchatAutomatique(
         quantite <= 0
     ){
 
-        return;
+        return null;
 
     }
 
@@ -497,9 +534,7 @@ function creerOuCompleterAchatAutomatique(
         );
 
 
-    // ==================================
-    // ACHAT EXISTANT
-    // ==================================
+    // Achat automatique déjà existant
 
     if(achatExistant){
 
@@ -521,8 +556,9 @@ function creerOuCompleterAchatAutomatique(
 
             ligne.quantite =
                 (
-                    Number(ligne.quantite)
-                    || 0
+                    Number(
+                        ligne.quantite
+                    ) || 0
                 )
                 +
                 quantite;
@@ -538,8 +574,7 @@ function creerOuCompleterAchatAutomatique(
                 reference:
                     article.reference || "",
 
-                quantite:
-                    quantite,
+                quantite,
 
                 prix:
                     Number(
@@ -570,8 +605,7 @@ function creerOuCompleterAchatAutomatique(
             article:
                 article.nom,
 
-            quantite:
-                quantite,
+            quantite,
 
             origine:
                 "Commande client"
@@ -579,14 +613,15 @@ function creerOuCompleterAchatAutomatique(
         });
 
 
+        sauvegarderDB();
+
+
         return achatExistant;
 
     }
 
 
-    // ==================================
-    // NOUVEL ACHAT
-    // ==================================
+    // Nouvel achat automatique
 
     const id =
         Date.now();
@@ -594,8 +629,7 @@ function creerOuCompleterAchatAutomatique(
 
     const achat = {
 
-        id:
-            id,
+        id,
 
         numero:
             "ACH-" + id,
@@ -621,8 +655,7 @@ function creerOuCompleterAchatAutomatique(
                 reference:
                     article.reference || "",
 
-                quantite:
-                    quantite,
+                quantite,
 
                 prix:
                     Number(
@@ -675,13 +708,15 @@ function creerOuCompleterAchatAutomatique(
         article:
             article.nom,
 
-        quantite:
-            quantite,
+        quantite,
 
         origine:
             "Commande client"
 
     });
+
+
+    sauvegarderDB();
 
 
     console.log(
@@ -696,47 +731,7 @@ function creerOuCompleterAchatAutomatique(
 
 
 // ======================================
-// RECALCUL TOTAL ACHAT
-// ======================================
-
-function recalculerTotalAchat(achat){
-
-    if(!achat){
-        return;
-    }
-
-
-    achat.total =
-        (
-            achat.articles || []
-        )
-        .reduce(
-
-            (total, ligne) =>
-
-                total
-                +
-                (
-                    Number(
-                        ligne.quantite
-                    ) || 0
-                )
-                *
-                (
-                    Number(
-                        ligne.prix
-                    ) || 0
-                ),
-
-            0
-
-        );
-
-}
-
-
-// ======================================
-// TRAITEMENT STOCK + ACHAT COMMANDE
+// TRAITEMENT STOCK + ACHAT
 // ======================================
 
 function traiterStockCommande(
@@ -744,13 +739,13 @@ function traiterStockCommande(
 ){
 
     if(!commande){
+
         return false;
+
     }
 
 
-    // ==================================
-    // SECURITE DOUBLE TRAITEMENT
-    // ==================================
+    // Protection double traitement
 
     if(
         commande.stockTraite === true
@@ -765,10 +760,6 @@ function traiterStockCommande(
 
     }
 
-
-    // ==================================
-    // RECUPERATION PRODUITS
-    // ==================================
 
     const produits =
         Array.isArray(
@@ -795,17 +786,23 @@ function traiterStockCommande(
             commande.id
         );
 
+        commande.stockErreur = true;
+
+        commande.stockErreurMessage =
+            "Aucun produit dans la commande.";
+
+        sauvegarderDB();
+
         return false;
 
     }
 
 
-    // ==================================
-    // PREPARATION DES OPERATIONS
-    // ==================================
-
     const operations = [];
 
+
+    // Vérification de tous les articles
+    // AVANT de modifier le stock.
 
     for(
         const articleCommande
@@ -829,7 +826,6 @@ function traiterStockCommande(
 
             commande.stockErreur =
                 true;
-
 
             commande.stockErreurMessage =
                 "Article introuvable dans le stock : "
@@ -882,16 +878,13 @@ function traiterStockCommande(
     }
 
 
-    // ==================================
-    // APPLICATION STOCK + ACHATS
-    // ==================================
+    // Application des opérations
 
     operations.forEach(
         operation => {
 
             const article =
                 operation.stock;
-
 
             const quantiteCommandee =
                 operation.quantite;
@@ -903,32 +896,19 @@ function traiterStockCommande(
                 ) || 0;
 
 
-            /*
-                Quantité réellement disponible
-                dans le stock.
-            */
-
-            const quantiteStockDisponible =
+            const stockDisponible =
                 Math.max(
                     0,
                     ancienStock
                 );
 
 
-            /*
-                Quantité prélevée du stock.
-            */
-
             const consommation =
                 Math.min(
-                    quantiteStockDisponible,
+                    stockDisponible,
                     quantiteCommandee
                 );
 
-
-            /*
-                Quantité manquante.
-            */
 
             const quantiteManquante =
                 Math.max(
@@ -938,10 +918,6 @@ function traiterStockCommande(
                     consommation
                 );
 
-
-            /*
-                Nouveau stock.
-            */
 
             const nouveauStock =
                 Math.max(
@@ -956,11 +932,11 @@ function traiterStockCommande(
                 nouveauStock;
 
 
-            // ==================================
-            // MOUVEMENT STOCK
-            // ==================================
+            // Mouvement de stock
 
-            if(consommation > 0){
+            if(
+                consommation > 0
+            ){
 
                 enregistrerMouvementCommande(
 
@@ -979,11 +955,6 @@ function traiterStockCommande(
             }
             else{
 
-                /*
-                    Même avec un stock à 0,
-                    on conserve une trace de la commande.
-                */
-
                 db.mouvements.push({
 
                     date:
@@ -998,11 +969,9 @@ function traiterStockCommande(
                     commande:
                         commande.id,
 
-                    ancienStock:
-                        ancienStock,
+                    ancienStock,
 
-                    nouveauStock:
-                        nouveauStock,
+                    nouveauStock,
 
                     difference:
                         0,
@@ -1015,9 +984,8 @@ function traiterStockCommande(
             }
 
 
-            // ==================================
-            // CREATION ACHAT MANQUANT
-            // ==================================
+            // Création de l'achat correspondant
+            // UNIQUEMENT pour le manque.
 
             if(
                 quantiteManquante > 0
@@ -1037,25 +1005,15 @@ function traiterStockCommande(
     );
 
 
-    // ==================================
-    // COMMANDE TRAITEE
-    // ==================================
-
     commande.stockTraite =
         true;
-
 
     commande.stockErreur =
         false;
 
-
     commande.stockTraiteDate =
         new Date().toLocaleString();
 
-
-    // ==================================
-    // SAUVEGARDE
-    // ==================================
 
     sauvegarderDB();
 
@@ -1090,10 +1048,6 @@ function ajouterCommande(
     }
 
 
-    // ==================================
-    // SECURITE TABLEAUX
-    // ==================================
-
     if(!Array.isArray(db.commandes))
         db.commandes = [];
 
@@ -1107,26 +1061,38 @@ function ajouterCommande(
         db.clients = [];
 
 
-    // ==================================
-    // AJOUT COMMANDE
-    // ==================================
+    // Ajout commande
 
     db.commandes.push(
         commande
     );
 
 
-    // ==================================
-    // CLIENT
-    // ==================================
+    // Client
+
+    const email =
+        String(
+            commande.email || ""
+        )
+        .trim()
+        .toLowerCase();
+
 
     let clientExiste =
+        email
+        ?
         db.clients.find(
             c =>
-                c.email
+                String(
+                    c.email || ""
+                )
+                .trim()
+                .toLowerCase()
                 ===
-                commande.email
-        );
+                email
+        )
+        :
+        null;
 
 
     if(!clientExiste){
@@ -1153,9 +1119,7 @@ function ajouterCommande(
     }
 
 
-    // ==================================
-    // TRAITEMENT STOCK
-    // ==================================
+    // Traitement stock
 
     const stockTraite =
         traiterStockCommande(
@@ -1178,10 +1142,6 @@ function ajouterCommande(
 
     }
 
-
-    // ==================================
-    // SAUVEGARDE COMPLETE
-    // ==================================
 
     sauvegarderDB();
 
@@ -1279,27 +1239,22 @@ function securiserTexte(
     return String(
         texte || ""
     )
-
     .replace(
         /&/g,
         "&amp;"
     )
-
     .replace(
         /</g,
         "&lt;"
     )
-
     .replace(
         />/g,
         "&gt;"
     )
-
     .replace(
         /"/g,
         "&quot;"
     )
-
     .replace(
         /'/g,
         "&#039;"
@@ -1330,12 +1285,15 @@ window.retraiterStockCommande =
 window.trouverArticleStock =
     trouverArticleStock;
 
+window.normaliserNomArticle =
+    normaliserNomArticle;
+
 
 // ======================================
 // FIN
 // ======================================
 
 console.log(
-    "DATABASE.JS 2.5.0 CHARGE - STOCK + ACHATS AUTOMATIQUES ACTIFS",
+    "DATABASE.JS 2.6.0 CHARGE - STOCK + ACHATS AUTOMATIQUES ACTIFS",
     db
 );
