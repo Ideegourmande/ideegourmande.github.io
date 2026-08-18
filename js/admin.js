@@ -1,7 +1,7 @@
 // ==================================
 // IDÉE GOURMANDE
 // Administration
-// Version 2.5.0
+// Version 2.6.0
 // Commandes + Stock + Achats
 // ==================================
 
@@ -12,11 +12,23 @@
 
 function obtenirCommandes(){
 
-    if(!db.commandes){
+    if(
+        typeof db === "undefined"
+        ||
+        !db
+    ){
+
+        return [];
+
+    }
+
+
+    if(!Array.isArray(db.commandes)){
 
         db.commandes = [];
 
     }
+
 
     return db.commandes;
 
@@ -29,11 +41,23 @@ function obtenirCommandes(){
 
 function obtenirArchives(){
 
-    if(!db.archives){
+    if(
+        typeof db === "undefined"
+        ||
+        !db
+    ){
+
+        return [];
+
+    }
+
+
+    if(!Array.isArray(db.archives)){
 
         db.archives = [];
 
     }
+
 
     return db.archives;
 
@@ -59,16 +83,12 @@ function afficherCommandes(){
 
 function afficherProduitsCommande(cmd){
 
-    /*
-        produitsListe contient :
+    if(!cmd){
 
-        - nom
-        - recette
-        - quantite
-        - poids
-        - reference
-        - prix
-    */
+        return "";
+
+    }
+
 
     const produits =
         Array.isArray(cmd.produitsListe)
@@ -76,12 +96,19 @@ function afficherProduitsCommande(cmd){
             : [];
 
 
-    // Anciennes commandes
+    // ==================================
+    // ANCIENNES COMMANDES
+    // ==================================
 
     if(produits.length === 0){
 
-        return (cmd.produits || "")
-            .replace(/\n/g,"<br>");
+        return String(
+            cmd.produits || ""
+        )
+        .replace(
+            /\n/g,
+            "<br>"
+        );
 
     }
 
@@ -90,6 +117,13 @@ function afficherProduitsCommande(cmd){
 
 
     produits.forEach(function(article){
+
+        if(!article){
+
+            return;
+
+        }
+
 
         const nom =
             article.nom || "Produit";
@@ -215,6 +249,13 @@ function afficherListeCommandes(commandes){
 
     commandes.forEach(function(cmd,index){
 
+        if(!cmd){
+
+            return;
+
+        }
+
+
         // ==================================
         // COULEUR DU STATUT
         // ==================================
@@ -223,7 +264,9 @@ function afficherListeCommandes(commandes){
             "statut-nouvelle";
 
 
-        if(cmd.statut === "En préparation"){
+        if(
+            cmd.statut === "En préparation"
+        ){
 
             classeStatut =
                 "statut-preparation";
@@ -231,7 +274,9 @@ function afficherListeCommandes(commandes){
         }
 
 
-        if(cmd.statut === "Prête"){
+        if(
+            cmd.statut === "Prête"
+        ){
 
             classeStatut =
                 "statut-prete";
@@ -239,7 +284,9 @@ function afficherListeCommandes(commandes){
         }
 
 
-        if(cmd.statut === "Livrée"){
+        if(
+            cmd.statut === "Livrée"
+        ){
 
             classeStatut =
                 "statut-livree";
@@ -395,9 +442,7 @@ function afficherListeCommandes(commandes){
                     class="btn"
                     onclick="imprimerCommande(${index})"
                 >
-
                     🖨 PDF
-
                 </button>
 
 
@@ -405,9 +450,7 @@ function afficherListeCommandes(commandes){
                     class="btn"
                     onclick="renvoyerEmail(${index})"
                 >
-
                     📧 Email
-
                 </button>
 
 
@@ -421,9 +464,7 @@ function afficherListeCommandes(commandes){
                         class="btn"
                         onclick="archiverCommande(${index})"
                     >
-
                         📁 Archiver
-
                     </button>
 
                     `
@@ -438,9 +479,7 @@ function afficherListeCommandes(commandes){
                     class="btn"
                     onclick="supprimerCommande(${index})"
                 >
-
                     🗑 Supprimer
-
                 </button>
 
 
@@ -466,7 +505,7 @@ function afficherListeCommandes(commandes){
 
 function changerStatut(index,valeur){
 
-    let commandes =
+    const commandes =
         obtenirCommandes();
 
 
@@ -501,15 +540,15 @@ function changerStatut(index,valeur){
 
 function archiverCommande(index){
 
-    let commandes =
+    const commandes =
         obtenirCommandes();
 
 
-    let archives =
+    const archives =
         obtenirArchives();
 
 
-    let cmd =
+    const cmd =
         commandes[index];
 
 
@@ -567,8 +606,15 @@ function supprimerCommande(index){
     }
 
 
-    let commandes =
+    const commandes =
         obtenirCommandes();
+
+
+    if(!commandes[index]){
+
+        return;
+
+    }
 
 
     commandes.splice(
@@ -597,11 +643,11 @@ function supprimerCommande(index){
 
 function imprimerCommande(index){
 
-    let commandes =
+    const commandes =
         obtenirCommandes();
 
 
-    let cmd =
+    const cmd =
         commandes[index];
 
 
@@ -612,12 +658,17 @@ function imprimerCommande(index){
     }
 
 
-    let noms =
-        (cmd.client || "")
-        .split(" ");
+    const noms =
+        String(
+            cmd.client || ""
+        )
+        .trim()
+        .split(/\s+/);
 
 
-    if(typeof genererPDFCommande !== "function"){
+    if(
+        typeof genererPDFCommande !== "function"
+    ){
 
         alert(
             "La fonction de génération PDF n'est pas disponible."
@@ -656,7 +707,9 @@ function imprimerCommande(index){
         },
 
         produits:
-            cmd.produitsListe || [],
+            Array.isArray(cmd.produitsListe)
+                ? cmd.produitsListe
+                : [],
 
         total:
             Number(cmd.total) || 0
@@ -672,11 +725,11 @@ function imprimerCommande(index){
 
 function renvoyerEmail(index){
 
-    let commandes =
+    const commandes =
         obtenirCommandes();
 
 
-    let cmd =
+    const cmd =
         commandes[index];
 
 
@@ -698,14 +751,14 @@ function renvoyerEmail(index){
     }
 
 
-    let sujet =
+    const sujet =
         "Votre commande Idée Gourmande";
 
 
-    let message =
+    const message =
 
         "Bonjour " +
-        cmd.client +
+        (cmd.client || "") +
         ",\n\n" +
 
         "Nous vous confirmons le rappel de votre commande :\n\n" +
@@ -714,7 +767,7 @@ function renvoyerEmail(index){
 
         "\n\nTotal : " +
 
-        cmd.total +
+        (Number(cmd.total) || 0).toFixed(2) +
 
         " CHF\n\n" +
 
@@ -746,23 +799,23 @@ function renvoyerEmail(index){
 
 function afficherStatistiques(){
 
-    let commandes =
+    const commandes =
         obtenirCommandes();
 
 
-    let nb =
+    const nb =
         document.getElementById(
             "nbCommandes"
         );
 
 
-    let ca =
+    const ca =
         document.getElementById(
             "caTotal"
         );
 
 
-    let jour =
+    const jour =
         document.getElementById(
             "commandeJour"
         );
@@ -770,7 +823,7 @@ function afficherStatistiques(){
 
     if(nb){
 
-        nb.innerHTML =
+        nb.textContent =
             commandes.length;
 
     }
@@ -789,13 +842,15 @@ function afficherStatistiques(){
 
     if(ca){
 
-        ca.innerHTML =
-            total.toFixed(2) + " CHF";
+        ca.textContent =
+            total.toFixed(2)
+            +
+            " CHF";
 
     }
 
 
-    let aujourd_hui =
+    const aujourd_hui =
         new Date()
         .toLocaleDateString("fr-FR");
 
@@ -806,8 +861,11 @@ function afficherStatistiques(){
     commandes.forEach(function(cmd){
 
         if(
-            cmd.date &&
-            cmd.date.includes(aujourd_hui)
+            cmd.date
+            &&
+            String(cmd.date).includes(
+                aujourd_hui
+            )
         ){
 
             compteur++;
@@ -819,29 +877,44 @@ function afficherStatistiques(){
 
     if(jour){
 
-        jour.innerHTML =
+        jour.textContent =
             compteur;
 
     }
 
 
     // ==================================
-    // STOCK ET ACHATS
+    // STOCK
     // ==================================
 
-    if(typeof db !== "undefined"){
+    if(
+        typeof db !== "undefined"
+        &&
+        db
+    ){
 
         let stockCritique = 0;
 
 
-        (db.articles || []).forEach(function(article){
+        (
+            Array.isArray(db.articles)
+                ? db.articles
+                : []
+        )
+        .forEach(function(article){
+
+            const stock =
+                Number(article.stock) || 0;
+
+
+            const minimum =
+                Number(article.minimum) || 0;
+
 
             if(
-                Number(article.stock) > 0
+                stock > 0
                 &&
-                Number(article.stock)
-                <=
-                Number(article.minimum)
+                stock <= minimum
             ){
 
                 stockCritique++;
@@ -851,7 +924,7 @@ function afficherStatistiques(){
         });
 
 
-        let zoneStock =
+        const zoneStock =
             document.getElementById(
                 "stockCritique"
             );
@@ -859,18 +932,29 @@ function afficherStatistiques(){
 
         if(zoneStock){
 
-            zoneStock.innerHTML =
+            zoneStock.textContent =
                 stockCritique;
 
         }
 
 
+        // ==================================
+        // ACHATS EN ATTENTE
+        // ==================================
+
         let achatsAttente = 0;
 
 
-        (db.achats || []).forEach(function(achat){
+        (
+            Array.isArray(db.achats)
+                ? db.achats
+                : []
+        )
+        .forEach(function(achat){
 
             if(
+                achat
+                &&
                 achat.statut !== "Réceptionné"
             ){
 
@@ -881,7 +965,7 @@ function afficherStatistiques(){
         });
 
 
-        let zoneAchats =
+        const zoneAchats =
             document.getElementById(
                 "nbAchats"
             );
@@ -889,7 +973,7 @@ function afficherStatistiques(){
 
         if(zoneAchats){
 
-            zoneAchats.innerHTML =
+            zoneAchats.textContent =
                 achatsAttente;
 
         }
@@ -905,7 +989,7 @@ function afficherStatistiques(){
 
 function rechercherCommande(){
 
-    let champ =
+    const champ =
         document.getElementById(
             "rechercheCommande"
         );
@@ -918,28 +1002,32 @@ function rechercherCommande(){
     }
 
 
-    let recherche =
+    const recherche =
         champ.value
         .toLowerCase()
         .trim();
 
 
-    let commandes =
+    const commandes =
         obtenirCommandes();
 
 
-    let filtre =
+    const filtre =
         commandes.filter(function(cmd){
 
             return (
 
-                (cmd.client || "")
+                String(
+                    cmd.client || ""
+                )
                 .toLowerCase()
                 .includes(recherche)
 
                 ||
 
-                (cmd.email || "")
+                String(
+                    cmd.email || ""
+                )
                 .toLowerCase()
                 .includes(recherche)
 
@@ -978,7 +1066,7 @@ function deconnexion(){
 
 function afficherAlertes(){
 
-    let zone =
+    const zone =
         document.getElementById(
             "listeAlertes"
         );
@@ -998,18 +1086,20 @@ function afficherAlertes(){
     // COMMANDES EN ATTENTE
     // ==================================
 
-    let commandes =
+    const commandes =
         obtenirCommandes();
 
 
-    let commandesAttente =
+    const commandesAttente =
         commandes.filter(function(cmd){
 
-            return !cmd.statut
+            return (
+                !cmd.statut
                 ||
                 cmd.statut === "Nouvelle"
                 ||
-                cmd.statut === "En préparation";
+                cmd.statut === "En préparation"
+            );
 
         }).length;
 
@@ -1028,15 +1118,24 @@ function afficherAlertes(){
 
 
     // ==================================
-    // STOCK
+    // STOCK + ACHATS
     // ==================================
 
-    if(typeof db !== "undefined"){
+    if(
+        typeof db !== "undefined"
+        &&
+        db
+    ){
 
         let stockZero = 0;
 
 
-        (db.articles || []).forEach(function(article){
+        (
+            Array.isArray(db.articles)
+                ? db.articles
+                : []
+        )
+        .forEach(function(article){
 
             if(
                 Number(article.stock) === 0
@@ -1059,15 +1158,19 @@ function afficherAlertes(){
         }
 
 
-        // ==================================
-        // ACHATS
-        // ==================================
-
-        let achatsAttente =
-            (db.achats || [])
+        const achatsAttente =
+            (
+                Array.isArray(db.achats)
+                    ? db.achats
+                    : []
+            )
             .filter(function(achat){
 
-                return achat.statut !== "Réceptionné";
+                return (
+                    achat
+                    &&
+                    achat.statut !== "Réceptionné"
+                );
 
             })
             .length;
@@ -1121,7 +1224,9 @@ function allerAuxCommandesApreparer(){
             "attente";
 
 
-        if(typeof trierCommandes === "function"){
+        if(
+            typeof trierCommandes === "function"
+        ){
 
             trierCommandes();
 
@@ -1159,7 +1264,7 @@ function allerAuxCommandesApreparer(){
 
 function afficherDernieresCommandes(){
 
-    let zone =
+    const zone =
         document.getElementById(
             "dernieresCommandes"
         );
@@ -1172,7 +1277,7 @@ function afficherDernieresCommandes(){
     }
 
 
-    let commandes =
+    const commandes =
         obtenirCommandes();
 
 
@@ -1186,9 +1291,7 @@ function afficherDernieresCommandes(){
     }
 
 
-    // 5 dernières commandes
-
-    let dernieres =
+    const dernieres =
         commandes
         .slice(-5)
         .reverse();
@@ -1198,6 +1301,13 @@ function afficherDernieresCommandes(){
 
 
     dernieres.forEach(function(cmd){
+
+        if(!cmd){
+
+            return;
+
+        }
+
 
         html += `
 
@@ -1215,7 +1325,7 @@ function afficherDernieresCommandes(){
             <br>
 
             Total :
-            ${cmd.total || 0} CHF
+            ${Number(cmd.total) || 0} CHF
 
             <br>
 
@@ -1238,25 +1348,29 @@ function afficherDernieresCommandes(){
 
 
 // ==================================
-// RESUME STOCK TABLEAU DE BORD
+// RÉSUMÉ STOCK TABLEAU DE BORD
 // ==================================
 
 function afficherResumeStock(){
 
-    if(typeof db === "undefined"){
+    if(
+        typeof db === "undefined"
+        ||
+        !db
+    ){
 
         return;
 
     }
 
 
-    let articles =
+    const articles =
         Array.isArray(db.articles)
             ? db.articles
             : [];
 
 
-    let totalArticles =
+    const totalArticles =
         articles.length;
 
 
@@ -1267,11 +1381,18 @@ function afficherResumeStock(){
 
     articles.forEach(function(article){
 
-        let stock =
+        if(!article){
+
+            return;
+
+        }
+
+
+        const stock =
             Number(article.stock) || 0;
 
 
-        let prix =
+        const prix =
             Number(article.prixAchatMoyen) || 0;
 
 
@@ -1279,10 +1400,14 @@ function afficherResumeStock(){
             stock * prix;
 
 
+        const minimum =
+            Number(article.minimum) || 0;
+
+
         if(
             stock > 0
             &&
-            stock <= Number(article.minimum)
+            stock <= minimum
         ){
 
             stockCritique++;
@@ -1292,7 +1417,7 @@ function afficherResumeStock(){
     });
 
 
-    let zoneArticles =
+    const zoneArticles =
         document.getElementById(
             "totalArticlesStock"
         );
@@ -1306,7 +1431,7 @@ function afficherResumeStock(){
     }
 
 
-    let zoneValeur =
+    const zoneValeur =
         document.getElementById(
             "valeurStock"
         );
@@ -1316,12 +1441,13 @@ function afficherResumeStock(){
 
         zoneValeur.textContent =
             valeurStock.toFixed(2)
-            + " CHF";
+            +
+            " CHF";
 
     }
 
 
-    let zoneCritique =
+    const zoneCritique =
         document.getElementById(
             "stockCritiqueStock"
         );
@@ -1338,12 +1464,16 @@ function afficherResumeStock(){
 
 
 // ==================================
-// RESUME ACHATS TABLEAU DE BORD
+// RÉSUMÉ ACHATS TABLEAU DE BORD
 // ==================================
 
 function afficherResumeAchats(){
 
-    if(typeof db === "undefined"){
+    if(
+        typeof db === "undefined"
+        ||
+        !db
+    ){
 
         console.error(
             "❌ db n'est pas disponible"
@@ -1355,7 +1485,7 @@ function afficherResumeAchats(){
 
 
     // ==================================
-    // SECURITE
+    // SÉCURITÉ
     // ==================================
 
     if(!Array.isArray(db.achats)){
@@ -1375,7 +1505,7 @@ function afficherResumeAchats(){
 
 
     // ==================================
-    // CALCUL ACHATS
+    // CALCUL
     // ==================================
 
     achats.forEach(function(achat){
@@ -1412,13 +1542,16 @@ function afficherResumeAchats(){
     // ==================================
 
     const fournisseurs =
-        (Array.isArray(db.clients)
-            ? db.clients
-            : []
+        (
+            Array.isArray(db.clients)
+                ? db.clients
+                : []
         )
         .filter(function(client){
 
             return (
+                client
+                &&
                 client.type === "Fournisseur"
             );
 
@@ -1426,7 +1559,7 @@ function afficherResumeAchats(){
 
 
     // ==================================
-    // ACHATS EN ATTENTE
+    // AFFICHAGE ACHATS EN ATTENTE
     // ==================================
 
     const zoneAttente =
@@ -1444,7 +1577,7 @@ function afficherResumeAchats(){
 
 
     // ==================================
-    // ACHATS RECEPTIONNES
+    // AFFICHAGE ACHATS RÉCEPTIONNÉS
     // ==================================
 
     const zoneReception =
@@ -1462,7 +1595,7 @@ function afficherResumeAchats(){
 
 
     // ==================================
-    // FOURNISSEURS
+    // AFFICHAGE FOURNISSEURS
     // ==================================
 
     const zoneFournisseurs =
@@ -1483,18 +1616,16 @@ function afficherResumeAchats(){
     // IMPORTANT
     // ==================================
     //
-    // Le montant des achats en attente
-    // n'est volontairement PAS calculé.
+    // Aucun montant d'achat n'est calculé.
     //
-    // Les prix pouvant varier selon les
-    // fournisseurs, ce montant n'est pas
-    // pertinent dans le tableau de bord.
+    // Les prix d'achat peuvent varier selon
+    // les fournisseurs et les commandes.
     //
-    // L'ancien élément :
+    // L'ancien champ :
     //
     // montantAchatsAttente
     //
-    // n'est donc plus utilisé.
+    // n'est donc volontairement PAS utilisé.
     //
     // ==================================
 
@@ -1569,16 +1700,39 @@ window.addEventListener(
         // RECHARGEMENT BASE
         // ==================================
 
-        db =
-            JSON.parse(
-                localStorage.getItem(
-                    "ideeGourmandeDB"
-                )
-            ) || {};
+        if(
+            typeof localStorage === "undefined"
+        ){
+
+            return;
+
+        }
+
+
+        try{
+
+            db =
+                JSON.parse(
+                    localStorage.getItem(
+                        "ideeGourmandeDB"
+                    )
+                ) || {};
+
+        }
+        catch(erreur){
+
+            console.error(
+                "❌ Impossible de recharger la base :",
+                erreur
+            );
+
+            return;
+
+        }
 
 
         // ==================================
-        // RAFRAICHISSEMENT
+        // RAFRAÎCHISSEMENT
         // ==================================
 
         afficherResumeAchats();
