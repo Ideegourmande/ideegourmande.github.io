@@ -1,8 +1,31 @@
 // ==================================
-// IDÉE GOURMANDE
+// IDEE GOURMANDE
 // Archives des commandes
-// Version 1.3
+// Version 2.8.0
+// Base centrale : ideeGourmandeDB
 // ==================================
+
+
+// ==================================
+// SECURITE
+// ==================================
+
+function texteArchive(texte){
+
+    if(typeof securiserTexte === "function"){
+
+        return securiserTexte(texte);
+
+    }
+
+    return String(texte || "")
+        .replace(/&/g,"&amp;")
+        .replace(/</g,"&lt;")
+        .replace(/>/g,"&gt;")
+        .replace(/"/g,"&quot;")
+        .replace(/'/g,"&#039;");
+
+}
 
 
 // ==================================
@@ -11,22 +34,196 @@
 
 function obtenirArchives(){
 
-    try{
-
-        return JSON.parse(
-            localStorage.getItem("commandesArchivees")
-        ) || [];
-
-    }
-    catch(e){
+    if(
+        typeof db === "undefined"
+    ){
 
         return [];
 
     }
 
+
+    if(
+        !Array.isArray(db.archives)
+    ){
+
+        db.archives = [];
+
+    }
+
+
+    return db.archives;
+
 }
 
 
+// ==================================
+// PRODUITS D'UNE COMMANDE
+// ==================================
+
+function obtenirProduitsCommande(commande){
+
+    if(!commande){
+
+        return "";
+
+    }
+
+
+    // Nouvelle structure
+
+    if(
+        Array.isArray(
+            commande.produitsListe
+        )
+    ){
+
+        return commande.produitsListe
+            .map(function(produit){
+
+                if(!produit){
+
+                    return "";
+
+                }
+
+
+                const nom =
+                    produit.nom ||
+                    produit.article ||
+                    produit.produit ||
+                    "Article";
+
+
+                const quantite =
+                    Number(
+                        produit.quantite
+                    ) || 0;
+
+
+                const poids =
+                    Number(
+                        produit.poids
+                    ) || 0;
+
+
+                if(
+                    poids > 0
+                ){
+
+                    return (
+                        nom +
+                        " - " +
+                        poids +
+                        " kg"
+                    );
+
+                }
+
+
+                if(
+                    quantite > 0
+                ){
+
+                    return (
+                        nom +
+                        " x " +
+                        quantite
+                    );
+
+                }
+
+
+                return nom;
+
+            })
+            .filter(Boolean)
+            .join("<br>");
+
+    }
+
+
+    // Ancienne structure sous forme de tableau
+
+    if(
+        Array.isArray(
+            commande.produits
+        )
+    ){
+
+        return commande.produits
+            .map(function(produit){
+
+                if(
+                    typeof produit === "string"
+                ){
+
+                    return texteArchive(
+                        produit
+                    );
+
+                }
+
+
+                if(!produit){
+
+                    return "";
+
+                }
+
+
+                const nom =
+                    produit.nom ||
+                    produit.article ||
+                    produit.produit ||
+                    "Article";
+
+
+                const quantite =
+                    Number(
+                        produit.quantite
+                    ) || 0;
+
+
+                return texteArchive(
+                    nom
+                )
+                +
+                (
+                    quantite > 0
+                    ?
+                    " x " + quantite
+                    :
+                    ""
+                );
+
+            })
+            .filter(Boolean)
+            .join("<br>");
+
+    }
+
+
+    // Ancienne structure texte
+
+    if(
+        typeof commande.produits === "string"
+    ){
+
+        return texteArchive(
+            commande.produits
+        )
+        .replace(
+            /\n/g,
+            "<br>"
+        );
+
+    }
+
+
+    return "Aucun produit";
+
+}
 
 
 // ==================================
@@ -42,12 +239,18 @@ function afficherArchives(){
 }
 
 
+// ==================================
+// AFFICHAGE LISTE
+// ==================================
 
-
-function afficherListeArchives(archives){
+function afficherListeArchives(
+    archives
+){
 
     const zone =
-        document.getElementById("listeArchives");
+        document.getElementById(
+            "listeArchives"
+        );
 
 
     if(!zone){
@@ -57,197 +260,304 @@ function afficherListeArchives(archives){
     }
 
 
-    if(archives.length === 0){
+    if(
+        !Array.isArray(archives)
+        ||
+        archives.length === 0
+    ){
 
-        zone.innerHTML =
-            "<p>Aucune archive.</p>";
+        zone.innerHTML = `
+
+            <p>
+                📂 Aucune archive.
+            </p>
+
+        `;
 
         return;
 
     }
 
 
+    // ==================================
+    // TRI : PLUS RECENT EN PREMIER
+    // ==================================
+
+    const liste =
+        [...archives].sort(
+            function(a,b){
+
+                const dateA =
+                    new Date(
+                        a.date || 0
+                    ).getTime();
+
+                const dateB =
+                    new Date(
+                        b.date || 0
+                    ).getTime();
+
+
+                return dateB - dateA;
+
+            }
+        );
+
+
     let html = "";
 
 
-    archives.forEach(function(cmd,index){
+    liste.forEach(
+        function(cmd){
 
-        html += `
+            if(!cmd){
 
-<div class="commande-admin">
+                return;
 
-<h3>
-
-📦 Commande ${cmd.id || "-"}
-
-</h3>
-
-<p>
-
-<strong>Date :</strong><br>
-
-${cmd.date || "-"}
-
-</p>
-
-<p>
-
-<strong>Client :</strong><br>
-
-${cmd.client || "-"}
-
-</p>
-
-<p>
-
-<strong>Email :</strong><br>
-
-${cmd.email || "-"}
-
-</p>
-
-<p>
-
-<strong>Téléphone :</strong><br>
-
-${cmd.telephone || "-"}
-
-</p>
-
-<p>
-
-<strong>Adresse :</strong><br>
-
-${cmd.adresse || "-"}
-
-</p>
-
-<p>
-
-<strong>Commande :</strong><br>
-
-${(cmd.produits || "").replace(/\n/g,"<br>")}
-
-</p>
-
-<p>
-
-<strong>Total :</strong>
-
-${Number(cmd.total || 0).toFixed(2)} CHF
-
-</p>
-
-<button
-class="btn"
-onclick="restaurerCommande(${index})">
-
-♻ Restaurer
-
-</button>
-
-<button
-class="btn"
-onclick="supprimerArchive(${index})">
-
-🗑 Supprimer
-
-</button>
-
-<hr>
-
-</div>
-
-`;
-
-    });
+            }
 
 
-    zone.innerHTML = html;
+            const id =
+                cmd.id ||
+                cmd.numero ||
+                "-";
+
+
+            const client =
+                cmd.client ||
+                cmd.nomClient ||
+                "-";
+
+
+            const email =
+                cmd.email ||
+                "-";
+
+
+            const telephone =
+                cmd.telephone ||
+                "-";
+
+
+            const adresse =
+                cmd.adresse ||
+                "-";
+
+
+            const total =
+                Number(
+                    cmd.total
+                ) || 0;
+
+
+            const statut =
+                cmd.statut ||
+                "Archivée";
+
+
+            const produits =
+                obtenirProduitsCommande(
+                    cmd
+                );
+
+
+            /*
+             * On récupère l'index réel
+             * dans db.archives.
+             */
+
+            const index =
+                db.archives.indexOf(
+                    cmd
+                );
+
+
+            html += `
+
+                <div class="commande-admin">
+
+                    <h3>
+
+                        📦 Commande
+                        ${texteArchive(id)}
+
+                    </h3>
+
+
+                    <p>
+
+                        <strong>
+                            Date :
+                        </strong>
+
+                        <br>
+
+                        ${texteArchive(
+                            cmd.date || "-"
+                        )}
+
+                    </p>
+
+
+                    <p>
+
+                        <strong>
+                            Client :
+                        </strong>
+
+                        <br>
+
+                        ${texteArchive(
+                            client
+                        )}
+
+                    </p>
+
+
+                    <p>
+
+                        <strong>
+                            Email :
+                        </strong>
+
+                        <br>
+
+                        ${texteArchive(
+                            email
+                        )}
+
+                    </p>
+
+
+                    <p>
+
+                        <strong>
+                            Téléphone :
+                        </strong>
+
+                        <br>
+
+                        ${texteArchive(
+                            telephone
+                        )}
+
+                    </p>
+
+
+                    <p>
+
+                        <strong>
+                            Adresse :
+                        </strong>
+
+                        <br>
+
+                        ${texteArchive(
+                            adresse
+                        )}
+
+                    </p>
+
+
+                    <p>
+
+                        <strong>
+                            Commande :
+                        </strong>
+
+                        <br>
+
+                        ${produits}
+
+                    </p>
+
+
+                    <p>
+
+                        <strong>
+                            Total :
+                        </strong>
+
+                        ${total.toFixed(2)}
+                        CHF
+
+                    </p>
+
+
+                    <p>
+
+                        <strong>
+                            Statut :
+                        </strong>
+
+                        ${texteArchive(
+                            statut
+                        )}
+
+                    </p>
+
+
+                    ${
+                        index >= 0
+
+                        ?
+
+                        `
+
+                        <button
+                            class="btn"
+                            onclick="restaurerCommande(${index})">
+
+                            ♻ Restaurer
+
+                        </button>
+
+
+                        <button
+                            class="btn"
+                            onclick="supprimerArchive(${index})">
+
+                            🗑 Supprimer
+
+                        </button>
+
+                        `
+
+                        :
+
+                        ""
+
+                    }
+
+
+                    <hr>
+
+                </div>
+
+            `;
+
+        }
+    );
+
+
+    zone.innerHTML =
+        html ||
+        "<p>Aucune archive.</p>";
 
 }
-
-
 
 
 // ==================================
 // RESTAURER UNE COMMANDE
 // ==================================
 
-function restaurerCommande(index){
-
-    let archives =
-        obtenirArchives();
-
-
-    if(!archives[index]){
-
-        return;
-
-    }
-
-
-    let commandes = [];
-
-
-    try{
-
-        commandes = JSON.parse(
-            localStorage.getItem("commandes")
-        ) || [];
-
-    }
-    catch(e){
-
-        commandes = [];
-
-    }
-
-
-    // Remet le statut à "Nouvelle"
-    archives[index].statut = "Nouvelle";
-
-
-    commandes.push(
-        archives[index]
-    );
-
-
-    archives.splice(index,1);
-
-
-    localStorage.setItem(
-        "commandes",
-        JSON.stringify(commandes)
-    );
-
-
-    localStorage.setItem(
-        "commandesArchivees",
-        JSON.stringify(archives)
-    );
-
-
-    afficherArchives();
-
-    alert(
-        "La commande a été restaurée."
-    );
-
-}
-
-
-
-
-// ==================================
-// SUPPRIMER UNE ARCHIVE
-// ==================================
-
-function supprimerArchive(index){
+function restaurerCommande(
+    index
+){
 
     if(
-        !confirm(
-            "Supprimer définitivement cette archive ?"
+        !Array.isArray(
+            db.archives
         )
     ){
 
@@ -256,45 +566,217 @@ function supprimerArchive(index){
     }
 
 
-    let archives =
-        obtenirArchives();
+    const archive =
+        db.archives[index];
 
 
-    if(!archives[index]){
+    if(!archive){
 
         return;
 
     }
 
 
-    archives.splice(index,1);
+    const confirmation =
+        confirm(
+            "Restaurer cette commande ?"
+        );
 
 
-    localStorage.setItem(
-        "commandesArchivees",
-        JSON.stringify(archives)
+    if(!confirmation){
+
+        return;
+
+    }
+
+
+    // ==================================
+    // SECURISATION COMMANDES
+    // ==================================
+
+    if(
+        !Array.isArray(
+            db.commandes
+        )
+    ){
+
+        db.commandes = [];
+
+    }
+
+
+    // ==================================
+    // COPIE DE LA COMMANDE
+    // ==================================
+
+    const commande =
+        JSON.parse(
+            JSON.stringify(
+                archive
+            )
+        );
+
+
+    // ==================================
+    // NOUVEL ETAT
+    // ==================================
+
+    commande.statut =
+        "Nouvelle";
+
+
+    commande.stockTraite =
+        false;
+
+
+    commande.stockErreur =
+        false;
+
+
+    commande.stockErreurMessage =
+        "";
+
+
+    commande.stockTraiteDate =
+        null;
+
+
+    // ==================================
+    // AJOUT COMMANDES
+    // ==================================
+
+    db.commandes.push(
+        commande
     );
+
+
+    // ==================================
+    // SUPPRESSION ARCHIVE
+    // ==================================
+
+    db.archives.splice(
+        index,
+        1
+    );
+
+
+    // ==================================
+    // SAUVEGARDE
+    // ==================================
+
+    if(
+        typeof sauvegarderDB === "function"
+    ){
+
+        sauvegarderDB();
+
+    }
+    else{
+
+        localStorage.setItem(
+            "ideeGourmandeDB",
+            JSON.stringify(db)
+        );
+
+    }
 
 
     afficherArchives();
 
+
     alert(
-        "L'archive a été supprimée."
+        "✅ La commande a été restaurée."
     );
 
 }
 
 
+// ==================================
+// SUPPRIMER UNE ARCHIVE
+// ==================================
+
+function supprimerArchive(
+    index
+){
+
+    if(
+        !Array.isArray(
+            db.archives
+        )
+    ){
+
+        return;
+
+    }
+
+
+    const archive =
+        db.archives[index];
+
+
+    if(!archive){
+
+        return;
+
+    }
+
+
+    const confirmation =
+        confirm(
+            "Supprimer définitivement cette archive ?"
+        );
+
+
+    if(!confirmation){
+
+        return;
+
+    }
+
+
+    db.archives.splice(
+        index,
+        1
+    );
+
+
+    if(
+        typeof sauvegarderDB === "function"
+    ){
+
+        sauvegarderDB();
+
+    }
+    else{
+
+        localStorage.setItem(
+            "ideeGourmandeDB",
+            JSON.stringify(db)
+        );
+
+    }
+
+
+    afficherArchives();
+
+
+    alert(
+        "🗑 Archive supprimée définitivement."
+    );
+
+}
 
 
 // ==================================
-// RECHERCHE DANS LES ARCHIVES
+// RECHERCHE ARCHIVES
 // ==================================
 
 function rechercherArchive(){
 
     const champ =
-        document.getElementById("rechercheArchive");
+        document.getElementById(
+            "rechercheArchive"
+        );
 
 
     if(!champ){
@@ -304,32 +786,100 @@ function rechercherArchive(){
     }
 
 
-    let recherche =
-        champ.value.toLowerCase();
+    const recherche =
+        champ.value
+            .toLowerCase()
+            .trim();
 
 
-    let archives =
+    const archives =
         obtenirArchives();
 
 
-    let resultat =
-        archives.filter(function(cmd){
+    if(!recherche){
 
-            return (
+        afficherListeArchives(
+            archives
+        );
 
-                (cmd.client || "")
-                .toLowerCase()
-                .includes(recherche)
+        return;
 
-                ||
+    }
 
-                (cmd.email || "")
-                .toLowerCase()
-                .includes(recherche)
 
-            );
+    const resultat =
+        archives.filter(
+            function(cmd){
 
-        });
+                if(!cmd){
+
+                    return false;
+
+                }
+
+
+                const client =
+                    String(
+                        cmd.client ||
+                        cmd.nomClient ||
+                        ""
+                    )
+                    .toLowerCase();
+
+
+                const email =
+                    String(
+                        cmd.email ||
+                        ""
+                    )
+                    .toLowerCase();
+
+
+                const telephone =
+                    String(
+                        cmd.telephone ||
+                        ""
+                    )
+                    .toLowerCase();
+
+
+                const id =
+                    String(
+                        cmd.id ||
+                        cmd.numero ||
+                        ""
+                    )
+                    .toLowerCase();
+
+
+                return (
+
+                    client.includes(
+                        recherche
+                    )
+
+                    ||
+
+                    email.includes(
+                        recherche
+                    )
+
+                    ||
+
+                    telephone.includes(
+                        recherche
+                    )
+
+                    ||
+
+                    id.includes(
+                        recherche
+                    )
+
+                );
+
+            }
+        );
 
 
     afficherListeArchives(
@@ -339,10 +889,53 @@ function rechercherArchive(){
 }
 
 
+// ==================================
+// SYNCHRONISATION ENTRE LES PAGES
+// ==================================
+
+window.addEventListener(
+    "storage",
+    function(e){
+
+        if(
+            e.key !==
+            "ideeGourmandeDB"
+        ){
+
+            return;
+
+        }
+
+
+        try{
+
+            db =
+                JSON.parse(
+                    e.newValue
+                )
+                || {};
+
+        }
+        catch(error){
+
+            console.error(
+                "Erreur rechargement DB :",
+                error
+            );
+
+            return;
+
+        }
+
+
+        afficherArchives();
+
+    }
+);
 
 
 // ==================================
-// DÉCONNEXION
+// DECONNEXION
 // ==================================
 
 function deconnexion(){
@@ -351,12 +944,11 @@ function deconnexion(){
         "adminConnecte"
     );
 
+
     window.location.href =
         "admin-login.html";
 
 }
-
-
 
 
 // ==================================
@@ -370,4 +962,46 @@ document.addEventListener(
         afficherArchives();
 
     }
+);
+
+
+// ==================================
+// EXPORTS
+// ==================================
+
+window.obtenirArchives =
+    obtenirArchives;
+
+
+window.afficherArchives =
+    afficherArchives;
+
+
+window.afficherListeArchives =
+    afficherListeArchives;
+
+
+window.restaurerCommande =
+    restaurerCommande;
+
+
+window.supprimerArchive =
+    supprimerArchive;
+
+
+window.rechercherArchive =
+    rechercherArchive;
+
+
+window.deconnexion =
+    deconnexion;
+
+
+// ==================================
+// FIN
+// ==================================
+
+console.log(
+    "ARCHIVES.JS 2.8.0 CHARGE - BASE CENTRALE",
+    db
 );
