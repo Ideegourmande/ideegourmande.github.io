@@ -1,9 +1,19 @@
 // ==================================
 // IDÉE GOURMANDE
 // Administration
-// Version 2.6.0
+// Version 2.8.0
 // Commandes + Stock + Achats
+// Sauvegarde + Restauration
 // ==================================
+
+
+// ==================================
+// CONSTANTE BASE
+// ==================================
+
+const CLE_BASE = "ideeGourmandeDB";
+const CLE_SECURITE_RESTAURATION =
+    "ideeGourmandeDB_avant_restauration";
 
 
 // ==================================
@@ -13,25 +23,17 @@
 function obtenirCommandes(){
 
     if(
-        typeof db === "undefined"
-        ||
+        typeof db === "undefined" ||
         !db
     ){
-
         return [];
-
     }
-
 
     if(!Array.isArray(db.commandes)){
-
         db.commandes = [];
-
     }
 
-
     return db.commandes;
-
 }
 
 
@@ -42,25 +44,17 @@ function obtenirCommandes(){
 function obtenirArchives(){
 
     if(
-        typeof db === "undefined"
-        ||
+        typeof db === "undefined" ||
         !db
     ){
-
         return [];
-
     }
-
 
     if(!Array.isArray(db.archives)){
-
         db.archives = [];
-
     }
 
-
     return db.archives;
-
 }
 
 
@@ -73,7 +67,6 @@ function afficherCommandes(){
     afficherListeCommandes(
         obtenirCommandes()
     );
-
 }
 
 
@@ -84,17 +77,13 @@ function afficherCommandes(){
 function afficherProduitsCommande(cmd){
 
     if(!cmd){
-
         return "";
-
     }
-
 
     const produits =
         Array.isArray(cmd.produitsListe)
             ? cmd.produitsListe
             : [];
-
 
     // ==================================
     // ANCIENNES COMMANDES
@@ -104,46 +93,30 @@ function afficherProduitsCommande(cmd){
 
         return String(
             cmd.produits || ""
-        )
-        .replace(
+        ).replace(
             /\n/g,
             "<br>"
         );
-
     }
 
-
     let html = "";
-
 
     produits.forEach(function(article){
 
         if(!article){
-
             return;
-
         }
-
 
         const nom =
             article.nom || "Produit";
 
-
         html += `
             <div class="admin-produit">
+
+                <strong>
+                    ${nom}
+                </strong>
         `;
-
-
-        // ==================================
-        // NOM
-        // ==================================
-
-        html += `
-            <strong>
-                ${nom}
-            </strong>
-        `;
-
 
         // ==================================
         // RECETTE
@@ -157,9 +130,7 @@ function afficherProduitsCommande(cmd){
                     Recette : ${article.recette}
                 </span>
             `;
-
         }
-
 
         // ==================================
         // NOMBRE
@@ -175,17 +146,14 @@ function afficherProduitsCommande(cmd){
                     Nombre : ${article.quantite || 1}
                 </span>
             `;
-
         }
-
 
         // ==================================
         // POIDS SAUMON
         // ==================================
 
         if(
-            article.reference === "saumon-fume"
-            &&
+            article.reference === "saumon-fume" &&
             article.poids
         ){
 
@@ -195,19 +163,14 @@ function afficherProduitsCommande(cmd){
                     Poids : ${article.poids} g
                 </span>
             `;
-
         }
-
 
         html += `
             </div>
         `;
-
     });
 
-
     return html;
-
 }
 
 
@@ -222,17 +185,12 @@ function afficherListeCommandes(commandes){
             "listeCommandes"
         );
 
-
     if(!zone){
-
         return;
-
     }
 
-
     if(
-        !Array.isArray(commandes)
-        ||
+        !Array.isArray(commandes) ||
         commandes.length === 0
     ){
 
@@ -240,21 +198,15 @@ function afficherListeCommandes(commandes){
             "<p>Aucune commande enregistrée.</p>";
 
         return;
-
     }
-
 
     let html = "";
 
-
-    commandes.forEach(function(cmd,index){
+    commandes.forEach(function(cmd, index){
 
         if(!cmd){
-
             return;
-
         }
-
 
         // ==================================
         // COULEUR DU STATUT
@@ -263,16 +215,13 @@ function afficherListeCommandes(commandes){
         let classeStatut =
             "statut-nouvelle";
 
-
         if(
             cmd.statut === "En préparation"
         ){
 
             classeStatut =
                 "statut-preparation";
-
         }
-
 
         if(
             cmd.statut === "Prête"
@@ -280,9 +229,7 @@ function afficherListeCommandes(commandes){
 
             classeStatut =
                 "statut-prete";
-
         }
-
 
         if(
             cmd.statut === "Livrée"
@@ -290,212 +237,190 @@ function afficherListeCommandes(commandes){
 
             classeStatut =
                 "statut-livree";
-
         }
-
 
         // ==================================
         // AFFICHAGE COMMANDE
         // ==================================
 
         html += `
+            <div class="commande-admin">
 
-        <div class="commande-admin">
+                <div class="commande-admin-entete">
 
+                    <div>
 
-            <div class="commande-admin-entete">
+                        <h3>
+                            📦 Commande ${cmd.id || "-"}
+                        </h3>
 
-                <div>
+                        <span class="commande-date">
+                            ${cmd.date || "-"}
+                        </span>
 
-                    <h3>
-                        📦 Commande ${cmd.id || "-"}
-                    </h3>
+                    </div>
 
-                    <span class="commande-date">
-                        ${cmd.date || "-"}
-                    </span>
-
-                </div>
-
-
-                <div class="commande-total">
-
-                    ${Number(cmd.total || 0).toFixed(2)} CHF
-
-                </div>
-
-            </div>
-
-
-            <div class="commande-admin-infos">
-
-
-                <div>
-
-                    <strong>👤 Client</strong>
-
-                    <p>
-                        ${cmd.client || "-"}
-                    </p>
+                    <div class="commande-total">
+                        ${Number(cmd.total || 0).toFixed(2)} CHF
+                    </div>
 
                 </div>
 
 
-                <div>
+                <div class="commande-admin-infos">
 
-                    <strong>📞 Téléphone</strong>
+                    <div>
+                        <strong>👤 Client</strong>
+                        <p>
+                            ${cmd.client || "-"}
+                        </p>
+                    </div>
 
-                    <p>
-                        ${cmd.telephone || "-"}
-                    </p>
+                    <div>
+                        <strong>📞 Téléphone</strong>
+                        <p>
+                            ${cmd.telephone || "-"}
+                        </p>
+                    </div>
+
+                    <div>
+                        <strong>✉️ Email</strong>
+                        <p>
+                            ${cmd.email || "-"}
+                        </p>
+                    </div>
+
+                    <div>
+                        <strong>📍 Adresse</strong>
+                        <p>
+                            ${cmd.adresse || "-"}
+                        </p>
+                    </div>
+
+                </div>
+
+
+                <div class="commande-admin-produits">
+
+                    <strong>🛒 Commande</strong>
+
+                    <div class="admin-liste-produits">
+                        ${afficherProduitsCommande(cmd)}
+                    </div>
 
                 </div>
 
 
-                <div>
+                <div class="commande-admin-statut">
 
-                    <strong>✉️ Email</strong>
+                    <strong>Statut :</strong>
 
-                    <p>
-                        ${cmd.email || "-"}
-                    </p>
-
-                </div>
-
-
-                <div>
-
-                    <strong>📍 Adresse</strong>
-
-                    <p>
-                        ${cmd.adresse || "-"}
-                    </p>
-
-                </div>
-
-            </div>
-
-
-            <div class="commande-admin-produits">
-
-                <strong>🛒 Commande</strong>
-
-                <div class="admin-liste-produits">
-
-                    ${afficherProduitsCommande(cmd)}
-
-                </div>
-
-            </div>
-
-
-            <div class="commande-admin-statut">
-
-                <strong>Statut :</strong>
-
-
-                <select
-                    class="${classeStatut}"
-                    onchange="changerStatut(${index},this.value)"
-                >
-
-                    <option
-                        value="Nouvelle"
-                        ${(cmd.statut || "Nouvelle")==="Nouvelle"?"selected":""}
+                    <select
+                        class="${classeStatut}"
+                        onchange="changerStatut(${index}, this.value)"
                     >
-                        Nouvelle
-                    </option>
+
+                        <option
+                            value="Nouvelle"
+                            ${
+                                (cmd.statut || "Nouvelle") === "Nouvelle"
+                                ? "selected"
+                                : ""
+                            }
+                        >
+                            Nouvelle
+                        </option>
+
+                        <option
+                            value="En préparation"
+                            ${
+                                cmd.statut === "En préparation"
+                                ? "selected"
+                                : ""
+                            }
+                        >
+                            En préparation
+                        </option>
+
+                        <option
+                            value="Prête"
+                            ${
+                                cmd.statut === "Prête"
+                                ? "selected"
+                                : ""
+                            }
+                        >
+                            Prête
+                        </option>
+
+                        <option
+                            value="Livrée"
+                            ${
+                                cmd.statut === "Livrée"
+                                ? "selected"
+                                : ""
+                            }
+                        >
+                            Livrée
+                        </option>
+
+                    </select>
+
+                </div>
 
 
-                    <option
-                        value="En préparation"
-                        ${cmd.statut==="En préparation"?"selected":""}
-                    >
-                        En préparation
-                    </option>
-
-
-                    <option
-                        value="Prête"
-                        ${cmd.statut==="Prête"?"selected":""}
-                    >
-                        Prête
-                    </option>
-
-
-                    <option
-                        value="Livrée"
-                        ${cmd.statut==="Livrée"?"selected":""}
-                    >
-                        Livrée
-                    </option>
-
-                </select>
-
-            </div>
-
-
-            <div class="commande-admin-actions">
-
-
-                <button
-                    class="btn"
-                    onclick="imprimerCommande(${index})"
-                >
-                    🖨 PDF
-                </button>
-
-
-                <button
-                    class="btn"
-                    onclick="renvoyerEmail(${index})"
-                >
-                    📧 Email
-                </button>
-
-
-                ${
-                    cmd.statut === "Livrée"
-                    ?
-
-                    `
+                <div class="commande-admin-actions">
 
                     <button
+                        type="button"
                         class="btn"
-                        onclick="archiverCommande(${index})"
+                        onclick="imprimerCommande(${index})"
                     >
-                        📁 Archiver
+                        🖨 PDF
                     </button>
 
-                    `
 
-                    :
+                    <button
+                        type="button"
+                        class="btn"
+                        onclick="renvoyerEmail(${index})"
+                    >
+                        📧 Email
+                    </button>
 
-                    ""
-                }
+
+                    ${
+                        cmd.statut === "Livrée"
+                        ?
+                        `
+                        <button
+                            type="button"
+                            class="btn"
+                            onclick="archiverCommande(${index})"
+                        >
+                            📁 Archiver
+                        </button>
+                        `
+                        :
+                        ""
+                    }
 
 
-                <button
-                    class="btn"
-                    onclick="supprimerCommande(${index})"
-                >
-                    🗑 Supprimer
-                </button>
+                    <button
+                        type="button"
+                        class="btn"
+                        onclick="supprimerCommande(${index})"
+                    >
+                        🗑 Supprimer
+                    </button>
 
+                </div>
 
             </div>
-
-
-        </div>
-
         `;
-
     });
 
-
-    zone.innerHTML =
-        html;
-
+    zone.innerHTML = html;
 }
 
 
@@ -503,34 +428,26 @@ function afficherListeCommandes(commandes){
 // CHANGER STATUT
 // ==================================
 
-function changerStatut(index,valeur){
+function changerStatut(index, valeur){
 
     const commandes =
         obtenirCommandes();
 
-
     if(!commandes[index]){
-
         return;
-
     }
-
 
     commandes[index].statut =
         valeur;
 
-
-    sauvegarderDB();
-
+    if(typeof sauvegarderDB === "function"){
+        sauvegarderDB();
+    }
 
     afficherCommandes();
-
     afficherStatistiques();
-
     afficherAlertes();
-
     afficherDernieresCommandes();
-
 }
 
 
@@ -543,51 +460,39 @@ function archiverCommande(index){
     const commandes =
         obtenirCommandes();
 
-
     const archives =
         obtenirArchives();
-
 
     const cmd =
         commandes[index];
 
-
     if(!cmd){
-
         return;
-
     }
 
-
-    if(!confirm(
-        "Archiver cette commande ?"
-    )){
-
+    if(
+        !confirm(
+            "Archiver cette commande ?"
+        )
+    ){
         return;
-
     }
-
 
     archives.push(cmd);
-
 
     commandes.splice(
         index,
         1
     );
 
-
-    sauvegarderDB();
-
+    if(typeof sauvegarderDB === "function"){
+        sauvegarderDB();
+    }
 
     afficherCommandes();
-
     afficherStatistiques();
-
     afficherAlertes();
-
     afficherDernieresCommandes();
-
 }
 
 
@@ -597,43 +502,34 @@ function archiverCommande(index){
 
 function supprimerCommande(index){
 
-    if(!confirm(
-        "Supprimer cette commande ?"
-    )){
-
+    if(
+        !confirm(
+            "Supprimer cette commande ?"
+        )
+    ){
         return;
-
     }
-
 
     const commandes =
         obtenirCommandes();
 
-
     if(!commandes[index]){
-
         return;
-
     }
-
 
     commandes.splice(
         index,
         1
     );
 
-
-    sauvegarderDB();
-
+    if(typeof sauvegarderDB === "function"){
+        sauvegarderDB();
+    }
 
     afficherCommandes();
-
     afficherStatistiques();
-
     afficherAlertes();
-
     afficherDernieresCommandes();
-
 }
 
 
@@ -646,17 +542,12 @@ function imprimerCommande(index){
     const commandes =
         obtenirCommandes();
 
-
     const cmd =
         commandes[index];
 
-
     if(!cmd){
-
         return;
-
     }
-
 
     const noms =
         String(
@@ -664,7 +555,6 @@ function imprimerCommande(index){
         )
         .trim()
         .split(/\s+/);
-
 
     if(
         typeof genererPDFCommande !== "function"
@@ -675,9 +565,7 @@ function imprimerCommande(index){
         );
 
         return;
-
     }
-
 
     genererPDFCommande({
 
@@ -703,7 +591,6 @@ function imprimerCommande(index){
 
             commentaire:
                 cmd.commentaire || ""
-
         },
 
         produits:
@@ -713,9 +600,7 @@ function imprimerCommande(index){
 
         total:
             Number(cmd.total) || 0
-
     });
-
 }
 
 
@@ -728,17 +613,12 @@ function renvoyerEmail(index){
     const commandes =
         obtenirCommandes();
 
-
     const cmd =
         commandes[index];
 
-
     if(!cmd){
-
         return;
-
     }
-
 
     if(!cmd.email){
 
@@ -747,27 +627,49 @@ function renvoyerEmail(index){
         );
 
         return;
-
     }
-
 
     const sujet =
         "Votre commande Idée Gourmande";
 
-
     const message =
-
         "Bonjour " +
         (cmd.client || "") +
         ",\n\n" +
 
         "Nous vous confirmons le rappel de votre commande :\n\n" +
 
-        (cmd.produits || "") +
+        (
+            cmd.produits ||
+            (
+                Array.isArray(cmd.produitsListe)
+                    ? cmd.produitsListe
+                        .map(function(article){
+
+                            if(!article){
+                                return "";
+                            }
+
+                            return (
+                                article.nom ||
+                                "Produit"
+                            ) +
+                            " x " +
+                            (
+                                article.quantite ||
+                                1
+                            );
+                        })
+                        .join("\n")
+                    : ""
+            )
+        ) +
 
         "\n\nTotal : " +
 
-        (Number(cmd.total) || 0).toFixed(2) +
+        (
+            Number(cmd.total) || 0
+        ).toFixed(2) +
 
         " CHF\n\n" +
 
@@ -775,21 +677,13 @@ function renvoyerEmail(index){
 
         "L'équipe Idée Gourmande";
 
-
     window.location.href =
-
         "mailto:" +
-
         cmd.email +
-
         "?subject=" +
-
         encodeURIComponent(sujet) +
-
         "&body=" +
-
         encodeURIComponent(message);
-
 }
 
 
@@ -802,99 +696,88 @@ function afficherStatistiques(){
     const commandes =
         obtenirCommandes();
 
-
     const nb =
         document.getElementById(
             "nbCommandes"
         );
-
 
     const ca =
         document.getElementById(
             "caTotal"
         );
 
-
     const jour =
         document.getElementById(
             "commandeJour"
         );
 
-
     if(nb){
 
         nb.textContent =
             commandes.length;
-
     }
-
 
     let total = 0;
 
-
     commandes.forEach(function(cmd){
+
+        if(!cmd){
+            return;
+        }
 
         total +=
             Number(cmd.total) || 0;
-
     });
-
 
     if(ca){
 
         ca.textContent =
-            total.toFixed(2)
-            +
+            total.toFixed(2) +
             " CHF";
-
     }
 
+
+    // ==================================
+    // COMMANDES DU JOUR
+    // ==================================
 
     const aujourd_hui =
         new Date()
         .toLocaleDateString("fr-FR");
 
-
     let compteur = 0;
-
 
     commandes.forEach(function(cmd){
 
         if(
-            cmd.date
-            &&
+            cmd &&
+            cmd.date &&
             String(cmd.date).includes(
                 aujourd_hui
             )
         ){
 
             compteur++;
-
         }
-
     });
-
 
     if(jour){
 
         jour.textContent =
             compteur;
-
     }
 
 
     // ==================================
-    // STOCK
+    // STOCK + ACHATS
     // ==================================
 
     if(
-        typeof db !== "undefined"
-        &&
+        typeof db !== "undefined" &&
         db
     ){
 
         let stockCritique = 0;
-
 
         (
             Array.isArray(db.articles)
@@ -903,24 +786,23 @@ function afficherStatistiques(){
         )
         .forEach(function(article){
 
+            if(!article){
+                return;
+            }
+
             const stock =
                 Number(article.stock) || 0;
-
 
             const minimum =
                 Number(article.minimum) || 0;
 
-
             if(
-                stock > 0
-                &&
+                stock > 0 &&
                 stock <= minimum
             ){
 
                 stockCritique++;
-
             }
-
         });
 
 
@@ -929,12 +811,10 @@ function afficherStatistiques(){
                 "stockCritique"
             );
 
-
         if(zoneStock){
 
             zoneStock.textContent =
                 stockCritique;
-
         }
 
 
@@ -944,7 +824,6 @@ function afficherStatistiques(){
 
         let achatsAttente = 0;
 
-
         (
             Array.isArray(db.achats)
                 ? db.achats
@@ -953,15 +832,12 @@ function afficherStatistiques(){
         .forEach(function(achat){
 
             if(
-                achat
-                &&
+                achat &&
                 achat.statut !== "Réceptionné"
             ){
 
                 achatsAttente++;
-
             }
-
         });
 
 
@@ -970,16 +846,12 @@ function afficherStatistiques(){
                 "nbAchats"
             );
 
-
         if(zoneAchats){
 
             zoneAchats.textContent =
                 achatsAttente;
-
         }
-
     }
-
 }
 
 
@@ -994,26 +866,24 @@ function rechercherCommande(){
             "rechercheCommande"
         );
 
-
     if(!champ){
-
         return;
-
     }
-
 
     const recherche =
         champ.value
         .toLowerCase()
         .trim();
 
-
     const commandes =
         obtenirCommandes();
 
-
     const filtre =
         commandes.filter(function(cmd){
+
+            if(!cmd){
+                return false;
+            }
 
             return (
 
@@ -1031,20 +901,221 @@ function rechercherCommande(){
                 .toLowerCase()
                 .includes(recherche)
 
+                ||
+
+                String(
+                    cmd.id || ""
+                )
+                .toLowerCase()
+                .includes(recherche)
             );
-
         });
-
 
     afficherListeCommandes(
         filtre
     );
-
 }
 
 
 // ==================================
-// DECONNEXION
+// TRI DES COMMANDES
+// ==================================
+
+function trierCommandes(){
+
+    const select =
+        document.getElementById(
+            "triCommandes"
+        );
+
+    if(!select){
+        return;
+    }
+
+    const typeTri =
+        select.value;
+
+    let commandes =
+        obtenirCommandes().slice();
+
+    const recherche =
+        (
+            document.getElementById(
+                "rechercheCommande"
+            )?.value ||
+            ""
+        )
+        .toLowerCase()
+        .trim();
+
+
+    // ==================================
+    // RECHERCHE
+    // ==================================
+
+    if(recherche){
+
+        commandes =
+            commandes.filter(function(cmd){
+
+                if(!cmd){
+                    return false;
+                }
+
+                return (
+
+                    String(
+                        cmd.client || ""
+                    )
+                    .toLowerCase()
+                    .includes(recherche)
+
+                    ||
+
+                    String(
+                        cmd.email || ""
+                    )
+                    .toLowerCase()
+                    .includes(recherche)
+
+                    ||
+
+                    String(
+                        cmd.id || ""
+                    )
+                    .toLowerCase()
+                    .includes(recherche)
+                );
+            });
+    }
+
+
+    // ==================================
+    // DATE
+    // ==================================
+
+    function valeurDate(cmd){
+
+        if(!cmd || !cmd.date){
+            return 0;
+        }
+
+        const date =
+            new Date(cmd.date);
+
+        if(!isNaN(date.getTime())){
+            return date.getTime();
+        }
+
+        return 0;
+    }
+
+
+    // ==================================
+    // TRI
+    // ==================================
+
+    if(typeTri === "anciennes"){
+
+        commandes.sort(function(a,b){
+
+            return valeurDate(a) -
+                   valeurDate(b);
+        });
+    }
+
+
+    else if(typeTri === "recentes"){
+
+        commandes.sort(function(a,b){
+
+            return valeurDate(b) -
+                   valeurDate(a);
+        });
+    }
+
+
+    else if(typeTri === "attente"){
+
+        const ordre = {
+            "Nouvelle": 1,
+            "En préparation": 2,
+            "Prête": 3,
+            "Livrée": 4
+        };
+
+        commandes.sort(function(a,b){
+
+            const statutA =
+                ordre[a.statut || "Nouvelle"] || 1;
+
+            const statutB =
+                ordre[b.statut || "Nouvelle"] || 1;
+
+            if(statutA !== statutB){
+                return statutA - statutB;
+            }
+
+            return valeurDate(b) -
+                   valeurDate(a);
+        });
+
+        commandes =
+            commandes.filter(function(cmd){
+
+                return (
+                    !cmd.statut ||
+                    cmd.statut === "Nouvelle" ||
+                    cmd.statut === "En préparation"
+                );
+            });
+    }
+
+
+    else if(typeTri === "pretes"){
+
+        commandes =
+            commandes.filter(function(cmd){
+
+                return (
+                    cmd.statut === "Prête"
+                );
+            });
+
+        commandes.sort(function(a,b){
+
+            return valeurDate(b) -
+                   valeurDate(a);
+        });
+    }
+
+
+    else if(typeTri === "livrees"){
+
+        commandes =
+            commandes.filter(function(cmd){
+
+                return (
+                    cmd.statut === "Livrée"
+                );
+            });
+
+        commandes.sort(function(a,b){
+
+            return valeurDate(b) -
+                   valeurDate(a);
+        });
+    }
+
+
+    afficherListeCommandes(
+        commandes
+    );
+}
+
+
+// ==================================
+// DÉCONNEXION
 // ==================================
 
 function deconnexion(){
@@ -1053,10 +1124,8 @@ function deconnexion(){
         "adminConnecte"
     );
 
-
     window.location.href =
         "admin-login.html";
-
 }
 
 
@@ -1071,13 +1140,9 @@ function afficherAlertes(){
             "listeAlertes"
         );
 
-
     if(!zone){
-
         return;
-
     }
-
 
     let html = "";
 
@@ -1089,31 +1154,27 @@ function afficherAlertes(){
     const commandes =
         obtenirCommandes();
 
-
     const commandesAttente =
         commandes.filter(function(cmd){
 
             return (
-                !cmd.statut
-                ||
-                cmd.statut === "Nouvelle"
-                ||
+                !cmd.statut ||
+                cmd.statut === "Nouvelle" ||
                 cmd.statut === "En préparation"
             );
-
         }).length;
-
 
     if(commandesAttente > 0){
 
-        html +=
-        `<p
-            class="alerte-cliquable"
-            onclick="allerAuxCommandesApreparer()"
-        >
-            🟠 ${commandesAttente} commande(s) à préparer
-        </p>`;
-
+        html += `
+            <p
+                class="alerte-cliquable"
+                onclick="allerAuxCommandesApreparer()"
+            >
+                🟠 ${commandesAttente}
+                commande(s) à préparer
+            </p>
+        `;
     }
 
 
@@ -1122,13 +1183,11 @@ function afficherAlertes(){
     // ==================================
 
     if(
-        typeof db !== "undefined"
-        &&
+        typeof db !== "undefined" &&
         db
     ){
 
         let stockZero = 0;
-
 
         (
             Array.isArray(db.articles)
@@ -1137,14 +1196,16 @@ function afficherAlertes(){
         )
         .forEach(function(article){
 
+            if(!article){
+                return;
+            }
+
             if(
                 Number(article.stock) === 0
             ){
 
                 stockZero++;
-
             }
-
         });
 
 
@@ -1154,7 +1215,6 @@ function afficherAlertes(){
                 "<p>🔴 " +
                 stockZero +
                 " article(s) en rupture de stock</p>";
-
         }
 
 
@@ -1167,8 +1227,7 @@ function afficherAlertes(){
             .filter(function(achat){
 
                 return (
-                    achat
-                    &&
+                    achat &&
                     achat.statut !== "Réceptionné"
                 );
 
@@ -1182,9 +1241,7 @@ function afficherAlertes(){
                 "<p>🟡 " +
                 achatsAttente +
                 " achat(s) en attente de réception</p>";
-
         }
-
     }
 
 
@@ -1196,13 +1253,10 @@ function afficherAlertes(){
 
         html =
             "<p>✅ Tout fonctionne correctement.</p>";
-
     }
-
 
     zone.innerHTML =
         html;
-
 }
 
 
@@ -1217,44 +1271,26 @@ function allerAuxCommandesApreparer(){
             "triCommandes"
         );
 
-
     if(select){
 
         select.value =
             "attente";
 
-
-        if(
-            typeof trierCommandes === "function"
-        ){
-
-            trierCommandes();
-
-        }
-
+        trierCommandes();
     }
-
 
     const zone =
         document.getElementById(
             "listeCommandes"
         );
 
-
     if(zone){
 
         zone.scrollIntoView({
-
-            behavior:
-                "smooth",
-
-            block:
-                "start"
-
+            behavior: "smooth",
+            block: "start"
         });
-
     }
-
 }
 
 
@@ -1269,17 +1305,12 @@ function afficherDernieresCommandes(){
             "dernieresCommandes"
         );
 
-
     if(!zone){
-
         return;
-
     }
-
 
     const commandes =
         obtenirCommandes();
-
 
     if(commandes.length === 0){
 
@@ -1287,7 +1318,6 @@ function afficherDernieresCommandes(){
             "<p>Aucune commande récente.</p>";
 
         return;
-
     }
 
 
@@ -1299,51 +1329,42 @@ function afficherDernieresCommandes(){
 
     let html = "";
 
-
     dernieres.forEach(function(cmd){
 
         if(!cmd){
-
             return;
-
         }
 
-
         html += `
+            <div class="commande-admin">
 
-        <div class="commande-admin">
+                <strong>
+                    📦 Commande ${cmd.id || "-"}
+                </strong>
 
-            <strong>
-                📦 Commande ${cmd.id || "-"}
-            </strong>
+                <br>
 
-            <br>
+                Client :
+                ${cmd.client || "-"}
 
-            Client :
-            ${cmd.client || "-"}
+                <br>
 
-            <br>
+                Total :
+                ${(Number(cmd.total) || 0).toFixed(2)} CHF
 
-            Total :
-            ${Number(cmd.total) || 0} CHF
+                <br>
 
-            <br>
+                Statut :
+                ${cmd.statut || "Nouvelle"}
 
-            Statut :
-            ${cmd.statut || "Nouvelle"}
+            </div>
 
-        </div>
-
-        <hr>
-
+            <hr>
         `;
-
     });
-
 
     zone.innerHTML =
         html;
-
 }
 
 
@@ -1354,47 +1375,35 @@ function afficherDernieresCommandes(){
 function afficherResumeStock(){
 
     if(
-        typeof db === "undefined"
-        ||
+        typeof db === "undefined" ||
         !db
     ){
-
         return;
-
     }
-
 
     const articles =
         Array.isArray(db.articles)
             ? db.articles
             : [];
 
-
     const totalArticles =
         articles.length;
 
-
     let valeurStock = 0;
-
     let stockCritique = 0;
 
 
     articles.forEach(function(article){
 
         if(!article){
-
             return;
-
         }
-
 
         const stock =
             Number(article.stock) || 0;
 
-
         const prix =
             Number(article.prixAchatMoyen) || 0;
-
 
         valeurStock +=
             stock * prix;
@@ -1403,17 +1412,13 @@ function afficherResumeStock(){
         const minimum =
             Number(article.minimum) || 0;
 
-
         if(
-            stock > 0
-            &&
+            stock > 0 &&
             stock <= minimum
         ){
 
             stockCritique++;
-
         }
-
     });
 
 
@@ -1422,12 +1427,10 @@ function afficherResumeStock(){
             "totalArticlesStock"
         );
 
-
     if(zoneArticles){
 
         zoneArticles.textContent =
             totalArticles;
-
     }
 
 
@@ -1436,14 +1439,11 @@ function afficherResumeStock(){
             "valeurStock"
         );
 
-
     if(zoneValeur){
 
         zoneValeur.textContent =
-            valeurStock.toFixed(2)
-            +
+            valeurStock.toFixed(2) +
             " CHF";
-
     }
 
 
@@ -1452,14 +1452,11 @@ function afficherResumeStock(){
             "stockCritiqueStock"
         );
 
-
     if(zoneCritique){
 
         zoneCritique.textContent =
             stockCritique;
-
     }
-
 }
 
 
@@ -1470,8 +1467,7 @@ function afficherResumeStock(){
 function afficherResumeAchats(){
 
     if(
-        typeof db === "undefined"
-        ||
+        typeof db === "undefined" ||
         !db
     ){
 
@@ -1480,7 +1476,6 @@ function afficherResumeAchats(){
         );
 
         return;
-
     }
 
 
@@ -1491,16 +1486,13 @@ function afficherResumeAchats(){
     if(!Array.isArray(db.achats)){
 
         db.achats = [];
-
     }
 
 
     const achats =
         db.achats;
 
-
     let attente = 0;
-
     let receptionnes = 0;
 
 
@@ -1511,29 +1503,22 @@ function afficherResumeAchats(){
     achats.forEach(function(achat){
 
         if(!achat){
-
             return;
-
         }
-
 
         const statut =
             achat.statut || "En attente";
-
 
         if(
             statut === "Réceptionné"
         ){
 
             receptionnes++;
-
         }
         else{
 
             attente++;
-
         }
-
     });
 
 
@@ -1550,11 +1535,9 @@ function afficherResumeAchats(){
         .filter(function(client){
 
             return (
-                client
-                &&
+                client &&
                 client.type === "Fournisseur"
             );
-
         });
 
 
@@ -1567,12 +1550,10 @@ function afficherResumeAchats(){
             "achatsEnAttente"
         );
 
-
     if(zoneAttente){
 
         zoneAttente.textContent =
             attente;
-
     }
 
 
@@ -1585,12 +1566,10 @@ function afficherResumeAchats(){
             "achatsReceptionnes"
         );
 
-
     if(zoneReception){
 
         zoneReception.textContent =
             receptionnes;
-
     }
 
 
@@ -1603,31 +1582,11 @@ function afficherResumeAchats(){
             "nombreFournisseurs"
         );
 
-
     if(zoneFournisseurs){
 
         zoneFournisseurs.textContent =
             fournisseurs.length;
-
     }
-
-
-    // ==================================
-    // IMPORTANT
-    // ==================================
-    //
-    // Aucun montant d'achat n'est calculé.
-    //
-    // Les prix d'achat peuvent varier selon
-    // les fournisseurs et les commandes.
-    //
-    // L'ancien champ :
-    //
-    // montantAchatsAttente
-    //
-    // n'est donc volontairement PAS utilisé.
-    //
-    // ==================================
 
 
     console.log(
@@ -1646,13 +1605,436 @@ function afficherResumeAchats(){
                 fournisseurs.length
         }
     );
-
 }
 
 
-// ==================================
+// ======================================
+// SAUVEGARDE DE LA BASE DANS UN FICHIER
+// ======================================
+
+function sauvegarderBaseFichier(){
+
+    try{
+
+        // ==================================
+        // VÉRIFICATION DE LA BASE
+        // ==================================
+
+        if(
+            typeof db === "undefined" ||
+            !db ||
+            typeof db !== "object"
+        ){
+
+            throw new Error(
+                "La base de données n'est pas disponible."
+            );
+        }
+
+
+        // ==================================
+        // COPIE DE LA BASE ACTUELLE
+        // ==================================
+
+        const base =
+            JSON.parse(
+                JSON.stringify(db)
+            );
+
+
+        // ==================================
+        // CONVERSION JSON
+        // ==================================
+
+        const contenu =
+            JSON.stringify(
+                base,
+                null,
+                4
+            );
+
+
+        // ==================================
+        // CRÉATION FICHIER
+        // ==================================
+
+        const blob =
+            new Blob(
+                [contenu],
+                {
+                    type:
+                        "application/json"
+                }
+            );
+
+
+        const url =
+            URL.createObjectURL(
+                blob
+            );
+
+
+        const lien =
+            document.createElement(
+                "a"
+            );
+
+
+        lien.href =
+            url;
+
+
+        // ==================================
+        // NOM FICHIER
+        // ==================================
+
+        const date =
+            new Date()
+            .toISOString()
+            .replace(
+                /[:.]/g,
+                "-"
+            );
+
+
+        lien.download =
+            "idee-gourmande-sauvegarde-" +
+            date +
+            ".json";
+
+
+        // ==================================
+        // TÉLÉCHARGEMENT
+        // ==================================
+
+        document.body.appendChild(
+            lien
+        );
+
+        lien.click();
+
+        lien.remove();
+
+
+        // ==================================
+        // NETTOYAGE
+        // ==================================
+
+        setTimeout(function(){
+
+            URL.revokeObjectURL(
+                url
+            );
+
+        }, 1000);
+
+
+        alert(
+            "✅ Sauvegarde effectuée avec succès."
+        );
+
+
+        console.log(
+            "💾 SAUVEGARDE EFFECTUÉE",
+            base
+        );
+
+    }
+    catch(erreur){
+
+        console.error(
+            "❌ ERREUR SAUVEGARDE :",
+            erreur
+        );
+
+        alert(
+            "❌ Impossible de créer la sauvegarde.\n\n" +
+            erreur.message
+        );
+    }
+}
+
+
+// ======================================
+// RESTAURATION DE LA BASE
+// ======================================
+
+function restaurerBaseFichier(event){
+
+    const input =
+        event &&
+        event.target
+            ? event.target
+            : null;
+
+    if(!input){
+        return;
+    }
+
+
+    const fichier =
+        input.files &&
+        input.files[0]
+            ? input.files[0]
+            : null;
+
+
+    if(!fichier){
+        return;
+    }
+
+
+    // ==================================
+    // VÉRIFICATION EXTENSION
+    // ==================================
+
+    if(
+        !fichier.name
+            .toLowerCase()
+            .endsWith(".json")
+    ){
+
+        alert(
+            "❌ Veuillez sélectionner un fichier JSON."
+        );
+
+        input.value = "";
+
+        return;
+    }
+
+
+    // ==================================
+    // CONFIRMATION
+    // ==================================
+
+    const confirmation =
+        confirm(
+
+            "⚠️ ATTENTION\n\n" +
+
+            "La restauration va remplacer " +
+
+            "la base actuellement utilisée.\n\n" +
+
+            "Une copie de sécurité de la base actuelle " +
+            "sera conservée avant le remplacement.\n\n" +
+
+            "Voulez-vous continuer ?"
+        );
+
+
+    if(!confirmation){
+
+        input.value = "";
+
+        return;
+    }
+
+
+    // ==================================
+    // LECTURE FICHIER
+    // ==================================
+
+    const lecteur =
+        new FileReader();
+
+
+    lecteur.onload =
+        function(){
+
+            try{
+
+                // ==================================
+                // LECTURE JSON
+                // ==================================
+
+                const baseRestauree =
+                    JSON.parse(
+                        lecteur.result
+                    );
+
+
+                // ==================================
+                // VÉRIFICATION OBJET
+                // ==================================
+
+                if(
+                    !baseRestauree ||
+                    typeof baseRestauree !== "object" ||
+                    Array.isArray(baseRestauree)
+                ){
+
+                    throw new Error(
+                        "Fichier de sauvegarde invalide."
+                    );
+                }
+
+
+                // ==================================
+                // VÉRIFICATION STRUCTURE
+                // ==================================
+
+                if(
+                    !Array.isArray(
+                        baseRestauree.commandes
+                    )
+                ){
+
+                    throw new Error(
+                        "La sauvegarde ne contient pas de liste de commandes valide."
+                    );
+                }
+
+
+                if(
+                    !Array.isArray(
+                        baseRestauree.articles
+                    )
+                ){
+
+                    throw new Error(
+                        "La sauvegarde ne contient pas de liste d'articles valide."
+                    );
+                }
+
+
+                if(
+                    !Array.isArray(
+                        baseRestauree.achats
+                    )
+                ){
+
+                    throw new Error(
+                        "La sauvegarde ne contient pas de liste d'achats valide."
+                    );
+                }
+
+
+                // ==================================
+                // COPIE DE SÉCURITÉ
+                // ==================================
+
+                const ancienneBase =
+                    localStorage.getItem(
+                        CLE_BASE
+                    );
+
+
+                if(ancienneBase){
+
+                    localStorage.setItem(
+                        CLE_SECURITE_RESTAURATION,
+                        ancienneBase
+                    );
+
+                    console.log(
+                        "🛡️ Copie de sécurité créée avant restauration."
+                    );
+                }
+
+
+                // ==================================
+                // INSTALLATION NOUVELLE BASE
+                // ==================================
+
+                localStorage.setItem(
+                    CLE_BASE,
+                    JSON.stringify(
+                        baseRestauree
+                    )
+                );
+
+
+                // ==================================
+                // MISE À JOUR DE DB
+                // ==================================
+
+                if(
+                    typeof db !== "undefined"
+                ){
+
+                    db =
+                        JSON.parse(
+                            JSON.stringify(
+                                baseRestauree
+                            )
+                        );
+                }
+
+
+                console.log(
+                    "📥 BASE RESTAURÉE :",
+                    baseRestauree
+                );
+
+
+                // ==================================
+                // CONFIRMATION
+                // ==================================
+
+                alert(
+
+                    "✅ Restauration terminée.\n\n" +
+
+                    "La page va être rechargée."
+                );
+
+
+                // ==================================
+                // RECHARGEMENT
+                // ==================================
+
+                window.location.reload();
+            }
+
+
+            catch(erreur){
+
+                console.error(
+                    "❌ ERREUR RESTAURATION :",
+                    erreur
+                );
+
+
+                alert(
+
+                    "❌ Impossible de restaurer cette sauvegarde.\n\n" +
+
+                    erreur.message
+                );
+            }
+            finally{
+
+                input.value = "";
+            }
+        };
+
+
+    // ==================================
+    // ERREUR LECTURE
+    // ==================================
+
+    lecteur.onerror =
+        function(){
+
+            alert(
+                "❌ Impossible de lire le fichier."
+            );
+
+            input.value = "";
+        };
+
+
+    lecteur.readAsText(
+        fichier
+    );
+}
+
+
+// ======================================
 // INITIALISATION
-// ==================================
+// ======================================
 
 document.addEventListener(
     "DOMContentLoaded",
@@ -1669,25 +2051,22 @@ document.addEventListener(
         afficherAlertes();
 
         afficherDernieresCommandes();
-
     }
 );
 
 
-// ==================================
+// ======================================
 // SYNCHRONISATION ENTRE LES PAGES
-// ==================================
+// ======================================
 
 window.addEventListener(
     "storage",
     function(e){
 
         if(
-            e.key !== "ideeGourmandeDB"
+            e.key !== CLE_BASE
         ){
-
             return;
-
         }
 
 
@@ -1696,27 +2075,51 @@ window.addEventListener(
         );
 
 
-        // ==================================
-        // RECHARGEMENT BASE
-        // ==================================
-
         if(
             typeof localStorage === "undefined"
         ){
-
             return;
-
         }
 
 
         try{
 
-            db =
+            const nouvelleBase =
+                localStorage.getItem(
+                    CLE_BASE
+                );
+
+
+            if(!nouvelleBase){
+                return;
+            }
+
+
+            const baseChargee =
                 JSON.parse(
-                    localStorage.getItem(
-                        "ideeGourmandeDB"
-                    )
-                ) || {};
+                    nouvelleBase
+                );
+
+
+            if(
+                !baseChargee ||
+                typeof baseChargee !== "object"
+            ){
+
+                throw new Error(
+                    "Base reçue invalide."
+                );
+            }
+
+
+            if(
+                typeof db !== "undefined"
+            ){
+
+                db =
+                    baseChargee;
+            }
+
 
         }
         catch(erreur){
@@ -1727,7 +2130,6 @@ window.addEventListener(
             );
 
             return;
-
         }
 
 
@@ -1746,539 +2148,73 @@ window.addEventListener(
         afficherDernieresCommandes();
 
         afficherCommandes();
-
     }
 );
-// ======================================
-// SAUVEGARDE DE LA BASE DANS UN FICHIER
-// ======================================
-
-function sauvegarderBaseFichier(){
-
-    try{
-
-        // On récupère toujours la base actuelle
-        const base =
-            obtenirDB();
-
-        // Conversion en JSON lisible
-        const contenu =
-            JSON.stringify(
-                base,
-                null,
-                4
-            );
-
-        // Création du fichier
-        const blob =
-            new Blob(
-                [contenu],
-                {
-                    type:
-                        "application/json"
-                }
-            );
-
-        // Création du lien temporaire
-        const url =
-            URL.createObjectURL(
-                blob
-            );
-
-        const lien =
-            document.createElement("a");
-
-        lien.href = url;
-
-        // Nom du fichier
-        const date =
-            new Date()
-            .toISOString()
-            .replace(
-                /[:.]/g,
-                "-"
-            );
-
-        lien.download =
-            "idee-gourmande-sauvegarde-" +
-            date +
-            ".json";
-
-        // Téléchargement
-        document.body.appendChild(
-            lien
-        );
-
-        lien.click();
-
-        // Nettoyage
-        lien.remove();
-
-        URL.revokeObjectURL(
-            url
-        );
-
-        alert(
-            "✅ Sauvegarde effectuée avec succès."
-        );
-
-        console.log(
-            "💾 SAUVEGARDE EFFECTUÉE",
-            base
-        );
-
-    }
-    catch(erreur){
-
-        console.error(
-            "❌ ERREUR SAUVEGARDE :",
-            erreur
-        );
-
-        alert(
-            "❌ Impossible de créer la sauvegarde."
-        );
-
-    }
-
-}
-
 
 
 // ======================================
-// RESTAURATION DE LA BASE
+// EXPORTS WINDOW
+// ======================================
+// Les fonctions sont utilisées directement
+// depuis admin.html avec onclick/onchange.
 // ======================================
 
-function restaurerBaseFichier(
-    evenement
-){
+window.obtenirCommandes =
+    obtenirCommandes;
 
-    const fichier =
-        evenement.target.files[0];
+window.obtenirArchives =
+    obtenirArchives;
 
+window.afficherCommandes =
+    afficherCommandes;
 
-    if(!fichier){
+window.afficherListeCommandes =
+    afficherListeCommandes;
 
-        return;
+window.afficherProduitsCommande =
+    afficherProduitsCommande;
 
-    }
+window.changerStatut =
+    changerStatut;
 
+window.archiverCommande =
+    archiverCommande;
 
-    // Confirmation avant remplacement
-    const confirmation =
-        confirm(
+window.supprimerCommande =
+    supprimerCommande;
 
-            "⚠️ ATTENTION\n\n" +
+window.imprimerCommande =
+    imprimerCommande;
 
-            "La restauration va remplacer " +
-            "la base actuellement utilisée.\n\n" +
+window.renvoyerEmail =
+    renvoyerEmail;
 
-            "Voulez-vous continuer ?"
+window.afficherStatistiques =
+    afficherStatistiques;
 
-        );
+window.rechercherCommande =
+    rechercherCommande;
 
+window.trierCommandes =
+    trierCommandes;
 
-    if(!confirmation){
+window.deconnexion =
+    deconnexion;
 
-        evenement.target.value = "";
+window.afficherAlertes =
+    afficherAlertes;
 
-        return;
+window.allerAuxCommandesApreparer =
+    allerAuxCommandesApreparer;
 
-    }
+window.afficherDernieresCommandes =
+    afficherDernieresCommandes;
 
+window.afficherResumeStock =
+    afficherResumeStock;
 
-    const lecteur =
-        new FileReader();
-
-
-    lecteur.onload =
-        function(){
-
-            try{
-
-                const baseRestauree =
-                    JSON.parse(
-                        lecteur.result
-                    );
-
-
-                // ==================================
-                // VERIFICATION MINIMALE
-                // ==================================
-
-                if(
-                    !baseRestauree
-                    ||
-                    typeof baseRestauree !== "object"
-                ){
-
-                    throw new Error(
-                        "Fichier de sauvegarde invalide."
-                    );
-
-                }
-
-
-                if(
-                    !Array.isArray(
-                        baseRestauree.commandes
-                    )
-                    ||
-                    !Array.isArray(
-                        baseRestauree.articles
-                    )
-                    ||
-                    !Array.isArray(
-                        baseRestauree.achats
-                    )
-                ){
-
-                    throw new Error(
-                        "Structure de base invalide."
-                    );
-
-                }
-
-
-                // ==================================
-                // SAUVEGARDE D'UNE COPIE DE SÉCURITÉ
-                // ==================================
-
-                const ancienneBase =
-                    localStorage.getItem(
-                        "ideeGourmandeDB"
-                    );
-
-
-                if(ancienneBase){
-
-                    localStorage.setItem(
-                        "ideeGourmandeDB_avant_restauration",
-                        ancienneBase
-                    );
-
-                }
-
-
-                // ==================================
-                // INSTALLATION NOUVELLE BASE
-                // ==================================
-
-                localStorage.setItem(
-
-                    "ideeGourmandeDB",
-
-                    JSON.stringify(
-                        baseRestauree
-                    )
-
-                );
-
-
-                console.log(
-                    "📥 BASE RESTAURÉE :",
-                    baseRestauree
-                );
-
-
-                alert(
-
-                    "✅ Restauration terminée.\n\n" +
-
-                    "La page va être rechargée."
-
-                );
-
-
-                // Rechargement complet
-                window.location.reload();
-
-            }
-            catch(erreur){
-
-                console.error(
-                    "❌ ERREUR RESTAURATION :",
-                    erreur
-                );
-
-
-                alert(
-
-                    "❌ Impossible de restaurer cette sauvegarde.\n\n" +
-
-                    erreur.message
-
-                );
-
-            }
-
-        };
-
-
-    lecteur.onerror =
-        function(){
-
-            alert(
-                "❌ Impossible de lire le fichier."
-            );
-
-        };
-
-
-    lecteur.readAsText(
-        fichier
-    );
-
-}
-
-
-
-// ======================================
-// EXPORTS
-// ======================================
-
-window.sauvegarderBaseFichier =
-    sauvegarderBaseFichier;
-
-
-window.restaurerBaseFichier =
-    restaurerBaseFichier;
-// ======================================
-// SAUVEGARDE BASE DANS UN FICHIER
-// ======================================
-
-function sauvegarderBaseFichier(){
-
-    try{
-
-        const base = obtenirDB();
-
-        const contenu = JSON.stringify(
-            base,
-            null,
-            4
-        );
-
-        const blob = new Blob(
-            [contenu],
-            {
-                type: "application/json"
-            }
-        );
-
-        const url =
-            URL.createObjectURL(blob);
-
-        const lien =
-            document.createElement("a");
-
-        lien.href = url;
-
-        const date =
-            new Date()
-            .toISOString()
-            .replace(/[:.]/g, "-");
-
-        lien.download =
-            "idee-gourmande-sauvegarde-" +
-            date +
-            ".json";
-
-        document.body.appendChild(lien);
-
-        lien.click();
-
-        lien.remove();
-
-        URL.revokeObjectURL(url);
-
-        alert(
-            "✅ Sauvegarde effectuée avec succès."
-        );
-
-        console.log(
-            "💾 SAUVEGARDE EFFECTUÉE",
-            base
-        );
-
-    }
-    catch(erreur){
-
-        console.error(
-            "❌ ERREUR SAUVEGARDE :",
-            erreur
-        );
-
-        alert(
-            "❌ Impossible de créer la sauvegarde."
-        );
-
-    }
-
-}
-
-
-
-// ======================================
-// RESTAURATION BASE
-// ======================================
-
-function restaurerBaseFichier(event){
-
-    const fichier =
-        event.target.files[0];
-
-    if(!fichier){
-
-        return;
-
-    }
-
-
-    const confirmation =
-        confirm(
-            "⚠️ ATTENTION\n\n" +
-            "La restauration va remplacer " +
-            "la base actuellement utilisée.\n\n" +
-            "Voulez-vous continuer ?"
-        );
-
-
-    if(!confirmation){
-
-        event.target.value = "";
-
-        return;
-
-    }
-
-
-    const lecteur =
-        new FileReader();
-
-
-    lecteur.onload = function(){
-
-        try{
-
-            const baseRestauree =
-                JSON.parse(
-                    lecteur.result
-                );
-
-
-            // Vérification minimale
-            if(
-                !baseRestauree ||
-                typeof baseRestauree !== "object"
-            ){
-
-                throw new Error(
-                    "Fichier de sauvegarde invalide."
-                );
-
-            }
-
-
-            if(
-                !Array.isArray(
-                    baseRestauree.commandes
-                )
-                ||
-                !Array.isArray(
-                    baseRestauree.articles
-                )
-                ||
-                !Array.isArray(
-                    baseRestauree.achats
-                )
-            ){
-
-                throw new Error(
-                    "Structure de base invalide."
-                );
-
-            }
-
-
-            // Copie de sécurité
-            const ancienneBase =
-                localStorage.getItem(
-                    "ideeGourmandeDB"
-                );
-
-
-            if(ancienneBase){
-
-                localStorage.setItem(
-                    "ideeGourmandeDB_avant_restauration",
-                    ancienneBase
-                );
-
-            }
-
-
-            // Installation de la sauvegarde
-            localStorage.setItem(
-                "ideeGourmandeDB",
-                JSON.stringify(
-                    baseRestauree
-                )
-            );
-
-
-            console.log(
-                "📥 BASE RESTAURÉE :",
-                baseRestauree
-            );
-
-
-            alert(
-                "✅ Restauration terminée.\n\n" +
-                "La page va être rechargée."
-            );
-
-
-            window.location.reload();
-
-        }
-        catch(erreur){
-
-            console.error(
-                "❌ ERREUR RESTAURATION :",
-                erreur
-            );
-
-            alert(
-                "❌ Impossible de restaurer cette sauvegarde.\n\n" +
-                erreur.message
-            );
-
-        }
-
-    };
-
-
-    lecteur.onerror = function(){
-
-        alert(
-            "❌ Impossible de lire le fichier."
-        );
-
-    };
-
-
-    lecteur.readAsText(
-        fichier
-    );
-
-}
-
-
-
-// ======================================
-// RENDRE LES FONCTIONS DISPONIBLES
-// ======================================
+window.afficherResumeAchats =
+    afficherResumeAchats;
 
 window.sauvegarderBaseFichier =
     sauvegarderBaseFichier;
