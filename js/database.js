@@ -670,7 +670,7 @@ function creerOuCompleterAchatAutomatique(
             0,
 
         statut:
-            "À commander",
+    "En attente",
 
         dateReception:
             null,
@@ -692,7 +692,15 @@ function creerOuCompleterAchatAutomatique(
     db.achats.push(
         achat
     );
+console.log(
+    "✅ ACHAT AUTOMATIQUE AJOUTÉ À db.achats :",
+    achat
+);
 
+console.log(
+    "📦 NOMBRE TOTAL D'ACHATS :",
+    db.achats.length
+);
 
     db.mouvements.push({
 
