@@ -2043,3 +2043,245 @@ window.sauvegarderBaseFichier =
 
 window.restaurerBaseFichier =
     restaurerBaseFichier;
+// ======================================
+// SAUVEGARDE BASE DANS UN FICHIER
+// ======================================
+
+function sauvegarderBaseFichier(){
+
+    try{
+
+        const base = obtenirDB();
+
+        const contenu = JSON.stringify(
+            base,
+            null,
+            4
+        );
+
+        const blob = new Blob(
+            [contenu],
+            {
+                type: "application/json"
+            }
+        );
+
+        const url =
+            URL.createObjectURL(blob);
+
+        const lien =
+            document.createElement("a");
+
+        lien.href = url;
+
+        const date =
+            new Date()
+            .toISOString()
+            .replace(/[:.]/g, "-");
+
+        lien.download =
+            "idee-gourmande-sauvegarde-" +
+            date +
+            ".json";
+
+        document.body.appendChild(lien);
+
+        lien.click();
+
+        lien.remove();
+
+        URL.revokeObjectURL(url);
+
+        alert(
+            "✅ Sauvegarde effectuée avec succès."
+        );
+
+        console.log(
+            "💾 SAUVEGARDE EFFECTUÉE",
+            base
+        );
+
+    }
+    catch(erreur){
+
+        console.error(
+            "❌ ERREUR SAUVEGARDE :",
+            erreur
+        );
+
+        alert(
+            "❌ Impossible de créer la sauvegarde."
+        );
+
+    }
+
+}
+
+
+
+// ======================================
+// RESTAURATION BASE
+// ======================================
+
+function restaurerBaseFichier(event){
+
+    const fichier =
+        event.target.files[0];
+
+    if(!fichier){
+
+        return;
+
+    }
+
+
+    const confirmation =
+        confirm(
+            "⚠️ ATTENTION\n\n" +
+            "La restauration va remplacer " +
+            "la base actuellement utilisée.\n\n" +
+            "Voulez-vous continuer ?"
+        );
+
+
+    if(!confirmation){
+
+        event.target.value = "";
+
+        return;
+
+    }
+
+
+    const lecteur =
+        new FileReader();
+
+
+    lecteur.onload = function(){
+
+        try{
+
+            const baseRestauree =
+                JSON.parse(
+                    lecteur.result
+                );
+
+
+            // Vérification minimale
+            if(
+                !baseRestauree ||
+                typeof baseRestauree !== "object"
+            ){
+
+                throw new Error(
+                    "Fichier de sauvegarde invalide."
+                );
+
+            }
+
+
+            if(
+                !Array.isArray(
+                    baseRestauree.commandes
+                )
+                ||
+                !Array.isArray(
+                    baseRestauree.articles
+                )
+                ||
+                !Array.isArray(
+                    baseRestauree.achats
+                )
+            ){
+
+                throw new Error(
+                    "Structure de base invalide."
+                );
+
+            }
+
+
+            // Copie de sécurité
+            const ancienneBase =
+                localStorage.getItem(
+                    "ideeGourmandeDB"
+                );
+
+
+            if(ancienneBase){
+
+                localStorage.setItem(
+                    "ideeGourmandeDB_avant_restauration",
+                    ancienneBase
+                );
+
+            }
+
+
+            // Installation de la sauvegarde
+            localStorage.setItem(
+                "ideeGourmandeDB",
+                JSON.stringify(
+                    baseRestauree
+                )
+            );
+
+
+            console.log(
+                "📥 BASE RESTAURÉE :",
+                baseRestauree
+            );
+
+
+            alert(
+                "✅ Restauration terminée.\n\n" +
+                "La page va être rechargée."
+            );
+
+
+            window.location.reload();
+
+        }
+        catch(erreur){
+
+            console.error(
+                "❌ ERREUR RESTAURATION :",
+                erreur
+            );
+
+            alert(
+                "❌ Impossible de restaurer cette sauvegarde.\n\n" +
+                erreur.message
+            );
+
+        }
+
+    };
+
+
+    lecteur.onerror = function(){
+
+        alert(
+            "❌ Impossible de lire le fichier."
+        );
+
+    };
+
+
+    lecteur.readAsText(
+        fichier
+    );
+
+}
+
+
+
+// ======================================
+// RENDRE LES FONCTIONS DISPONIBLES
+// ======================================
+
+window.sauvegarderBaseFichier =
+    sauvegarderBaseFichier;
+
+window.restaurerBaseFichier =
+    restaurerBaseFichier;
