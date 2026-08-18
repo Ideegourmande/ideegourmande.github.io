@@ -1113,7 +1113,158 @@ function trierCommandes(){
     );
 }
 
+// ==================================
+// REMISE À ZÉRO TEST
+// COMMANDES + ACHATS AUTOMATIQUES
+// ==================================
 
+function reinitialiserCommandesEtAchats(){
+
+    if(
+        typeof db === "undefined" ||
+        !db
+    ){
+        alert(
+            "❌ La base de données n'est pas disponible."
+        );
+
+        return;
+    }
+
+
+    const confirmation =
+        confirm(
+
+            "⚠️ REMISE À ZÉRO\n\n" +
+
+            "Cette action va supprimer :\n" +
+            "• toutes les commandes\n" +
+            "• tous les achats automatiques\n" +
+            "• les mouvements liés aux commandes\n\n" +
+
+            "Les articles, le stock et les achats manuels " +
+            "seront conservés.\n\n" +
+
+            "Cette action est irréversible.\n\n" +
+
+            "Voulez-vous continuer ?"
+        );
+
+
+    if(!confirmation){
+        return;
+    }
+
+
+    // ==================================
+    // COMMANDES
+    // ==================================
+
+    db.commandes = [];
+
+
+    // ==================================
+    // ACHATS AUTOMATIQUES UNIQUEMENT
+    // ==================================
+
+    db.achats =
+        (
+            Array.isArray(db.achats)
+                ? db.achats
+                : []
+        )
+        .filter(function(achat){
+
+            return achat &&
+                   achat.automatique !== true;
+
+        });
+
+
+    // ==================================
+    // MOUVEMENTS
+    // ==================================
+
+    db.mouvements =
+        (
+            Array.isArray(db.mouvements)
+                ? db.mouvements
+                : []
+        )
+        .filter(function(mouvement){
+
+            if(!mouvement){
+                return false;
+            }
+
+            return (
+                mouvement.origine !== "Commande client"
+                &&
+                mouvement.action !== "Commande client"
+                &&
+                mouvement.action !== "Création achat automatique"
+                &&
+                mouvement.action !== "Complément achat automatique"
+            );
+
+        });
+
+
+    // ==================================
+    // SAUVEGARDE
+    // ==================================
+
+    if(
+        typeof sauvegarderDB === "function"
+    ){
+
+        sauvegarderDB();
+
+    }
+
+
+    // ==================================
+    // RAFRAÎCHISSEMENT
+    // ==================================
+
+    if(
+        typeof afficherCommandes === "function"
+    ){
+        afficherCommandes();
+    }
+
+    if(
+        typeof afficherStatistiques === "function"
+    ){
+        afficherStatistiques();
+    }
+
+    if(
+        typeof afficherAlertes === "function"
+    ){
+        afficherAlertes();
+    }
+
+    if(
+        typeof afficherDernieresCommandes === "function"
+    ){
+        afficherDernieresCommandes();
+    }
+
+    if(
+        typeof afficherResumeAchats === "function"
+    ){
+        afficherResumeAchats();
+    }
+
+
+    alert(
+        "✅ Réinitialisation terminée.\n\n" +
+        "Les commandes et achats automatiques ont été supprimés.\n" +
+        "Le stock et les achats manuels ont été conservés."
+    );
+
+}
 // ==================================
 // DÉCONNEXION
 // ==================================
@@ -2221,3 +2372,6 @@ window.sauvegarderBaseFichier =
 
 window.restaurerBaseFichier =
     restaurerBaseFichier;
+
+window.reinitialiserCommandesEtAchats =
+    reinitialiserCommandesEtAchats;
