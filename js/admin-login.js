@@ -14,7 +14,7 @@ document.getElementById("motdepasse").value;
 // À modifier par votre propre mot de passe
 
 const motdepasseAdmin =
-"idee2026";
+"Idee2026";
 
 
 
