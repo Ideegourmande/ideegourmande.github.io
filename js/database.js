@@ -2827,3 +2827,232 @@ console.log(
 
     }
 );
+// ======================================
+// RETRAITEMENT AUTOMATIQUE
+// DES ANCIENNES COMMANDES EN ERREUR
+// ======================================
+
+function retraiterAnciennesCommandesEnErreur() {
+
+    console.log(
+        "🔄 RECHERCHE DES ANCIENNES COMMANDES EN ERREUR STOCK"
+    );
+
+    if (!Array.isArray(db.commandes)) {
+
+        console.warn(
+            "⚠️ Aucune liste de commandes disponible."
+        );
+
+        return 0;
+    }
+
+    const commandesEnErreur =
+        db.commandes.filter(function (commande) {
+
+            return (
+                commande &&
+                commande.stockErreur === true &&
+                commande.stockTraite !== true
+            );
+
+        });
+
+    console.log(
+        "📋 ANCIENNES COMMANDES EN ERREUR TROUVEES :",
+        commandesEnErreur.length
+    );
+
+    let traitees = 0;
+    let echouees = 0;
+
+    commandesEnErreur.forEach(function (commande) {
+
+        const identifiant =
+            commande.id ||
+            commande.numero ||
+            "sans identifiant";
+
+        console.log(
+            "🔄 RETRAITEMENT AUTOMATIQUE COMMANDE :",
+            identifiant
+        );
+
+        try {
+
+            const resultat =
+                traiterStockCommande(commande);
+
+            if (resultat === true) {
+
+                traitees++;
+
+                console.log(
+                    "✅ COMMANDE RETRAITEE AUTOMATIQUEMENT :",
+                    identifiant
+                );
+
+            }
+            else {
+
+                echouees++;
+
+                console.warn(
+                    "⚠️ COMMANDE TOUJOURS EN ERREUR :",
+                    identifiant,
+                    commande.stockErreurMessage || ""
+                );
+
+            }
+
+        }
+        catch (erreur) {
+
+            echouees++;
+
+            commande.stockErreur = true;
+
+            console.error(
+                "❌ ERREUR RETRAITEMENT COMMANDE :",
+                identifiant,
+                erreur
+            );
+
+        }
+
+    });
+
+    sauvegarderDB();
+
+    console.log(
+        "📊 RETRAITEMENT AUTOMATIQUE TERMINE",
+        {
+            trouvees:
+                commandesEnErreur.length,
+
+            traitees:
+                traitees,
+
+            echouees:
+                echouees
+        }
+    );
+
+    return traitees;
+}
+
+
+// ======================================
+// ACCES BASE
+// ======================================
+
+function obtenirDB() {
+
+    return db;
+
+}
+
+
+// ======================================
+// EXPORTS
+// ======================================
+
+window.db =
+    db;
+
+window.ajouterCommande =
+    ajouterCommande;
+
+window.sauvegarderDB =
+    sauvegarderDB;
+
+window.traiterStockCommande =
+    traiterStockCommande;
+
+window.retraiterStockCommande =
+    retraiterStockCommande;
+
+window.retraiterAnciennesCommandesEnErreur =
+    retraiterAnciennesCommandesEnErreur;
+
+window.trouverArticleStock =
+    trouverArticleStock;
+
+window.calculerQuantiteCommande =
+    calculerQuantiteCommande;
+
+window.creerOuCompleterAchatAutomatique =
+    creerOuCompleterAchatAutomatique;
+
+window.normaliserNomArticle =
+    normaliserNomArticle;
+
+window.normaliserRecette =
+    normaliserRecette;
+
+window.securiserTexte =
+    securiserTexte;
+
+window.obtenirDB =
+    obtenirDB;
+
+window.migrerAnciennesDonnees =
+    migrerAnciennesDonnees;
+
+window.migrerAnciennesCommandes =
+    migrerAnciennesCommandes;
+
+window.migrerAnciennesArchives =
+    migrerAnciennesArchives;
+
+
+// ======================================
+// RETRAITEMENT AUTOMATIQUE
+// ======================================
+//
+// UNE SEULE EXECUTION.
+// Cette ligne doit rester ici,
+// après toutes les définitions.
+// ======================================
+
+retraiterAnciennesCommandesEnErreur();
+
+
+// ======================================
+// SAUVEGARDE FINALE
+// ======================================
+
+sauvegarderDB();
+
+
+// ======================================
+// MESSAGE FINAL
+// ======================================
+
+console.log(
+    "DATABASE.JS 3.1.1 CHARGE",
+    {
+
+        version:
+            db.parametres.versionDatabase,
+
+        commandes:
+            db.commandes.length,
+
+        archives:
+            db.archives.length,
+
+        articles:
+            db.articles.length,
+
+        achats:
+            db.achats.length,
+
+        clients:
+            db.clients.length,
+
+        mouvements:
+            db.mouvements.length
+
+    }
+);
