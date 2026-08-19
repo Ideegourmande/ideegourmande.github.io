@@ -839,8 +839,6 @@ const correspondancesProduits = {
 
     // ==================================
     // MAGRET
-    // CORRECTION :
-    // "magret au herbes" -> "magret aux herbes"
     // ==================================
 
     "magret": {
@@ -1158,7 +1156,7 @@ function trouverArticleStock(
 
 
                 // ==================================
-                // MAGRET AUX HERBES
+                // MAGRET
                 // ==================================
 
                 if (
@@ -2219,6 +2217,10 @@ function traiterStockCommande(
         false;
 
 
+    commande.stockErreurMessage =
+        "";
+
+
     commande.stockTraiteDate =
         new Date()
         .toLocaleString(
@@ -2621,6 +2623,190 @@ function retraiterStockCommande(
 
 
 // ======================================
+// RETRAITEMENT AUTOMATIQUE
+// DES ANCIENNES COMMANDES EN ERREUR
+// ======================================
+
+function retraiterAnciennesCommandesEnErreur() {
+
+    if (
+        !db ||
+        !Array.isArray(
+            db.commandes
+        )
+    ) {
+
+        console.warn(
+            "⚠️ Impossible de retraiter les commandes : base indisponible."
+        );
+
+        return {
+
+            trouvees: 0,
+
+            traitees: 0,
+
+            echouees: 0
+
+        };
+
+    }
+
+
+    console.log(
+        "🔄 RECHERCHE DES ANCIENNES COMMANDES EN ERREUR STOCK"
+    );
+
+
+    const commandesEnErreur =
+        db.commandes.filter(
+            function (commande) {
+
+                return (
+
+                    commande
+
+                    &&
+
+                    commande.stockTraite !== true
+
+                    &&
+
+                    commande.stockErreur === true
+
+                );
+
+            }
+        );
+
+
+    console.log(
+        "📋 COMMANDES EN ERREUR TROUVEES :",
+        commandesEnErreur.length
+    );
+
+
+    let traitees = 0;
+
+    let echouees = 0;
+
+
+    commandesEnErreur.forEach(
+        function (commande) {
+
+            console.log(
+                "🔁 RETRAITEMENT AUTOMATIQUE COMMANDE :",
+                {
+
+                    id:
+                        commande.id,
+
+                    client:
+                        commande.client,
+
+                    date:
+                        commande.date,
+
+                    ancienMessage:
+                        commande.stockErreurMessage
+
+                }
+            );
+
+
+            // Réinitialisation temporaire
+            // de l'état d'erreur.
+
+            commande.stockErreur =
+                false;
+
+
+            commande.stockErreurMessage =
+                "";
+
+
+            const resultat =
+                traiterStockCommande(
+                    commande
+                );
+
+
+            if (
+                resultat === true
+            ) {
+
+                traitees++;
+
+
+                console.log(
+                    "✅ COMMANDE ANCIENNE RETRAITEE :",
+                    commande.id
+                );
+
+            }
+            else {
+
+                echouees++;
+
+
+                commande.stockTraite =
+                    false;
+
+
+                commande.stockErreur =
+                    true;
+
+
+                console.warn(
+                    "⚠️ RETRAITEMENT ECHEC :",
+                    commande.id
+                );
+
+            }
+
+        }
+    );
+
+
+    if (
+        commandesEnErreur.length > 0
+    ) {
+
+        sauvegarderDB();
+
+    }
+
+
+    console.log(
+        "📊 RESULTAT RETRAITEMENT AUTOMATIQUE",
+        {
+
+            trouvees:
+                commandesEnErreur.length,
+
+            traitees,
+
+            echouees
+
+        }
+    );
+
+
+    return {
+
+        trouvees:
+            commandesEnErreur.length,
+
+        traitees,
+
+        echouees
+
+    };
+
+}
+
+
+// ======================================
 // SECURISATION HTML
 // ======================================
 
@@ -2690,6 +2876,10 @@ window.retraiterStockCommande =
     retraiterStockCommande;
 
 
+window.retraiterAnciennesCommandesEnErreur =
+    retraiterAnciennesCommandesEnErreur;
+
+
 window.trouverArticleStock =
     trouverArticleStock;
 
@@ -2732,6 +2922,26 @@ window.migrerAnciennesCommandes =
 
 window.migrerAnciennesArchives =
     migrerAnciennesArchives;
+
+
+// ======================================
+// RETRAITEMENT AUTOMATIQUE
+// ======================================
+//
+// Cette fonction est appelée après le chargement
+// complet de database.js.
+//
+// Elle récupère uniquement les commandes qui :
+// - existent
+// - n'ont pas encore été traitées
+// - sont marquées en erreur
+//
+// Une commande passée à stockTraite === true
+// ne sera jamais retraitée.
+//
+// ======================================
+
+retraiterAnciennesCommandesEnErreur();
 
 
 // ======================================
