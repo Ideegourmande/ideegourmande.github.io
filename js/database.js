@@ -1,3 +1,4 @@
+```javascript
 // ======================================
 // IDEE GOURMANDE
 // Base de données centrale
@@ -836,19 +837,31 @@ const correspondancesProduits = {
     },
 
 
+    // ==================================
+    // MAGRET
+    // CORRECTION :
+    // "magret au herbes" -> "magret aux herbes"
+    // ==================================
+
     "magret": {
 
         "herbe":
-            "magret au herbes",
+            "magret aux herbes",
 
         "herbes":
-            "magret au herbes",
+            "magret aux herbes",
+
+        "aux herbe":
+            "magret aux herbes",
 
         "aux herbes":
-            "magret au herbes",
+            "magret aux herbes",
+
+        "au herbe":
+            "magret aux herbes",
 
         "au herbes":
-            "magret au herbes",
+            "magret aux herbes",
 
         "piment":
             "magret aux pimets",
@@ -1144,6 +1157,10 @@ function trouverArticleStock(
                 }
 
 
+                // ==================================
+                // MAGRET AUX HERBES
+                // ==================================
+
                 if (
                     reference === "magret"
                 ) {
@@ -1151,7 +1168,10 @@ function trouverArticleStock(
                     if (
                         recette === "herbe" ||
                         recette === "herbes" ||
-                        recette === "aux herbes"
+                        recette === "aux herbe" ||
+                        recette === "aux herbes" ||
+                        recette === "au herbe" ||
+                        recette === "au herbes"
                     ) {
 
                         return (
@@ -1169,7 +1189,11 @@ function trouverArticleStock(
 
                     if (
                         recette === "piment" ||
-                        recette === "piments"
+                        recette === "piments" ||
+                        recette === "pimets" ||
+                        recette === "aux piment" ||
+                        recette === "aux piments" ||
+                        recette === "aux pimets"
                     ) {
 
                         return (
@@ -1418,7 +1442,7 @@ function calculerQuantiteCommande(
 
     if (
         nomStock ===
-            "magret au herbes"
+            "magret aux herbes"
         ||
         nomStock ===
             "magret aux pimets"
@@ -2741,3 +2765,4 @@ console.log(
 
     }
 );
+```
