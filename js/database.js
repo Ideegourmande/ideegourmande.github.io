@@ -797,7 +797,132 @@ function migrerAnciennesDonnees() {
 // ======================================
 
 migrerAnciennesDonnees();
+// ======================================
+// RETRAITEMENT AUTOMATIQUE DES ANCIENNES
+// COMMANDES EN ERREUR STOCK
+// ======================================
 
+function retraiterAnciennesCommandesEnErreur() {
+
+    console.log(
+        "🔄 RECHERCHE DES ANCIENNES COMMANDES EN ERREUR STOCK"
+    );
+
+    if (!Array.isArray(db.commandes)) {
+
+        console.warn(
+            "⚠️ Aucune liste de commandes disponible."
+        );
+
+        return;
+
+    }
+
+    const commandesEnErreur =
+        db.commandes.filter(
+            function (commande) {
+
+                if (!commande) {
+                    return false;
+                }
+
+                return (
+                    commande.stockErreur === true
+                    &&
+                    commande.stockTraite !== true
+                );
+
+            }
+        );
+
+    console.log(
+        "📋 ANCIENNES COMMANDES EN ERREUR TROUVEES :",
+        commandesEnErreur.length
+    );
+
+    if (commandesEnErreur.length === 0) {
+
+        console.log(
+            "✅ AUCUNE ANCIENNE COMMANDE A RETRAITER"
+        );
+
+        return;
+
+    }
+
+    let traitees = 0;
+    let echouees = 0;
+
+    commandesEnErreur.forEach(
+        function (commande) {
+
+            console.log(
+                "🔄 RETRAITEMENT AUTOMATIQUE COMMANDE",
+                commande.id || commande.numero || "sans identifiant"
+            );
+
+            try {
+
+                commande.stockErreur = false;
+
+                const resultat =
+                    traiterStockCommande(
+                        commande
+                    );
+
+                if (resultat === true) {
+
+                    traitees++;
+
+                    console.log(
+                        "✅ COMMANDE RETRAITEE :",
+                        commande.id || commande.numero
+                    );
+
+                }
+                else {
+
+                    echouees++;
+
+                    commande.stockErreur = true;
+
+                    console.warn(
+                        "⚠️ RETRAITEMENT IMPOSSIBLE :",
+                        commande.id || commande.numero
+                    );
+
+                }
+
+            }
+            catch (erreur) {
+
+                echouees++;
+
+                commande.stockErreur = true;
+
+                console.error(
+                    "❌ ERREUR RETRAITEMENT COMMANDE :",
+                    commande.id || commande.numero,
+                    erreur
+                );
+
+            }
+
+        }
+    );
+
+    sauvegarderDB();
+
+    console.log(
+        "📊 RETRAITEMENT AUTOMATIQUE TERMINE",
+        {
+            trouvees: commandesEnErreur.length,
+            traitees: traitees,
+            echouees: echouees
+        }
+    );
+
+}
 
 // ======================================
 // ALIAS PRODUITS
@@ -2951,7 +3076,20 @@ retraiterAnciennesCommandesEnErreur();
 
 sauvegarderDB();
 
+// ======================================
+// RETRAITEMENT AUTOMATIQUE
+// DES ANCIENNES COMMANDES EN ERREUR
+// ======================================
 
+retraiterAnciennesCommandesEnErreur();
+
+
+// ======================================
+// EXPORT RETRAITEMENT
+// ======================================
+
+window.retraiterAnciennesCommandesEnErreur =
+    retraiterAnciennesCommandesEnErreur;
 // ======================================
 // FIN
 // ======================================
