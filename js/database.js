@@ -30,8 +30,7 @@ let db = null;
 
 try {
 
-    const contenu =
-        localStorage.getItem(CLE_BASE);
+    const contenu = localStorage.getItem(CLE_BASE);
 
     if (contenu) {
 
@@ -83,7 +82,9 @@ const structureDB = {
 
     articles: [],
 
-    emplacements: emplacementsDefaut,
+    emplacements: [
+        ...emplacementsDefaut
+    ],
 
     mouvements: [],
 
@@ -99,8 +100,7 @@ const structureDB = {
 
     parametres: {
 
-        versionDatabase:
-            VERSION_DATABASE
+        versionDatabase: VERSION_DATABASE
 
     }
 
@@ -141,8 +141,7 @@ if (
 
         parametres: {
 
-            versionDatabase:
-                VERSION_DATABASE
+            versionDatabase: VERSION_DATABASE
 
         }
 
@@ -152,7 +151,7 @@ if (
 
 
 // ======================================
-// MIGRATION / VERIFICATION STRUCTURE
+// VERIFICATION STRUCTURE
 // ======================================
 
 Object.keys(structureDB).forEach(
@@ -243,10 +242,6 @@ if (
 
 }
 
-
-// ======================================
-// VERSION DATABASE
-// ======================================
 
 db.parametres.versionDatabase =
     VERSION_DATABASE;
@@ -743,13 +738,6 @@ function migrerAnciennesDonnees() {
 
 
 // ======================================
-// EXECUTION MIGRATION
-// ======================================
-
-migrerAnciennesDonnees();
-
-
-// ======================================
 // ALIAS PRODUITS
 // ======================================
 
@@ -931,9 +919,7 @@ function trouverArticleStock(
     ) {
 
         const nomCorrespondant =
-            correspondance[
-                recette
-            ];
+            correspondance[recette];
 
 
         if (nomCorrespondant) {
@@ -1055,9 +1041,7 @@ function trouverArticleStock(
                     );
 
 
-                // ==============================
                 // FOIE GRAS
-                // ==============================
 
                 if (
                     reference === "foie-gras"
@@ -1069,18 +1053,12 @@ function trouverArticleStock(
                     ) {
 
                         return (
-                            nomStock.includes(
-                                "foie gras"
-                            )
+                            nomStock.includes("foie gras")
                             &&
                             (
-                                nomStock.includes(
-                                    "pimet"
-                                )
+                                nomStock.includes("pimet")
                                 ||
-                                nomStock.includes(
-                                    "piment"
-                                )
+                                nomStock.includes("piment")
                             )
                         );
 
@@ -1095,18 +1073,12 @@ function trouverArticleStock(
 
                         return (
                             (
-                                nomStock.includes(
-                                    "foie gras"
-                                )
+                                nomStock.includes("foie gras")
                                 ||
-                                nomStock.includes(
-                                    "fois gras"
-                                )
+                                nomStock.includes("fois gras")
                             )
                             &&
-                            nomStock.includes(
-                                "figue"
-                            )
+                            nomStock.includes("figue")
                         );
 
                     }
@@ -1114,9 +1086,7 @@ function trouverArticleStock(
                 }
 
 
-                // ==============================
                 // MAGRET
-                // ==============================
 
                 if (
                     reference === "magret"
@@ -1132,13 +1102,9 @@ function trouverArticleStock(
                     ) {
 
                         return (
-                            nomStock.includes(
-                                "magret"
-                            )
+                            nomStock.includes("magret")
                             &&
-                            nomStock.includes(
-                                "herbe"
-                            )
+                            nomStock.includes("herbe")
                         );
 
                     }
@@ -1150,18 +1116,12 @@ function trouverArticleStock(
                     ) {
 
                         return (
-                            nomStock.includes(
-                                "magret"
-                            )
+                            nomStock.includes("magret")
                             &&
                             (
-                                nomStock.includes(
-                                    "pimet"
-                                )
+                                nomStock.includes("pimet")
                                 ||
-                                nomStock.includes(
-                                    "piment"
-                                )
+                                nomStock.includes("piment")
                             )
                         );
 
@@ -1170,41 +1130,33 @@ function trouverArticleStock(
                 }
 
 
-                // ==============================
                 // VIANDE SECHEE
-                // ==============================
 
                 if (
                     reference === "viande-sechee"
                 ) {
 
                     return (
-                        nomStock ===
-                        "viande sechee"
+                        nomStock === "viande sechee"
                     );
 
                 }
 
 
-                // ==============================
                 // LARD SEC
-                // ==============================
 
                 if (
                     reference === "lard-sec"
                 ) {
 
                     return (
-                        nomStock ===
-                        "lard sec fume"
+                        nomStock === "lard sec fume"
                     );
 
                 }
 
 
-                // ==============================
                 // SAUMON
-                // ==============================
 
                 if (
                     reference === "saumon-fume"
@@ -1216,13 +1168,9 @@ function trouverArticleStock(
                     ) {
 
                         return (
-                            nomStock.includes(
-                                "saumon"
-                            )
+                            nomStock.includes("saumon")
                             &&
-                            nomStock.includes(
-                                "aneth"
-                            )
+                            nomStock.includes("aneth")
                         );
 
                     }
@@ -1234,18 +1182,12 @@ function trouverArticleStock(
                     ) {
 
                         return (
-                            nomStock.includes(
-                                "saumon"
-                            )
+                            nomStock.includes("saumon")
                             &&
                             (
-                                nomStock.includes(
-                                    "piment"
-                                )
+                                nomStock.includes("piment")
                                 ||
-                                nomStock.includes(
-                                    "pimet"
-                                )
+                                nomStock.includes("pimet")
                             )
                         );
 
@@ -1286,15 +1228,15 @@ function trouverArticleStock(
 
 
 // ======================================
-// QUANTITE COMMANDEE
+// CALCUL QUANTITE COMMANDEE
 // ======================================
 //
 // Foie gras aux pimets = 200 g / pièce
 // Fois gras aux figues = 200 g / pièce
 // Viande séchée        = 500 g / pièce
 // Lard sec fumé        = 500 g / pièce
-// Saumon                = poids choisi
-// Magret                = 1 pièce
+// Saumon               = poids choisi
+// Magret               = 1 pièce
 // ======================================
 
 function calculerQuantiteCommande(
@@ -1331,9 +1273,7 @@ function calculerQuantiteCommande(
         ) || 0;
 
 
-    // ==================================
     // SAUMON
-    // ==================================
 
     if (
         reference === "saumon-fume"
@@ -1348,9 +1288,7 @@ function calculerQuantiteCommande(
     }
 
 
-    // ==================================
     // FOIE GRAS
-    // ==================================
 
     if (
         nomStock === "foie gras aux pimets"
@@ -1365,9 +1303,7 @@ function calculerQuantiteCommande(
     }
 
 
-    // ==================================
     // VIANDE SECHEE
-    // ==================================
 
     if (
         nomStock === "viande sechee"
@@ -1380,9 +1316,7 @@ function calculerQuantiteCommande(
     }
 
 
-    // ==================================
-    // LARD SEC FUME
-    // ==================================
+    // LARD SEC
 
     if (
         nomStock === "lard sec fume"
@@ -1395,9 +1329,7 @@ function calculerQuantiteCommande(
     }
 
 
-    // ==================================
     // MAGRET
-    // ==================================
 
     if (
         nomStock === "magret aux herbes"
@@ -1432,9 +1364,7 @@ function enregistrerMouvementCommande(
     db.mouvements.push({
 
         date:
-            new Date().toLocaleString(
-                "fr-FR"
-            ),
+            new Date().toLocaleString("fr-FR"),
 
         action:
             "Commande client",
@@ -1595,13 +1525,9 @@ function creerOuCompleterAchatAutomatique(
     console.log(
         "🛒 CREATION / COMPLETION ACHAT AUTOMATIQUE",
         {
-            article:
-                article.nom,
-
+            article: article.nom,
             quantite,
-
-            stock:
-                article.stock
+            stock: article.stock
         }
     );
 
@@ -1611,6 +1537,10 @@ function creerOuCompleterAchatAutomatique(
             article
         );
 
+
+    // ==================================
+    // COMPLETER ACHAT EXISTANT
+    // ==================================
 
     if (achatExistant) {
 
@@ -1674,9 +1604,7 @@ function creerOuCompleterAchatAutomatique(
         db.mouvements.push({
 
             date:
-                new Date().toLocaleString(
-                    "fr-FR"
-                ),
+                new Date().toLocaleString("fr-FR"),
 
             action:
                 "Complément achat automatique",
@@ -1710,7 +1638,7 @@ function creerOuCompleterAchatAutomatique(
 
 
     // ==================================
-    // NOUVEL ACHAT
+    // CREATION NOUVEL ACHAT
     // ==================================
 
     const id =
@@ -1726,8 +1654,8 @@ function creerOuCompleterAchatAutomatique(
 
         date:
             new Date()
-                .toISOString()
-                .split("T")[0],
+            .toISOString()
+            .split("T")[0],
 
         fournisseur:
             "À définir",
@@ -1787,9 +1715,7 @@ function creerOuCompleterAchatAutomatique(
     db.mouvements.push({
 
         date:
-            new Date().toLocaleString(
-                "fr-FR"
-            ),
+            new Date().toLocaleString("fr-FR"),
 
         action:
             "Création achat automatique",
@@ -1829,7 +1755,7 @@ function creerOuCompleterAchatAutomatique(
 
 
 // ======================================
-// TRAITEMENT STOCK + ACHAT
+// TRAITEMENT STOCK + ACHATS
 // ======================================
 
 function traiterStockCommande(
@@ -1866,17 +1792,30 @@ function traiterStockCommande(
     // ==================================
 
     const produits =
+
         Array.isArray(
             commande.produitsListe
         )
-            ? commande.produitsListe
-            : (
-                Array.isArray(
-                    commande.produits
-                )
-                    ? commande.produits
-                    : []
-            );
+
+        ?
+
+        commande.produitsListe
+
+        :
+
+        (
+            Array.isArray(
+                commande.produits
+            )
+
+            ?
+
+            commande.produits
+
+            :
+
+            []
+        );
 
 
     if (
@@ -1894,13 +1833,6 @@ function traiterStockCommande(
         commande.stockErreurMessage =
             "Aucun produit dans la commande.";
 
-        commande.stockErreurDate =
-            new Date().toLocaleString(
-                "fr-FR"
-            );
-
-        commande.stockTraite = false;
-
 
         sauvegarderDB();
 
@@ -1911,7 +1843,7 @@ function traiterStockCommande(
 
 
     // ==================================
-    // OPERATIONS
+    // PREPARATION OPERATIONS
     // ==================================
 
     const operations = [];
@@ -1922,8 +1854,7 @@ function traiterStockCommande(
     // ==================================
 
     for (
-        const articleCommande
-        of produits
+        const articleCommande of produits
     ) {
 
         const articleStock =
@@ -1942,7 +1873,6 @@ function traiterStockCommande(
 
             commande.stockErreur = true;
 
-            commande.stockTraite = false;
 
             commande.stockErreurMessage =
                 "Article introuvable dans le stock : "
@@ -1953,11 +1883,6 @@ function traiterStockCommande(
                     articleCommande.reference
                     ||
                     "Article inconnu"
-                );
-
-            commande.stockErreurDate =
-                new Date().toLocaleString(
-                    "fr-FR"
                 );
 
 
@@ -2079,7 +2004,7 @@ function traiterStockCommande(
 
 
             // ==================================
-            // MOUVEMENT STOCK
+            // MOUVEMENT
             // ==================================
 
             if (
@@ -2087,11 +2012,17 @@ function traiterStockCommande(
             ) {
 
                 enregistrerMouvementCommande(
+
                     article,
+
                     ancienStock,
+
                     nouveauStock,
+
                     consommation,
+
                     commande
+
                 );
 
             }
@@ -2128,8 +2059,11 @@ function traiterStockCommande(
 
 
                 creerOuCompleterAchatAutomatique(
+
                     article,
+
                     quantiteManquante
+
                 );
 
             }
@@ -2149,9 +2083,7 @@ function traiterStockCommande(
     commande.stockErreurMessage = "";
 
     commande.stockTraiteDate =
-        new Date().toLocaleString(
-            "fr-FR"
-        );
+        new Date().toLocaleString("fr-FR");
 
 
     sauvegarderDB();
@@ -2175,7 +2107,7 @@ function traiterStockCommande(
 
 
 // ======================================
-// AJOUT / MISE A JOUR CLIENT
+// CLIENT
 // ======================================
 
 function enregistrerClientCommande(
@@ -2216,13 +2148,17 @@ function enregistrerClientCommande(
                 function (client) {
 
                     return (
+
                         String(
                             client.email || ""
                         )
                         .trim()
                         .toLowerCase()
+
                         ===
+
                         email
+
                     );
 
                 }
@@ -2382,7 +2318,7 @@ function ajouterCommande(
 
 
     // ==================================
-    // AJOUT COMMANDE
+    // AJOUT
     // ==================================
 
     db.commandes.push(
@@ -2425,9 +2361,7 @@ function ajouterCommande(
         commande.stockErreur = true;
 
         commande.stockErreurDate =
-            new Date().toLocaleString(
-                "fr-FR"
-            );
+            new Date().toLocaleString("fr-FR");
 
     }
 
@@ -2525,19 +2459,6 @@ function retraiterStockCommande(
 // RETRAITEMENT AUTOMATIQUE
 // DES ANCIENNES COMMANDES EN ERREUR
 // ======================================
-//
-// Une seule fonction dans tout le fichier.
-//
-// Sont retraitées uniquement les commandes
-// ayant :
-//
-// stockErreur === true
-//
-// ET :
-//
-// stockTraite !== true
-//
-// ======================================
 
 function retraiterAnciennesCommandesEnErreur() {
 
@@ -2551,7 +2472,7 @@ function retraiterAnciennesCommandesEnErreur() {
     ) {
 
         console.warn(
-            "⚠️ Impossible de retraiter les commandes : tableau absent."
+            "⚠️ Aucune liste de commandes disponible."
         );
 
         return 0;
@@ -2564,9 +2485,17 @@ function retraiterAnciennesCommandesEnErreur() {
             function (commande) {
 
                 return (
-                    commande &&
-                    commande.stockErreur === true &&
+
+                    commande
+
+                    &&
+
+                    commande.stockErreur === true
+
+                    &&
+
                     commande.stockTraite !== true
+
                 );
 
             }
@@ -2601,8 +2530,10 @@ function retraiterAnciennesCommandesEnErreur() {
         function (commande) {
 
             const identifiant =
-                commande.id ||
-                commande.numero ||
+                commande.id
+                ||
+                commande.numero
+                ||
                 "sans identifiant";
 
 
@@ -2613,6 +2544,18 @@ function retraiterAnciennesCommandesEnErreur() {
 
 
             try {
+
+                /*
+                 * On remet temporairement stockErreur
+                 * à false.
+                 *
+                 * Si le traitement échoue,
+                 * traiterStockCommande() le remettra
+                 * à true avec son message d'erreur.
+                 */
+
+                commande.stockErreur = false;
+
 
                 const resultat =
                     traiterStockCommande(
@@ -2638,6 +2581,10 @@ function retraiterAnciennesCommandesEnErreur() {
                     echouees++;
 
 
+                    commande.stockErreur =
+                        true;
+
+
                     console.warn(
                         "⚠️ COMMANDE TOUJOURS EN ERREUR :",
                         identifiant,
@@ -2655,25 +2602,18 @@ function retraiterAnciennesCommandesEnErreur() {
                 commande.stockErreur =
                     true;
 
-                commande.stockTraite =
-                    false;
-
 
                 commande.stockErreurMessage =
                     erreur &&
                     erreur.message
-                        ? erreur.message
-                        : String(erreur);
-
-
-                commande.stockErreurDate =
-                    new Date().toLocaleString(
-                        "fr-FR"
-                    );
+                    ?
+                    erreur.message
+                    :
+                    String(erreur);
 
 
                 console.error(
-                    "❌ ERREUR RETRAITEMENT COMMANDE :",
+                    "❌ ERREUR RETRAITEMENT AUTOMATIQUE :",
                     identifiant,
                     erreur
                 );
@@ -2754,92 +2694,95 @@ function obtenirDB() {
 
 
 // ======================================
+// MIGRATION AU CHARGEMENT
+// ======================================
+
+migrerAnciennesDonnees();
+
+
+// ======================================
 // EXPORTS
 // ======================================
 
 window.db =
     db;
 
-
 window.ajouterCommande =
     ajouterCommande;
-
 
 window.sauvegarderDB =
     sauvegarderDB;
 
-
 window.traiterStockCommande =
     traiterStockCommande;
-
 
 window.retraiterStockCommande =
     retraiterStockCommande;
 
-
 window.retraiterAnciennesCommandesEnErreur =
     retraiterAnciennesCommandesEnErreur;
-
 
 window.trouverArticleStock =
     trouverArticleStock;
 
-
 window.calculerQuantiteCommande =
     calculerQuantiteCommande;
-
 
 window.creerOuCompleterAchatAutomatique =
     creerOuCompleterAchatAutomatique;
 
-
 window.normaliserNomArticle =
     normaliserNomArticle;
-
 
 window.normaliserRecette =
     normaliserRecette;
 
-
 window.securiserTexte =
     securiserTexte;
-
 
 window.obtenirDB =
     obtenirDB;
 
-
-// ======================================
-// EXPORTS MIGRATION
-// ======================================
-
 window.migrerAnciennesDonnees =
     migrerAnciennesDonnees;
 
-
 window.migrerAnciennesCommandes =
     migrerAnciennesCommandes;
-
 
 window.migrerAnciennesArchives =
     migrerAnciennesArchives;
 
 
 // ======================================
-// EXECUTION AUTOMATIQUE
+// RETRAITEMENT AUTOMATIQUE
 // ======================================
 //
 // IMPORTANT :
-// Ce bloc est volontairement placé APRES
-// la définition de traiterStockCommande()
-// et APRES l'export de la fonction.
+// Cet appel est volontairement le DERNIER
+// traitement fonctionnel du fichier.
 //
-// Il n'existe qu'UN SEUL appel automatique.
+// Toutes les fonctions nécessaires sont
+// déjà définies et tous les exports sont
+// déjà installés sur window.
 //
+// Une commande est retraitée uniquement si :
+//
+// stockErreur === true
+//
+// ET
+//
+// stockTraite !== true
+//
+// Si elle réussit :
+//
+// stockTraite = true
+// stockErreur = false
+//
+// Elle ne sera donc plus retraitée.
 // ======================================
 
 console.log(
-    "🔄 DEMARRAGE DU RETRAITEMENT AUTOMATIQUE"
+    "🔄 DEMARRAGE RETRAITEMENT AUTOMATIQUE..."
 );
 
 
