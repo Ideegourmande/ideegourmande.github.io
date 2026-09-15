@@ -1,8 +1,5 @@
 console.log("COMMANDE.JS CHARGE");
 
-// Adresse de réception des commandes
-const EMAIL_DESTINATION_COMMANDES = "ideesgourmandesge@gmail.com";
-
 
 // ======================================
 // IDEE GOURMANDE
@@ -1219,48 +1216,116 @@ function envoyerCommande(
 
 
     // ==================================
-    // PDF
+    // PDF + ENVOI AUTOMATIQUE
     // ==================================
 
-    if(
-        typeof genererPDFCommande ===
-        "function"
-    ){
+    let resultatPDF = null;
 
-        genererPDFCommande(
-            commande
-        );
-
+    if (typeof genererPDFCommande === "function") {
+        resultatPDF = genererPDFCommande(commande);
     }
 
+    if (!resultatPDF || !resultatPDF.blob) {
+        alert("La commande a été enregistrée et le PDF a été généré, mais le PDF n'est pas disponible pour l'envoi automatique.");
+        return;
+    }
 
-    // ==================================
-    // GMAIL
-    // ==================================
-
-    ouvrirGmailCommande(
-        commande
-    );
-
+    envoyerCommandeAutomatiquement(commande, resultatPDF);
 
     // ==================================
     // NETTOYAGE PANIER
     // ==================================
 
-    panierCommande.length =
-        0;
-
-
-    window.panierCommande =
-        panierCommande;
-
-
+    panierCommande.length = 0;
+    window.panierCommande = panierCommande;
     afficherPanier();
 
+}
 
-    alert(
-        "Votre commande a été enregistrée et Gmail a été ouvert pour son envoi."
-    );
+// ======================================
+// ENVOI AUTOMATIQUE PAR GOOGLE APPS SCRIPT
+// ======================================
+
+// Après déploiement du fichier Google Apps Script fourni dans
+// google-apps-script/Code.gs, coller ici l'URL de l'application Web.
+const EMAIL_API_URL =
+    "https://script.google.com/macros/s/AKfycbzKiedAF-Qjr6gisEk9f6VeeKRnEu_WqTXJyj2QqNVXqTNPhJUIEPkKcdRNheq6w6wY/exec";
+
+function blobToBase64(blob) {
+    return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onloadend = () => {
+            const result = String(reader.result || "");
+            const comma = result.indexOf(",");
+            resolve(comma >= 0 ? result.slice(comma + 1) : result);
+        };
+        reader.onerror = reject;
+        reader.readAsDataURL(blob);
+    });
+}
+
+async function envoyerCommandeAutomatiquement(commande, resultatPDF) {
+
+    const destinataire = String(commande?.client?.email || "").trim();
+
+    if (!destinataire) {
+        alert("La commande a été enregistrée, mais aucune adresse e-mail client n'est indiquée.");
+        return;
+    }
+
+    if (!EMAIL_API_URL || EMAIL_API_URL === "https://script.google.com/macros/s/AKfycbzKiedAF-Qjr6gisEk9f6VeeKRnEu_WqTXJyj2QqNVXqTNPhJUIEPkKcdRNheq6w6wY/exec") {
+        alert("La commande et le PDF sont prêts. Il faut encore configurer l'URL Google Apps Script dans js/commande.js pour activer l'envoi automatique.");
+        return;
+    }
+
+    try {
+        const pdfBase64 = await blobToBase64(resultatPDF.blob);
+        const numeroCommande = Date.now();
+
+        const payload = {
+            to: destinataire,
+            subject: `Commande Idée Gourmande n°${numeroCommande}`,
+            client: commande.client,
+            produits: commande.produits,
+            total: commande.total,
+            numeroCommande,
+            pdfBase64,
+            pdfFilename: resultatPDF.filename
+        };
+
+        // Formulaire POST vers une iframe : pas de problème CORS et aucun
+        // clic Gmail n'est nécessaire.
+        const iframe = document.createElement("iframe");
+        iframe.name = "emailSubmitFrame" + Date.now();
+        iframe.style.display = "none";
+        document.body.appendChild(iframe);
+
+        const form = document.createElement("form");
+        form.method = "POST";
+        form.action = EMAIL_API_URL;
+        form.target = iframe.name;
+        form.style.display = "none";
+
+        const input = document.createElement("input");
+        input.type = "hidden";
+        input.name = "payload";
+        input.value = JSON.stringify(payload);
+        form.appendChild(input);
+        document.body.appendChild(form);
+
+        form.submit();
+
+        setTimeout(() => {
+            form.remove();
+            iframe.remove();
+        }, 10000);
+
+        alert("Commande enregistrée et e-mail envoyé automatiquement avec le PDF en pièce jointe.");
+
+    } catch (erreur) {
+        console.error("Erreur envoi automatique :", erreur);
+        alert("La commande a été enregistrée et le PDF généré, mais l'envoi automatique a échoué. Vérifiez la configuration Google Apps Script.");
+    }
 
 }
 

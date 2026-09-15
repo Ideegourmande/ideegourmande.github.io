@@ -742,13 +742,22 @@ function genererPDFCommande(commande) {
     // SAUVEGARDE
     // ==========================================
 
+    // Sauvegarde locale pour le client
     doc.save(fichier);
 
+    // Retourne aussi le PDF en mémoire pour permettre son envoi automatique
+    // par le serveur Google Apps Script.
+    const pdfBlob = doc.output("blob");
 
     console.log(
         "PDF généré :",
         fichier
     );
+
+    return {
+        blob: pdfBlob,
+        filename: fichier
+    };
 }
 
 
