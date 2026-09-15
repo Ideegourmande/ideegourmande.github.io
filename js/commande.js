@@ -1232,6 +1232,17 @@ function envoyerCommande(
 
 
     // ==================================
+    // OUVERTURE GMAIL
+    // ==================================
+    // Le site étant hébergé sur GitHub Pages, JavaScript ne peut pas
+    // envoyer directement un email au nom de ideesgourmandesge@gmail.com.
+    // On ouvre donc Gmail avec le destinataire indiqué sur le bulletin
+    // de commande et le message prérempli.
+
+    ouvrirGmailPourCommande(commande);
+
+
+    // ==================================
     // NETTOYAGE PANIER
     // ==================================
 
@@ -1249,6 +1260,95 @@ function envoyerCommande(
     alert(
         "Votre commande a été générée."
     );
+
+}
+
+
+// ======================================
+// GMAIL - EMAIL DE COMMANDE
+// ======================================
+
+function ouvrirGmailPourCommande(commande){
+
+    const destinataire =
+        String(commande?.client?.email || "")
+            .trim();
+
+    if(!destinataire){
+        alert(
+            "La commande est enregistrée et le PDF a été généré, mais aucune adresse email client n'est indiquée dans le bulletin de commande."
+        );
+        return;
+    }
+
+    const numeroCommande =
+        new Date().getTime();
+
+    const nomClient =
+        (commande.client?.prenom || "") +
+        " " +
+        (commande.client?.nom || "");
+
+    const lignesProduits =
+        (commande.produits || [])
+            .map(article => {
+                const quantite =
+                    article.quantite > 1
+                        ? ` x${article.quantite}`
+                        : "";
+
+                const poids =
+                    article.poids
+                        ? ` (${article.poids} g)`
+                        : "";
+
+                return `- ${article.nom}${quantite}${poids} : ${Number(article.prix || 0).toFixed(2)} CHF`;
+            })
+            .join("\n");
+
+    const sujet =
+        `Commande Idée Gourmande n°${numeroCommande}`;
+
+    const corps =
+`Bonjour,
+
+Voici la commande Idée Gourmande.
+
+Client : ${nomClient.trim()}
+Téléphone : ${commande.client?.telephone || ""}
+Email : ${destinataire}
+Adresse : ${commande.client?.adresse || ""}
+
+Produits commandés :
+${lignesProduits}
+
+Total : ${Number(commande.total || 0).toFixed(2)} CHF
+
+Commentaire : ${commande.client?.commentaire || "Aucun"}
+
+Le PDF de la commande vient d'être généré.
+
+Cordialement,
+Idée Gourmande`;
+
+    const url =
+        "https://mail.google.com/mail/?view=cm&fs=1" +
+        "&to=" + encodeURIComponent(destinataire) +
+        "&su=" + encodeURIComponent(sujet) +
+        "&body=" + encodeURIComponent(corps);
+
+    const fenetre =
+        window.open(
+            url,
+            "_blank",
+            "noopener,noreferrer"
+        );
+
+    if(!fenetre){
+        // Les bloqueurs de fenêtres peuvent empêcher window.open.
+        // Un lien direct reste disponible comme solution de secours.
+        window.location.href = url;
+    }
 
 }
 
