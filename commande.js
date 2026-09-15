@@ -1074,6 +1074,9 @@ function envoyerCommande(
     };
 
 
+    // Identifiant unique partagé par l'enregistrement, le PDF et l'e-mail.
+    commande.id = Date.now();
+
     console.log(
         "COMMANDE PREPAREE :",
         commande
@@ -1107,7 +1110,7 @@ function envoyerCommande(
     const commandeEnregistree = {
 
         id:
-            Date.now(),
+            commande.id,
 
         date:
             new Date()
@@ -1273,14 +1276,9 @@ async function envoyerCommandeAutomatiquement(commande, resultatPDF) {
         return;
     }
 
-    if (!EMAIL_API_URL || EMAIL_API_URL === "https://script.google.com/macros/s/AKfycbzKiedAF-Qjr6gisEk9f6VeeKRnEu_WqTXJyj2QqNVXqTNPhJUIEPkKcdRNheq6w6wY/exec") {
-        alert("La commande et le PDF sont prêts. Il faut encore configurer l'URL Google Apps Script dans js/commande.js pour activer l'envoi automatique.");
-        return;
-    }
-
     try {
         const pdfBase64 = await blobToBase64(resultatPDF.blob);
-        const numeroCommande = Date.now();
+        const numeroCommande = commande.id || Date.now();
 
         const payload = {
             to: destinataire,
