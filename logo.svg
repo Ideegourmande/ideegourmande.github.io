@@ -1,0 +1,51 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 500 500">
+
+<!-- Fond circulaire -->
+<circle cx="250" cy="250" r="230" fill="#f8f4eb" stroke="#b08d2c" stroke-width="12"/>
+
+<!-- Cercle intérieur -->
+<circle cx="250" cy="250" r="190" fill="none" stroke="#879b7b" stroke-width="4"/>
+
+
+<!-- Texte principal -->
+<text x="250" y="220"
+      text-anchor="middle"
+      font-family="Georgia, serif"
+      font-size="55"
+      font-weight="bold"
+      fill="#292929">
+IDÉE
+</text>
+
+<text x="250" y="285"
+      text-anchor="middle"
+      font-family="Georgia, serif"
+      font-size="65"
+      font-weight="bold"
+      fill="#879b7b">
+GOURMANDE
+</text>
+
+
+<!-- Petit symbole gastronomique -->
+<path d="M250 120 
+         C220 150 220 170 250 185
+         C280 170 280 150 250 120"
+      fill="#b08d2c"/>
+
+
+<!-- Texte Genève -->
+<text x="250" y="345"
+      text-anchor="middle"
+      font-family="Georgia, serif"
+      font-size="25"
+      fill="#292929">
+GENÈVE
+</text>
+
+
+<!-- Petits ornements -->
+<circle cx="130" cy="250" r="8" fill="#b08d2c"/>
+<circle cx="370" cy="250" r="8" fill="#b08d2c"/>
+
+</svg>
