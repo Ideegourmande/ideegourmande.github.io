@@ -1233,7 +1233,11 @@ function envoyerCommande(
         return;
     }
 
-    envoyerCommandeAutomatiquement(commande, resultatPDF);
+    const envoiOK =
+        await envoyerCommandeAutomatiquement(
+            commande,
+            resultatPDF
+        );
 
     // ==================================
     // NETTOYAGE PANIER
@@ -1243,90 +1247,131 @@ function envoyerCommande(
     window.panierCommande = panierCommande;
     afficherPanier();
 
+    if (envoiOK) {
+        alert(
+            "Commande enregistrée. Le PDF a été envoyé automatiquement au client par e-mail."
+        );
+    } else {
+        alert(
+            "Commande enregistrée et PDF généré, mais l'envoi automatique du mail a échoué."
+        );
+    }
+
 }
 
 // ======================================
 // ENVOI AUTOMATIQUE PAR GOOGLE APPS SCRIPT
 // ======================================
 
-// Après déploiement du fichier Google Apps Script fourni dans
-// google-apps-script/Code.gs, coller ici l'URL de l'application Web.
 const EMAIL_API_URL =
     "https://script.google.com/macros/s/AKfycbzKiedAF-Qjr6gisEk9f6VeeKRnEu_WqTXJyj2QqNVXqTNPhJUIEPkKcdRNheq6w6wY/exec";
 
-function blobToBase64(blob) {
-    return new Promise((resolve, reject) => {
-        const reader = new FileReader();
-        reader.onloadend = () => {
-            const result = String(reader.result || "");
-            const comma = result.indexOf(",");
-            resolve(comma >= 0 ? result.slice(comma + 1) : result);
-        };
-        reader.onerror = reject;
-        reader.readAsDataURL(blob);
-    });
+// Convertit le Blob PDF en Base64 sans passer par une data-URI.
+// Cette méthode évite les problèmes de décodage liés aux formulaires HTML.
+async function blobToBase64(blob) {
+    if (!blob) throw new Error("Blob PDF manquant.");
+
+    const buffer = await blob.arrayBuffer();
+    const bytes = new Uint8Array(buffer);
+
+    let binary = "";
+    const tailleBloc = 0x8000;
+
+    for (let i = 0; i < bytes.length; i += tailleBloc) {
+        binary += String.fromCharCode(
+            ...bytes.subarray(i, Math.min(i + tailleBloc, bytes.length))
+        );
+    }
+
+    return btoa(binary);
 }
 
 async function envoyerCommandeAutomatiquement(commande, resultatPDF) {
 
-    const destinataire = String(commande?.client?.email || "").trim();
+    const destinataire =
+        String(commande?.client?.email || "").trim();
 
     if (!destinataire) {
-        alert("La commande a été enregistrée, mais aucune adresse e-mail client n'est indiquée.");
-        return;
+        alert(
+            "La commande a été enregistrée, mais aucune adresse e-mail client n'est indiquée."
+        );
+        return false;
+    }
+
+    if (!EMAIL_API_URL) {
+        throw new Error("URL Google Apps Script absente.");
     }
 
     try {
-        const pdfBase64 = await blobToBase64(resultatPDF.blob);
-        const numeroCommande = commande.id || Date.now();
+
+        const pdfBase64 =
+            await blobToBase64(resultatPDF.blob);
+
+        if (!pdfBase64) {
+            throw new Error("Le PDF est vide.");
+        }
+
+        const numeroCommande =
+            commande.id || Date.now();
 
         const payload = {
             to: destinataire,
-            subject: `Commande Idée Gourmande n°${numeroCommande}`,
-            client: commande.client,
-            produits: commande.produits,
-            total: commande.total,
+
+            subject:
+                `Commande Idée Gourmande n°${numeroCommande}`,
+
+            client:
+                commande.client || {},
+
+            produits:
+                commande.produits || [],
+
+            total:
+                commande.total || 0,
+
             numeroCommande,
+
             pdfBase64,
-            pdfFilename: resultatPDF.filename
+
+            pdfFilename:
+                resultatPDF.filename ||
+                `Commande_${numeroCommande}.pdf`
         };
 
-        // Formulaire POST vers une iframe : pas de problème CORS et aucun
-        // clic Gmail n'est nécessaire.
-        const iframe = document.createElement("iframe");
-        iframe.name = "emailSubmitFrame" + Date.now();
-        iframe.style.display = "none";
-        document.body.appendChild(iframe);
+        /*
+         * Envoi JSON en text/plain :
+         * text/plain est une requête CORS "simple", ce qui permet au
+         * navigateur d'envoyer la requête à Google Apps Script sans
+         * bloquer l'envoi à cause du CORS.
+         *
+         * Le serveur Apps Script lit e.postData.contents.
+         */
+        await fetch(
+            EMAIL_API_URL,
+            {
+                method: "POST",
+                mode: "no-cors",
+                headers: {
+                    "Content-Type":
+                        "text/plain;charset=UTF-8"
+                },
+                body:
+                    JSON.stringify(payload)
+            }
+        );
 
-        const form = document.createElement("form");
-        form.method = "POST";
-        form.action = EMAIL_API_URL;
-        form.target = iframe.name;
-        form.style.display = "none";
-
-        const input = document.createElement("input");
-        input.type = "hidden";
-        input.name = "payload";
-        input.value = JSON.stringify(payload);
-        form.appendChild(input);
-        document.body.appendChild(form);
-
-        form.submit();
-
-        setTimeout(() => {
-            form.remove();
-            iframe.remove();
-        }, 10000);
-
-        alert("Commande enregistrée et e-mail envoyé automatiquement avec le PDF en pièce jointe.");
+        return true;
 
     } catch (erreur) {
-        console.error("Erreur envoi automatique :", erreur);
-        alert("La commande a été enregistrée et le PDF généré, mais l'envoi automatique a échoué. Vérifiez la configuration Google Apps Script.");
+
+        console.error(
+            "Erreur envoi automatique :",
+            erreur
+        );
+
+        return false;
     }
-
 }
-
 
 // ======================================
 // EXPORT GLOBAL
