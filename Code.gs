@@ -1,29 +1,30 @@
 /**
  * Idée Gourmande - Envoi automatique des commandes
  *
- * Déployer comme Application Web avec :
+ * Déployer comme Application Web :
  * - Exécuter en tant que : Moi
  * - Qui a accès : Tout le monde
  *
- * Le compte propriétaire doit être :
+ * Le projet doit appartenir au compte :
  * ideesgourmandesge@gmail.com
  */
 
-const EXPEDITEUR = 'ideesgourmandesge@gmail.com';
 const NOM_EXPEDITEUR = 'Idée Gourmande';
+const EXPEDITEUR = 'ideesgourmandesge@gmail.com';
 
 function doPost(e) {
   try {
     let raw = '';
 
-    // Nouvelle méthode : JSON brut envoyé en text/plain.
-    if (e && e.postData && e.postData.contents) {
-      raw = String(e.postData.contents || '');
+    // Méthode principale : formulaire URL-encoded.
+    // Le navigateur envoie le JSON complet dans e.parameter.payload.
+    if (e && e.parameter && e.parameter.payload) {
+      raw = String(e.parameter.payload);
     }
 
-    // Compatibilité avec l'ancienne version du site.
-    if (!raw && e && e.parameter && e.parameter.payload) {
-      raw = String(e.parameter.payload || '');
+    // Compatibilité avec un éventuel ancien client JSON brut.
+    if (!raw && e && e.postData && e.postData.contents) {
+      raw = String(e.postData.contents);
     }
 
     if (!raw) {
@@ -38,175 +39,138 @@ function doPost(e) {
       throw new Error('Destinataire manquant.');
     }
 
+    if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(to)) {
+      throw new Error('Adresse e-mail destinataire invalide.');
+    }
+
+    if (!data.pdfBase64) {
+      throw new Error('PDF absent du message reçu.');
+    }
+
+    const base64 = String(data.pdfBase64)
+      .replace(/^data:application\/pdf;base64,/, '')
+      .replace(/\s/g, '');
+
+    if (base64.length < 100) {
+      throw new Error('Le contenu PDF reçu est vide ou trop court.');
+    }
+
+    const bytes = Utilities.base64Decode(base64);
+
+    if (!bytes || bytes.length < 100) {
+      throw new Error('Le PDF décodé est vide ou invalide.');
+    }
+
+    const filename =
+      String(
+        data.pdfFilename ||
+        ('Commande_' + (data.numeroCommande || Date.now()) + '.pdf')
+      );
+
+    const pdfBlob = Utilities.newBlob(
+      bytes,
+      'application/pdf',
+      filename
+    );
+
+    const client = data.client || {};
+    const produits = Array.isArray(data.produits) ? data.produits : [];
+    const total = Number(data.total || 0).toFixed(2);
+
+    const lignes = produits.map(function(article) {
+      const q =
+        Number(article.quantite || 1) > 1
+          ? ' x' + article.quantite
+          : '';
+
+      const poids =
+        article.poids
+          ? ' (' + article.poids + ' g)'
+          : '';
+
+      return (
+        '- ' +
+        (article.nom || 'Produit') +
+        q +
+        poids +
+        ' : ' +
+        Number(article.prix || 0).toFixed(2) +
+        ' CHF'
+      );
+    }).join('\n');
+
     const subject =
       String(
         data.subject ||
-        'Commande Idée Gourmande'
+        ('Commande Idée Gourmande n°' + (data.numeroCommande || ''))
       );
-
-    const client =
-      data.client || {};
-
-    const produits =
-      Array.isArray(data.produits)
-        ? data.produits
-        : [];
-
-    const total =
-      Number(data.total || 0).toFixed(2);
-
-    const lignes =
-      produits
-        .map(function(article) {
-
-          const q =
-            Number(article.quantite || 1) > 1
-              ? ' x' + article.quantite
-              : '';
-
-          const poids =
-            article.poids
-              ? ' (' + article.poids + ' g)'
-              : '';
-
-          return (
-            '- ' +
-            (article.nom || 'Produit') +
-            q +
-            poids +
-            ' : ' +
-            Number(article.prix || 0).toFixed(2) +
-            ' CHF'
-          );
-        })
-        .join('\n');
 
     const body = [
       'Bonjour,',
       '',
       'Voici votre commande Idée Gourmande.',
       '',
-      'N° commande : ' +
-        (data.numeroCommande || ''),
+      'N° commande : ' + (data.numeroCommande || ''),
       '',
-      'Client : ' +
-        (client.prenom || '') +
-        ' ' +
-        (client.nom || ''),
-      'Téléphone : ' +
-        (client.telephone || ''),
-      'E-mail : ' +
-        to,
-      'Adresse : ' +
-        (client.adresse || ''),
+      'Client : ' + (client.prenom || '') + ' ' + (client.nom || ''),
+      'Téléphone : ' + (client.telephone || ''),
+      'E-mail : ' + to,
+      'Adresse : ' + (client.adresse || ''),
       '',
       'Produits commandés :',
       lignes,
       '',
-      'Total : ' +
-        total +
-        ' CHF',
+      'Total : ' + total + ' CHF',
       '',
-      'Commentaire : ' +
-        (client.commentaire || 'Aucun'),
+      'Commentaire : ' + (client.commentaire || 'Aucun'),
       '',
       'Votre bon de commande PDF est joint à ce message.',
       '',
       'Idée Gourmande'
     ].join('\n');
 
-    const attachments = [];
-
-    if (data.pdfBase64) {
-
-      const base64 =
-        String(data.pdfBase64)
-          .replace(/^data:application\/pdf;base64,/, '')
-          .replace(/\s/g, '');
-
-      if (!base64) {
-        throw new Error('Le contenu PDF est vide.');
-      }
-
-      const bytes =
-        Utilities.base64Decode(base64);
-
-      const blob =
-        Utilities.newBlob(
-          bytes,
-          'application/pdf',
-          String(
-            data.pdfFilename ||
-            (
-              'Commande_' +
-              (data.numeroCommande || Date.now()) +
-              '.pdf'
-            )
-          )
-        );
-
-      attachments.push(blob);
-    } else {
-      throw new Error('PDF absent du message reçu par Google Apps Script.');
-    }
-
     GmailApp.sendEmail(
       to,
       subject,
       body,
       {
-        attachments: attachments,
+        attachments: [pdfBlob],
         name: NOM_EXPEDITEUR,
         replyTo: EXPEDITEUR
       }
     );
 
     console.log(
-      'Commande envoyée à ' +
-      to +
-      ' avec ' +
-      attachments.length +
-      ' pièce jointe(s).'
+      'OK : mail envoyé à ' + to +
+      ' avec le PDF ' + filename +
+      ' (' + bytes.length + ' octets).'
     );
 
     return ContentService
-      .createTextOutput(
-        JSON.stringify({
-          ok: true,
-          attachment: attachments.length
-        })
-      )
-      .setMimeType(
-        ContentService.MimeType.JSON
-      );
+      .createTextOutput(JSON.stringify({
+        ok: true,
+        attachment: true,
+        bytes: bytes.length,
+        filename: filename
+      }))
+      .setMimeType(ContentService.MimeType.JSON);
 
   } catch (error) {
-
-    console.error(
-      'Erreur doPost :',
-      error
-    );
+    console.error('ERREUR doPost : ' + error);
 
     return ContentService
-      .createTextOutput(
-        JSON.stringify({
-          ok: false,
-          error: String(error)
-        })
-      )
-      .setMimeType(
-        ContentService.MimeType.JSON
-      );
+      .createTextOutput(JSON.stringify({
+        ok: false,
+        error: String(error)
+      }))
+      .setMimeType(ContentService.MimeType.JSON);
   }
 }
 
 function doGet() {
-
   return ContentService
     .createTextOutput(
       'Idée Gourmande - service e-mail actif'
     )
-    .setMimeType(
-      ContentService.MimeType.TEXT
-    );
+    .setMimeType(ContentService.MimeType.TEXT);
 }

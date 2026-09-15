@@ -1266,8 +1266,6 @@ function envoyerCommande(
 const EMAIL_API_URL =
     "https://script.google.com/macros/s/AKfycbzKiedAF-Qjr6gisEk9f6VeeKRnEu_WqTXJyj2QqNVXqTNPhJUIEPkKcdRNheq6w6wY/exec";
 
-// Convertit le Blob PDF en Base64 sans passer par une data-URI.
-// Cette méthode évite les problèmes de décodage liés aux formulaires HTML.
 async function blobToBase64(blob) {
     if (!blob) throw new Error("Blob PDF manquant.");
 
@@ -1287,28 +1285,20 @@ async function blobToBase64(blob) {
 }
 
 async function envoyerCommandeAutomatiquement(commande, resultatPDF) {
-
     const destinataire =
         String(commande?.client?.email || "").trim();
 
     if (!destinataire) {
-        alert(
-            "La commande a été enregistrée, mais aucune adresse e-mail client n'est indiquée."
-        );
+        console.error("Adresse e-mail client absente.");
         return false;
     }
 
-    if (!EMAIL_API_URL) {
-        throw new Error("URL Google Apps Script absente.");
-    }
-
     try {
-
         const pdfBase64 =
             await blobToBase64(resultatPDF.blob);
 
-        if (!pdfBase64) {
-            throw new Error("Le PDF est vide.");
+        if (!pdfBase64 || pdfBase64.length < 100) {
+            throw new Error("Le contenu PDF est vide ou invalide.");
         }
 
         const numeroCommande =
@@ -1316,59 +1306,58 @@ async function envoyerCommandeAutomatiquement(commande, resultatPDF) {
 
         const payload = {
             to: destinataire,
-
-            subject:
-                `Commande Idée Gourmande n°${numeroCommande}`,
-
-            client:
-                commande.client || {},
-
-            produits:
-                commande.produits || [],
-
-            total:
-                commande.total || 0,
-
+            subject: `Commande Idée Gourmande n°${numeroCommande}`,
+            client: commande.client || {},
+            produits: commande.produits || [],
+            total: commande.total || 0,
             numeroCommande,
-
             pdfBase64,
-
             pdfFilename:
                 resultatPDF.filename ||
                 `Commande_${numeroCommande}.pdf`
         };
 
         /*
-         * Envoi JSON en text/plain :
-         * text/plain est une requête CORS "simple", ce qui permet au
-         * navigateur d'envoyer la requête à Google Apps Script sans
-         * bloquer l'envoi à cause du CORS.
-         *
-         * Le serveur Apps Script lit e.postData.contents.
+         * IMPORTANT :
+         * application/x-www-form-urlencoded est une requête CORS
+         * "simple". Le payload complet est placé dans le paramètre
+         * "payload", que Google Apps Script lit via e.parameter.
+         * Cela évite les problèmes de redirection/CORS rencontrés
+         * avec les POST JSON vers Apps Script.
          */
-        await fetch(
+        const formulaire = new URLSearchParams();
+        formulaire.set("payload", JSON.stringify(payload));
+
+        const reponse = await fetch(
             EMAIL_API_URL,
             {
                 method: "POST",
                 mode: "no-cors",
                 headers: {
                     "Content-Type":
-                        "text/plain;charset=UTF-8"
+                        "application/x-www-form-urlencoded;charset=UTF-8"
                 },
-                body:
-                    JSON.stringify(payload)
+                body: formulaire.toString()
             }
+        );
+
+        /*
+         * En mode no-cors, le navigateur ne permet pas de lire
+         * la réponse. Le serveur reçoit néanmoins le payload.
+         */
+        console.log(
+            "Demande d'envoi transmise à Google Apps Script.",
+            "Taille PDF base64 :",
+            pdfBase64.length
         );
 
         return true;
 
     } catch (erreur) {
-
         console.error(
             "Erreur envoi automatique :",
             erreur
         );
-
         return false;
     }
 }
