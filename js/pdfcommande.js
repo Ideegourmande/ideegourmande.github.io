@@ -982,20 +982,6 @@ async function genererPDFCommande(commande) {
 
     }
 
-
-    // ==========================================
-    // CONFIRMATION
-    // ==========================================
-
-    if (envoiReussi) {
-
-        alert(
-            "Commande envoyée avec succès !\n\n" +
-            "Le PDF a été joint automatiquement au mail."
-        );
-
-    }
-
 }
 
 
