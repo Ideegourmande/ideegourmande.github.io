@@ -5,7 +5,7 @@ console.log("COMMANDE.JS CHARGE");
 // IDEE GOURMANDE
 // commande.js
 // Gestion complète du panier
-// Version 2.1.0
+// Version 3.0.0
 // ======================================
 
 
@@ -101,7 +101,7 @@ document.addEventListener(
             );
 
 
-        if(boutonVider){
+        if (boutonVider) {
 
             boutonVider.addEventListener(
                 "click",
@@ -117,7 +117,7 @@ document.addEventListener(
             );
 
 
-        if(formulaire){
+        if (formulaire) {
 
             formulaire.addEventListener(
                 "submit",
@@ -127,10 +127,10 @@ document.addEventListener(
         }
 
 
-        if(
+        if (
             typeof initialiserNomTwint ===
             "function"
-        ){
+        ) {
 
             initialiserNomTwint();
 
@@ -144,7 +144,7 @@ document.addEventListener(
 // BOUTONS AJOUT PANIER
 // ======================================
 
-function initialiserBoutonsPanier(){
+function initialiserBoutonsPanier() {
 
     const boutons =
         document.querySelectorAll(
@@ -184,13 +184,13 @@ function initialiserBoutonsPanier(){
 
 function ajouterAuPanier(
     reference
-){
+) {
 
     const produit =
         produits[reference];
 
 
-    if(!produit){
+    if (!produit) {
 
         console.error(
             "Produit inconnu",
@@ -230,7 +230,7 @@ function ajouterAuPanier(
     };
 
 
-    switch(reference){
+    switch (reference) {
 
         case "foie-gras":
 
@@ -278,9 +278,9 @@ function ajouterAuPanier(
                 lirePoidsSaumon();
 
 
-            if(
+            if (
                 article.poids < 100
-            ){
+            ) {
 
                 alert(
                     "Veuillez choisir un poids pour le saumon."
@@ -295,12 +295,12 @@ function ajouterAuPanier(
     }
 
 
-    if(
+    if (
         reference !==
         "saumon-fume"
         &&
         article.quantite <= 0
-    ){
+    ) {
 
         alert(
             "Quantité invalide"
@@ -337,7 +337,7 @@ function ajouterAuPanier(
 
 function ajouterOuFusionner(
     article
-){
+) {
 
     const existant =
         panierCommande.find(
@@ -368,15 +368,12 @@ function ajouterOuFusionner(
         );
 
 
-    if(existant){
+    if (existant) {
 
-        if(
+        if (
             article.reference ===
             "saumon-fume"
-        ){
-
-            // Pour le saumon, chaque ajout
-            // correspond au poids sélectionné.
+        ) {
 
             existant.poids =
                 (
@@ -392,7 +389,7 @@ function ajouterOuFusionner(
                 );
 
         }
-        else{
+        else {
 
             existant.quantite +=
                 article.quantite;
@@ -406,7 +403,7 @@ function ajouterOuFusionner(
             );
 
     }
-    else{
+    else {
 
         panierCommande.push(
             article
@@ -423,7 +420,7 @@ function ajouterOuFusionner(
 
 function calculerPrixArticle(
     article
-){
+) {
 
     const produit =
         produits[
@@ -431,19 +428,17 @@ function calculerPrixArticle(
         ];
 
 
-    if(!produit){
+    if (!produit) {
 
         return 0;
 
     }
 
 
-    // Saumon : prix pour 100 g
-
-    if(
+    if (
         article.reference ===
         "saumon-fume"
-    ){
+    ) {
 
         return Number(
 
@@ -462,9 +457,6 @@ function calculerPrixArticle(
 
     }
 
-
-    // Autres produits :
-    // prix par unité
 
     return Number(
 
@@ -488,9 +480,9 @@ function calculerPrixArticle(
 
 function getRecette(
     carte
-){
+) {
 
-    if(!carte){
+    if (!carte) {
 
         return "";
 
@@ -518,7 +510,7 @@ function getRecette(
 
 function lireQuantite(
     id
-){
+) {
 
     const champ =
         document.getElementById(
@@ -526,7 +518,7 @@ function lireQuantite(
         );
 
 
-    if(!champ){
+    if (!champ) {
 
         return 0;
 
@@ -544,7 +536,7 @@ function lireQuantite(
 // LECTURE POIDS SAUMON
 // ======================================
 
-function lirePoidsSaumon(){
+function lirePoidsSaumon() {
 
     const champ =
         document.getElementById(
@@ -552,7 +544,7 @@ function lirePoidsSaumon(){
         );
 
 
-    if(!champ){
+    if (!champ) {
 
         return 0;
 
@@ -570,7 +562,7 @@ function lirePoidsSaumon(){
 // AFFICHAGE PANIER
 // ======================================
 
-function afficherPanier(){
+function afficherPanier() {
 
     const zone =
         document.getElementById(
@@ -584,20 +576,20 @@ function afficherPanier(){
         );
 
 
-    if(
+    if (
         !zone
         ||
         !totalZone
-    ){
+    ) {
 
         return;
 
     }
 
 
-    if(
+    if (
         panierCommande.length === 0
-    ){
+    ) {
 
         zone.innerHTML =
             "<p>Aucun produit sélectionné.</p>";
@@ -625,18 +617,18 @@ function afficherPanier(){
 
 
     panierCommande.forEach(
-        (article,index) => {
+        (article, index) => {
 
 
-            if(
+            if (
                 article.reference ===
                 "saumon-fume"
-            ){
+            ) {
 
                 compteur++;
 
             }
-            else{
+            else {
 
                 compteur +=
                     Number(
@@ -656,39 +648,27 @@ function afficherPanier(){
 
             <div class="ligne-produit">
 
-
                 <div class="infos-produit">
 
-
                     <strong>
-
                         ${article.nom}
-
                     </strong>
-
 
                     <br>
 
-
                     ${afficherDetailsArticle(article)}
 
-
                     <div class="gestion-quantite">
-
 
                         <button
                             type="button"
                             class="btn-quantite moins"
                             onclick="modifierQuantite(${index},-1)"
                         >
-
                             −
-
                         </button>
 
-
                         <span>
-
                             ${
                                 article.reference ===
                                 "saumon-fume"
@@ -701,54 +681,38 @@ function afficherPanier(){
 
                                 article.quantite
                             }
-
                         </span>
-
 
                         <button
                             type="button"
                             class="btn-quantite plus"
                             onclick="modifierQuantite(${index},1)"
                         >
-
                             +
-
                         </button>
-
 
                     </div>
 
-
                 </div>
-
 
                 <div class="prix-produit">
 
-
                     <strong>
-
                         ${article.prix.toFixed(2)}
                         CHF
-
                     </strong>
 
-
                     <br><br>
-
 
                     <button
                         type="button"
                         class="btn-supprimer"
                         onclick="supprimerArticle(${index})"
                     >
-
                         Supprimer
-
                     </button>
 
-
                 </div>
-
 
             </div>
 
@@ -781,12 +745,12 @@ function afficherPanier(){
 
 function afficherDetailsArticle(
     article
-){
+) {
 
     let texte = "";
 
 
-    if(article.recette){
+    if (article.recette) {
 
         texte +=
             "Recette : "
@@ -798,12 +762,12 @@ function afficherDetailsArticle(
     }
 
 
-    if(
+    if (
         article.reference ===
         "saumon-fume"
         &&
         article.poids
-    ){
+    ) {
 
         texte +=
             article.poids
@@ -824,7 +788,7 @@ function afficherDetailsArticle(
 
 function mettreAJourTitrePanier(
     nombre
-){
+) {
 
     const titre =
         document.getElementById(
@@ -832,7 +796,7 @@ function mettreAJourTitrePanier(
         );
 
 
-    if(!titre){
+    if (!titre) {
 
         return;
 
@@ -866,23 +830,23 @@ function mettreAJourTitrePanier(
 function modifierQuantite(
     index,
     variation
-){
+) {
 
     const article =
         panierCommande[index];
 
 
-    if(!article){
+    if (!article) {
 
         return;
 
     }
 
 
-    if(
+    if (
         article.reference ===
         "saumon-fume"
-    ){
+    ) {
 
         article.poids =
             (
@@ -897,9 +861,9 @@ function modifierQuantite(
             );
 
 
-        if(
+        if (
             article.poids < 100
-        ){
+        ) {
 
             supprimerArticle(
                 index
@@ -910,15 +874,15 @@ function modifierQuantite(
         }
 
     }
-    else{
+    else {
 
         article.quantite +=
             variation;
 
 
-        if(
+        if (
             article.quantite <= 0
-        ){
+        ) {
 
             supprimerArticle(
                 index
@@ -952,7 +916,7 @@ function modifierQuantite(
 
 function supprimerArticle(
     index
-){
+) {
 
     panierCommande.splice(
         index,
@@ -973,7 +937,7 @@ function supprimerArticle(
 // VIDER PANIER
 // ======================================
 
-function viderPanier(){
+function viderPanier() {
 
     panierCommande.length = 0;
 
@@ -991,16 +955,16 @@ function viderPanier(){
 // ENVOI COMMANDE
 // ======================================
 
-function envoyerCommande(
+async function envoyerCommande(
     e
-){
+) {
 
     e.preventDefault();
 
 
-    if(
+    if (
         panierCommande.length === 0
-    ){
+    ) {
 
         alert(
             "Votre panier est vide."
@@ -1021,6 +985,12 @@ function envoyerCommande(
 
 
     const commande = {
+
+        // Numéro unique créé AVANT
+        // la génération du PDF.
+        id:
+            Date.now(),
+
 
         client: {
 
@@ -1084,10 +1054,10 @@ function envoyerCommande(
     // ENREGISTREMENT BASE
     // ==================================
 
-    if(
+    if (
         typeof ajouterCommande !==
         "function"
-    ){
+    ) {
 
         console.error(
             "ajouterCommande() est introuvable. database.js doit être chargé avant commande.js."
@@ -1107,7 +1077,7 @@ function envoyerCommande(
     const commandeEnregistree = {
 
         id:
-            Date.now(),
+            commande.id,
 
         date:
             new Date()
@@ -1134,9 +1104,6 @@ function envoyerCommande(
         commentaire:
             commande.client.commentaire,
 
-
-        // Texte pour l'affichage
-        // des anciennes interfaces.
 
         produits:
             commande.produits
@@ -1176,9 +1143,6 @@ function envoyerCommande(
             .join("\n"),
 
 
-        // Structure complète utilisée
-        // par database.js.
-
         produitsListe:
             commande.produits,
 
@@ -1204,7 +1168,7 @@ function envoyerCommande(
         );
 
 
-    if(!resultat){
+    if (!resultat) {
 
         alert(
             "La commande n'a pas pu être enregistrée."
@@ -1216,30 +1180,63 @@ function envoyerCommande(
 
 
     // ==================================
-    // PDF
+    // PDF + ENVOI AUTOMATIQUE
     // ==================================
 
-    if(
-        typeof genererPDFCommande ===
+    if (
+        typeof genererPDFCommande !==
         "function"
-    ){
+    ) {
 
-        genererPDFCommande(
-            commande
+        console.error(
+            "genererPDFCommande() est introuvable."
         );
+
+
+        alert(
+            "La commande a été enregistrée, mais le générateur PDF est introuvable."
+        );
+
+        return;
 
     }
 
 
-    // ==================================
-    // OUVERTURE GMAIL
-    // ==================================
-    // Le site étant hébergé sur GitHub Pages, JavaScript ne peut pas
-    // envoyer directement un email au nom de ideesgourmandesge@gmail.com.
-    // On ouvre donc Gmail avec le destinataire indiqué sur le bulletin
-    // de commande et le message prérempli.
+    try {
 
-    ouvrirGmailPourCommande(commande);
+        console.log(
+            "Génération et envoi automatique du PDF..."
+        );
+
+
+        await genererPDFCommande(
+            commande
+        );
+
+
+        console.log(
+            "PDF traité et envoi terminé."
+        );
+
+
+    }
+    catch (error) {
+
+        console.error(
+            "Erreur pendant la génération/envoi du PDF :",
+            error
+        );
+
+
+        alert(
+            "La commande a été enregistrée, mais une erreur est survenue lors de la génération ou de l'envoi du PDF.\n\n" +
+            error.message
+        );
+
+
+        return;
+
+    }
 
 
     // ==================================
@@ -1257,98 +1254,15 @@ function envoyerCommande(
     afficherPanier();
 
 
+    // ==================================
+    // CONFIRMATION
+    // ==================================
+
     alert(
-        "Votre commande a été générée."
+        "Votre commande a été envoyée avec succès.\n\n" +
+        "Le PDF a été transmis automatiquement avec le mail.\n\n" +
+        "Cette page reste ouverte."
     );
-
-}
-
-
-// ======================================
-// GMAIL - EMAIL DE COMMANDE
-// ======================================
-
-function ouvrirGmailPourCommande(commande){
-
-    const destinataire =
-        String(commande?.client?.email || "")
-            .trim();
-
-    if(!destinataire){
-        alert(
-            "La commande est enregistrée et le PDF a été généré, mais aucune adresse email client n'est indiquée dans le bulletin de commande."
-        );
-        return;
-    }
-
-    const numeroCommande =
-        new Date().getTime();
-
-    const nomClient =
-        (commande.client?.prenom || "") +
-        " " +
-        (commande.client?.nom || "");
-
-    const lignesProduits =
-        (commande.produits || [])
-            .map(article => {
-                const quantite =
-                    article.quantite > 1
-                        ? ` x${article.quantite}`
-                        : "";
-
-                const poids =
-                    article.poids
-                        ? ` (${article.poids} g)`
-                        : "";
-
-                return `- ${article.nom}${quantite}${poids} : ${Number(article.prix || 0).toFixed(2)} CHF`;
-            })
-            .join("\n");
-
-    const sujet =
-        `Commande Idée Gourmande n°${numeroCommande}`;
-
-    const corps =
-`Bonjour,
-
-Voici la commande Idée Gourmande.
-
-Client : ${nomClient.trim()}
-Téléphone : ${commande.client?.telephone || ""}
-Email : ${destinataire}
-Adresse : ${commande.client?.adresse || ""}
-
-Produits commandés :
-${lignesProduits}
-
-Total : ${Number(commande.total || 0).toFixed(2)} CHF
-
-Commentaire : ${commande.client?.commentaire || "Aucun"}
-
-Le PDF de la commande vient d'être généré.
-
-Cordialement,
-Idée Gourmande`;
-
-    const url =
-        "https://mail.google.com/mail/?view=cm&fs=1" +
-        "&to=" + encodeURIComponent(destinataire) +
-        "&su=" + encodeURIComponent(sujet) +
-        "&body=" + encodeURIComponent(corps);
-
-    const fenetre =
-        window.open(
-            url,
-            "_blank",
-            "noopener,noreferrer"
-        );
-
-    if(!fenetre){
-        // Les bloqueurs de fenêtres peuvent empêcher window.open.
-        // Un lien direct reste disponible comme solution de secours.
-        window.location.href = url;
-    }
 
 }
 
@@ -1378,5 +1292,5 @@ window.envoyerCommande =
 // ======================================
 
 console.log(
-    "COMMANDE.JS 2.1.0 CHARGE"
+    "COMMANDE.JS 3.0.0 CHARGE"
 );
