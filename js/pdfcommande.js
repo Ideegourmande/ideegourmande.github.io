@@ -3,9 +3,23 @@ console.log("PDFCOMMANDE.JS CHARGE");
 // ==========================================
 // IDÉE GOURMANDE
 // Génération PDF professionnel
+// + Envoi automatique par Google Apps Script
 // ==========================================
 
-function genererPDFCommande(commande) {
+
+// ==========================================
+// URL GOOGLE APPS SCRIPT
+// ==========================================
+
+const URL_GOOGLE_SCRIPT =
+    "https://script.google.com/macros/s/AKfycbzKiedAF-Qjr6gisEk9f6VeeKRnEu_WqTXJyj2QqNVXqTNPhJUIEPkKcdRNheq6w6wY/exec";
+
+
+// ==========================================
+// GÉNÉRATION PDF
+// ==========================================
+
+async function genererPDFCommande(commande) {
 
     // ==========================================
     // VÉRIFICATION jsPDF
@@ -15,7 +29,12 @@ function genererPDFCommande(commande) {
 
         console.error("jsPDF non chargé");
 
+        alert(
+            "Erreur : la bibliothèque PDF n'est pas chargée."
+        );
+
         return;
+
     }
 
     const { jsPDF } = window.jspdf;
@@ -397,8 +416,6 @@ function genererPDFCommande(commande) {
             article.reference === "saumon-fume"
         ) {
 
-            // Saumon :
-            // poids directement saisi
             poids =
                 article.poids
                 ? article.poids + " g"
@@ -409,8 +426,6 @@ function genererPDFCommande(commande) {
             article.reference === "foie-gras"
         ) {
 
-            // Foie gras :
-            // 200 g par article
             poids =
                 (
                     Number(article.quantite || 1)
@@ -423,8 +438,6 @@ function genererPDFCommande(commande) {
             article.reference === "viande-sechee"
         ) {
 
-            // Viande séchée :
-            // 500 g par portion
             poids =
                 (
                     Number(article.quantite || 1)
@@ -437,8 +450,6 @@ function genererPDFCommande(commande) {
             article.reference === "lard-sec"
         ) {
 
-            // Lard sec :
-            // 500 g par portion
             poids =
                 (
                     Number(article.quantite || 1)
@@ -451,8 +462,6 @@ function genererPDFCommande(commande) {
             article.reference === "magret"
         ) {
 
-            // Magret :
-            // vendu à la pièce
             poids = "-";
 
         }
@@ -739,16 +748,254 @@ function genererPDFCommande(commande) {
 
 
     // ==========================================
-    // SAUVEGARDE
+    // CONVERSION DU PDF EN BASE64
     // ==========================================
 
-    doc.save(fichier);
+    console.log(
+        "Préparation du PDF pour Google Apps Script..."
+    );
+
+
+    let dataUri;
+
+    try {
+
+        dataUri =
+            doc.output("datauristring");
+
+    }
+    catch (error) {
+
+        console.error(
+            "Erreur conversion PDF :",
+            error
+        );
+
+        alert(
+            "Impossible de préparer le PDF pour l'envoi."
+        );
+
+        return;
+
+    }
+
+
+    // Extraction du Base64
+    const pdfBase64 =
+        dataUri.split(",")[1];
+
+
+    if (!pdfBase64) {
+
+        console.error(
+            "Base64 PDF absent"
+        );
+
+        alert(
+            "Erreur : le contenu du PDF est vide."
+        );
+
+        return;
+
+    }
 
 
     console.log(
-        "PDF généré :",
-        fichier
+        "PDF Base64 préparé :",
+        pdfBase64.length,
+        "caractères"
     );
+
+
+    // ==========================================
+    // DONNÉES ENVOYÉES À GOOGLE APPS SCRIPT
+    // ==========================================
+
+    const payload = {
+
+        to:
+            commande.client?.email || "",
+
+        numeroCommande:
+            numeroCommande,
+
+        client: {
+
+            prenom:
+                commande.client?.prenom || "",
+
+            nom:
+                commande.client?.nom || "",
+
+            telephone:
+                commande.client?.telephone || "",
+
+            adresse:
+                commande.client?.adresse || "",
+
+            commentaire:
+                commande.client?.commentaire || ""
+
+        },
+
+        produits:
+            produits,
+
+        total:
+            total,
+
+        pdfBase64:
+            pdfBase64,
+
+        pdfFilename:
+            fichier,
+
+        subject:
+            "Commande Idée Gourmande n°" +
+            numeroCommande
+
+    };
+
+
+    // ==========================================
+    // ENVOI À GOOGLE APPS SCRIPT
+    // ==========================================
+
+    console.log(
+        "Envoi du PDF à Google Apps Script..."
+    );
+
+
+    let envoiReussi = false;
+
+
+    try {
+
+        const response =
+            await fetch(
+                URL_GOOGLE_SCRIPT,
+                {
+                    method: "POST",
+
+                    headers: {
+                        "Content-Type":
+                            "application/x-www-form-urlencoded"
+                    },
+
+                    body:
+                        new URLSearchParams({
+                            payload:
+                                JSON.stringify(payload)
+                        })
+                }
+            );
+
+
+        const texte =
+            await response.text();
+
+
+        console.log(
+            "Réponse Google Apps Script :",
+            texte
+        );
+
+
+        let resultat;
+
+
+        try {
+
+            resultat =
+                JSON.parse(texte);
+
+        }
+        catch (e) {
+
+            throw new Error(
+                "Réponse Google Apps Script invalide : " +
+                texte
+            );
+
+        }
+
+
+        if (
+            resultat &&
+            resultat.ok === true
+        ) {
+
+            envoiReussi = true;
+
+            console.log(
+                "✅ Mail envoyé avec PDF joint :",
+                resultat.filename
+            );
+
+        }
+        else {
+
+            throw new Error(
+                resultat?.error ||
+                "Google Apps Script a refusé l'envoi."
+            );
+
+        }
+
+    }
+    catch (error) {
+
+        console.error(
+            "❌ ERREUR ENVOI GOOGLE APPS SCRIPT :",
+            error
+        );
+
+        alert(
+            "Le PDF a été généré, mais l'envoi automatique du mail a échoué.\n\n" +
+            "Erreur : " +
+            error.message
+        );
+
+    }
+
+
+    // ==========================================
+    // TÉLÉCHARGEMENT LOCAL DU PDF
+    // ==========================================
+
+    try {
+
+        doc.save(fichier);
+
+        console.log(
+            "PDF téléchargé :",
+            fichier
+        );
+
+    }
+    catch (error) {
+
+        console.error(
+            "Erreur téléchargement PDF :",
+            error
+        );
+
+    }
+
+
+    // ==========================================
+    // CONFIRMATION
+    // ==========================================
+
+    if (envoiReussi) {
+
+        alert(
+            "Commande envoyée avec succès !\n\n" +
+            "Le PDF a été joint automatiquement au mail."
+        );
+
+    }
+
 }
 
 
@@ -815,4 +1062,5 @@ function ajouterPiedDePage(doc) {
         );
 
     }
+
 }
