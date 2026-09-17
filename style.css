@@ -2676,7 +2676,7 @@ footer a:hover {
 .language-selector {
     display: flex;
     align-items: center;
-    gap: 6px;
+    gap: 4px;
     margin-left: auto;
 }
 
@@ -2684,10 +2684,15 @@ footer a:hover {
     border: 1px solid var(--vert);
     background: var(--blanc);
     color: var(--vert-fonce);
-    padding: 6px 10px;
-    border-radius: 8px;
+
+    padding: 3px 7px;
+    font-size: 12px;
+    line-height: 1.2;
+
+    border-radius: 6px;
     cursor: pointer;
     font-weight: 600;
+
     transition: var(--transition);
 }
 
@@ -2705,8 +2710,13 @@ footer a:hover {
 @media (max-width: 768px) {
 
     .language-selector {
-        margin: 10px auto;
+        margin: 8px auto;
         justify-content: center;
+    }
+
+    .language-selector button {
+        padding: 4px 7px;
+        font-size: 11px;
     }
 
 }
