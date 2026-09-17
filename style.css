@@ -2668,54 +2668,62 @@ footer a:hover {
 
     }
 
-}
-/* ==========================================
-   SÉLECTEUR DE LANGUE — DISCRET
+}/* ==========================================
+   LANGUES — VERSION MINI
 ========================================== */
 
-.language-selector {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    margin-left: auto;
+nav .language-selector {
+    display: flex !important;
+    align-items: center !important;
+    gap: 6px !important;
+    margin-left: auto !important;
 }
 
-.language-selector button {
-    border: none;
-    background: none;
-    padding: 2px 0;
-    margin: 0;
+nav .language-selector button {
+    width: auto !important;
+    min-width: 0 !important;
+    height: auto !important;
 
-    font-size: 12px;
-    line-height: 1;
-    font-weight: 600;
+    padding: 1px 3px !important;
+    margin: 0 !important;
 
-    color: var(--gris);
-    cursor: pointer;
+    border: none !important;
+    border-radius: 0 !important;
+    background: transparent !important;
 
-    opacity: 0.65;
-    transition: var(--transition);
+    color: var(--gris) !important;
+    font-family: Georgia, serif !important;
+    font-size: 10px !important;
+    font-weight: normal !important;
+    line-height: 1 !important;
+
+    box-shadow: none !important;
+    transform: none !important;
 }
 
-.language-selector button:hover {
-    color: var(--vert-fonce);
-    opacity: 1;
+nav .language-selector button:hover {
+    background: transparent !important;
+    color: var(--vert-fonce) !important;
+    box-shadow: none !important;
+    transform: none !important;
 }
 
-.language-selector button.active {
-    color: var(--vert-fonce);
-    opacity: 1;
-    text-decoration: underline;
-    text-underline-offset: 3px;
+nav .language-selector button.active {
+    background: transparent !important;
+    color: var(--vert-fonce) !important;
+    font-weight: bold !important;
+    text-decoration: underline !important;
+    text-underline-offset: 2px !important;
 }
 
 @media (max-width: 768px) {
-    .language-selector {
-        margin: 6px auto;
-        gap: 10px;
+    nav .language-selector {
+        gap: 7px !important;
+        margin: 4px auto !important;
     }
 
-    .language-selector button {
-        font-size: 11px;
+    nav .language-selector button {
+        padding: 1px 2px !important;
+        font-size: 9px !important;
     }
 }
