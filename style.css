@@ -2670,28 +2670,31 @@ footer a:hover {
 
 }
 /* ==========================================
-   SÉLECTEUR DE LANGUE
+   SÉLECTEUR DE LANGUE — TRÈS COMPACT
 ========================================== */
 
 .language-selector {
     display: flex;
     align-items: center;
-    gap: 4px;
+    gap: 3px;
     margin-left: auto;
 }
 
 .language-selector button {
     border: 1px solid var(--vert);
-    background: var(--blanc);
+    background: transparent;
     color: var(--vert-fonce);
 
-    padding: 3px 7px;
-    font-size: 12px;
-    line-height: 1.2;
+    padding: 2px 5px;
+    font-size: 10px;
+    line-height: 1;
 
-    border-radius: 6px;
+    border-radius: 4px;
     cursor: pointer;
     font-weight: 600;
+    min-width: auto;
+    width: auto;
+    height: auto;
 
     transition: var(--transition);
 }
@@ -2702,21 +2705,14 @@ footer a:hover {
     color: var(--blanc);
 }
 
-
-/* ==========================================
-   MOBILE
-========================================== */
-
 @media (max-width: 768px) {
-
     .language-selector {
-        margin: 8px auto;
+        margin: 5px auto;
         justify-content: center;
     }
 
     .language-selector button {
-        padding: 4px 7px;
-        font-size: 11px;
+        padding: 3px 5px;
+        font-size: 10px;
     }
-
 }
