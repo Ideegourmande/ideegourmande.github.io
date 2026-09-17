@@ -13,24 +13,32 @@
 
 <header>
 
-<div class="top-banner">
+<div class="top-banner" data-i18n="banner">
 🚚 Commandes préparées artisanalement à Genève – La livraison s'effectue sous vide et, selon les produits, également congelée (saumon fumé et foie gras), afin de préserver les textures ainsi que toutes les qualités gustatives de nos préparations.
 Toutes nos spécialités sont élaborées sans sel nitrité.
-
 </div>
 
 <nav>
+
 <div class="logo">
 <img src="images/logo.svg" alt="Idée Gourmande">
 </div>
 
+<!-- Sélecteur de langue -->
+<div class="language-selector" aria-label="Choisir la langue">
+<button type="button" data-lang="fr">🇫🇷 FR</button>
+<button type="button" data-lang="de">🇩🇪 DE</button>
+<button type="button" data-lang="it">🇮🇹 IT</button>
+</div>
+
 <ul>
-<li><a href="index.html">Accueil</a></li>
-<li><a href="savoir-faire.html">Notre savoir-faire</a></li>
-<li><a href="produits.html">Nos produits</a></li>
-<li><a href="commande.html">Commander</a></li>
-<li><a href="contact.html">Contact</a></li>
+<li><a href="index.html" data-i18n="nav_home">Accueil</a></li>
+<li><a href="savoir-faire.html" data-i18n="nav_savoir">Notre savoir-faire</a></li>
+<li><a href="produits.html" data-i18n="nav_products">Nos produits</a></li>
+<li><a href="commande.html" data-i18n="nav_order">Commander</a></li>
+<li><a href="contact.html" data-i18n="nav_contact">Contact</a></li>
 </ul>
+
 </nav>
 
 </header>
@@ -42,14 +50,16 @@ Toutes nos spécialités sont élaborées sans sel nitrité.
 
 <h1>Idée Gourmande</h1>
 
-<h2>L'excellence artisanale genevoise</h2>
+<h2 data-i18n="hero_title">
+L'excellence artisanale genevoise
+</h2>
 
-<p>
+<p data-i18n="hero_text">
 Foie gras, magrets fumés et saumon fumé préparés avec passion
 dans le respect des traditions gastronomiques.
 </p>
 
-<a class="btn" href="produits.html">
+<a class="btn" href="produits.html" data-i18n="hero_button">
 Découvrir nos produits
 </a>
 
@@ -61,24 +71,24 @@ Découvrir nos produits
 <section class="valeurs">
 
 <div>
-<h3>🇨🇭 Fabrication artisanale</h3>
-<p>
+<h3 data-i18n="value_artisan_title">🇨🇭 Fabrication artisanale</h3>
+<p data-i18n="value_artisan_text">
 Des produits préparés à Genève avec exigence et savoir-faire.
 </p>
 </div>
 
 
 <div>
-<h3>❄️ Chaîne du froid respectée</h3>
-<p>
+<h3 data-i18n="value_cold_title">❄️ Chaîne du froid respectée</h3>
+<p data-i18n="value_cold_text">
 Une livraison sous-vide et, selon les produits, également congelée pour préserver toutes les qualités gustatives.
 </p>
 </div>
 
 
 <div>
-<h3>✨ Produits premium</h3>
-<p>
+<h3 data-i18n="value_premium_title">✨ Produits premium</h3>
+<p data-i18n="value_premium_text">
 Des recettes raffinées élaborées en petites quantités.
 </p>
 </div>
@@ -88,14 +98,16 @@ Des recettes raffinées élaborées en petites quantités.
 
 <section class="presentation">
 
-<h2>Bienvenue chez Idée Gourmande</h2>
+<h2 data-i18n="welcome_title">
+Bienvenue chez Idée Gourmande
+</h2>
 
-<p>
+<p data-i18n="welcome_text">
 Nous créons des spécialités gastronomiques artisanales pensées
 pour vos moments d’exception : fêtes, repas en famille ou cadeaux gourmands.
 </p>
 
-<a class="btn" href="commande.html">
+<a class="btn" href="commande.html" data-i18n="order_button">
 Préparer ma commande
 </a>
 
@@ -110,6 +122,10 @@ Préparer ma commande
 
 </footer>
 
+
+<!-- Système de traduction -->
+<script src="js/translations.js"></script>
+<script src="js/language.js"></script>
 
 </body>
 </html>
