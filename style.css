@@ -2736,3 +2736,18 @@ nav .language-selector button.active {
         font-size: 10px !important;
     }
 }
+/* ===================================================
+   NAVIGATION — ALIGNEMENT MENU + LANGUES
+   =================================================== */
+
+nav {
+    justify-content: flex-start;
+}
+
+nav ul {
+    margin-left: auto;
+}
+
+nav .language-selector {
+    margin-left: 25px !important;
+}
