@@ -2670,14 +2670,16 @@ footer a:hover {
 
 }
 /* ==========================================
-   LANGUES — STYLE IDÉE GOURMANDE
-========================================== */
+   LANGUES — FR · DE · IT
+   ========================================== */
 
 nav .language-selector {
     display: flex !important;
     align-items: center !important;
-    gap: 6px !important;
-    margin-left: 18px !important;
+    gap: 5px !important;
+
+    margin-left: 25px !important;
+
     white-space: nowrap !important;
 }
 
@@ -2695,8 +2697,9 @@ nav .language-selector button {
     background: transparent !important;
 
     color: #777 !important;
+
     font-family: Georgia, serif !important;
-    font-size: 10px !important;
+    font-size: 11px !important;
     font-weight: normal !important;
     line-height: 1 !important;
 
@@ -2704,6 +2707,12 @@ nav .language-selector button {
     transform: none !important;
 
     cursor: pointer !important;
+}
+
+nav .language-selector span {
+    color: #aaa;
+    font-size: 10px;
+    line-height: 1;
 }
 
 nav .language-selector button:hover {
@@ -2716,38 +2725,31 @@ nav .language-selector button:hover {
 nav .language-selector button.active {
     background: transparent !important;
     color: var(--vert-fonce) !important;
+
     font-weight: bold !important;
+
     text-decoration: underline !important;
     text-decoration-thickness: 1px !important;
     text-underline-offset: 3px !important;
 }
 
 
-/* MOBILE */
+/* ==========================================
+   MOBILE
+   ========================================== */
 
 @media (max-width: 768px) {
 
     nav .language-selector {
         margin: 2px auto 0 !important;
-        gap: 8px !important;
+        gap: 7px !important;
     }
 
     nav .language-selector button {
-        font-size: 10px !important;
+        font-size: 11px !important;
     }
-}
-/* ===================================================
-   NAVIGATION — ALIGNEMENT MENU + LANGUES
-   =================================================== */
 
-nav {
-    justify-content: flex-start;
-}
-
-nav ul {
-    margin-left: auto;
-}
-
-nav .language-selector {
-    margin-left: 25px !important;
+    nav .language-selector span {
+        font-size: 10px;
+    }
 }
