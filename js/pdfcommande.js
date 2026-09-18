@@ -1,1052 +1,306 @@
-console.log("PDFCOMMANDE.JS CHARGE");
-
-// ==========================================
-// IDÉE GOURMANDE
-// Génération PDF professionnel
-// + Envoi automatique par Google Apps Script
-// ==========================================
-
-
-// ==========================================
-// URL GOOGLE APPS SCRIPT
-// ==========================================
-
-const URL_GOOGLE_SCRIPT =
-    "https://script.google.com/macros/s/AKfycbzKiedAF-Qjr6gisEk9f6VeeKRnEu_WqTXJyj2QqNVXqTNPhJUIEPkKcdRNheq6w6wY/exec";
-
-
-// ==========================================
-// GÉNÉRATION PDF
-// ==========================================
+const GOOGLE_APPS_SCRIPT_URL =
+  "https://script.google.com/macros/s/AKfycbzKiedAF-Qjr6gisEk9f6VeeKRnEu_WqTXJyj2QqNVXqTNPhJUIEPkKcdRNheq6w6wY/exec";
 
 async function genererPDFCommande(commande) {
 
-    // ==========================================
-    // VÉRIFICATION jsPDF
-    // ==========================================
-
-    if (!window.jspdf) {
-
-        console.error("jsPDF non chargé");
-
-        alert(
-            "Erreur : la bibliothèque PDF n'est pas chargée."
-        );
-
-        return;
-
+    if (!window.jspdf || !window.jspdf.jsPDF) {
+        throw new Error("jsPDF n'est pas chargé.");
     }
 
     const { jsPDF } = window.jspdf;
-
     const doc = new jsPDF();
 
+    // ==============================
+    // INFORMATIONS
+    // ==============================
 
-    // ==========================================
-    // LOGO
-    // ==========================================
+    const fichier = "Commande_" + commande.id + ".pdf";
 
-    const logo = new Image();
+    const client = commande.client || {};
+    const produits = Array.isArray(commande.produits)
+        ? commande.produits
+        : [];
 
-    logo.src = "images/logo.png";
+    const total = Number(commande.total || 0);
 
-
-    // ==========================================
-    // VARIABLES
-    // ==========================================
-
-    let y = 20;
-
-    const margeGauche = 20;
-    const largeurPage = 170;
-
-
-    // ==========================================
-    // EN-TÊTE
-    // ==========================================
-
-    doc.addImage(
-        logo,
-        "PNG",
-        20,
-        10,
-        45,
-        25
-    );
-
-
-    doc.setFontSize(18);
-
-    doc.setFont(undefined, "bold");
-
-    doc.text(
-        "IDÉE GOURMANDE",
-        75,
-        18
-    );
-
-
-    doc.setFontSize(10);
-
-    doc.setFont(undefined, "normal");
-
-    doc.text(
-        "Genève",
-        75,
-        25
-    );
-
-
-    doc.text(
-        "TWINT : 079 592 78 82",
-        75,
-        31
-    );
-
-
-    // ==========================================
+    // ==============================
     // TITRE
-    // ==========================================
+    // ==============================
 
-    y = 50;
+    doc.setFontSize(20);
+    doc.setFont("helvetica", "bold");
+    doc.text("IDÉE GOURMANDE", 20, 20);
 
-
-    doc.setFontSize(18);
-
-    doc.setFont(undefined, "bold");
-
-    doc.text(
-        "BON DE COMMANDE",
-        margeGauche,
-        y
-    );
-
-
-    y += 10;
-
-
-    // ==========================================
-    // NUMÉRO ET DATE
-    // ==========================================
-
-    const maintenant = new Date();
-
-
-    const dateTexte =
-        maintenant.toLocaleDateString("fr-FR");
-
-
-    const heureTexte =
-        maintenant.toLocaleTimeString(
-            "fr-FR",
-            {
-                hour: "2-digit",
-                minute: "2-digit"
-            }
-        );
-
-
-    const numeroCommande =
-        commande.id ||
-        (
-            "IG-" +
-            maintenant.getTime()
-        );
-
+    doc.setFontSize(14);
+    doc.text("Bon de commande", 20, 30);
 
     doc.setFontSize(10);
+    doc.setFont("helvetica", "normal");
 
-    doc.setFont(undefined, "normal");
-
-
+    doc.text("N° commande : " + commande.id, 20, 40);
     doc.text(
-        "N° commande : " + numeroCommande,
-        margeGauche,
-        y
+        "Date : " + new Date().toLocaleString("fr-CH"),
+        20,
+        47
     );
 
+    // ==============================
+    // CLIENT
+    // ==============================
 
-    doc.text(
-        "Date : " + dateTexte + " à " + heureTexte,
-        120,
-        y
-    );
+    let y = 60;
 
+    doc.setFont("helvetica", "bold");
+    doc.text("CLIENT", 20, y);
 
-    y += 12;
-
-
-    // ==========================================
-    // CADRE CLIENT
-    // ==========================================
-
-    const hauteurClient = 48;
-
-
-    doc.setDrawColor(100, 100, 100);
-
-    doc.rect(
-        margeGauche,
-        y,
-        largeurPage,
-        hauteurClient
-    );
-
-
-    doc.setFontSize(12);
-
-    doc.setFont(undefined, "bold");
-
-    doc.text(
-        "INFORMATIONS CLIENT",
-        margeGauche + 5,
-        y + 8
-    );
-
-
-    doc.setFontSize(10);
-
-    doc.setFont(undefined, "normal");
-
-
-    const nomClient =
-        (
-            commande.client?.prenom || ""
-        ) +
-        " " +
-        (
-            commande.client?.nom || ""
-        );
-
-
-    doc.text(
-        "Client : " + nomClient.trim(),
-        margeGauche + 5,
-        y + 17
-    );
-
-
-    doc.text(
-        "Email : " +
-        (commande.client?.email || ""),
-        margeGauche + 5,
-        y + 25
-    );
-
-
-    doc.text(
-        "Téléphone : " +
-        (commande.client?.telephone || ""),
-        margeGauche + 5,
-        y + 33
-    );
-
-
-    doc.text(
-        "Adresse : " +
-        (commande.client?.adresse || ""),
-        margeGauche + 5,
-        y + 41
-    );
-
-
-    y += hauteurClient + 12;
-
-
-    // ==========================================
-    // PRODUITS
-    // ==========================================
-
-    doc.setFontSize(13);
-
-    doc.setFont(undefined, "bold");
-
-    doc.text(
-        "PRODUITS COMMANDÉS",
-        margeGauche,
-        y
-    );
-
-
+    doc.setFont("helvetica", "normal");
     y += 8;
 
-
-    // ==========================================
-    // TABLEAU
-    // ==========================================
-
-    const xProduit = 20;
-    const xRecette = 78;
-    const xNombre = 125;
-    const xPoids = 145;
-    const xPrix = 170;
-
-
-    doc.setFillColor(230, 230, 230);
-
-    doc.rect(
+    doc.text(
+        "Nom : " + (client.prenom || "") + " " + (client.nom || ""),
         20,
-        y - 5,
-        170,
-        10,
-        "F"
+        y
     );
 
-
-    doc.setFontSize(9);
-
-    doc.setFont(undefined, "bold");
-
-
+    y += 7;
     doc.text(
-        "Produit",
-        xProduit + 3,
-        y + 1
+        "Téléphone : " + (client.telephone || ""),
+        20,
+        y
     );
 
-
+    y += 7;
     doc.text(
-        "Recette",
-        xRecette,
-        y + 1
+        "E-mail : " + (client.email || ""),
+        20,
+        y
     );
 
+    y += 7;
 
-    doc.text(
-        "Nombre",
-        xNombre,
-        y + 1
+    const adresse = String(client.adresse || "");
+    const adresseLignes = doc.splitTextToSize(
+        "Adresse : " + adresse,
+        170
     );
 
+    doc.text(adresseLignes, 20, y);
+    y += adresseLignes.length * 6 + 8;
 
-    doc.text(
-        "Poids",
-        xPoids,
-        y + 1
-    );
-
-
-    doc.text(
-        "Prix",
-        xPrix,
-        y + 1
-    );
-
-
-    y += 10;
-
-
-    doc.setFont(undefined, "normal");
-
-    doc.setFontSize(9);
-
-
-    // ==========================================
+    // ==============================
     // PRODUITS
-    // ==========================================
+    // ==============================
 
-    const produits =
-        Array.isArray(commande.produits)
-            ? commande.produits
-            : [];
+    doc.setFont("helvetica", "bold");
+    doc.text("PRODUITS COMMANDÉS", 20, y);
 
+    doc.setFont("helvetica", "normal");
+    y += 10;
 
     produits.forEach(function(article) {
 
+        const nom = article.nom || "Produit";
+        const quantite = Number(article.quantite || 1);
+        const poids = article.poids
+            ? " (" + article.poids + " g)"
+            : "";
+
+        const prix = Number(article.prix || 0).toFixed(2);
+
+        const ligne =
+            "- " +
+            nom +
+            poids +
+            " x" +
+            quantite +
+            " : " +
+            prix +
+            " CHF";
+
+        const lignes = doc.splitTextToSize(ligne, 170);
+
+        doc.text(lignes, 20, y);
+
+        y += lignes.length * 6 + 2;
+
         // Nouvelle page si nécessaire
-        if (y > 265) {
-
-            ajouterPiedDePage(doc);
-
+        if (y > 270) {
             doc.addPage();
-
-            y = 25;
-
+            y = 20;
         }
-
-
-        // ======================================
-        // PRODUIT
-        // ======================================
-
-        const nom =
-            article.nom || "Produit";
-
-
-        // ======================================
-        // RECETTE
-        // ======================================
-
-        const recette =
-            article.recette || "-";
-
-
-        // ======================================
-        // NOMBRE
-        // ======================================
-
-        let nombre = "";
-
-
-        if (
-            article.reference === "saumon-fume"
-        ) {
-
-            nombre = "-";
-
-        }
-        else {
-
-            nombre =
-                String(
-                    article.quantite || 1
-                );
-
-        }
-
-
-        // ======================================
-        // POIDS TOTAL
-        // ======================================
-
-        let poids = "";
-
-
-        if (
-            article.reference === "saumon-fume"
-        ) {
-
-            poids =
-                article.poids
-                ? article.poids + " g"
-                : "";
-
-        }
-        else if (
-            article.reference === "foie-gras"
-        ) {
-
-            poids =
-                (
-                    Number(article.quantite || 1)
-                    * 200
-                )
-                + " g";
-
-        }
-        else if (
-            article.reference === "viande-sechee"
-        ) {
-
-            poids =
-                (
-                    Number(article.quantite || 1)
-                    * 500
-                )
-                + " g";
-
-        }
-        else if (
-            article.reference === "lard-sec"
-        ) {
-
-            poids =
-                (
-                    Number(article.quantite || 1)
-                    * 500
-                )
-                + " g";
-
-        }
-        else if (
-            article.reference === "magret"
-        ) {
-
-            poids = "-";
-
-        }
-
-
-        // ======================================
-        // PRIX
-        // ======================================
-
-        const prix =
-            Number(article.prix) || 0;
-
-
-        // ======================================
-        // LIGNES MULTI-LIGNES
-        // ======================================
-
-        const nomLignes =
-            doc.splitTextToSize(
-                nom,
-                55
-            );
-
-
-        const recetteLignes =
-            doc.splitTextToSize(
-                recette,
-                42
-            );
-
-
-        const hauteur =
-            Math.max(
-                nomLignes.length,
-                recetteLignes.length
-            ) * 5 + 5;
-
-
-        // ======================================
-        // AFFICHAGE
-        // ======================================
-
-        doc.text(
-            nomLignes,
-            xProduit + 3,
-            y
-        );
-
-
-        doc.text(
-            recetteLignes,
-            xRecette,
-            y
-        );
-
-
-        doc.text(
-            nombre,
-            xNombre,
-            y
-        );
-
-
-        doc.text(
-            poids,
-            xPoids,
-            y
-        );
-
-
-        doc.text(
-            prix.toFixed(2) + " CHF",
-            xPrix,
-            y
-        );
-
-
-        y += hauteur;
-
     });
 
-
-    // ==========================================
+    // ==============================
     // TOTAL
-    // ==========================================
+    // ==============================
 
     y += 5;
 
-
-    doc.setDrawColor(80, 80, 80);
-
-
-    doc.line(
-        110,
-        y,
-        190,
-        y
-    );
-
-
-    y += 8;
-
-
-    doc.setFontSize(14);
-
-    doc.setFont(undefined, "bold");
-
-
-    const total =
-        Number(commande.total) || 0;
-
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(13);
 
     doc.text(
-        "TOTAL",
-        125,
+        "TOTAL : " + total.toFixed(2) + " CHF",
+        20,
         y
     );
 
-
-    doc.text(
-        total.toFixed(2) + " CHF",
-        165,
-        y
-    );
-
+    doc.setFontSize(10);
+    doc.setFont("helvetica", "normal");
 
     y += 12;
 
-
-    // ==========================================
-    // PAIEMENT
-    // ==========================================
-
-    doc.setFontSize(10);
-
-    doc.setFont(undefined, "normal");
-
-
     doc.text(
         "Paiement : TWINT",
-        margeGauche,
+        20,
         y
     );
 
+    // ==============================
+    // COMMENTAIRE
+    // ==============================
 
-    doc.text(
-        "079 592 78 82",
-        margeGauche,
-        y + 6
-    );
+    if (client.commentaire) {
 
+        y += 12;
 
-    y += 16;
+        doc.setFont("helvetica", "bold");
+        doc.text("COMMENTAIRE", 20, y);
 
-
-    // ==========================================
-    // REMARQUE - COMMUNICATION
-    // ==========================================
-
-    if (
-        commande.client?.commentaire &&
-        commande.client.commentaire.trim() !== ""
-    ) {
-
-        if (y > 245) {
-
-            ajouterPiedDePage(doc);
-
-            doc.addPage();
-
-            y = 25;
-
-        }
-
-
-        doc.setFontSize(11);
-
-        doc.setFont(undefined, "bold");
-
-
-        doc.text(
-            "REMARQUE - COMMUNICATION",
-            margeGauche,
-            y
-        );
-
-
+        doc.setFont("helvetica", "normal");
         y += 7;
 
-
-        doc.setFont(undefined, "normal");
-
-        doc.setFontSize(10);
-
-
-        const remarque =
-            doc.splitTextToSize(
-                commande.client.commentaire,
-                165
-            );
-
-
-        doc.text(
-            remarque,
-            margeGauche,
-            y
+        const commentaireLignes = doc.splitTextToSize(
+            String(client.commentaire),
+            170
         );
 
-
-        y +=
-            remarque.length * 5 +
-            5;
-
+        doc.text(commentaireLignes, 20, y);
     }
 
+    // ==============================
+    // SAUVEGARDE LOCALE DU PDF
+    // ==============================
 
-    // ==========================================
-    // PIED DE PAGE
-    // ==========================================
+    doc.save(fichier);
 
-    ajouterPiedDePage(doc);
+    // PDF en mémoire
+    const pdfBlob = doc.output("blob");
 
+    console.log("PDF généré :", fichier);
 
-    // ==========================================
-    // NOM DU FICHIER
-    // ==========================================
-
-    console.log(
-        "CLIENT PDF :",
-        commande.client
-    );
-
-
-    const nomClientFichier =
-        (
-            commande.client?.nom ||
-            "Client"
-        )
-        .toUpperCase()
-        .replace(
-            /[^A-Z0-9]/g,
-            ""
-        );
-
-
-    const prenomClientFichier =
-        (
-            commande.client?.prenom ||
-            ""
-        )
-        .trim()
-        .toUpperCase()
-        .replace(
-            /[^A-Z0-9]/g,
-            ""
-        );
-
-
-    const datePDF =
-        maintenant.getFullYear() +
-        String(
-            maintenant.getMonth() + 1
-        ).padStart(2, "0") +
-        String(
-            maintenant.getDate()
-        ).padStart(2, "0") +
-        "_" +
-        String(
-            maintenant.getHours()
-        ).padStart(2, "0") +
-        String(
-            maintenant.getMinutes()
-        ).padStart(2, "0");
-
-
-    const fichier =
-        "Commande_" +
-        nomClientFichier +
-        "_" +
-        prenomClientFichier +
-        "_" +
-        datePDF +
-        ".pdf";
-
-
-    // ==========================================
+    // ==============================
     // CONVERSION DU PDF EN BASE64
-    // ==========================================
+    // ==============================
 
-    console.log(
-        "Préparation du PDF pour Google Apps Script..."
-    );
+    const pdfBase64 = await new Promise(function(resolve, reject) {
 
+        const reader = new FileReader();
 
-    let dataUri;
+        reader.onloadend = function() {
+            resolve(reader.result);
+        };
 
-    try {
+        reader.onerror = function() {
+            reject(new Error(
+                "Impossible de convertir le PDF en Base64."
+            ));
+        };
 
-        dataUri =
-            doc.output("datauristring");
+        reader.readAsDataURL(pdfBlob);
+    });
 
-    }
-    catch (error) {
-
-        console.error(
-            "Erreur conversion PDF :",
-            error
-        );
-
-        alert(
-            "Impossible de préparer le PDF pour l'envoi."
-        );
-
-        return;
-
-    }
-
-
-    // Extraction du Base64
-    const pdfBase64 =
-        dataUri.split(",")[1];
-
-
-    if (!pdfBase64) {
-
-        console.error(
-            "Base64 PDF absent"
-        );
-
-        alert(
-            "Erreur : le contenu du PDF est vide."
-        );
-
-        return;
-
-    }
-
-
-    console.log(
-        "PDF Base64 préparé :",
-        pdfBase64.length,
-        "caractères"
-    );
-
-
-    // ==========================================
-    // DONNÉES ENVOYÉES À GOOGLE APPS SCRIPT
-    // ==========================================
+    // ==============================
+    // DONNÉES ENVOYÉES À GOOGLE
+    // ==============================
 
     const payload = {
 
-        to:
-            commande.client?.email || "",
+        to: client.email || "",
 
-        numeroCommande:
-            numeroCommande,
+        numeroCommande: commande.id,
 
-        client: {
+        pdfBase64: pdfBase64,
 
-            prenom:
-                commande.client?.prenom || "",
+        pdfFilename: fichier,
 
-            nom:
-                commande.client?.nom || "",
+        client: client,
 
-            telephone:
-                commande.client?.telephone || "",
+        produits: produits,
 
-            adresse:
-                commande.client?.adresse || "",
-
-            commentaire:
-                commande.client?.commentaire || ""
-
-        },
-
-        produits:
-            produits,
-
-        total:
-            total,
-
-        pdfBase64:
-            pdfBase64,
-
-        pdfFilename:
-            fichier,
+        total: total,
 
         subject:
             "Commande Idée Gourmande n°" +
-            numeroCommande
-
+            commande.id
     };
 
-
-    // ==========================================
-    // ENVOI À GOOGLE APPS SCRIPT
-    // ==========================================
+    if (!payload.to) {
+        throw new Error(
+            "L'adresse e-mail du client est manquante."
+        );
+    }
 
     console.log(
         "Envoi du PDF à Google Apps Script..."
     );
 
+    // ==============================
+    // ENVOI À GOOGLE APPS SCRIPT
+    // ==============================
 
-    let envoiReussi = false;
+    const response = await fetch(
+        GOOGLE_APPS_SCRIPT_URL,
+        {
+            method: "POST",
 
+            headers: {
+                "Content-Type":
+                    "application/x-www-form-urlencoded;charset=UTF-8"
+            },
+
+            body: new URLSearchParams({
+                payload: JSON.stringify(payload)
+            })
+        }
+    );
+
+    const texteReponse = await response.text();
+
+    console.log(
+        "Réponse Google Apps Script :",
+        texteReponse
+    );
+
+    let resultat;
 
     try {
+        resultat = JSON.parse(texteReponse);
+    } catch (erreur) {
 
-        const response =
-            await fetch(
-                URL_GOOGLE_SCRIPT,
-                {
-                    method: "POST",
-
-                    headers: {
-                        "Content-Type":
-                            "application/x-www-form-urlencoded"
-                    },
-
-                    body:
-                        new URLSearchParams({
-                            payload:
-                                JSON.stringify(payload)
-                        })
-                }
-            );
-
-
-        const texte =
-            await response.text();
-
-
-        console.log(
-            "Réponse Google Apps Script :",
-            texte
+        throw new Error(
+            "Réponse Google Apps Script invalide : " +
+            texteReponse
         );
-
-
-        let resultat;
-
-
-        try {
-
-            resultat =
-                JSON.parse(texte);
-
-        }
-        catch (e) {
-
-            throw new Error(
-                "Réponse Google Apps Script invalide : " +
-                texte
-            );
-
-        }
-
-
-        if (
-            resultat &&
-            resultat.ok === true
-        ) {
-
-            envoiReussi = true;
-
-            console.log(
-                "✅ Mail envoyé avec PDF joint :",
-                resultat.filename
-            );
-
-        }
-        else {
-
-            throw new Error(
-                resultat?.error ||
-                "Google Apps Script a refusé l'envoi."
-            );
-
-        }
-
-    }
-    catch (error) {
-
-        console.error(
-            "❌ ERREUR ENVOI GOOGLE APPS SCRIPT :",
-            error
-        );
-
-        alert(
-            "Le PDF a été généré, mais l'envoi automatique du mail a échoué.\n\n" +
-            "Erreur : " +
-            error.message
-        );
-
     }
 
+    if (!resultat.ok) {
 
-    // ==========================================
-    // TÉLÉCHARGEMENT LOCAL DU PDF
-    // ==========================================
-
-    try {
-
-        doc.save(fichier);
-
-        console.log(
-            "PDF téléchargé :",
-            fichier
+        throw new Error(
+            resultat.message ||
+            resultat.error ||
+            "Google Apps Script n'a pas confirmé l'envoi."
         );
-
-    }
-    catch (error) {
-
-        console.error(
-            "Erreur téléchargement PDF :",
-            error
-        );
-
     }
 
-}
+    console.log(
+        "E-mail envoyé avec succès par Gmail.",
+        resultat
+    );
 
-
-// ==========================================
-// PIED DE PAGE
-// ==========================================
-
-function ajouterPiedDePage(doc) {
-
-    const nombrePages =
-        doc.internal.getNumberOfPages();
-
-
-    for (
-        let page = 1;
-        page <= nombrePages;
-        page++
-    ) {
-
-        doc.setPage(page);
-
-
-        doc.setFontSize(8);
-
-        doc.setFont(undefined, "normal");
-
-
-        doc.setDrawColor(
-            180,
-            180,
-            180
-        );
-
-
-        doc.line(
-            20,
-            285,
-            190,
-            285
-        );
-
-
-        doc.text(
-            "Idée Gourmande - Genève",
-            20,
-            291
-        );
-
-
-        doc.text(
-            "TWINT : 079 592 78 82",
-            85,
-            291
-        );
-
-
-        doc.text(
-            "Page " +
-            page +
-            " / " +
-            nombrePages,
-            160,
-            291
-        );
-
-    }
-
+    return {
+        blob: pdfBlob,
+        filename: fichier,
+        emailEnvoye: true
+    };
 }
