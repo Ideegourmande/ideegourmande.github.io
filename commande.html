@@ -1,482 +1,1298 @@
 <!DOCTYPE html>
-
 <html lang="fr">
+
 <head>
-<meta charset="utf-8"/>
-<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-<title data-i18n="page_order_title">Préparer ma commande | Idée Gourmande</title>
-<link href="css/style.css" rel="stylesheet"/>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Préparer ma commande | Idée Gourmande</title>
+
+<link rel="stylesheet" href="css/style.css">
+
 </head>
+
+
 <body>
+
+
 <header>
+
+
 <div class="top-banner">
 
 🚚 Commandes préparées artisanalement à Genève – Livraison sous vide ou congelée selon les produits pour préserver toute la qualité.
 
 </div>
+
+
+
 <nav>
+
+
 <div class="logo">
-<img alt="Idée Gourmande" src="images/logo.svg"/>
+
+<img src="images/logo.svg" alt="Idée Gourmande">
+
 </div>
+
+
+
 <ul>
-<li><a data-i18n="nav_home" href="index.html">Accueil</a></li>
-<li><a data-i18n="nav_savoir" href="savoir-faire.html">Notre savoir-faire</a></li>
-<li><a data-i18n="nav_products" href="produits.html">Nos spécialités</a></li>
-<li><a data-i18n="nav_order" href="commande.html">Commander</a></li>
-<li><a data-i18n="nav_contact" href="contact.html">Contact</a></li>
+
+<li><a href="index.html">Accueil</a></li>
+<li><a href="savoir-faire.html">Notre savoir-faire</a></li>
+<li><a href="produits.html">Nos spécialités</a></li>
+<li><a href="commande.html">Commander</a></li>
+<li><a href="contact.html">Contact</a></li>
 <li><a href="admin.html">Administration</a></li>
+
 </ul>
+
+
 </nav>
+
+
 </header>
+
+
+
+
+
+
+
+
 <section class="presentation">
-<h1 data-i18n="order_heading">
+
+
+<h1>
 
 Préparer ma commande
 
 </h1>
-<p data-i18n="order_intro">
+
+
+<p>
 
 Choisissez vos spécialités artisanales, vos options et ajoutez vos produits au panier.
 
 </p>
+
+
 </section>
+
+
+
+
+
+
+
 <section class="commande-grid">
+
+
+
+
+
+
+
 <!-- ===================================================
      FOIE GRAS
 =================================================== -->
-<div class="commande-card" data-prix="35" data-produit="foie-gras">
-<img alt="Foie gras de canard au torchon" src="images/foie-gras-figues.jpg"/>
+
+
+<div class="commande-card"
+data-produit="foie-gras"
+data-prix="35">
+
+
+
+<img src="images/foie-gras-figues.jpg"
+alt="Foie gras de canard au torchon">
+
+
+
 <h3>
 
 🦆 Foie gras de canard au torchon
 
 </h3>
+
+
+
+
 <p>
 
 Choisissez votre recette :
 
 </p>
+
+
+
+
 <div class="choix-recette">
+
+
+
 <label>
-<input name="foieRecette" type="radio" value="figues"/>
+
+<input
+type="radio"
+name="foieRecette"
+value="figues">
 
 
 Gelée de figues au vin de messe
 
 </label>
+
+
+
+
 <label>
-<input name="foieRecette" type="radio" value="piment"/>
+
+<input
+type="radio"
+name="foieRecette"
+value="piment">
 
 
-Piment d'Espelette &amp; Porto Calem
+Piment d'Espelette & Porto Calem
 
 </label>
+
+
+
 </div>
+
+
+
+
+
+
 <label>
 
 Quantité (200 g)
 
 </label>
-<input class="quantite-produit" id="foieQuantite" min="1" type="number" value="1"/>
+
+
+
+
+<input
+class="quantite-produit"
+type="number"
+id="foieQuantite"
+value="1"
+min="1">
+
+
+
+
+
 <p>
+
 <strong>
 
 35.00 CHF / 200 g
 
 </strong>
+
 </p>
-<button class="btn ajouter-panier" data-produit="foie-gras" type="button">
+
+
+
+
+
+<button
+type="button"
+class="btn ajouter-panier"
+data-produit="foie-gras">
 
 Ajouter au panier
 
 </button>
+
+
+
+
 </div>
+
+
+
+
+
+
+
+
+
 <!-- ===================================================
      MAGRET
 =================================================== -->
-<div class="commande-card" data-prix="25" data-produit="magret">
-<img alt="Magret de canard fumé et séché" src="images/magret-fume.jpg"/>
+
+
+<div class="commande-card"
+data-produit="magret"
+data-prix="25">
+
+
+
+
+
+ <img src="images/magret-fume.jpg"
+alt="Magret de canard fumé et séché">
+
+
+
+
+
 <h3>
 
 🦆 Magret de canard fumé et séché
 
 </h3>
+
+
+
+
+
 <p>
 
 Choisissez votre recette :
 
 </p>
+
+
+
+
+
 <div class="choix-recette">
+
+
+
 <label>
-<input name="magretRecette" type="radio" value="herbes"/>
+
+<input
+type="radio"
+name="magretRecette"
+value="herbes">
 
 
 Herbes de Provence
 
 </label>
+
+
+
+
+
 <label>
-<input name="magretRecette" type="radio" value="piment"/>
+
+<input
+type="radio"
+name="magretRecette"
+value="piment">
 
 
 Piment d'Espelette
 
 </label>
+
+
+
 </div>
+
+
+
+
+
+
+
 <label>
 
 Quantité
 
 </label>
-<input class="quantite-produit" id="magretQuantite" min="1" type="number" value="1"/>
+
+
+
+
+<input
+class="quantite-produit"
+type="number"
+id="magretQuantite"
+value="1"
+min="1">
+
+
+
+
+
 <p>
+
 <strong>
 
 25.00 CHF
 
 </strong>
+
 </p>
-<button class="btn ajouter-panier" data-produit="magret" type="button">
+
+
+
+
+
+
+<button
+type="button"
+class="btn ajouter-panier"
+data-produit="magret">
 
 Ajouter au panier
 
 </button>
+
+
+
+
+
+
 </div>
+
+
+
+
+
+
+
 <!-- ===================================================
      VIANDE SÉCHÉE
 =================================================== -->
-<div class="commande-card" data-prix="45" data-produit="viande-sechee">
-<img alt="Viande séchée artisanale" src="images/viande-sechee.jpg"/>
+
+
+<div class="commande-card"
+data-produit="viande-sechee"
+data-prix="45">
+
+
+
+ <img src="images/viande-sechee.jpg"
+alt="Viande séchée artisanale">
+
+
+
+
+
 <h3>
 
 🥩 Viande séchée artisanale
 
 </h3>
+
+
+
+
 <p>
 
 Recette maison
 
 </p>
+
+
+
+
+
 <p>
+
 <strong>
 
 45.00 CHF / portion
 
 </strong>
+
 </p>
+
+
+
+
+
+
 <label>
 
 Nombre de portions
 
 </label>
-<input class="quantite-produit" id="viandeQuantite" min="0" type="number" value="1"/>
+
+
+
+
+<input
+class="quantite-produit"
+type="number"
+id="viandeQuantite"
+value="1"
+min="0">
+
+
+
+
+
 <p class="confirmation">
 
 ≈ 500 g par portion.  
 Poids réel confirmé lors de la préparation.
 
 </p>
-<button class="btn ajouter-panier" data-produit="viande-sechee" type="button">
+
+
+
+
+
+<button
+type="button"
+class="btn ajouter-panier"
+data-produit="viande-sechee">
 
 Ajouter au panier
 
 </button>
+
+
+
+
+
 </div>
+
+
+
+
+
+
+
+
+
 <!-- ===================================================
      LARD SEC
 =================================================== -->
-<div class="commande-card" data-prix="20" data-produit="lard-sec">
-<img alt="Lard sec légèrement fumé" src="images/lard-sec.jpg"/>
+
+
+<div class="commande-card"
+data-produit="lard-sec"
+data-prix="20">
+
+
+
+
+
+ <img src="images/lard-sec.jpg"
+alt="Lard sec légèrement fumé">
+
+
+
+
+
+
 <h3>
 
 🥓 Lard sec légèrement fumé
 
 </h3>
+
+
+
+
+
 <p>
 
 Recette maison
 
 </p>
+
+
+
+
+
 <p>
+
 <strong>
 
 20.00 CHF / portion
 
 </strong>
+
 </p>
+
+
+
+
+
+
 <label>
 
 Nombre de portions
 
 </label>
-<input class="quantite-produit" id="lardQuantite" min="0" type="number" value="1"/>
+
+
+
+
+
+<input
+class="quantite-produit"
+type="number"
+id="lardQuantite"
+value="1"
+min="0">
+
+
+
+
+
+
 <p class="confirmation">
 
 ≈ 500 g par portion.  
 Poids réel confirmé lors de la préparation.
 
 </p>
-<button class="btn ajouter-panier" data-produit="lard-sec" type="button">
+
+
+
+
+
+
+<button
+type="button"
+class="btn ajouter-panier"
+data-produit="lard-sec">
 
 Ajouter au panier
 
 </button>
+
+
+
+
+
 </div>
+
+
+
+
+
+
+
+
+
 <!-- ===================================================
      SAUMON FUMÉ
 =================================================== -->
-<div class="commande-card" data-prix="8" data-produit="saumon-fume">
-<img alt="Cœur de saumon fumé" src="images/saumon-fume.jpg"/>
+
+
+<div class="commande-card"
+data-produit="saumon-fume"
+data-prix="8">
+
+
+
+
+
+<img
+src="images/saumon-fume.jpg"
+alt="Cœur de saumon fumé">
+
+
+
+
+
+
 <h3>
 
 🐟 Cœur de saumon fumé
 
 </h3>
+
+
+
+
+
+
 <p>
 
 Choisissez votre recette :
 
 </p>
+
+
+
+
+
 <div class="choix-recette">
+
+
+
+
+
 <label>
-<input name="saumonRecette" type="radio" value="aneth"/>
+
+<input
+type="radio"
+name="saumonRecette"
+value="aneth">
 
 
 Aneth
 
 </label>
+
+
+
+
+
+
 <label>
-<input name="saumonRecette" type="radio" value="piment"/>
+
+<input
+type="radio"
+name="saumonRecette"
+value="piment">
 
 
 Piment d'Espelette
 
 </label>
+
+
+
+
+
 </div>
+
+
+
+
+
+
+
+
+
 <label>
 
 Poids souhaité
 
 </label>
-<select class="poids-produit" id="saumonPoids">
+
+
+
+
+
+
+
+<select
+class="poids-produit"
+id="saumonPoids">
+
+
+
 <option value="0">
 
 Choisir un poids
 
 </option>
+
+
+
 <option value="100">
 
 100 g
 
 </option>
+
+
+
 <option value="200">
 
 200 g
 
 </option>
+
+
+
 <option value="300">
 
 300 g
 
 </option>
+
+
+
 <option value="400">
 
 400 g
 
 </option>
+
+
+
 <option value="500">
 
 500 g
 
 </option>
+
+
+
 <option value="600">
 
 600 g
 
 </option>
+
+
+
 <option value="700">
 
 700 g
 
 </option>
+
+
+
 <option value="800">
 
 800 g
 
 </option>
+
+
+
 <option value="900">
 
 900 g
 
 </option>
+
+
+
 <option value="1000">
 
 1 kg
 
 </option>
+
+
+
 </select>
+
+
+
+
+
+
+
 <p>
+
 <strong>
 
 8.00 CHF / 100 g
 
 </strong>
+
 </p>
+
+
+
+
+
+
+
 <p class="confirmation">
 
 Poids réel confirmé lors de la préparation.
 
 </p>
-<button class="btn ajouter-panier" data-produit="saumon-fume" type="button">
+
+
+
+
+
+
+<button
+type="button"
+class="btn ajouter-panier"
+data-produit="saumon-fume">
 
 Ajouter au panier
 
 </button>
+
+
+
+
+
+
 </div>
+
+
+
+
+
+
 </section>
+
+
+
+
+
+
+
+
+
 <!-- ===================================================
      INFORMATION POIDS RÉEL
 =================================================== -->
+
+
 <section class="presentation">
+
+
+
 <div class="paiement-box">
+
+
+
+
+
 <h3>
 
 ℹ️ Information importante
 
 </h3>
+
+
+
+
+
+
 <p>
 
 Les produits vendus au poids (cœur de saumon fumé, viande séchée et lard sec) sont préparés artisanalement.
 
 </p>
+
+
+
+
+
 <p>
+
 <strong>
 
 Le poids réel sera confirmé lors de la préparation.
 
 </strong>
+
 </p>
+
+
+
+
+
 <p>
 
 Le montant final sera ajusté en fonction du poids effectivement préparé.
 
 </p>
+
+
+
+
+
 </div>
+
+
+
 </section>
+
+
+
+
+
+
+
+
+
 <!-- ===================================================
      PANIER
 =================================================== -->
+
+
 <section class="panier-section">
+
+
+
 <div class="panier-card">
+
+
+
+
+
 <h2 id="titrePanier">
 
 🛒 Votre panier
 
 </h2>
+
+
+
+
+
 <div id="recapCommande">
 
 Aucun produit sélectionné.
 
 </div>
+
+
+
+
+
+
 <div class="total-box">
+
+
+
+
+
 <span>
 
 Total estimatif
 
 </span>
+
+
+
+
+
 <strong id="total">
 
 0.00 CHF
 
 </strong>
+
+
+
+
+
 </div>
-<button class="btn vider-panier" id="btnViderPanier" type="button">
+
+
+
+
+
+
+<button
+type="button"
+id="btnViderPanier"
+class="btn vider-panier">
 
 Vider le panier
 
 </button>
+
+
+
+
+
+
 </div>
+
+
+
+
 </section>
+
+
+
+
+
+
+
+
 <!-- ===================================================
      FORMULAIRE CLIENT
 =================================================== -->
+
+
 <section class="presentation">
+
+
+
+
+
 <h2>
 
 Vos coordonnées
 
 </h2>
-<form class="commande-form" id="formCommande">
+
+
+
+
+
+
+
+<form
+id="formCommande"
+class="commande-form">
+
+
+
+
+
+
 <div class="form-grid">
+
+
+
+
+
+
+
 <div>
+
+
 <label>
 
 Prénom
 
 </label>
-<input id="prenom" placeholder="Votre prénom" required="" type="text"/>
+
+
+
+
+<input
+type="text"
+id="prenom"
+placeholder="Votre prénom"
+required>
+
+
+
 </div>
+
+
+
+
+
+
+
 <div>
+
+
 <label>
 
 Nom
 
 </label>
-<input id="nom" placeholder="Votre nom" required="" type="text"/>
+
+
+
+
+
+<input
+type="text"
+id="nom"
+placeholder="Votre nom"
+required>
+
+
+
 </div>
+
+
+
+
+
+
+
 <div>
+
+
 <label>
 
 Téléphone
 
 </label>
-<input id="telephone" placeholder="079 xxx xx xx" type="tel"/>
+
+
+
+
+
+<input
+type="tel"
+id="telephone"
+placeholder="079 xxx xx xx">
+
+
+
 </div>
+
+
+
+
+
+
+
 <div>
+
+
 <label>
 
 Adresse e-mail
 
 </label>
-<input id="email" placeholder="votre@email.ch" required="" type="email"/>
+
+
+
+
+<input
+type="email"
+id="email"
+placeholder="votre@email.ch"
+required>
+
+
+
 </div>
+
+
+
+
+
+
+
 <div class="full-width">
+
+
 <label>
 
 Adresse de livraison
 
 </label>
-<textarea id="adresse" placeholder="Rue, numéro, NPA, ville" rows="4"></textarea>
+
+
+
+
+
+<textarea
+id="adresse"
+rows="4"
+placeholder="Rue, numéro, NPA, ville"></textarea>
+
+
+
 </div>
+
+
+
+
+
+
+
 <div class="full-width">
+
+
 <label>
 
 Commentaire
 
 </label>
-<textarea id="commentaire" placeholder="Date souhaitée, instructions particulières..." rows="3"></textarea>
+
+
+
+
+
+<textarea
+id="commentaire"
+rows="3"
+placeholder="Date souhaitée, instructions particulières..."></textarea>
+
+
+
 </div>
+
+
+
+
+
+
 </div>
+
+
+
+
+
+
+
+
+
 <!-- ===================================================
      PAIEMENT TWINT
 =================================================== -->
+
+
 <div class="paiement-box">
+
+
+
+
+
 <h3>
 
 💳 Paiement TWINT
 
 </h3>
+
+
+
+
+
+
 <p>
 
 Merci d'effectuer le paiement avant validation de la commande.
 
 </p>
+
+
+
+
+
+
+
 <div class="twint-number">
 
 079 592 78 82
 
 </div>
+
+
+
+
+
+
+
+
 <label>
-<input id="confirmationTwint" required="" type="checkbox"/>
+
+
+
+
+
+<input
+type="checkbox"
+id="confirmationTwint"
+required>
 
 
 
@@ -489,15 +1305,48 @@ J'ai effectué le paiement TWINT au nom de
 
 
 <strong id="twintNomComplet">
+
 </strong>
+
+
+
+
+
 </label>
+
+
+
+
+
+
+
 <p class="confirmation">
 
 La commande sera confirmée après vérification du paiement.
 
 </p>
+
+
+
+
+
+
+
 </div>
-<button class="btn btn-large" type="submit">
+
+
+
+
+
+
+
+
+
+<button
+
+class="btn btn-large"
+
+type="submit">
 
 
 
@@ -506,18 +1355,60 @@ Envoyer ma commande
 
 
 </button>
+
+
+
+
+
+
+
 </form>
+
+
+
+
+
+
+
 </section>
+
+
+
+
+
+
+
+
+
 <!-- ===================================================
      FOOTER
 =================================================== -->
+
+
 <footer>
+
+
+
+
+
 <p>
 
 © Idée Gourmande - Genève
 
 </p>
+
+
+
+
+
+
+
 <p>
+
+
+
+
+
 <a href="contact.html">
 
 Contact
@@ -528,7 +1419,7 @@ Contact
 
 
 
- | 
+&nbsp;|&nbsp;
 
 
 
@@ -539,14 +1430,64 @@ Contact
 Mentions légales
 
 </a>
+
+
+
+
+
+
 </p>
+
+
+
+
+
+
+
 </footer>
+
+
+
+
+
+
+
+
+
 <!-- ===================================================
      SCRIPTS
 =================================================== -->
+
+
+
+
+
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
+
+
+
+
 <script src="js/database.js"></script>
+
+
+
+
+
 <script src="js/pdfcommande.js"></script>
+
+
+
+
+
 <script src="js/commande.js?v=3"></script>
-<script src="js/translations.js"></script><script src="js/language.js"></script></body>
+
+
+
+
+
+
+
+</body>
+
 </html>
