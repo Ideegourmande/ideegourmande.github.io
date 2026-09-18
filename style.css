@@ -1,2671 +1,987 @@
 /* ===================================================
-   IDÉE GOURMANDE V2
-   Style principal optimisé
-   =================================================== */
-
+IDÉE GOURMANDE V2
+Style principal optimisé
+=================================================== */
 
 /* ===================================================
-   VARIABLES
-   =================================================== */
+VARIABLES
+=================================================== */
 
 :root {
 
-    --vert: #7F9275;
+```
+--vert: #7F9275;
 
-    --vert-fonce: #5E7055;
+--vert-fonce: #5E7055;
 
-    --or: #D4AF37;
+--or: #D4AF37;
 
-    --or-fonce: #B89122;
+--or-fonce: #B89122;
 
-    --fond: #F8F5EF;
+--fond: #F8F5EF;
 
-    --blanc: #FFFFFF;
+--blanc: #FFFFFF;
 
-    --texte: #333333;
+--texte: #333333;
 
-    --gris: #666666;
+--gris: #666666;
 
-    --ombre: 0 8px 25px rgba(0,0,0,.08);
+--ombre: 0 8px 25px rgba(0,0,0,.08);
 
-    --rayon: 18px;
+--rayon: 18px;
 
-    --transition: .30s;
+--transition: .30s;
+```
 
 }
 
-
-
 /* ===================================================
-   RESET GLOBAL
-   =================================================== */
-
+RESET GLOBAL
+=================================================== */
 
 * {
 
-    margin:0;
+  margin:0;
 
-    padding:0;
+  padding:0;
 
-    box-sizing:border-box;
+  box-sizing:border-box;
 
 }
-
-
 
 html {
 
-    scroll-behavior:smooth;
+```
+scroll-behavior:smooth;
+```
 
 }
-
-
 
 body {
 
-    font-family:Georgia, serif;
+```
+font-family:Georgia, serif;
 
-    background:var(--fond);
+background:var(--fond);
 
-    color:var(--texte);
+color:var(--texte);
 
-    line-height:1.6;
+line-height:1.6;
+```
 
 }
-
-
 
 img {
 
-    display:block;
+```
+display:block;
 
-    max-width:100%;
+max-width:100%;
 
-    height:auto;
+height:auto;
+```
 
 }
-
-
 
 a {
 
-    text-decoration:none;
+```
+text-decoration:none;
 
-    transition:var(--transition);
+transition:var(--transition);
+```
 
 }
-
-
 
 ul {
 
-    list-style:none;
+```
+list-style:none;
+```
 
 }
 
-
-
-
-
-
-
 /* ===================================================
-   BANDEAU SUPERIEUR
-   =================================================== */
-
+BANDEAU SUPERIEUR
+=================================================== */
 
 .top-banner {
 
-    background:var(--vert);
+```
+background:var(--vert);
 
-    color:white;
+color:white;
 
-    padding:12px;
+padding:12px;
 
-    text-align:center;
+text-align:center;
 
-    font-size:.95rem;
+font-size:.95rem;
 
-    letter-spacing:.3px;
+letter-spacing:.3px;
+```
 
 }
 
-
-
-
-
-
-
 /* ===================================================
-   NAVIGATION
-   =================================================== */
-
+NAVIGATION
+=================================================== */
 
 nav {
 
-    display:flex;
+```
+display:flex;
 
-    justify-content:space-between;
+justify-content:space-between;
 
-    align-items:center;
+align-items:center;
 
-    padding:18px 8%;
+padding:18px 8%;
 
-    background:white;
+background:white;
 
-    box-shadow:0 2px 10px rgba(0,0,0,.05);
+box-shadow:0 2px 10px rgba(0,0,0,.05);
 
-    position:sticky;
+position:sticky;
 
-    top:0;
+top:0;
 
-    z-index:999;
+z-index:999;
+```
 
 }
-
-
 
 .logo img {
 
-    width:120px;
+```
+width:120px;
+```
 
 }
-
-
 
 nav ul {
 
-    display:flex;
+```
+display:flex;
 
-    align-items:center;
+align-items:center;
 
-    gap:35px;
+gap:35px;
+```
 
 }
-
-
 
 nav a {
 
-    color:var(--texte);
+```
+color:var(--texte);
 
-    font-weight:bold;
+font-weight:bold;
 
-    font-size:1rem;
+font-size:1rem;
+```
 
 }
-
-
 
 nav a:hover {
 
-    color:var(--or-fonce);
+```
+color:var(--or-fonce);
+```
 
 }
 
-
-
-
-
-
-
-
 /* ===================================================
-   HERO
-   =================================================== */
-
+HERO
+=================================================== */
 
 .hero {
 
-    min-height:700px;
+```
+min-height:700px;
 
-    display:flex;
+display:flex;
 
-    justify-content:center;
+justify-content:center;
 
-    align-items:center;
+align-items:center;
 
-    text-align:center;
+text-align:center;
 
-    color:white;
+color:white;
 
-    background:
+background:
 
-        linear-gradient(
-            rgba(0,0,0,.45),
-            rgba(0,0,0,.45)
-        ),
+    linear-gradient(
+        rgba(0,0,0,.45),
+        rgba(0,0,0,.45)
+    ),
 
-        url("../images/hero.jpg");
+    url("../images/hero.jpg");
 
-    background-size:cover;
+background-size:cover;
 
-    background-position:center;
+background-position:center;
+```
 
 }
-
-
 
 .hero-content {
 
-    max-width:850px;
+```
+max-width:850px;
 
-    padding:30px;
+padding:30px;
+```
 
 }
-
-
 
 .hero h1 {
 
-    font-size:4.5rem;
+```
+font-size:4.5rem;
 
-    margin-bottom:20px;
+margin-bottom:20px;
+```
 
 }
-
-
 
 .hero h2 {
 
-    color:#F1D78A;
+```
+color:#F1D78A;
 
-    font-size:2rem;
+font-size:2rem;
 
-    margin-bottom:20px;
+margin-bottom:20px;
+```
 
 }
-
-
 
 .hero p {
 
-    font-size:1.25rem;
+```
+font-size:1.25rem;
 
-    margin-bottom:40px;
+margin-bottom:40px;
+```
 
 }
 
-
-
-
-
-
-
-
 /* ===================================================
-   BOUTONS GENERAUX
-   =================================================== */
-
+BOUTONS GENERAUX
+=================================================== */
 
 .btn,
 button {
 
-    background:var(--or-fonce);
+```
+background:var(--or-fonce);
 
-    color:white;
+color:white;
 
-    border:none;
+border:none;
 
-    padding:15px 36px;
+padding:15px 36px;
 
-    border-radius:35px;
+border-radius:35px;
 
-    font-size:1rem;
+font-size:1rem;
 
-    font-weight:bold;
+font-weight:bold;
 
-    cursor:pointer;
+cursor:pointer;
 
-    transition:var(--transition);
+transition:var(--transition);
 
-    display:inline-flex;
+display:inline-flex;
 
-    align-items:center;
+align-items:center;
 
-    justify-content:center;
+justify-content:center;
+```
 
 }
-
-
 
 .btn:hover,
 button:hover {
 
-    background:#94741C;
+```
+background:#94741C;
 
-    transform:translateY(-3px);
+transform:translateY(-3px);
 
-    box-shadow:0 12px 25px rgba(184,145,34,.35);
+box-shadow:0 12px 25px rgba(184,145,34,.35);
+```
 
 }
-
-
 
 .btn-secondaire {
 
-    background:var(--vert);
+```
+background:var(--vert);
+```
 
 }
-
-
 
 .btn-secondaire:hover {
 
-    background:var(--vert-fonce);
+```
+background:var(--vert-fonce);
+```
 
 }
 
-
-
-
-
-
-
 /* ===================================================
-   SECTIONS INTRODUCTION
-   =================================================== */
-
+SECTIONS INTRODUCTION
+=================================================== */
 
 .presentation {
 
-    padding:70px 10%;
+```
+padding:70px 10%;
 
-    text-align:center;
+text-align:center;
+```
 
 }
-
-
 
 .presentation h1,
 .presentation h2 {
 
-    color:var(--vert);
+```
+color:var(--vert);
 
-    margin-bottom:20px;
+margin-bottom:20px;
+```
 
 }
-
-
 
 .presentation h1 {
 
-    font-size:3rem;
+```
+font-size:3rem;
+```
 
 }
-
-
 
 .presentation h2 {
 
-    font-size:2.3rem;
+```
+font-size:2.3rem;
+```
 
 }
-
-
 
 .presentation p {
 
-    max-width:900px;
+```
+max-width:900px;
 
-    margin:auto;
+margin:auto;
 
-    font-size:1.1rem;
+font-size:1.1rem;
 
-    color:var(--gris);
+color:var(--gris);
+```
 
 }
 
 /* ===================================================
-   VALEURS / BLOCS PREMIUM
-   =================================================== */
-
+VALEURS / BLOCS PREMIUM
+=================================================== */
 
 .valeurs {
 
-    display:grid;
+```
+display:grid;
 
-    grid-template-columns:repeat(3,1fr);
+grid-template-columns:repeat(3,1fr);
 
-    gap:30px;
+gap:30px;
 
-    padding:60px 8%;
+padding:60px 8%;
 
-}
-
-
-
-.valeurs div {
-
-    background:white;
-
-    padding:35px;
-
-    border-radius:var(--rayon);
-
-    box-shadow:var(--ombre);
-
-    text-align:center;
-
-    transition:var(--transition);
+align-items:stretch;
+```
 
 }
 
+.valeurs > div {
 
+```
+background:white;
 
-.valeurs div:hover {
+padding:35px;
 
-    transform:translateY(-8px);
+border-radius:var(--rayon);
 
-    box-shadow:0 15px 35px rgba(0,0,0,.12);
+box-shadow:var(--ombre);
+
+text-align:center;
+
+transition:var(--transition);
+
+display:flex;
+
+flex-direction:column;
+
+justify-content:flex-start;
+
+align-items:center;
+
+min-height:220px;
+```
 
 }
 
+.valeurs > div:hover {
 
+```
+transform:translateY(-8px);
+
+box-shadow:0 15px 35px rgba(0,0,0,.12);
+```
+
+}
 
 .valeurs h3 {
 
-    color:var(--vert);
+```
+color:var(--vert);
 
-    margin-bottom:15px;
+margin-bottom:15px;
 
-    font-size:1.4rem;
+font-size:1.4rem;
+
+line-height:1.35;
+
+min-height:58px;
+
+width:100%;
+
+display:flex;
+
+align-items:center;
+
+justify-content:center;
+```
 
 }
 
+.valeurs p {
 
+```
+color:var(--gris);
 
+width:100%;
 
+margin:0;
 
+line-height:1.6;
+```
 
+}
 
 /* ===================================================
-   CATALOGUE PRODUITS
-   =================================================== */
-
+CATALOGUE PRODUITS
+=================================================== */
 
 .catalogue {
 
-    padding:0 8% 60px;
+```
+padding:0 8% 60px;
+```
 
 }
-
-
 
 .produits {
 
-    display:flex;
+```
+display:flex;
 
-    justify-content:center;
+justify-content:center;
 
-    flex-wrap:wrap;
+flex-wrap:wrap;
 
-    gap:30px;
+gap:30px;
 
-    margin-bottom:50px;
+margin-bottom:50px;
+```
 
 }
-
-
 
 .titre-categorie {
 
-    text-align:center;
+```
+text-align:center;
 
-    margin:40px 0 10px;
+margin:40px 0 10px;
 
-    color:var(--vert);
+color:var(--vert);
+```
 
 }
 
-
-
-
-
-
-
-
 /* ===================================================
-   CARTE PRODUIT CATALOGUE
-   =================================================== */
-
+CARTE PRODUIT CATALOGUE
+=================================================== */
 
 .produit {
 
-    width:320px;
+```
+width:320px;
 
-    background:linear-gradient(
-        to bottom,
-        #ffffff,
-        #fcfaf6
-    );
+background:linear-gradient(
+    to bottom,
+    #ffffff,
+    #fcfaf6
+);
 
-    border-radius:22px;
+border-radius:22px;
 
-    overflow:hidden;
+overflow:hidden;
 
-    border:1px solid #e9e1d1;
+border:1px solid #e9e1d1;
 
-    box-shadow:0 12px 30px rgba(0,0,0,.07);
+box-shadow:0 12px 30px rgba(0,0,0,.07);
 
-    display:flex;
+display:flex;
 
-    flex-direction:column;
+flex-direction:column;
 
-    text-align:center;
+text-align:center;
 
-    height:100%;
+height:100%;
 
-    transition:var(--transition);
+transition:var(--transition);
+```
 
 }
-
-
 
 .produit:hover {
 
-    transform:translateY(-12px);
+```
+transform:translateY(-12px);
 
-    box-shadow:0 30px 55px rgba(0,0,0,.16);
+box-shadow:0 30px 55px rgba(0,0,0,.16);
+```
 
 }
-
-
-
-
 
 .produit img {
 
-    width:100%;
+```
+width:100%;
 
-    height:220px;
+height:220px;
 
-    object-fit:cover;
+object-fit:cover;
+```
 
 }
-
-
 
 .produit h3 {
 
-    min-height:70px;
+```
+min-height:70px;
 
-    display:flex;
+display:flex;
 
-    align-items:center;
+align-items:center;
 
-    justify-content:center;
+justify-content:center;
 
-    padding:20px;
+padding:20px;
 
-    color:var(--vert);
+color:var(--vert);
 
-    font-size:1.45rem;
+font-size:1.45rem;
 
-    line-height:1.3;
+line-height:1.3;
+```
 
 }
-
-
 
 .produit p {
 
-    margin:0 20px 15px;
+```
+margin:0 20px 15px;
 
-    color:var(--gris);
+color:var(--gris);
+```
 
 }
-
-
 
 .prix {
 
-    display:flex;
+```
+display:flex;
 
-    align-items:center;
+align-items:center;
 
-    justify-content:center;
+justify-content:center;
 
-    min-height:45px;
+min-height:45px;
 
-    margin:10px 20px 0;
+margin:10px 20px 0;
 
-    font-size:1.45rem;
+font-size:1.45rem;
 
-    font-weight:bold;
+font-weight:bold;
 
-    color:var(--or-fonce);
+color:var(--or-fonce);
+```
 
 }
-
-
 
 .recettes {
 
-    margin:8px 20px 28px;
+```
+margin:8px 20px 28px;
 
-    padding-left:22px;
+padding-left:22px;
 
-    color:#555;
+color:#555;
 
-    line-height:1.75;
+line-height:1.75;
 
-    font-size:1rem;
+font-size:1rem;
+```
 
 }
-
-
 
 .recettes li {
 
-    position:relative;
+```
+position:relative;
 
-    padding-left:12px;
+padding-left:12px;
 
-    margin-bottom:6px;
+margin-bottom:6px;
+```
 
 }
-
-
 
 .recettes li::before {
 
-    content:"•";
+```
+content:"•";
 
-    color:var(--or-fonce);
+color:var(--or-fonce);
 
-    position:absolute;
+position:absolute;
 
-    left:-8px;
+left:-8px;
+```
 
 }
-
-
 
 .produit::after {
 
-    content:"";
+```
+content:"";
 
-    display:block;
+display:block;
 
-    width:80%;
+width:80%;
 
-    margin:auto;
+margin:auto;
 
-    border-top:1px solid #ece6d8;
+border-top:1px solid #ece6d8;
+```
 
 }
-
-
 
 .produit .btn {
 
-    width:160px;
+```
+width:160px;
 
-    height:55px;
+height:55px;
 
-    margin:auto auto 20px;
+margin:auto auto 20px;
 
-    font-size:1.05rem;
+font-size:1.05rem;
 
-    letter-spacing:.4px;
+letter-spacing:.4px;
 
-    box-shadow:0 8px 18px rgba(184,145,34,.25);
+box-shadow:0 8px 18px rgba(184,145,34,.25);
+```
 
 }
 
-
-
-
-
-
-
-
-
 /* ===================================================
-   COMMANDES - GRILLE PRODUITS
-   =================================================== */
-
+COMMANDES - GRILLE PRODUITS
+=================================================== */
 
 .commande-grid {
 
-    display:grid;
+```
+display:grid;
 
-    grid-template-columns:repeat(auto-fit,minmax(320px,1fr));
+grid-template-columns:repeat(auto-fit,minmax(320px,1fr));
 
-    gap:35px;
+gap:35px;
 
-    align-items:stretch;
+align-items:stretch;
+```
 
 }
 
-
-
-
-
-
 /* ===================================================
-   CARTE COMMANDE
-   =================================================== */
-
+CARTE COMMANDE
+=================================================== */
 
 .commande-card {
 
-    background:var(--blanc);
+```
+background:var(--blanc);
 
-    border-radius:var(--rayon);
+border-radius:var(--rayon);
 
-    box-shadow:var(--ombre);
+box-shadow:var(--ombre);
 
-    padding:25px;
+padding:25px;
 
-    display:flex;
+display:flex;
 
-    flex-direction:column;
+flex-direction:column;
 
-    height:100%;
+height:100%;
 
-    transition:var(--transition);
+transition:var(--transition);
+```
 
 }
-
-
 
 .commande-card:hover {
 
-    transform:translateY(-8px);
+```
+transform:translateY(-8px);
 
-    box-shadow:0 15px 35px rgba(0,0,0,.12);
+box-shadow:0 15px 35px rgba(0,0,0,.12);
+```
 
 }
-
-
 
 .commande-card img {
 
-    width:100%;
+```
+width:100%;
 
-    height:240px;
+height:240px;
 
-    object-fit:cover;
+object-fit:cover;
 
-    border-radius:var(--rayon);
+border-radius:var(--rayon);
 
-    margin-bottom:20px;
+margin-bottom:20px;
+```
 
 }
-
-
 
 .commande-card h3 {
 
-    min-height:55px;
+```
+min-height:55px;
 
-    margin-bottom:15px;
+margin-bottom:15px;
 
-    color:var(--vert);
+color:var(--vert);
+```
 
 }
-
-
 
 .commande-card p {
 
-    margin-bottom:12px;
+```
+margin-bottom:12px;
+```
 
 }
-
-
 
 .commande-card strong {
 
-    color:var(--or-fonce);
+```
+color:var(--or-fonce);
 
-    font-size:1.1rem;
+font-size:1.1rem;
+```
 
 }
-
-
 
 .commande-card label {
 
-    display:block;
+```
+display:block;
 
-    font-weight:bold;
+font-weight:bold;
 
-    margin-top:15px;
+margin-top:15px;
+```
 
 }
 
-
-
-
-
-
-
-
 /* ===================================================
-   CHOIX RECETTES
-   =================================================== */
-
+CHOIX RECETTES
+=================================================== */
 
 .choix-recette {
 
-    display:flex;
+```
+display:flex;
 
-    flex-direction:column;
+flex-direction:column;
 
-    gap:12px;
+gap:12px;
 
-    margin:15px 0 20px;
+margin:15px 0 20px;
+```
 
 }
-
-
 
 .choix-recette label {
 
-    display:flex;
+```
+display:flex;
 
-    align-items:center;
+align-items:center;
 
-    gap:10px;
+gap:10px;
 
-    padding:12px;
+padding:12px;
 
-    background:var(--fond);
+background:var(--fond);
 
-    border-radius:12px;
+border-radius:12px;
 
-    cursor:pointer;
+cursor:pointer;
 
-    font-weight:normal;
+font-weight:normal;
 
-    transition:var(--transition);
+transition:var(--transition);
+```
 
 }
-
-
 
 .choix-recette label:hover {
 
-    background:#efe8da;
+```
+background:#efe8da;
+```
 
 }
-
-
 
 .choix-recette input {
 
-    width:auto;
+```
+width:auto;
 
-    margin:0;
+margin:0;
+```
 
 }
 
-
-
-
-
-
-
-
 /* ===================================================
-   QUANTITES ET POIDS
-   =================================================== */
-
+QUANTITES ET POIDS
+=================================================== */
 
 .quantite-produit,
 .poids-produit {
 
-    width:100%;
+```
+width:100%;
 
-    padding:12px;
+padding:12px;
 
-    border-radius:12px;
+border-radius:12px;
 
-    border:1px solid #ddd;
+border:1px solid #ddd;
 
-    font-size:1rem;
+font-size:1rem;
 
-    margin-top:8px;
+margin-top:8px;
+```
 
 }
 
-
-
-
-
-
-
-
 /* ===================================================
-   AJOUT PANIER
-   =================================================== */
-
+AJOUT PANIER
+=================================================== */
 
 .ajouter-panier {
 
-    width:100%;
+```
+width:100%;
 
-    margin-top:auto;
+margin-top:auto;
+```
 
 }
 
 /* ===================================================
-   FORMULAIRES
-   =================================================== */
-
+FORMULAIRES
+=================================================== */
 
 .commande-form {
 
-    background:white;
+```
+background:white;
 
-    padding:40px;
+padding:40px;
 
-    border-radius:var(--rayon);
+border-radius:var(--rayon);
 
-    box-shadow:var(--ombre);
+box-shadow:var(--ombre);
 
-    max-width:1000px;
+max-width:1000px;
 
-    margin:auto;
+margin:auto;
+```
 
 }
-
-
 
 #formCommande {
 
-    width:100%;
+```
+width:100%;
+```
 
 }
-
-
 
 .form-grid {
 
-    display:grid;
+```
+display:grid;
 
-    grid-template-columns:repeat(2,1fr);
+grid-template-columns:repeat(2,1fr);
 
-    gap:25px;
+gap:25px;
+```
 
 }
-
-
 
 .full-width {
 
-    grid-column:1/-1;
+```
+grid-column:1/-1;
+```
 
 }
-
-
 
 input,
 textarea,
 select {
 
-    width:100%;
+```
+width:100%;
 
-    padding:15px;
+padding:15px;
 
-    margin-top:8px;
+margin-top:8px;
 
-    border:1px solid #ddd;
+border:1px solid #ddd;
 
-    border-radius:12px;
-
-    font-family:inherit;
-
-    font-size:1rem;
-
-    background:white;
-
-}
-
-
-
-textarea {
-
-    resize:vertical;
-
-}
-
-
-
-input:focus,
-textarea:focus,
-select:focus {
-
-    outline:none;
-
-    border-color:var(--or);
-
-    box-shadow:0 0 0 3px rgba(212,175,55,.15);
-
-}
-
-
-
-
-
-
-
-
-/* ===================================================
-   SECTION COMMANDE
-   =================================================== */
-
-
-.commande-section {
-
-    padding:60px 8%;
-
-}
-
-
-
-.commande-container {
-
-    max-width:1200px;
-
-    margin:auto;
-
-}
-
-
-
-
-
-
-
-
-
-/* ===================================================
-   PANIER
-   =================================================== */
-
-
-.panier-section {
-
-    padding:60px 8%;
-
-}
-
-
-
-.panier-card {
-
-    background:white;
-
-    padding:35px;
-
-    border-radius:var(--rayon);
-
-    box-shadow:var(--ombre);
-
-    max-width:900px;
-
-    margin:auto;
-
-}
-
-
-
-.panier-card h2 {
-
-    color:var(--vert);
-
-    margin-bottom:25px;
-
-}
-
-
-
-#recapCommande {
-
-    padding:20px;
-
-    background:#fafafa;
-
-    border-radius:15px;
-
-    min-height:80px;
-
-}
-
-
-
-#recapCommande p {
-
-    margin-bottom:10px;
-
-}
-
-
-
-.total-box {
-
-    display:flex;
-
-    justify-content:space-between;
-
-    align-items:center;
-
-    margin-top:25px;
-
-    padding-top:20px;
-
-    border-top:1px solid #ddd;
-
-    font-size:1.2rem;
-
-}
-
-
-
-.total-box strong {
-
-    font-size:2rem;
-
-    color:var(--vert);
-
-}
-
-
-
-.vider-panier {
-
-    background:#8b3a3a;
-
-    margin-top:20px;
-
-}
-
-
-
-.vider-panier:hover {
-
-    background:#6c2929;
-
-}
-
-
-
-
-
-
-
-
-/* ===================================================
-   RESUME COMMANDE
-   =================================================== */
-
-
-.resume-commande {
-
-    background:white;
-
-    padding:30px;
-
-    border-radius:var(--rayon);
-
-    box-shadow:var(--ombre);
-
-    margin-top:40px;
-
-}
-
-
-
-.resume-commande h2 {
-
-    color:var(--vert);
-
-    margin-bottom:20px;
-
-}
-
-
-
-.ligne-produit {
-
-    display:flex;
-
-    justify-content:space-between;
-
-    align-items:center;
-
-    padding:12px 0;
-
-    border-bottom:1px solid #eee;
-
-}
-
-
-
-.ligne-produit:last-child {
-
-    border-bottom:none;
-
-}
-
-
-
-.ligne-produit span {
-
-    font-size:1rem;
-
-}
-
-
-
-.ligne-produit strong {
-
-    color:var(--or-fonce);
-
-}
-
-
-
-
-
-
-
-
-/* ===================================================
-   TOTAL COMMANDE
-   =================================================== */
-
-
-.total-commande {
-
-    margin-top:30px;
-
-    background:var(--vert);
-
-    color:white;
-
-    padding:25px;
-
-    border-radius:var(--rayon);
-
-    display:flex;
-
-    justify-content:space-between;
-
-    align-items:center;
-
-    font-size:1.4rem;
-
-}
-
-
-
-.total-commande strong {
-
-    font-size:2rem;
-
-    color:white;
-
-}
-
-
-
-.validation-commande {
-
-    text-align:center;
-
-    margin-top:35px;
-
-}
-
-
-
-.btn-large {
-
-    font-size:1.15rem;
-
-    padding:18px 50px;
-
-}
-
-
-
-
-
-
-
-
-/* ===================================================
-   PAIEMENT TWINT
-   =================================================== */
-
-
-.paiement-box {
-
-    margin:35px auto;
-
-    padding:30px;
-
-    background:#faf7ee;
-
-    border:1px solid var(--or);
-
-    border-radius:var(--rayon);
-
-    text-align:center;
-
-}
-
-
-
-.paiement-box h3 {
-
-    color:var(--vert);
-
-    margin-bottom:15px;
-
-}
-
-
-
-.twint-number {
-
-    font-size:1.8rem;
-
-    font-weight:bold;
-
-    color:var(--vert);
-
-    margin:20px;
-
-}
-
-
-
-.twint-info {
-
-    margin-top:20px;
-
-    padding:15px;
-
-    background:white;
-
-    border-left:4px solid var(--or);
-
-    border-radius:10px;
-
-    font-size:.95rem;
-
-    line-height:1.6;
-
-    color:var(--texte);
-
-    box-shadow:0 2px 8px rgba(0,0,0,.05);
-
-}
-
-
-
-.confirmation {
-
-    font-size:.95rem;
-
-    color:var(--gris);
-
-    margin-top:20px;
-
-}
-
-
-
-
-
-
-
-
-/* ===================================================
-   PAGE CONFIRMATION
-   =================================================== */
-
-
-.confirmation-page {
-
-    max-width:800px;
-
-    margin:80px auto;
-
-    padding:45px;
-
-    background:white;
-
-    border-radius:var(--rayon);
-
-    box-shadow:var(--ombre);
-
-    text-align:center;
-
-}
-
-
-
-.confirmation-page h1 {
-
-    color:var(--vert);
-
-    font-size:3rem;
-
-    margin-bottom:20px;
-
-}
-
-
-
-.confirmation-page p {
-
-    font-size:1.15rem;
-
-    color:var(--gris);
-
-}
-
-
-
-
-
-
-
-
-/* ===================================================
-   PDF COMMANDE
-   =================================================== */
-
-
-.pdf-box {
-
-    background:#faf7ee;
-
-    border:1px solid var(--or);
-
-    padding:25px;
-
-    border-radius:var(--rayon);
-
-    margin-top:30px;
-
-    text-align:center;
-
-}
-
-
-
-.pdf-box h3 {
-
-    color:var(--vert);
-
-    margin-bottom:15px;
-
-}
-
-
-
-
-
-
-
-
-/* ===================================================
-   CONTACT
-   =================================================== */
-
-
-.contact-card {
-
-    background:white;
-
-    padding:40px;
-
-    max-width:800px;
-
-    margin:auto;
-
-    border-radius:var(--rayon);
-
-    box-shadow:var(--ombre);
-
-}
-
-
-
-.contact-card h2 {
-
-    color:var(--vert);
-
-    margin-bottom:20px;
-
-}
-
-
-
-.contact-info {
-
-    margin-top:25px;
-
-    font-size:1.1rem;
-
-}
-
-
-
-.contact-info strong {
-
-    color:var(--or-fonce);
-
-}
-
-
-
-
-
-
-
-
-/* ===================================================
-   FOOTER
-   =================================================== */
-
-
-footer {
-
-    background:#292929;
-
-    color:white;
-
-    padding:35px;
-
-    text-align:center;
-
-    margin-top:60px;
-
-}
-
-
-
-footer a {
-
-    color:var(--or);
-
-}
-
-
-
-footer a:hover {
-
-    color:white;
-
-}
-
-/* ===================================================
-   ADMINISTRATION - COMMANDES
-   =================================================== */
-
-.commande-admin {
-
-    background:white;
-
-    padding:30px;
-
-    margin-bottom:25px;
-
-    border-radius:var(--rayon);
-
-    box-shadow:var(--ombre);
-
-    border-left:5px solid var(--vert);
-
-    transition:var(--transition);
-
-}
-
-
-.commande-admin:hover {
-
-    transform:translateY(-3px);
-
-    box-shadow:0 12px 30px rgba(0,0,0,.10);
-
-}
-
-
-/* Titre de la commande */
-
-.commande-admin h3 {
-
-    color:var(--vert);
-
-    margin-bottom:20px;
-
-    font-size:1.35rem;
-
-}
-
-
-/* Informations */
-
-.commande-admin p {
-
-    margin-bottom:12px;
-
-    color:var(--texte);
-
-}
-
-
-.commande-admin p strong {
-
-    color:var(--vert-fonce);
-
-}
-
-
-/* Sélecteur de statut */
-
-.commande-admin select {
-
-    max-width:250px;
-
-    margin-top:8px;
-
-}
-
-
-/* Zone des boutons */
-
-.commande-admin .btn {
-
-    margin:8px 8px 0 0;
-
-}
-
-
-/* Séparation entre commandes */
-
-.commande-admin hr {
-
-    margin-top:25px;
-
-    border:none;
-
-    border-top:1px solid #eee;
-
-}
-
-
-
-
-
-
-
-/* ===================================================
-   MENU ADMINISTRATION
-   =================================================== */
-
-
-.admin-menu,
-.menu-admin,
-.dashboard-admin {
-
-    display:flex;
-
-    flex-wrap:wrap;
-
-    gap:15px;
-
-}
-
-
-
-.admin-menu .btn,
-.menu-admin .btn,
-.dashboard-admin .btn {
-
-    margin:8px;
-
-    min-height:45px;
-
-    display:inline-flex;
-
-    align-items:center;
-
-    justify-content:center;
-
-    text-align:center;
-
-}
-
-
-
-
-
-
-
-/* ===================================================
-   STATISTIQUES ADMIN
-   =================================================== */
-
-
-.admin-stats {
-
-    display:grid;
-
-    grid-template-columns:repeat(3,1fr);
-
-    gap:25px;
-
-    margin:40px 8%;
-
-}
-
-
-
-.stat-card {
-
-    background:white;
-
-    padding:30px;
-
-    border-radius:var(--rayon);
-
-    box-shadow:var(--ombre);
-
-    text-align:center;
-
-}
-
-
-
-.stat-card h3 {
-
-    font-size:2.5rem;
-
-    color:var(--vert);
-
-}
-
-
-
-.stat-card p {
-
-    color:var(--gris);
-
-    font-weight:bold;
-
-    margin-top:10px;
-
-}
-
-
-
-
-
-
-
-
-/* ===================================================
-   MESSAGES
-   =================================================== */
-
-
-.message-success {
-
-    background:#e9f3e5;
-
-    color:#48613f;
-
-    padding:18px;
-
-    border-radius:15px;
-
-    margin:20px 0;
-
-}
-
-
-
-.message-error {
-
-    background:#f9e5e5;
-
-    color:#8b3a3a;
-
-    padding:18px;
-
-    border-radius:15px;
-
-    margin:20px 0;
-
-}
-
-
-
-
-
-
-
-
-/* ===================================================
-   GESTION STOCK
-   =================================================== */
-
-
-#tableStock {
-
-    width:100%;
-
-    border-collapse:collapse;
-
-    margin-top:25px;
-
-    background:white;
-
-    border-radius:15px;
-
-    overflow:hidden;
-
-}
-
-
-
-#tableStock th {
-
-    background:var(--vert);
-
-    color:white;
-
-    padding:15px;
-
-    text-align:center;
-
-}
-
-
-
-#tableStock td {
-
-    padding:14px;
-
-    border-bottom:1px solid #eee;
-
-    text-align:center;
-
-}
-
-
-
-#tableStock tr:hover {
-
-    background:#faf7ee;
-
-}
-
-
-
-
-
-
-
-/* ===================================================
-   ETATS STOCK
-   =================================================== */
-
-
-.stock-ok {
-
-    color:#4d7c3f;
-
-    font-weight:bold;
-
-}
-
-
-
-.stock-critique {
-
-    color:#c47a00;
-
-    font-weight:bold;
-
-}
-
-
-
-.stock-rupture {
-
-    color:#8b3a3a;
-
-    font-weight:bold;
-
-}
-
-
-
-
-
-
-
-
-/* ===================================================
-   ACTIONS STOCK
-   =================================================== */
-
-
-.action-stock {
-
-    display:flex;
-
-    justify-content:center;
-
-    gap:10px;
-
-}
-
-
-
-.btn-stock {
-
-    padding:8px 15px;
-
-    font-size:.9rem;
-
-}
-
-
-
-
-
-
-
-
-/* ===================================================
-   POPUP ARTICLE
-   =================================================== */
-
-
-.popup {
-
-    position:fixed;
-
-    top:0;
-
-    left:0;
-
-    width:100%;
-
-    height:100%;
-
-    background:rgba(0,0,0,.55);
-
-    display:flex;
-
-    justify-content:center;
-
-    align-items:center;
-
-    z-index:2000;
-
-}
-
-
-
-.popup-content {
-
-    background:white;
-
-    width:90%;
-
-    max-width:500px;
-
-    padding:35px;
-
-    border-radius:var(--rayon);
-
-    box-shadow:var(--ombre);
-
-}
-
-
-
-.popup-content h2 {
-
-    color:var(--vert);
-
-    margin-bottom:25px;
-
-    text-align:center;
-
-}
-
-
-
-.popup-content label {
-
-    display:block;
-
-    font-weight:bold;
-
-    margin-top:15px;
-
-}
-
-
-
-
-
-
-
-
-/* ===================================================
-   ALERTES STOCK
-   =================================================== */
-
-
-.alertes {
-
-    margin-top:20px;
-
-}
-
-
-
-.alerte-ok {
-
-    background:#e9f3e5;
-
-    color:#48613f;
-
-    padding:15px;
-
-    border-radius:12px;
-
-}
-
-
-
-.alerte-warning {
-
-    background:#fff3d6;
-
-    color:#9a6700;
-
-    padding:15px;
-
-    border-radius:12px;
-
-}
-
-
-
-.alerte-danger {
-
-    background:#f9e5e5;
-
-    color:#8b3a3a;
-
-    padding:15px;
-
-    border-radius:12px;
-
-}
-
-
-
-
-
-
-
-
-/* ===================================================
-   RESPONSIVE
-   =================================================== */
-
-
-/* Tablette et mobile */
-
-@media(max-width:768px) {
-
-
-    nav {
-
-        flex-direction:column;
-
-        gap:15px;
-
-    }
-
-
-
-    nav ul {
-
-        flex-wrap:wrap;
-
-        justify-content:center;
-
-        gap:15px;
-
-    }
-
-
-
-    .hero {
-
-        min-height:500px;
-
-    }
-
-
-
-    .hero h1 {
-
-        font-size:2.8rem;
-
-    }
-
-
-
-    .hero h2 {
-
-        font-size:1.5rem;
-
-    }
-
-
-
-    .presentation {
-
-        padding:50px 8%;
-
-    }
-
-
-
-    .commande-grid {
-
-        grid-template-columns:1fr;
-
-    }
-
-
-
-    .produit img {
-
-        height:220px;
-
-    }
-
-
-
-    .produit h3 {
-
-        min-height:auto;
-
-    }
-
-
-
-    .form-grid {
-
-        grid-template-columns:1fr;
-
-    }
-
-
-
-    .valeurs {
-
-        grid-template-columns:1fr;
-
-    }
-
-
-
-    .admin-stats {
-
-        grid-template-columns:1fr;
-
-    }
-
-
-
-    .admin-menu,
-    .menu-admin,
-    .dashboard-admin {
-
-        flex-direction:column;
-
-        align-items:stretch;
-
-    }
-
-
-
-    .admin-menu .btn,
-    .menu-admin .btn,
-    .dashboard-admin .btn {
-
-        width:100%;
-
-        margin:8px 0;
-
-    }
-
-
-
-    .popup-content {
-
-        width:95%;
-
-        padding:25px;
-
-    }
-
-
-
-    #tableStock {
-
-        display:block;
-
-        overflow-x:auto;
-
-        white-space:nowrap;
-
-    }
-
-}
-
-
-
-
-
-
-
-
-/* ===================================================
-   PETIT TELEPHONE
-   =================================================== */
-
-
-@media(max-width:600px) {
-
-
-    .hero-content {
-
-        padding:20px;
-
-    }
-
-
-
-    .hero h1 {
-
-        font-size:2.2rem;
-
-    }
-
-
-
-    .btn {
-
-        width:100%;
-
-    }
-
-
-
-    .commande-form,
-    .panier-card,
-    .contact-card {
-
-        padding:25px;
-
-    }
-
-
-}
-/* ===================================================
-   BOUTONS QUANTITE PANIER
-   =================================================== */
-
-
-.gestion-quantite{
-    display:flex;
-    align-items:center;
-    justify-content:flex-start;
-    gap:12px;
-    margin-top:8px;
-}
-
-.gestion-quantite span{
-    min-width:70px;
-    text-align:center;
-    font-weight:600;
-}
-
-.btn-quantite{
-    width:32px;
-    height:32px;
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    padding:0;
-}
-.infos-produit{
-    display:flex;
-    flex-direction:column;
-}
-
-.infos-produit br{
-    display:none;
-}
-
-.gestion-quantite{
-    margin-top:auto;
-}
-.infos-produit{
-    min-height:140px;
-}
-/* ===================================================
-   CORRECTION AFFICHAGE PANIER COMMANDE
-   =================================================== */
-
-
-.panier-section {
-
-    width:100%;
-
-    padding:40px 20px;
-
-    box-sizing:border-box;
-
-}
-
-
-
-.panier-card {
-
-    width:100%;
-
-    max-width:900px;
-
-    margin:0 auto;
-
-    box-sizing:border-box;
-
-}
-
-
-
-#recapCommande {
-
-    width:100%;
-
-}
-
-
-
-.ligne-produit {
-
-    width:100%;
-
-    display:flex;
-
-    justify-content:space-between;
-
-    align-items:center;
-
-    gap:20px;
-
-    padding:15px;
-
-    box-sizing:border-box;
-
-}
-
-
-
-.infos-produit {
-
-    flex:1;
-
-}
-
-
-
-.prix-produit {
-
-    min-width:150px;
-
-    text-align:right;
-
-}
-/* ===================================================
-   CORRECTION AFFICHAGE PANIER
-   =================================================== */
-
-
-.panier-section {
-
-    width: 100% !important;
-    display: block !important;
-    padding: 40px 20px !important;
-
-}
-
-
-.panier-card {
-
-    width: 100% !important;
-    max-width: 900px !important;
-    margin: 0 auto !important;
-
-}
-
-
-
-#recapCommande {
-
-    width: 100% !important;
-
-}
-
-
-
-.ligne-produit {
-
-    width: 100% !important;
-    display: flex !important;
-    justify-content: space-between !important;
-    align-items: center !important;
-
-}
-
-
-
-.infos-produit {
-
-    flex: 1;
-
-}
-
-
-
-.prix-produit {
-
-    min-width: 150px;
-
-}
-/* ===================================================
-   ADMIN - CARTES COMMANDES AMELIOREES
-   =================================================== */
-
-.commande-admin {
-    background: white;
-    padding: 30px;
-    margin: 25px auto;
-    max-width: 1000px;
-    border-radius: var(--rayon);
-    box-shadow: var(--ombre);
-    border-left: 5px solid var(--vert);
-}
-
-.commande-admin h3 {
-    color: var(--vert);
-    font-size: 1.35rem;
-    margin-bottom: 25px;
-    padding-bottom: 15px;
-    border-bottom: 1px solid #eee;
-}
-
-.commande-admin p {
-    margin-bottom: 15px;
-}
-
-.commande-admin strong {
-    color: var(--vert-fonce);
-}
-
-.commande-admin select {
-    max-width: 250px;
-    margin-top: 5px;
-}
-
-/* Séparation des actions */
-
-.commande-admin .btn {
-    margin: 5px 8px 5px 0;
-}
-
-/* Séparation finale */
-
-.commande-admin hr {
-    margin-top: 25px;
-    border: none;
-    border-top: 1px solid #eee;
-}
-/* ===================================================
-   ADMIN - STATUTS COLORES
-   =================================================== */
-
-.commande-admin-statut select {
-    width: auto !important;
-    min-width: 190px;
-    margin-top: 0 !important;
-    padding: 10px 15px;
-    border-radius: 10px;
-    font-weight: bold;
-    cursor: pointer;
-}
-
-/* NOUVELLE */
-
-.commande-admin-statut select.statut-nouvelle {
-    background-color: #e9f3e5 !important;
-    color: #48613f !important;
-    border: 2px solid #9bbb8f !important;
-}
-
-/* EN PRÉPARATION */
-
-.commande-admin-statut select.statut-preparation {
-    background-color: #fff3d6 !important;
-    color: #9a6700 !important;
-    border: 2px solid #e0b85c !important;
-}
-
-/* PRÊTE */
-
-.commande-admin-statut select.statut-prete {
-    background-color: #e5eef9 !important;
-    color: #456b95 !important;
-    border: 2px solid #8eafd0 !important;
-}
-
-/* LIVRÉE */
-
-.commande-admin-statut select.statut-livree {
-    background-color: #eeeeee !important;
-    color: #555555 !important;
-    border: 2px solid #bbbbbb !important;
-}
-/* ===================================================
-   ADMIN - TRI DES COMMANDES
-   =================================================== */
-
-.tri-commandes {
-
-    display:flex;
-    align-items:center;
-    gap:12px;
-
-    margin:20px 0;
-
-    padding:15px;
-
-    background:#faf7ee;
-
-    border-radius:12px;
-
-}
-
-.tri-commandes label {
-
-    font-weight:bold;
-
-    color:var(--vert-fonce);
-
-    white-space:nowrap;
-
-}
-
-.tri-commandes select {
-
-    width:auto !important;
-
-    min-width:240px;
-
-    margin-top:0 !important;
-
-    padding:10px 15px;
-
-    border:2px solid #d4af37;
-
-    border-radius:10px;
-
-    background:white;
-
-    color:#555;
-
-    font-weight:bold;
-
-    cursor:pointer;
-
-}
-@media(max-width:600px) {
-
-    .tri-commandes {
-
-        flex-direction:column;
-
-        align-items:stretch;
-
-    }
-
-    .tri-commandes select {
-
-        width:100% !important;
-
-    }
-
-}
+border-radius:12px;
+```
