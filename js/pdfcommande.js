@@ -1,5 +1,7 @@
 const GOOGLE_APPS_SCRIPT_URL =
   "https://script.google.com/macros/s/AKfycby5o5V0dRb9fPpnhmUYCeWB1LxXjGRXfQK0kQ2Tzw2gHK58GQn8VmxlDI1DFWzogAhI/exec";
+
+
 async function genererPDFCommande(commande) {
 
     if (!window.jspdf || !window.jspdf.jsPDF) {
@@ -16,11 +18,13 @@ async function genererPDFCommande(commande) {
     const fichier = "Commande_" + commande.id + ".pdf";
 
     const client = commande.client || {};
+
     const produits = Array.isArray(commande.produits)
         ? commande.produits
         : [];
 
     const total = Number(commande.total || 0);
+
 
     // ==============================
     // TITRE
@@ -36,12 +40,18 @@ async function genererPDFCommande(commande) {
     doc.setFontSize(10);
     doc.setFont("helvetica", "normal");
 
-    doc.text("N° commande : " + commande.id, 20, 40);
+    doc.text(
+        "N° commande : " + commande.id,
+        20,
+        40
+    );
+
     doc.text(
         "Date : " + new Date().toLocaleString("fr-CH"),
         20,
         47
     );
+
 
     // ==============================
     // CLIENT
@@ -53,24 +63,32 @@ async function genererPDFCommande(commande) {
     doc.text("CLIENT", 20, y);
 
     doc.setFont("helvetica", "normal");
+
     y += 8;
 
     doc.text(
-        "Nom : " + (client.prenom || "") + " " + (client.nom || ""),
+        "Nom : " +
+        (client.prenom || "") +
+        " " +
+        (client.nom || ""),
         20,
         y
     );
 
     y += 7;
+
     doc.text(
-        "Téléphone : " + (client.telephone || ""),
+        "Téléphone : " +
+        (client.telephone || ""),
         20,
         y
     );
 
     y += 7;
+
     doc.text(
-        "E-mail : " + (client.email || ""),
+        "E-mail : " +
+        (client.email || ""),
         20,
         y
     );
@@ -78,33 +96,51 @@ async function genererPDFCommande(commande) {
     y += 7;
 
     const adresse = String(client.adresse || "");
+
     const adresseLignes = doc.splitTextToSize(
         "Adresse : " + adresse,
         170
     );
 
-    doc.text(adresseLignes, 20, y);
+    doc.text(
+        adresseLignes,
+        20,
+        y
+    );
+
     y += adresseLignes.length * 6 + 8;
+
 
     // ==============================
     // PRODUITS
     // ==============================
 
     doc.setFont("helvetica", "bold");
-    doc.text("PRODUITS COMMANDÉS", 20, y);
+    doc.text(
+        "PRODUITS COMMANDÉS",
+        20,
+        y
+    );
 
     doc.setFont("helvetica", "normal");
+
     y += 10;
 
     produits.forEach(function(article) {
 
-        const nom = article.nom || "Produit";
-        const quantite = Number(article.quantite || 1);
-        const poids = article.poids
-            ? " (" + article.poids + " g)"
-            : "";
+        const nom =
+            article.nom || "Produit";
 
-        const prix = Number(article.prix || 0).toFixed(2);
+        const quantite =
+            Number(article.quantite || 1);
+
+        const poids =
+            article.poids
+                ? " (" + article.poids + " g)"
+                : "";
+
+        const prix =
+            Number(article.prix || 0).toFixed(2);
 
         const ligne =
             "- " +
@@ -116,18 +152,31 @@ async function genererPDFCommande(commande) {
             prix +
             " CHF";
 
-        const lignes = doc.splitTextToSize(ligne, 170);
+        const lignes =
+            doc.splitTextToSize(
+                ligne,
+                170
+            );
 
-        doc.text(lignes, 20, y);
+        doc.text(
+            lignes,
+            20,
+            y
+        );
 
         y += lignes.length * 6 + 2;
 
+
         // Nouvelle page si nécessaire
+
         if (y > 270) {
+
             doc.addPage();
+
             y = 20;
         }
     });
+
 
     // ==============================
     // TOTAL
@@ -135,17 +184,27 @@ async function genererPDFCommande(commande) {
 
     y += 5;
 
-    doc.setFont("helvetica", "bold");
+    doc.setFont(
+        "helvetica",
+        "bold"
+    );
+
     doc.setFontSize(13);
 
     doc.text(
-        "TOTAL : " + total.toFixed(2) + " CHF",
+        "TOTAL : " +
+        total.toFixed(2) +
+        " CHF",
         20,
         y
     );
 
     doc.setFontSize(10);
-    doc.setFont("helvetica", "normal");
+
+    doc.setFont(
+        "helvetica",
+        "normal"
+    );
 
     y += 12;
 
@@ -155,6 +214,7 @@ async function genererPDFCommande(commande) {
         y
     );
 
+
     // ==============================
     // COMMENTAIRE
     // ==============================
@@ -163,143 +223,321 @@ async function genererPDFCommande(commande) {
 
         y += 12;
 
-        doc.setFont("helvetica", "bold");
-        doc.text("COMMENTAIRE", 20, y);
-
-        doc.setFont("helvetica", "normal");
-        y += 7;
-
-        const commentaireLignes = doc.splitTextToSize(
-            String(client.commentaire),
-            170
+        doc.setFont(
+            "helvetica",
+            "bold"
         );
 
-        doc.text(commentaireLignes, 20, y);
+        doc.text(
+            "COMMENTAIRE",
+            20,
+            y
+        );
+
+        doc.setFont(
+            "helvetica",
+            "normal"
+        );
+
+        y += 7;
+
+        const commentaireLignes =
+            doc.splitTextToSize(
+                String(client.commentaire),
+                170
+            );
+
+        doc.text(
+            commentaireLignes,
+            20,
+            y
+        );
     }
 
-    // ==============================
-    // SAUVEGARDE LOCALE DU PDF
-    // ==============================
-
-    doc.save(fichier);
-
-    // PDF en mémoire
-    const pdfBlob = doc.output("blob");
-
-    console.log("PDF généré :", fichier);
 
     // ==============================
-    // CONVERSION DU PDF EN BASE64
+    // PDF EN MÉMOIRE
     // ==============================
 
-    const pdfBase64 = await new Promise(function(resolve, reject) {
+    const pdfBlob =
+        doc.output("blob");
 
-        const reader = new FileReader();
+    console.log(
+        "PDF généré :",
+        fichier
+    );
 
-        reader.onloadend = function() {
-            resolve(reader.result);
-        };
-
-        reader.onerror = function() {
-            reject(new Error(
-                "Impossible de convertir le PDF en Base64."
-            ));
-        };
-
-        reader.readAsDataURL(pdfBlob);
-    });
 
     // ==============================
-    // DONNÉES ENVOYÉES À GOOGLE
+    // CONVERSION BASE64
+    // ==============================
+
+    const pdfBase64 =
+        await new Promise(
+            function(resolve, reject) {
+
+                const reader =
+                    new FileReader();
+
+                reader.onloadend =
+                    function() {
+
+                        resolve(
+                            reader.result
+                        );
+                    };
+
+                reader.onerror =
+                    function() {
+
+                        reject(
+                            new Error(
+                                "Impossible de convertir le PDF en Base64."
+                            )
+                        );
+                    };
+
+                reader.readAsDataURL(
+                    pdfBlob
+                );
+            }
+        );
+
+
+    // ==============================
+    // VÉRIFICATION E-MAIL
+    // ==============================
+
+    const emailClient =
+        String(
+            client.email || ""
+        ).trim();
+
+    if (!emailClient) {
+
+        throw new Error(
+            "L'adresse e-mail du client est manquante."
+        );
+    }
+
+
+    // ==============================
+    // DONNÉES À ENVOYER
     // ==============================
 
     const payload = {
 
-        to: client.email || "",
+        to: emailClient,
 
-        numeroCommande: commande.id,
+        numeroCommande:
+            commande.id,
 
-        pdfBase64: pdfBase64,
+        pdfBase64:
+            pdfBase64,
 
-        pdfFilename: fichier,
+        pdfFilename:
+            fichier,
 
-        client: client,
+        client:
+            client,
 
-        produits: produits,
+        produits:
+            produits,
 
-        total: total,
+        total:
+            total,
 
         subject:
             "Commande Idée Gourmande n°" +
             commande.id
     };
 
-    if (!payload.to) {
-        throw new Error(
-            "L'adresse e-mail du client est manquante."
-        );
-    }
 
     console.log(
-        "Envoi du PDF à Google Apps Script..."
+        "Préparation de l'envoi vers Google Apps Script..."
     );
 
+
     // ==============================
-    // ENVOI À GOOGLE APPS SCRIPT
+    // ENVOI COMPATIBLE MOBILE
     // ==============================
 
-    const response = await fetch(
-        GOOGLE_APPS_SCRIPT_URL,
-        {
-            method: "POST",
+    await envoyerCommandeGoogle(
+        payload
+    );
 
-            headers: {
-                "Content-Type":
-                    "application/x-www-form-urlencoded;charset=UTF-8"
-            },
 
-            body: new URLSearchParams({
-                payload: JSON.stringify(payload)
-            })
+    // ==============================
+    // SAUVEGARDE LOCALE DU PDF
+    // ==============================
+
+    // Sur ordinateur, on télécharge
+    // également une copie du PDF.
+    //
+    // Sur mobile, on évite le téléchargement
+    // automatique qui peut perturber le
+    // navigateur pendant l'envoi.
+
+    const estMobile =
+        /Android|iPhone|iPad|iPod/i.test(
+            navigator.userAgent
+        );
+
+    if (!estMobile) {
+
+        try {
+
+            doc.save(fichier);
+
+        } catch (erreur) {
+
+            console.warn(
+                "Téléchargement local du PDF impossible :",
+                erreur
+            );
         }
-    );
-
-    const texteReponse = await response.text();
-
-    console.log(
-        "Réponse Google Apps Script :",
-        texteReponse
-    );
-
-    let resultat;
-
-    try {
-        resultat = JSON.parse(texteReponse);
-    } catch (erreur) {
-
-        throw new Error(
-            "Réponse Google Apps Script invalide : " +
-            texteReponse
-        );
     }
 
-    if (!resultat.ok) {
-
-        throw new Error(
-            resultat.message ||
-            resultat.error ||
-            "Google Apps Script n'a pas confirmé l'envoi."
-        );
-    }
 
     console.log(
-        "E-mail envoyé avec succès par Gmail.",
-        resultat
+        "Commande transmise à Google Apps Script."
     );
+
 
     return {
-        blob: pdfBlob,
-        filename: fichier,
-        emailEnvoye: true
+
+        blob:
+            pdfBlob,
+
+        filename:
+            fichier,
+
+        emailEnvoye:
+            true
     };
+}
+
+
+/**
+ * Envoi compatible avec les navigateurs mobiles.
+ *
+ * On utilise un formulaire HTML invisible
+ * plutôt que fetch(), afin d'éviter les
+ * problèmes CORS / Load failed sur mobile.
+ */
+function envoyerCommandeGoogle(payload) {
+
+    return new Promise(
+        function(resolve, reject) {
+
+            try {
+
+                // Création d'un iframe invisible
+
+                const iframe =
+                    document.createElement("iframe");
+
+                iframe.style.display = "none";
+
+                iframe.name =
+                    "googleAppsScript_" +
+                    Date.now();
+
+                document.body.appendChild(
+                    iframe
+                );
+
+
+                // Création du formulaire
+
+                const form =
+                    document.createElement("form");
+
+                form.method =
+                    "POST";
+
+                form.action =
+                    GOOGLE_APPS_SCRIPT_URL;
+
+                form.target =
+                    iframe.name;
+
+                form.style.display =
+                    "none";
+
+
+                // Champ payload
+
+                const input =
+                    document.createElement("input");
+
+                input.type =
+                    "hidden";
+
+                input.name =
+                    "payload";
+
+                input.value =
+                    JSON.stringify(payload);
+
+                form.appendChild(
+                    input
+                );
+
+
+                document.body.appendChild(
+                    form
+                );
+
+
+                console.log(
+                    "Envoi de la commande vers Google..."
+                );
+
+
+                // Envoi
+
+                form.submit();
+
+
+                /*
+                 * Le Web App Google reçoit
+                 * la commande indépendamment
+                 * de la réponse visible par
+                 * le navigateur.
+                 *
+                 * On laisse quelques secondes
+                 * au serveur pour recevoir le
+                 * PDF et envoyer les deux e-mails.
+                 */
+
+                setTimeout(
+                    function() {
+
+                        form.remove();
+
+                        iframe.remove();
+
+                        console.log(
+                            "Commande envoyée au Web App Google."
+                        );
+
+                        resolve();
+
+                    },
+                    3000
+                );
+
+
+            } catch (erreur) {
+
+                reject(
+                    new Error(
+                        "Impossible d'envoyer la commande : " +
+                        erreur.message
+                    )
+                );
+            }
+        }
+    );
 }
