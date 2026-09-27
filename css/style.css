@@ -2669,3 +2669,31 @@ footer a:hover {
     }
 
 }
+```html
+<style>
+.share-site-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 12px 18px;
+  border: none;
+  border-radius: 10px;
+  background: #8b5e3c;
+  color: #fff;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: transform 0.2s ease, opacity 0.2s ease;
+}
+
+.share-site-btn:hover {
+  opacity: 0.9;
+  transform: translateY(-1px);
+}
+
+.share-site-btn:active {
+  transform: translateY(0);
+}
+</style>
+```
