@@ -1,3 +1,4 @@
+```html
 <!DOCTYPE html>
 <html lang="fr">
 
@@ -9,6 +10,36 @@
 <title>Administration - Idée Gourmande</title>
 
 <link rel="stylesheet" href="css/style.css">
+
+<style>
+
+.share-site-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 12px 18px;
+    margin: 5px;
+    border: none;
+    border-radius: 10px;
+    background: #8b5e3c;
+    color: #ffffff;
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: transform 0.2s ease, opacity 0.2s ease;
+}
+
+.share-site-btn:hover {
+    opacity: 0.9;
+    transform: translateY(-1px);
+}
+
+.share-site-btn:active {
+    transform: translateY(0);
+}
+
+</style>
 
 </head>
 
@@ -75,6 +106,22 @@ if(localStorage.getItem("adminConnecte") !== "oui"){
         🏠 Accueil
 
     </a>
+
+
+
+    <!-- =========================
+         PARTAGER LE SITE
+    ========================= -->
+
+    <button
+        type="button"
+        class="share-site-btn"
+        onclick="shareSite()"
+    >
+
+        📤 Partager le site
+
+    </button>
 
 
 
@@ -221,7 +268,6 @@ if(localStorage.getItem("adminConnecte") !== "oui"){
 <section class="stats">
 
 
-
     <!-- COMMANDES -->
 
     <div class="stat-card">
@@ -231,7 +277,6 @@ if(localStorage.getItem("adminConnecte") !== "oui"){
             Commandes
 
         </h3>
-
 
         <strong id="nbCommandes">
 
@@ -253,7 +298,6 @@ if(localStorage.getItem("adminConnecte") !== "oui"){
 
         </h3>
 
-
         <strong id="caTotal">
 
             0 CHF
@@ -273,7 +317,6 @@ if(localStorage.getItem("adminConnecte") !== "oui"){
             Aujourd'hui
 
         </h3>
-
 
         <strong id="commandeJour">
 
@@ -295,7 +338,6 @@ if(localStorage.getItem("adminConnecte") !== "oui"){
 
         </h3>
 
-
         <strong id="nbAchats">
 
             0
@@ -315,7 +357,6 @@ if(localStorage.getItem("adminConnecte") !== "oui"){
             Stock critique
 
         </h3>
-
 
         <strong id="stockCritique">
 
@@ -337,7 +378,6 @@ if(localStorage.getItem("adminConnecte") !== "oui"){
 
         </h3>
 
-
         <strong id="sessionActive">
 
             Aucune
@@ -357,9 +397,7 @@ if(localStorage.getItem("adminConnecte") !== "oui"){
 
 <section class="panier-section">
 
-
     <div class="panier-card">
-
 
         <h2>
 
@@ -367,16 +405,13 @@ if(localStorage.getItem("adminConnecte") !== "oui"){
 
         </h2>
 
-
         <div id="dernieresCommandes">
 
             Chargement...
 
         </div>
 
-
     </div>
-
 
 </section>
 
@@ -388,16 +423,13 @@ if(localStorage.getItem("adminConnecte") !== "oui"){
 
 <section class="panier-section">
 
-
     <div class="panier-card">
-
 
         <h2>
 
             📦 Commandes reçues
 
         </h2>
-
 
 
         <!-- =========================
@@ -419,7 +451,6 @@ if(localStorage.getItem("adminConnecte") !== "oui"){
 
         <div class="tri-commandes">
 
-
             <label for="triCommandes">
 
                 Trier par :
@@ -427,12 +458,10 @@ if(localStorage.getItem("adminConnecte") !== "oui"){
             </label>
 
 
-
             <select
                 id="triCommandes"
                 onchange="trierCommandes()"
             >
-
 
                 <option value="anciennes">
 
@@ -440,15 +469,11 @@ if(localStorage.getItem("adminConnecte") !== "oui"){
 
                 </option>
 
-
-
                 <option value="recentes">
 
                     🆕 Plus récentes
 
                 </option>
-
-
 
                 <option value="attente">
 
@@ -456,15 +481,11 @@ if(localStorage.getItem("adminConnecte") !== "oui"){
 
                 </option>
 
-
-
                 <option value="pretes">
 
                     🔵 Prêtes
 
                 </option>
-
-
 
                 <option value="livrees">
 
@@ -472,9 +493,7 @@ if(localStorage.getItem("adminConnecte") !== "oui"){
 
                 </option>
 
-
             </select>
-
 
         </div>
 
@@ -490,9 +509,7 @@ if(localStorage.getItem("adminConnecte") !== "oui"){
 
         </div>
 
-
     </div>
-
 
 </section>
 
@@ -504,9 +521,7 @@ if(localStorage.getItem("adminConnecte") !== "oui"){
 
 <section class="panier-section">
 
-
     <div class="panier-card">
-
 
         <h2>
 
@@ -515,9 +530,7 @@ if(localStorage.getItem("adminConnecte") !== "oui"){
         </h2>
 
 
-
         <div id="listeAlertes">
-
 
             <p>
 
@@ -525,12 +538,9 @@ if(localStorage.getItem("adminConnecte") !== "oui"){
 
             </p>
 
-
         </div>
 
-
     </div>
-
 
 </section>
 
@@ -542,9 +552,7 @@ if(localStorage.getItem("adminConnecte") !== "oui"){
 
 <section class="panier-section">
 
-
     <div class="panier-card">
-
 
         <h2>
 
@@ -553,11 +561,9 @@ if(localStorage.getItem("adminConnecte") !== "oui"){
         </h2>
 
 
-
         <p>
 
             Nombre d'articles :
-
 
             <strong id="totalArticlesStock">
 
@@ -568,11 +574,9 @@ if(localStorage.getItem("adminConnecte") !== "oui"){
         </p>
 
 
-
         <p>
 
             Valeur estimée :
-
 
             <strong id="valeurStock">
 
@@ -583,11 +587,9 @@ if(localStorage.getItem("adminConnecte") !== "oui"){
         </p>
 
 
-
         <p>
 
             Articles en stock critique :
-
 
             <strong id="stockCritiqueStock">
 
@@ -597,9 +599,7 @@ if(localStorage.getItem("adminConnecte") !== "oui"){
 
         </p>
 
-
     </div>
-
 
 </section>
 
@@ -611,9 +611,7 @@ if(localStorage.getItem("adminConnecte") !== "oui"){
 
 <section class="panier-section">
 
-
     <div class="panier-card">
-
 
         <h2>
 
@@ -622,11 +620,9 @@ if(localStorage.getItem("adminConnecte") !== "oui"){
         </h2>
 
 
-
         <p>
 
             Achats en attente :
-
 
             <strong id="achatsEnAttente">
 
@@ -637,11 +633,9 @@ if(localStorage.getItem("adminConnecte") !== "oui"){
         </p>
 
 
-
         <p>
 
             Achats réceptionnés :
-
 
             <strong id="achatsReceptionnes">
 
@@ -652,11 +646,9 @@ if(localStorage.getItem("adminConnecte") !== "oui"){
         </p>
 
 
-
         <p>
 
             Fournisseurs :
-
 
             <strong id="nombreFournisseurs">
 
@@ -666,22 +658,7 @@ if(localStorage.getItem("adminConnecte") !== "oui"){
 
         </p>
 
-
-
-        <!--
-
-            Le montant des achats en attente
-            n'est volontairement pas affiché.
-
-            Les prix d'achat peuvent varier
-            selon le fournisseur et selon
-            la commande.
-
-        -->
-
-
     </div>
-
 
 </section>
 
@@ -693,9 +670,7 @@ if(localStorage.getItem("adminConnecte") !== "oui"){
 
 <section class="panier-section">
 
-
     <div class="panier-card">
-
 
         <h2>
 
@@ -723,9 +698,7 @@ if(localStorage.getItem("adminConnecte") !== "oui"){
 
         </button>
 
-
     </div>
-
 
 </section>
 
@@ -737,7 +710,6 @@ if(localStorage.getItem("adminConnecte") !== "oui"){
 
 <footer>
 
-
     <p>
 
         © Idée Gourmande - Genève
@@ -745,13 +717,11 @@ if(localStorage.getItem("adminConnecte") !== "oui"){
     </p>
 
 
-
     <p>
 
         Version 2.8.0
 
     </p>
-
 
 </footer>
 
@@ -777,11 +747,86 @@ if(localStorage.getItem("adminConnecte") !== "oui"){
 
 
 
+<!-- =========================
+     PARTAGE DU SITE
+========================= -->
+
+<script>
+
+async function shareSite() {
+
+    const siteUrl = "https://ideegourmande.github.io/";
+
+    const shareData = {
+
+        title: "Idée Gourmande",
+
+        text: "Découvrez le site Idée Gourmande 🍰",
+
+        url: siteUrl
+
+    };
+
+
+    /* =========================
+       PARTAGE NATIF
+    ========================= */
+
+    if (navigator.share) {
+
+        try {
+
+            await navigator.share(shareData);
+
+            return;
+
+        } catch (error) {
+
+            /* L'utilisateur a fermé
+               la fenêtre de partage */
+
+            if (error.name === "AbortError") {
+
+                return;
+
+            }
+
+        }
+
+    }
+
+
+    /* =========================
+       COPIE DU LIEN
+    ========================= */
+
+    try {
+
+        await navigator.clipboard.writeText(siteUrl);
+
+        alert("✅ Le lien du site a été copié !");
+
+    } catch (error) {
+
+        /* Dernier recours */
+
+        window.prompt(
+
+            "Copiez le lien de votre site :",
+
+            siteUrl
+
+        );
+
+    }
+
+}
+
+</script>
+
+
+
 </body>
 
 </html>
-```html
-<button type="button" class="share-site-btn" onclick="shareSite()">
-  📤 Partager le site
-</button>
 ```
