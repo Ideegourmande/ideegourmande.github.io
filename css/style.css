@@ -519,9 +519,10 @@ button,
 .commande-card {
     background: var(--blanc);
 
+    border: 1px solid #E5DED0;
     border-radius: var(--rayon);
 
-    box-shadow: var(--ombre);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, .08);
 
     padding: 25px;
 
@@ -529,6 +530,7 @@ button,
     flex-direction: column;
 
     height: 100%;
+    min-height: 100%;
 
     transition: var(--transition);
 }
@@ -536,46 +538,11 @@ button,
 .commande-card:hover {
     transform: translateY(-8px);
 
+    border-color: #D4AF37;
+
     box-shadow:
         0 15px 35px rgba(0, 0, 0, .12);
 }
-
-.commande-card img {
-    width: 100%;
-    height: 240px;
-
-    object-fit: cover;
-
-    border-radius: var(--rayon);
-
-    margin-bottom: 20px;
-}
-
-.commande-card h3 {
-    min-height: 55px;
-
-    margin-bottom: 15px;
-
-    color: var(--vert);
-}
-
-.commande-card p {
-    margin-bottom: 12px;
-}
-
-.commande-card strong {
-    color: var(--or-fonce);
-    font-size: 1.1rem;
-}
-
-.commande-card label {
-    display: block;
-
-    font-weight: bold;
-
-    margin-top: 15px;
-}
-
 
 /* =========================================================
    14. CHOIX RECETTES
