@@ -1294,3 +1294,31 @@ window.envoyerCommande =
 console.log(
     "COMMANDE.JS 3.0.0 CHARGE"
 );
+const boutonPartager = document.getElementById("partagerSite");
+
+if (boutonPartager) {
+boutonPartager.addEventListener("click", async function(e) {
+e.preventDefault();
+
+const partage = {
+title: "Idée Gourmande",
+text: "Découvrez Idée Gourmande – spécialités artisanales préparées à Genève.",
+url: window.location.origin + window.location.pathname
+};
+
+if (navigator.share) {
+try {
+await navigator.share(partage);
+} catch (erreur) {
+// L'utilisateur a simplement fermé la fenêtre de partage
+}
+} else {
+try {
+await navigator.clipboard.writeText(window.location.href);
+alert("Le lien du site a été copié. Vous pouvez maintenant le partager.");
+} catch (erreur) {
+alert("Impossible de copier automatiquement le lien du site.");
+}
+}
+});
+}
