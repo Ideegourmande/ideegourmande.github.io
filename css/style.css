@@ -2669,3 +2669,36 @@ footer a:hover {
     }
 
 }
+```css
+/* ===================================================
+   TEST AFFICHAGE COULEURS
+   =================================================== */
+
+body {
+    background-color: #F8F5EF !important;
+}
+
+.btn,
+button,
+.btn-large,
+.ajouter-panier,
+.btn-stock,
+.admin-menu .btn,
+.menu-admin .btn,
+.dashboard-admin .btn {
+    background-color: #B89122 !important;
+    color: #FFFFFF !important;
+    opacity: 1 !important;
+    visibility: visible !important;
+}
+
+.btn-secondaire {
+    background-color: #5E7055 !important;
+    color: #FFFFFF !important;
+}
+
+.top-banner {
+    background-color: #7F9275 !important;
+    color: #FFFFFF !important;
+}
+```
