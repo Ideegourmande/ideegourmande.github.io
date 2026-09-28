@@ -1,827 +1,543 @@
-console.log("PDFCOMMANDE.JS CHARGE");
+const GOOGLE_APPS_SCRIPT_URL =
+  "https://script.google.com/macros/s/AKfycby5o5V0dRb9fPpnhmUYCeWB1LxXjGRXfQK0kQ2Tzw2gHK58GQn8VmxlDI1DFWzogAhI/exec";
 
-// ==========================================
-// IDÉE GOURMANDE
-// Génération PDF professionnel
-// ==========================================
 
-function genererPDFCommande(commande) {
+async function genererPDFCommande(commande) {
 
-    // ==========================================
-    // VÉRIFICATION jsPDF
-    // ==========================================
-
-    if (!window.jspdf) {
-
-        console.error("jsPDF non chargé");
-
-        return;
+    if (!window.jspdf || !window.jspdf.jsPDF) {
+        throw new Error("jsPDF n'est pas chargé.");
     }
 
     const { jsPDF } = window.jspdf;
-
     const doc = new jsPDF();
 
+    // ==============================
+    // INFORMATIONS
+    // ==============================
 
-    // ==========================================
-    // LOGO
-    // ==========================================
+    const fichier = "Commande_" + commande.id + ".pdf";
 
-    const logo = new Image();
+    const client = commande.client || {};
 
-    logo.src = "images/logo.png";
+    const produits = Array.isArray(commande.produits)
+        ? commande.produits
+        : [];
 
-
-    // ==========================================
-    // VARIABLES
-    // ==========================================
-
-    let y = 20;
-
-    const margeGauche = 20;
-    const largeurPage = 170;
+    const total = Number(commande.total || 0);
 
 
-    // ==========================================
-    // EN-TÊTE
-    // ==========================================
-
-    doc.addImage(
-        logo,
-        "PNG",
-        20,
-        10,
-        45,
-        25
-    );
-
-
-    doc.setFontSize(18);
-
-    doc.setFont(undefined, "bold");
-
-    doc.text(
-        "IDÉE GOURMANDE",
-        75,
-        18
-    );
-
-
-    doc.setFontSize(10);
-
-    doc.setFont(undefined, "normal");
-
-    doc.text(
-        "Genève",
-        75,
-        25
-    );
-
-
-    doc.text(
-        "TWINT : 079 592 78 82",
-        75,
-        31
-    );
-
-
-    // ==========================================
+    // ==============================
     // TITRE
-    // ==========================================
+    // ==============================
 
-    y = 50;
+    doc.setFontSize(20);
+    doc.setFont("helvetica", "bold");
+    doc.text("IDÉE GOURMANDE", 20, 20);
 
-
-    doc.setFontSize(18);
-
-    doc.setFont(undefined, "bold");
-
-    doc.text(
-        "BON DE COMMANDE",
-        margeGauche,
-        y
-    );
-
-
-    y += 10;
-
-
-    // ==========================================
-    // NUMÉRO ET DATE
-    // ==========================================
-
-    const maintenant = new Date();
-
-
-    const dateTexte =
-        maintenant.toLocaleDateString("fr-FR");
-
-
-    const heureTexte =
-        maintenant.toLocaleTimeString(
-            "fr-FR",
-            {
-                hour: "2-digit",
-                minute: "2-digit"
-            }
-        );
-
-
-    const numeroCommande =
-        commande.id ||
-        (
-            "IG-" +
-            maintenant.getTime()
-        );
-
+    doc.setFontSize(14);
+    doc.text("Bon de commande", 20, 30);
 
     doc.setFontSize(10);
-
-    doc.setFont(undefined, "normal");
-
+    doc.setFont("helvetica", "normal");
 
     doc.text(
-        "N° commande : " + numeroCommande,
-        margeGauche,
-        y
+        "N° commande : " + commande.id,
+        20,
+        40
     );
-
 
     doc.text(
-        "Date : " + dateTexte + " à " + heureTexte,
-        120,
-        y
+        "Date : " + new Date().toLocaleString("fr-CH"),
+        20,
+        47
     );
 
 
-    y += 12;
+    // ==============================
+    // CLIENT
+    // ==============================
 
+    let y = 60;
 
-    // ==========================================
-    // CADRE CLIENT
-    // ==========================================
+    doc.setFont("helvetica", "bold");
+    doc.text("CLIENT", 20, y);
 
-    const hauteurClient = 48;
-
-
-    doc.setDrawColor(100, 100, 100);
-
-    doc.rect(
-        margeGauche,
-        y,
-        largeurPage,
-        hauteurClient
-    );
-
-
-    doc.setFontSize(12);
-
-    doc.setFont(undefined, "bold");
-
-    doc.text(
-        "INFORMATIONS CLIENT",
-        margeGauche + 5,
-        y + 8
-    );
-
-
-    doc.setFontSize(10);
-
-    doc.setFont(undefined, "normal");
-
-
-    const nomClient =
-        (
-            commande.client?.prenom || ""
-        ) +
-        " " +
-        (
-            commande.client?.nom || ""
-        );
-
-
-    doc.text(
-        "Client : " + nomClient.trim(),
-        margeGauche + 5,
-        y + 17
-    );
-
-
-    doc.text(
-        "Email : " +
-        (commande.client?.email || ""),
-        margeGauche + 5,
-        y + 25
-    );
-
-
-    doc.text(
-        "Téléphone : " +
-        (commande.client?.telephone || ""),
-        margeGauche + 5,
-        y + 33
-    );
-
-
-    doc.text(
-        "Adresse : " +
-        (commande.client?.adresse || ""),
-        margeGauche + 5,
-        y + 41
-    );
-
-
-    y += hauteurClient + 12;
-
-
-    // ==========================================
-    // PRODUITS
-    // ==========================================
-
-    doc.setFontSize(13);
-
-    doc.setFont(undefined, "bold");
-
-    doc.text(
-        "PRODUITS COMMANDÉS",
-        margeGauche,
-        y
-    );
-
+    doc.setFont("helvetica", "normal");
 
     y += 8;
 
-
-    // ==========================================
-    // TABLEAU
-    // ==========================================
-
-    const xProduit = 20;
-    const xRecette = 78;
-    const xNombre = 125;
-    const xPoids = 145;
-    const xPrix = 170;
-
-
-    doc.setFillColor(230, 230, 230);
-
-    doc.rect(
+    doc.text(
+        "Nom : " +
+        (client.prenom || "") +
+        " " +
+        (client.nom || ""),
         20,
-        y - 5,
-        170,
-        10,
-        "F"
+        y
     );
 
-
-    doc.setFontSize(9);
-
-    doc.setFont(undefined, "bold");
-
+    y += 7;
 
     doc.text(
-        "Produit",
-        xProduit + 3,
-        y + 1
+        "Téléphone : " +
+        (client.telephone || ""),
+        20,
+        y
     );
 
+    y += 7;
 
     doc.text(
-        "Recette",
-        xRecette,
-        y + 1
+        "E-mail : " +
+        (client.email || ""),
+        20,
+        y
     );
 
+    y += 7;
+
+    const adresse = String(client.adresse || "");
+
+    const adresseLignes = doc.splitTextToSize(
+        "Adresse : " + adresse,
+        170
+    );
 
     doc.text(
-        "Nombre",
-        xNombre,
-        y + 1
+        adresseLignes,
+        20,
+        y
     );
 
+    y += adresseLignes.length * 6 + 8;
 
+
+    // ==============================
+    // PRODUITS
+    // ==============================
+
+    doc.setFont("helvetica", "bold");
     doc.text(
-        "Poids",
-        xPoids,
-        y + 1
+        "PRODUITS COMMANDÉS",
+        20,
+        y
     );
 
-
-    doc.text(
-        "Prix",
-        xPrix,
-        y + 1
-    );
-
+    doc.setFont("helvetica", "normal");
 
     y += 10;
 
-
-    doc.setFont(undefined, "normal");
-
-    doc.setFontSize(9);
-
-
-    // ==========================================
-    // PRODUITS
-    // ==========================================
-
-    const produits =
-        Array.isArray(commande.produits)
-            ? commande.produits
-            : [];
-
-
     produits.forEach(function(article) {
-
-        // Nouvelle page si nécessaire
-        if (y > 265) {
-
-            ajouterPiedDePage(doc);
-
-            doc.addPage();
-
-            y = 25;
-
-        }
-
-
-        // ======================================
-        // PRODUIT
-        // ======================================
 
         const nom =
             article.nom || "Produit";
 
+        const quantite =
+            Number(article.quantite || 1);
 
-        // ======================================
-        // RECETTE
-        // ======================================
-
-        const recette =
-            article.recette || "-";
-
-
-        // ======================================
-        // NOMBRE
-        // ======================================
-
-        let nombre = "";
-
-
-        if (
-            article.reference === "saumon-fume"
-        ) {
-
-            nombre = "-";
-
-        }
-        else {
-
-            nombre =
-                String(
-                    article.quantite || 1
-                );
-
-        }
-
-
-        // ======================================
-        // POIDS TOTAL
-        // ======================================
-
-        let poids = "";
-
-
-        if (
-            article.reference === "saumon-fume"
-        ) {
-
-            // Saumon :
-            // poids directement saisi
-            poids =
-                article.poids
-                ? article.poids + " g"
+        const poids =
+            article.poids
+                ? " (" + article.poids + " g)"
                 : "";
 
-        }
-        else if (
-            article.reference === "foie-gras"
-        ) {
-
-            // Foie gras :
-            // 200 g par article
-            poids =
-                (
-                    Number(article.quantite || 1)
-                    * 200
-                )
-                + " g";
-
-        }
-        else if (
-            article.reference === "viande-sechee"
-        ) {
-
-            // Viande séchée :
-            // 500 g par portion
-            poids =
-                (
-                    Number(article.quantite || 1)
-                    * 500
-                )
-                + " g";
-
-        }
-        else if (
-            article.reference === "lard-sec"
-        ) {
-
-            // Lard sec :
-            // 500 g par portion
-            poids =
-                (
-                    Number(article.quantite || 1)
-                    * 500
-                )
-                + " g";
-
-        }
-        else if (
-            article.reference === "magret"
-        ) {
-
-            // Magret :
-            // vendu à la pièce
-            poids = "-";
-
-        }
-
-
-        // ======================================
-        // PRIX
-        // ======================================
-
         const prix =
-            Number(article.prix) || 0;
+            Number(article.prix || 0).toFixed(2);
 
+        const ligne =
+            "- " +
+            nom +
+            poids +
+            " x" +
+            quantite +
+            " : " +
+            prix +
+            " CHF";
 
-        // ======================================
-        // LIGNES MULTI-LIGNES
-        // ======================================
-
-        const nomLignes =
+        const lignes =
             doc.splitTextToSize(
-                nom,
-                55
+                ligne,
+                170
             );
 
-
-        const recetteLignes =
-            doc.splitTextToSize(
-                recette,
-                42
-            );
-
-
-        const hauteur =
-            Math.max(
-                nomLignes.length,
-                recetteLignes.length
-            ) * 5 + 5;
-
-
-        // ======================================
-        // AFFICHAGE
-        // ======================================
-
         doc.text(
-            nomLignes,
-            xProduit + 3,
+            lignes,
+            20,
             y
         );
 
-
-        doc.text(
-            recetteLignes,
-            xRecette,
-            y
-        );
+        y += lignes.length * 6 + 2;
 
 
-        doc.text(
-            nombre,
-            xNombre,
-            y
-        );
+        // Nouvelle page si nécessaire
 
-
-        doc.text(
-            poids,
-            xPoids,
-            y
-        );
-
-
-        doc.text(
-            prix.toFixed(2) + " CHF",
-            xPrix,
-            y
-        );
-
-
-        y += hauteur;
-
-    });
-
-
-    // ==========================================
-    // TOTAL
-    // ==========================================
-
-    y += 5;
-
-
-    doc.setDrawColor(80, 80, 80);
-
-
-    doc.line(
-        110,
-        y,
-        190,
-        y
-    );
-
-
-    y += 8;
-
-
-    doc.setFontSize(14);
-
-    doc.setFont(undefined, "bold");
-
-
-    const total =
-        Number(commande.total) || 0;
-
-
-    doc.text(
-        "TOTAL",
-        125,
-        y
-    );
-
-
-    doc.text(
-        total.toFixed(2) + " CHF",
-        165,
-        y
-    );
-
-
-    y += 12;
-
-
-    // ==========================================
-    // PAIEMENT
-    // ==========================================
-
-    doc.setFontSize(10);
-
-    doc.setFont(undefined, "normal");
-
-
-    doc.text(
-        "Paiement : TWINT",
-        margeGauche,
-        y
-    );
-
-
-    doc.text(
-        "079 592 78 82",
-        margeGauche,
-        y + 6
-    );
-
-
-    y += 16;
-
-
-    // ==========================================
-    // REMARQUE - COMMUNICATION
-    // ==========================================
-
-    if (
-        commande.client?.commentaire &&
-        commande.client.commentaire.trim() !== ""
-    ) {
-
-        if (y > 245) {
-
-            ajouterPiedDePage(doc);
+        if (y > 270) {
 
             doc.addPage();
 
-            y = 25;
-
+            y = 20;
         }
+    });
 
 
-        doc.setFontSize(11);
+    // ==============================
+    // TOTAL
+    // ==============================
 
-        doc.setFont(undefined, "bold");
+    y += 5;
 
+    doc.setFont(
+        "helvetica",
+        "bold"
+    );
 
-        doc.text(
-            "REMARQUE - COMMUNICATION",
-            margeGauche,
-            y
-        );
+    doc.setFontSize(13);
 
+    doc.text(
+        "TOTAL : " +
+        total.toFixed(2) +
+        " CHF",
+        20,
+        y
+    );
 
-        y += 7;
+    doc.setFontSize(10);
 
+    doc.setFont(
+        "helvetica",
+        "normal"
+    );
 
-        doc.setFont(undefined, "normal");
+    y += 12;
 
-        doc.setFontSize(10);
-
-
-        const remarque =
-            doc.splitTextToSize(
-                commande.client.commentaire,
-                165
-            );
-
-
-        doc.text(
-            remarque,
-            margeGauche,
-            y
-        );
-
-
-        y +=
-            remarque.length * 5 +
-            5;
-
-    }
-
-
-    // ==========================================
-    // PIED DE PAGE
-    // ==========================================
-
-    ajouterPiedDePage(doc);
-
-
-    // ==========================================
-    // NOM DU FICHIER
-    // ==========================================
-
-    console.log(
-        "CLIENT PDF :",
-        commande.client
+    doc.text(
+        "Paiement : TWINT",
+        20,
+        y
     );
 
 
-    const nomClientFichier =
-        (
-            commande.client?.nom ||
-            "Client"
-        )
-        .toUpperCase()
-        .replace(
-            /[^A-Z0-9]/g,
-            ""
+    // ==============================
+    // COMMENTAIRE
+    // ==============================
+
+    if (client.commentaire) {
+
+        y += 12;
+
+        doc.setFont(
+            "helvetica",
+            "bold"
         );
 
-
-    const prenomClientFichier =
-        (
-            commande.client?.prenom ||
-            ""
-        )
-        .trim()
-        .toUpperCase()
-        .replace(
-            /[^A-Z0-9]/g,
-            ""
+        doc.text(
+            "COMMENTAIRE",
+            20,
+            y
         );
 
+        doc.setFont(
+            "helvetica",
+            "normal"
+        );
 
-    const datePDF =
-        maintenant.getFullYear() +
-        String(
-            maintenant.getMonth() + 1
-        ).padStart(2, "0") +
-        String(
-            maintenant.getDate()
-        ).padStart(2, "0") +
-        "_" +
-        String(
-            maintenant.getHours()
-        ).padStart(2, "0") +
-        String(
-            maintenant.getMinutes()
-        ).padStart(2, "0");
+        y += 7;
 
+        const commentaireLignes =
+            doc.splitTextToSize(
+                String(client.commentaire),
+                170
+            );
 
-    const fichier =
-        "Commande_" +
-        nomClientFichier +
-        "_" +
-        prenomClientFichier +
-        "_" +
-        datePDF +
-        ".pdf";
+        doc.text(
+            commentaireLignes,
+            20,
+            y
+        );
+    }
 
 
-    // ==========================================
-    // SAUVEGARDE
-    // ==========================================
+    // ==============================
+    // PDF EN MÉMOIRE
+    // ==============================
 
-    // Sauvegarde locale pour le client
-    doc.save(fichier);
-
-    // Retourne aussi le PDF en mémoire pour permettre son envoi automatique
-    // par le serveur Google Apps Script.
-    const pdfBlob = doc.output("blob");
+    const pdfBlob =
+        doc.output("blob");
 
     console.log(
         "PDF généré :",
         fichier
     );
 
+
+    // ==============================
+    // CONVERSION BASE64
+    // ==============================
+
+    const pdfBase64 =
+        await new Promise(
+            function(resolve, reject) {
+
+                const reader =
+                    new FileReader();
+
+                reader.onloadend =
+                    function() {
+
+                        resolve(
+                            reader.result
+                        );
+                    };
+
+                reader.onerror =
+                    function() {
+
+                        reject(
+                            new Error(
+                                "Impossible de convertir le PDF en Base64."
+                            )
+                        );
+                    };
+
+                reader.readAsDataURL(
+                    pdfBlob
+                );
+            }
+        );
+
+
+    // ==============================
+    // VÉRIFICATION E-MAIL
+    // ==============================
+
+    const emailClient =
+        String(
+            client.email || ""
+        ).trim();
+
+    if (!emailClient) {
+
+        throw new Error(
+            "L'adresse e-mail du client est manquante."
+        );
+    }
+
+
+    // ==============================
+    // DONNÉES À ENVOYER
+    // ==============================
+
+    const payload = {
+
+        to: emailClient,
+
+        numeroCommande:
+            commande.id,
+
+        pdfBase64:
+            pdfBase64,
+
+        pdfFilename:
+            fichier,
+
+        client:
+            client,
+
+        produits:
+            produits,
+
+        total:
+            total,
+
+        subject:
+            "Commande Idée Gourmande n°" +
+            commande.id
+    };
+
+
+    console.log(
+        "Préparation de l'envoi vers Google Apps Script..."
+    );
+
+
+    // ==============================
+    // ENVOI COMPATIBLE MOBILE
+    // ==============================
+
+    await envoyerCommandeGoogle(
+        payload
+    );
+
+
+    // ==============================
+    // SAUVEGARDE LOCALE DU PDF
+    // ==============================
+
+    // Sur ordinateur, on télécharge
+    // également une copie du PDF.
+    //
+    // Sur mobile, on évite le téléchargement
+    // automatique qui peut perturber le
+    // navigateur pendant l'envoi.
+
+    const estMobile =
+        /Android|iPhone|iPad|iPod/i.test(
+            navigator.userAgent
+        );
+
+    if (!estMobile) {
+
+        try {
+
+            doc.save(fichier);
+
+        } catch (erreur) {
+
+            console.warn(
+                "Téléchargement local du PDF impossible :",
+                erreur
+            );
+        }
+    }
+
+
+    console.log(
+        "Commande transmise à Google Apps Script."
+    );
+
+
     return {
-        blob: pdfBlob,
-        filename: fichier
+
+        blob:
+            pdfBlob,
+
+        filename:
+            fichier,
+
+        emailEnvoye:
+            true
     };
 }
 
 
-// ==========================================
-// PIED DE PAGE
-// ==========================================
+/**
+ * Envoi compatible avec les navigateurs mobiles.
+ *
+ * On utilise un formulaire HTML invisible
+ * plutôt que fetch(), afin d'éviter les
+ * problèmes CORS / Load failed sur mobile.
+ */
+function envoyerCommandeGoogle(payload) {
 
-function ajouterPiedDePage(doc) {
+    return new Promise(
+        function(resolve, reject) {
 
-    const nombrePages =
-        doc.internal.getNumberOfPages();
+            try {
 
+                // Création d'un iframe invisible
 
-    for (
-        let page = 1;
-        page <= nombrePages;
-        page++
-    ) {
+                const iframe =
+                    document.createElement("iframe");
 
-        doc.setPage(page);
+                iframe.style.display = "none";
 
+                iframe.name =
+                    "googleAppsScript_" +
+                    Date.now();
 
-        doc.setFontSize(8);
-
-        doc.setFont(undefined, "normal");
-
-
-        doc.setDrawColor(
-            180,
-            180,
-            180
-        );
-
-
-        doc.line(
-            20,
-            285,
-            190,
-            285
-        );
+                document.body.appendChild(
+                    iframe
+                );
 
 
-        doc.text(
-            "Idée Gourmande - Genève",
-            20,
-            291
-        );
+                // Création du formulaire
+
+                const form =
+                    document.createElement("form");
+
+                form.method =
+                    "POST";
+
+                form.action =
+                    GOOGLE_APPS_SCRIPT_URL;
+
+                form.target =
+                    iframe.name;
+
+                form.style.display =
+                    "none";
 
 
-        doc.text(
-            "TWINT : 079 592 78 82",
-            85,
-            291
-        );
+                // Champ payload
+
+                const input =
+                    document.createElement("input");
+
+                input.type =
+                    "hidden";
+
+                input.name =
+                    "payload";
+
+                input.value =
+                    JSON.stringify(payload);
+
+                form.appendChild(
+                    input
+                );
 
 
-        doc.text(
-            "Page " +
-            page +
-            " / " +
-            nombrePages,
-            160,
-            291
-        );
+                document.body.appendChild(
+                    form
+                );
 
-    }
+
+                console.log(
+                    "Envoi de la commande vers Google..."
+                );
+
+
+                // Envoi
+
+                form.submit();
+
+
+                /*
+                 * Le Web App Google reçoit
+                 * la commande indépendamment
+                 * de la réponse visible par
+                 * le navigateur.
+                 *
+                 * On laisse quelques secondes
+                 * au serveur pour recevoir le
+                 * PDF et envoyer les deux e-mails.
+                 */
+
+                setTimeout(
+                    function() {
+
+                        form.remove();
+
+                        iframe.remove();
+
+                        console.log(
+                            "Commande envoyée au Web App Google."
+                        );
+
+                        resolve();
+
+                    },
+                    3000
+                );
+
+
+            } catch (erreur) {
+
+                reject(
+                    new Error(
+                        "Impossible d'envoyer la commande : " +
+                        erreur.message
+                    )
+                );
+            }
+        }
+    );
 }
