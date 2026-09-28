@@ -1742,7 +1742,7 @@ footer a:hover {
 .commande-card[data-produit="lard-sec"] img,
 .commande-card[data-produit="saumon-fume"] img {
     width: 92% !important;
-    height: 200px !important;
+    height: 180px !important;
     object-fit: cover !important;
     object-position: center center !important;
     display: block !important;
