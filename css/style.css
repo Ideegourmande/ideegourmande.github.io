@@ -1714,4 +1714,20 @@ footer a:hover {
 /* =========================================================
    FIN DU STYLE.CSS — V3 FINAL
    ========================================================= */
+/* =========================================================
+   CORRECTION — CARTE LARD SEC
+   ========================================================= */
 
+.commande-card[data-produit="lard-sec"] {
+    background: #FFFFFF !important;
+    border: 2px solid #E5DED0 !important;
+    border-radius: 18px !important;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, .12) !important;
+    padding: 25px !important;
+    overflow: hidden !important;
+}
+
+.commande-card[data-produit="lard-sec"]:hover {
+    border-color: #D4AF37 !important;
+    box-shadow: 0 15px 35px rgba(0, 0, 0, .16) !important;
+}
