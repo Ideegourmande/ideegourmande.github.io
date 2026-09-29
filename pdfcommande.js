@@ -562,3 +562,4 @@ function envoyerCommandeGoogle(payload) {
         }
     );
 }
+console.log("PDFCOMMANDE VERSION TWINT TEST");
