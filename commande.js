@@ -1021,31 +1021,15 @@ async function envoyerCommande(
 
 
     const commande = {
-
-        client: {
-
-            prenom:
-                getValue("prenom"),
-
-            nom:
-                getValue("nom"),
-
-            telephone:
-                getValue("telephone"),
-
-            email:
-                getValue("email"),
-
-            adresse:
-                getValue("adresse"),
-
-           commentaire:
-    getValue("commentaire"),
-
-nomExpediteurTwint:
-    getValue("nomExpediteurTwint")
-
-        },
+    client: {
+        prenom: getValue("prenom"),
+        nom: getValue("nom"),
+        telephone: getValue("telephone"),
+        email: getValue("email"),
+        adresse: getValue("adresse"),
+        commentaire: getValue("commentaire"),
+        nomExpediteurTwint: getValue("nomExpediteurTwint")
+    },
 
 
         produits:
