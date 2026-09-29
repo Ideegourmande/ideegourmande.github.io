@@ -1012,8 +1012,6 @@ async function envoyerCommande(
             commentaire:
                 getValue("commentaire")
 
-            nomExpediteurTwint:
-        getValue("nomExpediteurTwint")
         },
 
 
