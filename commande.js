@@ -1084,7 +1084,10 @@ nomExpediteurTwint:
         "COMMANDE PREPAREE :",
         commande
     );
-
+    console.log(
+    "EXPEDITEUR TWINT :",
+    commande.client.nomExpediteurTwint
+);
 
     // ==================================
     // ENREGISTREMENT BASE
