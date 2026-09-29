@@ -991,7 +991,7 @@ function viderPanier(){
 // ENVOI COMMANDE
 // ======================================
 
-function envoyerCommande(
+async function envoyerCommande(
     e
 ){
 
