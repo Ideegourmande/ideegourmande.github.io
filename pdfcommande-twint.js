@@ -563,3 +563,4 @@ function envoyerCommandeGoogle(payload) {
     );
 }
 console.log("PDFCOMMANDE VERSION TWINT TEST");
+console.log("PDFCOMMANDE TWINT - NOUVEAU FICHIER CHARGE");
