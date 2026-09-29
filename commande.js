@@ -1064,11 +1064,9 @@ async function envoyerCommande(
     // Identifiant unique partagé par l'enregistrement, le PDF et l'e-mail.
     commande.id = Date.now();
 
-    console.log(
-        "COMMANDE PREPAREE :",
-        commande
-    );
-    console.log(
+   console.log("COMMANDE PREPAREE :", commande);
+
+console.log(
     "EXPEDITEUR TWINT :",
     commande.client.nomExpediteurTwint
 );
