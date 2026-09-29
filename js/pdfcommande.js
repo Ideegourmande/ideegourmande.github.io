@@ -209,10 +209,19 @@ async function genererPDFCommande(commande) {
     y += 12;
 
     doc.text(
-        "Paiement : TWINT",
-        20,
-        y
-    );
+    "Paiement : TWINT",
+    20,
+    y
+);
+
+y += 7;
+
+doc.text(
+    "Expéditeur du paiement TWINT : " +
+    (client.nomExpediteurTwint || ""),
+    20,
+    y
+);
 
 
     // ==============================
