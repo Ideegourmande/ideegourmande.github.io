@@ -1039,8 +1039,11 @@ async function envoyerCommande(
             adresse:
                 getValue("adresse"),
 
-            commentaire:
-                getValue("commentaire")
+           commentaire:
+    getValue("commentaire"),
+
+nomExpediteurTwint:
+    getValue("nomExpediteurTwint")
 
         },
 
