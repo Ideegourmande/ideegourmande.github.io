@@ -1066,7 +1066,10 @@ nomExpediteurTwint:
     commande.id = Date.now();
 
    console.log("COMMANDE PREPAREE :", commande);
-
+console.log(
+    "NOM TWINT AVANT PDF :",
+    commande.client.nomExpediteurTwint
+);
 console.log(
     "EXPEDITEUR TWINT :",
     commande.client.nomExpediteurTwint
