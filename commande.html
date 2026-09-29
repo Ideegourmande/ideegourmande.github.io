@@ -724,49 +724,45 @@ placeholder="Date souhaitée, instructions particulières..."></textarea>
 <div class="paiement-box">
 
 <h3>
-
 💳 Paiement TWINT
-
 </h3>
 
 <p>
-
 Merci d'effectuer le paiement avant validation de la commande.
-
 </p>
 
 <div class="twint-number">
-
 079 592 78 82
-
 </div>
 
-<label>
+<p>
+<strong>1. Effectuez votre paiement TWINT au numéro ci-dessus.</strong>
+</p>
 
+<p>
+<strong>2. Indiquez le nom de l'expéditeur du paiement :</strong>
+</p>
+
+<input
+type="text"
+id="nomExpediteurTwint"
+placeholder="Nom et prénom utilisés pour le paiement TWINT"
+required>
+
+<label>
 <input
 type="checkbox"
 id="confirmationTwint"
 required>
 
-J'ai effectué le paiement TWINT au nom de
-
-<strong id="twintNomComplet">
-
-</strong>
-
+J'ai effectué le paiement TWINT et indiqué ci-dessus le nom de l'expéditeur.
 </label>
 
 <p class="confirmation">
-
 La commande sera confirmée après vérification du paiement.
-
 </p>
 
 </div>
-
-<button
-class="btn btn-large"
-type="submit">
 
 Envoyer ma commande
 
