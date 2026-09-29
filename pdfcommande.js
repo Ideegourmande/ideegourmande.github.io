@@ -216,9 +216,21 @@ async function genererPDFCommande(commande) {
 
 y += 7;
 
+const nomTwintPDF =
+    String(
+        client.nomExpediteurTwint ||
+        document.getElementById("nomExpediteurTwint")?.value ||
+        ""
+    ).trim();
+
+console.log(
+    "NOM TWINT LU POUR LE PDF :",
+    nomTwintPDF
+);
+
 doc.text(
     "Expéditeur du paiement TWINT : " +
-    (client.nomExpediteurTwint || ""),
+    nomTwintPDF,
     20,
     y
 );
