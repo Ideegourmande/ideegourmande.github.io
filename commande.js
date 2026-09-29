@@ -1028,7 +1028,8 @@ async function envoyerCommande(
         email: getValue("email"),
         adresse: getValue("adresse"),
         commentaire: getValue("commentaire"),
-        nomExpediteurTwint: getValue("nomExpediteurTwint")
+nomExpediteurTwint:
+    document.getElementById("nomExpediteurTwint").value.trim()
     },
 
 
