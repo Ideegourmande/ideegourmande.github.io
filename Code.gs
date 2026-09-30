@@ -435,7 +435,9 @@ function doPost(e) {
 
 const modeLivraison =
   String(
-    client.modeLivraison || ''
+    client.modeLivraison ||
+    data.modeLivraison ||
+    ''
   ).trim();
 
 const fraisLivraison =
@@ -444,7 +446,15 @@ const fraisLivraison =
     : 0;
 
 const informationsLivraison = [];
+console.log(
+  'MODE LIVRAISON REÇU PAR CODE.GS : ' +
+  modeLivraison
+);
 
+console.log(
+  'FRAIS LIVRAISON CALCULÉS POUR LE MAIL : ' +
+  fraisLivraison
+);
 if (modeLivraison) {
 
   informationsLivraison.push(
