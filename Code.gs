@@ -429,7 +429,40 @@ function doPost(e) {
         )
       );
 
+// ------------------------------------------
+// MODE DE RÉCEPTION / FRAIS DE LIVRAISON
+// ------------------------------------------
 
+const modeLivraison =
+  String(
+    client.modeLivraison || ''
+  ).trim();
+
+const fraisLivraison =
+  modeLivraison === 'Livraison en Suisse'
+    ? 10.50
+    : 0;
+
+const informationsLivraison = [];
+
+if (modeLivraison) {
+
+  informationsLivraison.push(
+    'Mode de réception : ' +
+    modeLivraison
+  );
+
+}
+
+if (fraisLivraison > 0) {
+
+  informationsLivraison.push(
+    'Frais d’expédition : ' +
+    fraisLivraison.toFixed(2) +
+    ' CHF'
+  );
+
+}
     // ------------------------------------------
     // CORPS DU MAIL
     // ------------------------------------------
@@ -472,11 +505,15 @@ function doPost(e) {
       'E-mail : ' +
         to,
 
-      'Adresse : ' +
+            'Adresse : ' +
         (
           client.adresse ||
           ''
         ),
+
+      '',
+
+      ...informationsLivraison,
 
       '',
 
