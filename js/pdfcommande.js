@@ -692,7 +692,54 @@ async function genererPDFCommande(commande) {
         }
     );
 
+// ========================================================
+// FRAIS DE LIVRAISON
+// ========================================================
 
+const fraisLivraisonPDF =
+    client.modeLivraison === "Livraison en Suisse"
+        ? 10.50
+        : 0;
+
+if (fraisLivraisonPDF > 0) {
+
+    nouvellePageSiNecessaire(10);
+
+    doc.setFont(
+        "helvetica",
+        "normal"
+    );
+
+    doc.setFontSize(8);
+
+    doc.setTextColor(
+        NOIR[0],
+        NOIR[1],
+        NOIR[2]
+    );
+
+    doc.text(
+        "Livraison en Suisse",
+        marge + 5,
+        y + 5
+    );
+
+    doc.setFont(
+        "helvetica",
+        "bold"
+    );
+
+    doc.text(
+        fraisLivraisonPDF.toFixed(2) + " CHF",
+        pageWidth - marge - 5,
+        y + 5,
+        {
+            align: "right"
+        }
+    );
+
+    y += 9;
+}
     // ========================================================
     // TOTAL
     // ========================================================
