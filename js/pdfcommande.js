@@ -209,62 +209,71 @@ async function genererPDFCommande(commande) {
     y += 12;
 
 
-    // ==============================
-    // MODE DE RÉCEPTION
-    // ==============================
+// ==============================
+// MODE DE RÉCEPTION
+// ==============================
 
-    const champModeLivraison =
-        document.getElementById("modeLivraison");
+const champModeLivraison =
+    document.getElementById("modeLivraison");
 
-    const modeLivraisonPDF =
-        String(
-            client.modeLivraison ||
-            (
-                champModeLivraison
-                    ? champModeLivraison.value
-                    : ""
-            ) ||
-            ""
-        ).trim();
+const modeDepuisFormulaire =
+    champModeLivraison
+        ? String(champModeLivraison.value || "").trim()
+        : "";
 
-    console.log(
-        "MODE DE RÉCEPTION LU POUR LE PDF :",
-        modeLivraisonPDF
+const modeDepuisCommande =
+    client.modeLivraison
+        ? String(client.modeLivraison).trim()
+        : "";
+
+const modeLivraisonPDF =
+    modeDepuisCommande || modeDepuisFormulaire;
+
+console.log(
+    "MODE DE RÉCEPTION - client.modeLivraison :",
+    modeDepuisCommande
+);
+
+console.log(
+    "MODE DE RÉCEPTION - formulaire :",
+    modeDepuisFormulaire
+);
+
+console.log(
+    "MODE DE RÉCEPTION - valeur finale PDF :",
+    modeLivraisonPDF
+);
+
+doc.setFont("helvetica", "bold");
+
+doc.text(
+    "MODE DE RÉCEPTION",
+    20,
+    y
+);
+
+doc.setFont("helvetica", "normal");
+
+y += 8;
+
+const texteModeLivraison =
+    modeLivraisonPDF || "Non renseigné";
+
+const modeLivraisonLignes =
+    doc.splitTextToSize(
+        texteModeLivraison,
+        170
     );
 
-    doc.setFont(
-        "helvetica",
-        "bold"
-    );
+doc.text(
+    modeLivraisonLignes,
+    20,
+    y
+);
 
-    doc.text(
-        "Mode de réception :",
-        20,
-        y
-    );
-
-    doc.setFont(
-        "helvetica",
-        "normal"
-    );
-
-    y += 7;
-
-    const modeLivraisonLignes =
-        doc.splitTextToSize(
-            modeLivraisonPDF || "Non renseigné",
-            170
-        );
-
-    doc.text(
-        modeLivraisonLignes,
-        20,
-        y
-    );
-
-    y +=
-        modeLivraisonLignes.length * 6 +
-        5;
+y +=
+    modeLivraisonLignes.length * 6 +
+    6;
 
 
     // ==============================
