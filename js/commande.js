@@ -14,7 +14,7 @@ console.log("COMMANDE.JS CHARGE");
 // ======================================
 
 let panierCommande = [];
-
+const FRAIS_LIVRAISON_SUISSE = 10.50;
 window.panierCommande =
     panierCommande;
 
@@ -93,7 +93,19 @@ document.addEventListener(
         initialiserBoutonsPanier();
 
         afficherPanier();
+        const selectLivraison =
+            document.getElementById(
+                "modeLivraison"
+            );
 
+        if (selectLivraison) {
+
+            selectLivraison.addEventListener(
+                "change",
+                afficherPanier
+            );
+
+        }
 
         const boutonVider =
             document.getElementById(
@@ -557,7 +569,26 @@ function lirePoidsSaumon() {
 
 }
 
+// ======================================
+// FRAIS DE LIVRAISON
+// ======================================
 
+function calculerFraisLivraison() {
+
+    const modeLivraison =
+        document.getElementById(
+            "modeLivraison"
+        )?.value || "";
+
+    if (
+        modeLivraison ===
+        "Livraison en Suisse"
+    ) {
+        return FRAIS_LIVRAISON_SUISSE;
+    }
+
+    return 0;
+}
 // ======================================
 // AFFICHAGE PANIER
 // ======================================
@@ -720,7 +751,43 @@ function afficherPanier() {
 
         }
     );
+    // ==================================
+    // FRAIS DE LIVRAISON
+    // ==================================
 
+    const fraisLivraison =
+        calculerFraisLivraison();
+
+    if (fraisLivraison > 0) {
+
+        html += `
+
+        <div class="ligne-produit">
+
+            <div class="infos-produit">
+
+                <strong>
+                    📦 Livraison en Suisse
+                </strong>
+
+            </div>
+
+            <div class="prix-produit">
+
+                <strong>
+                    ${fraisLivraison.toFixed(2)}
+                    CHF
+                </strong>
+
+            </div>
+
+        </div>
+
+        `;
+
+        total += fraisLivraison;
+
+    }
 
     zone.innerHTML =
         html;
@@ -1027,22 +1094,24 @@ modeLivraison:
 
 
         total:
-            panierCommande.reduce(
-                (
-                    somme,
-                    article
-                ) =>
+    panierCommande.reduce(
+        (
+            somme,
+            article
+        ) =>
 
-                    somme
-                    +
-                    (
-                        Number(
-                            article.prix
-                        ) || 0
-                    ),
+            somme
+            +
+            (
+                Number(
+                    article.prix
+                ) || 0
+            ),
 
-                0
-            )
+        0
+    )
+    +
+    calculerFraisLivraison()
 
     };
 
