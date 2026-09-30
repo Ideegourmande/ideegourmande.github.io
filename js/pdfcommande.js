@@ -719,7 +719,7 @@ if (fraisLivraisonPDF > 0) {
     );
 
     doc.text(
-        "Livraison en Suisse",
+        "Livraison en Suisse - expédition par la Poste",
         marge + 5,
         y + 5
     );
@@ -740,9 +740,7 @@ if (fraisLivraisonPDF > 0) {
 
     y += 9;
 }
-    // ========================================================
-    // TOTAL
-    // ========================================================
+
 
     nouvellePageSiNecessaire(22);
 
