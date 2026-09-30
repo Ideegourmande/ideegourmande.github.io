@@ -1105,10 +1105,10 @@ modeLivraison:
             commande.client.adresse,
 
         commentaire:
-            commande.client.commentaire,
+    commande.client.commentaire,
 
-        modeLivraison:
-    commande.modeLivraison,
+modeLivraison:
+    commande.client.modeLivraison,
 
 
         produits:
