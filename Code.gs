@@ -1,14 +1,3 @@
-/**
- * Idée Gourmande - Envoi automatique des commandes
- *
- * Déployer comme Application Web :
- * - Exécuter en tant que : Moi
- * - Qui a accès : Tout le monde
- *
- * Le projet doit appartenir au compte :
- * ideesgourmandesge@gmail.com
- */
-
 const NOM_EXPEDITEUR = 'Idée Gourmande';
 const EXPEDITEUR = 'ideesgourmandesge@gmail.com';
 
@@ -16,370 +5,99 @@ const FRAIS_LIVRAISON_SUISSE = 10.50;
 
 
 /**
- * Réception des commandes depuis le site.
+ * Réception de la commande depuis le site
  */
 function doPost(e) {
 
   try {
 
-    console.log('========== DEBUT doPost ==========');
-
-    // ------------------------------------------
-    // VÉRIFICATION DE LA REQUÊTE
-    // ------------------------------------------
-
-    if (!e) {
-      throw new Error('Objet e absent.');
-    }
-
-    console.log(
-      'e.parameter présent : ' +
-      !!e.parameter
-    );
-
-    console.log(
-      'e.postData présent : ' +
-      !!e.postData
-    );
-
-
-    // ------------------------------------------
-    // RÉCUPÉRATION DU JSON
-    // ------------------------------------------
+    // ==============================
+    // RÉCUPÉRATION DU PAYLOAD
+    // ==============================
 
     let raw = '';
 
-    /*
-     * Format actuellement envoyé par pdfcommande.js :
-     *
-     * application/x-www-form-urlencoded
-     *
-     * payload = JSON.stringify(payload)
-     */
-
-    if (
-      e.parameter &&
-      e.parameter.payload
-    ) {
-
-      raw = String(
-        e.parameter.payload
-      );
-
-      console.log(
-        'Payload récupéré depuis e.parameter.payload'
-      );
-
+    if (e && e.parameter && e.parameter.payload) {
+      raw = String(e.parameter.payload);
     }
 
-
-    /*
-     * Compatibilité avec un éventuel envoi
-     * de JSON brut.
-     */
-
-    if (
-      !raw &&
-      e.postData &&
-      e.postData.contents
-    ) {
-
-      raw = String(
-        e.postData.contents
-      );
-
-      console.log(
-        'Payload récupéré depuis e.postData.contents'
-      );
-
+    if (!raw && e && e.postData && e.postData.contents) {
+      raw = String(e.postData.contents);
     }
-
-
-    // ------------------------------------------
-    // VÉRIFICATION DU PAYLOAD
-    // ------------------------------------------
 
     if (!raw) {
+      throw new Error('Payload manquant.');
+    }
 
-      console.error(
-        'ERREUR : aucun payload reçu.'
-      );
+    const data = JSON.parse(raw);
 
-      if (e.parameter) {
+    // ==============================
+    // DESTINATAIRE CLIENT
+    // ==============================
 
-        console.log(
-          'Paramètres reçus : ' +
-          JSON.stringify(e.parameter)
-        );
+    const emailClient = String(data.to || '').trim();
 
-      }
+    if (!emailClient) {
+      throw new Error('Adresse e-mail du client manquante.');
+    }
 
-      if (e.postData) {
-
-        console.log(
-          'postData type : ' +
-          e.postData.type
-        );
-
-        console.log(
-          'postData length : ' +
-          (
-            e.postData.contents
-              ? e.postData.contents.length
-              : 0
-          )
-        );
-
-      }
-
+    if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(emailClient)) {
       throw new Error(
-        'Payload manquant. Aucun JSON reçu par doPost().'
+        'Adresse e-mail du client invalide : ' + emailClient
       );
-
     }
 
-
-    console.log(
-      'Taille payload reçu : ' +
-      raw.length +
-      ' caractères'
-    );
-
-
-    // ------------------------------------------
-    // DÉCODAGE JSON
-    // ------------------------------------------
-
-    let data;
-
-    try {
-
-      data = JSON.parse(raw);
-
-    }
-    catch (error) {
-
-      console.error(
-        'JSON invalide : ' +
-        error
-      );
-
-      console.error(
-        'Début du contenu reçu : ' +
-        raw.substring(0, 500)
-      );
-
-      throw new Error(
-        'Le payload reçu n’est pas un JSON valide.'
-      );
-
-    }
-
-
-    // ------------------------------------------
-    // DESTINATAIRE
-    // ------------------------------------------
-
-    const to =
-      String(
-        data.to || ''
-      ).trim();
-
-
-    if (!to) {
-
-      throw new Error(
-        'Destinataire manquant.'
-      );
-
-    }
-
-
-    if (
-      !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(to)
-    ) {
-
-      throw new Error(
-        'Adresse e-mail destinataire invalide : ' +
-        to
-      );
-
-    }
-
-
-    console.log(
-      'Destinataire : ' + to
-    );
-
-
-    // ------------------------------------------
+    // ==============================
     // PDF
-    // ------------------------------------------
+    // ==============================
 
     if (!data.pdfBase64) {
-
-      throw new Error(
-        'PDF absent du message reçu.'
-      );
-
+      throw new Error('PDF absent du message reçu.');
     }
 
-
-    let base64 =
-      String(
-        data.pdfBase64
-      );
-
-
-    /*
-     * Accepte :
-     *
-     * data:application/pdf;base64,XXXX
-     *
-     * ou simplement :
-     *
-     * XXXX
-     */
-
-    base64 =
-      base64
-        .replace(
-          /^data:application\/pdf;base64,/,
-          ''
-        )
-        .replace(
-          /\s/g,
-          ''
-        );
-
-
-    console.log(
-      'Base64 PDF : ' +
-      base64.length +
-      ' caractères'
-    );
-
+    let base64 = String(data.pdfBase64)
+      .replace(/^data:application\/pdf;base64,/, '')
+      .replace(/\s/g, '');
 
     if (base64.length < 100) {
-
-      throw new Error(
-        'Le contenu PDF reçu est vide ou trop court.'
-      );
-
+      throw new Error('Le PDF reçu est vide ou invalide.');
     }
 
+    const bytes = Utilities.base64Decode(base64);
 
-    // ------------------------------------------
-    // DÉCODAGE PDF
-    // ------------------------------------------
-
-    let bytes;
-
-    try {
-
-      bytes =
-        Utilities.base64Decode(
-          base64
-        );
-
-    }
-    catch (error) {
-
-      console.error(
-        'Erreur Base64 : ' +
-        error
-      );
-
-      throw new Error(
-        'Impossible de décoder le PDF Base64.'
-      );
-
+    if (!bytes || bytes.length < 100) {
+      throw new Error('Les données du PDF sont invalides.');
     }
 
-
-    if (
-      !bytes ||
-      bytes.length < 100
-    ) {
-
-      throw new Error(
-        'Le PDF décodé est vide ou invalide.'
-      );
-
-    }
-
-
-    console.log(
-      'PDF décodé : ' +
-      bytes.length +
-      ' octets'
+    const filename = String(
+      data.pdfFilename ||
+      ('Commande_' + (data.numeroCommande || Date.now()) + '.pdf')
     );
 
+    const pdfBlob = Utilities.newBlob(
+      bytes,
+      'application/pdf',
+      filename
+    );
 
-    // ------------------------------------------
-    // NOM DU FICHIER
-    // ------------------------------------------
+    // ==============================
+    // DONNÉES COMMANDE
+    // ==============================
 
-    const filename =
-      String(
-        data.pdfFilename ||
-        (
-          'Commande_' +
-          (
-            data.numeroCommande ||
-            Date.now()
-          ) +
-          '.pdf'
-        )
-      );
+    const client = data.client || {};
 
+    const produits = Array.isArray(data.produits)
+      ? data.produits
+      : [];
 
-    // ------------------------------------------
-    // CRÉATION DU BLOB PDF
-    // ------------------------------------------
+    const total = Number(data.total || 0).toFixed(2);
 
-    const pdfBlob =
-      Utilities.newBlob(
-        bytes,
-        'application/pdf',
-        filename
-      );
+    const numeroCommande =
+      data.numeroCommande || '';
 
-
-    // ------------------------------------------
-    // DONNÉES CLIENT
-    // ------------------------------------------
-
-    const client =
-      data.client || {};
-
-
-    const produits =
-      Array.isArray(data.produits)
-        ? data.produits
-        : [];
-
-
-    const total =
-      Number(
-        data.total || 0
-      ).toFixed(2);
-
-
-    // ------------------------------------------
+    // ==============================
     // MODE DE RÉCEPTION
-    // ------------------------------------------
-
-    /*
-     * On accepte le mode depuis :
-     *
-     * 1. data.client.modeLivraison
-     * 2. data.modeLivraison
-     *
-     * Cela rend le système compatible avec
-     * les deux formats actuellement utilisés
-     * par le site.
-     */
+    // ==============================
 
     const modeLivraison =
       String(
@@ -388,22 +106,15 @@ function doPost(e) {
         ''
       ).trim();
 
-
-    // ------------------------------------------
-    // FRAIS DE LIVRAISON
-    // ------------------------------------------
-
     const fraisLivraison =
       modeLivraison === 'Livraison en Suisse'
         ? FRAIS_LIVRAISON_SUISSE
         : 0;
 
-
     console.log(
       'MODE LIVRAISON REÇU PAR CODE.GS : ' +
       modeLivraison
     );
-
 
     console.log(
       'FRAIS LIVRAISON CALCULÉS POUR LE MAIL : ' +
@@ -411,96 +122,53 @@ function doPost(e) {
       ' CHF'
     );
 
+    // ==============================
+    // LISTE DES PRODUITS
+    // ==============================
 
-    // ------------------------------------------
-    // LIGNES PRODUITS
-    // ------------------------------------------
+    const lignes = produits.map(function(article) {
 
-    const lignes =
-      produits
-        .map(function(article) {
+      const q =
+        Number(article.quantite || 1) > 1
+          ? ' x' + article.quantite
+          : '';
 
-          const q =
-            Number(
-              article.quantite || 1
-            ) > 1
-              ? ' x' +
-                article.quantite
-              : '';
+      const poids =
+        article.poids
+          ? ' (' + article.poids + ' g)'
+          : '';
 
-
-          const poids =
-            article.poids
-              ? ' (' +
-                article.poids +
-                ' g)'
-              : '';
-
-
-          return (
-            '- ' +
-            (
-              article.nom ||
-              'Produit'
-            ) +
-            q +
-            poids +
-            ' : ' +
-            Number(
-              article.prix || 0
-            ).toFixed(2) +
-            ' CHF'
-          );
-
-        })
-        .join('\n');
-
-
-    // ------------------------------------------
-    // NUMÉRO DE COMMANDE
-    // ------------------------------------------
-
-    const numeroCommande =
-      data.numeroCommande || '';
-
-
-    // ------------------------------------------
-    // SUJET DU MAIL
-    // ------------------------------------------
-
-    const subject =
-      String(
-        data.subject ||
-        (
-          'Commande Idée Gourmande n°' +
-          numeroCommande
-        )
+      return (
+        '- ' +
+        (article.nom || 'Produit') +
+        q +
+        poids +
+        ' : ' +
+        Number(article.prix || 0).toFixed(2) +
+        ' CHF'
       );
 
+    }).join('\n');
 
-    // ------------------------------------------
-    // INFORMATIONS DE LIVRAISON
-    // ------------------------------------------
+    // ==============================
+    // INFORMATIONS LIVRAISON
+    // ==============================
 
     const informationsLivraison = [];
-
 
     if (modeLivraison) {
 
       informationsLivraison.push(
-        'Mode de réception : ' +
-        modeLivraison
+        'Mode de réception : ' + modeLivraison
       );
 
-    }
-    else {
+    } else {
 
       informationsLivraison.push(
         'Mode de réception : Non renseigné'
       );
 
     }
-
 
     if (fraisLivraison > 0) {
 
@@ -510,8 +178,7 @@ function doPost(e) {
         ' CHF'
       );
 
-    }
-    else {
+    } else {
 
       informationsLivraison.push(
         'Frais de livraison : 0.00 CHF'
@@ -519,213 +186,163 @@ function doPost(e) {
 
     }
 
+    // ==============================
+    // OBJET DES E-MAILS
+    // ==============================
 
-    // ------------------------------------------
-    // CORPS DU MAIL
-    // ------------------------------------------
+    const sujetCommande =
+      'Nouvelle commande Idée Gourmande n°' +
+      numeroCommande;
 
-    const body = [
+    const sujetClient =
+      'Confirmation de votre commande Idée Gourmande n°' +
+      numeroCommande;
 
+    // ==============================
+    // E-MAIL POUR IDÉE GOURMANDE
+    // ==============================
+
+    const corpsEntreprise = [
       'Bonjour,',
-
       '',
-
-      'Voici votre commande Idée Gourmande.',
-
+      'Une nouvelle commande a été reçue sur le site Idée Gourmande.',
       '',
-
-      'N° commande : ' +
-        numeroCommande,
-
+      'N° commande : ' + numeroCommande,
       '',
-
       'CLIENT',
-
       'Nom : ' +
-        (
-          client.prenom ||
-          ''
-        ) +
+        (client.prenom || '') +
         ' ' +
-        (
-          client.nom ||
-          ''
-        ),
-
+        (client.nom || ''),
       'Téléphone : ' +
-        (
-          client.telephone ||
-          ''
-        ),
-
+        (client.telephone || ''),
       'E-mail : ' +
-        to,
-
+        emailClient,
       'Adresse : ' +
-        (
-          client.adresse ||
-          ''
-        ),
-
+        (client.adresse || ''),
       '',
-
-      'MODE DE RÉCEPTION',
-
-      ...informationsLivraison,
-
-      '',
-
       'PRODUITS COMMANDÉS',
-
       lignes,
-
       '',
-
-      'TOTAL : ' +
-        total +
-        ' CHF',
-
+      'MODE DE RÉCEPTION',
+      ...informationsLivraison,
       '',
-
-      'PAIEMENT',
-
+      'TOTAL : ' + total + ' CHF',
+      '',
       'Paiement : TWINT',
-
       '',
-
       'Commentaire : ' +
-        (
-          client.commentaire ||
-          'Aucun'
-        ),
-
+        (client.commentaire || 'Aucun'),
       '',
-
-      'Votre bon de commande PDF est joint à ce message.',
-
+      'Le bon de commande PDF est joint à cet e-mail.',
       '',
-
       'Idée Gourmande'
-
     ].join('\n');
 
-
-    // ------------------------------------------
-    // ENVOI GMAIL
-    // ------------------------------------------
-
-    console.log(
-      'Envoi Gmail vers : ' +
-      to
-    );
-
-
-    console.log(
-      'Pièce jointe : ' +
-      filename +
-      ' (' +
-      bytes.length +
-      ' octets)'
-    );
-
+    // ==============================
+    // ENVOI À L'ENTREPRISE
+    // ==============================
 
     GmailApp.sendEmail(
-      to,
-      subject,
-      body,
+      EXPEDITEUR,
+      sujetCommande,
+      corpsEntreprise,
       {
-
-        attachments: [
-          pdfBlob
-        ],
-
-        name:
-          NOM_EXPEDITEUR,
-
-        replyTo:
-          EXPEDITEUR
-
+        attachments: [pdfBlob],
+        name: NOM_EXPEDITEUR,
+        replyTo: emailClient
       }
     );
 
+    // ==============================
+    // E-MAIL DE CONFIRMATION CLIENT
+    // ==============================
 
-    // ------------------------------------------
-    // SUCCÈS
-    // ------------------------------------------
+    const corpsClient = [
+      'Bonjour ' +
+        (client.prenom || '') +
+        ',',
+      '',
+      'Nous vous remercions pour votre commande auprès d’Idée Gourmande.',
+      '',
+      'Votre commande n°' +
+        numeroCommande +
+        ' a bien été reçue.',
+      '',
+      'PRODUITS COMMANDÉS',
+      lignes,
+      '',
+      'MODE DE RÉCEPTION',
+      ...informationsLivraison,
+      '',
+      'TOTAL : ' + total + ' CHF',
+      '',
+      'Paiement : TWINT',
+      '',
+      'Adresse de livraison :',
+      (client.adresse || ''),
+      '',
+      'Votre bon de commande PDF est joint à cet e-mail.',
+      '',
+      'Pour toute question, vous pouvez répondre directement à cet e-mail.',
+      '',
+      'Merci pour votre confiance.',
+      '',
+      'Idée Gourmande'
+    ].join('\n');
 
-    console.log(
-      '========== MAIL ENVOYÉ AVEC SUCCÈS =========='
+    // ==============================
+    // ENVOI AU CLIENT
+    // ==============================
+
+    GmailApp.sendEmail(
+      emailClient,
+      sujetClient,
+      corpsClient,
+      {
+        attachments: [pdfBlob],
+        name: NOM_EXPEDITEUR,
+        replyTo: EXPEDITEUR
+      }
     );
 
+    // ==============================
+    // RÉPONSE AU SITE
+    // ==============================
 
     return ContentService
       .createTextOutput(
         JSON.stringify({
-
           ok: true,
-
+          entreprise: EXPEDITEUR,
+          client: emailClient,
           attachment: true,
-
-          bytes:
-            bytes.length,
-
-          filename:
-            filename,
-
-          modeLivraison:
-            modeLivraison,
-
-          fraisLivraison:
-            fraisLivraison
-
+          bytes: bytes.length,
+          filename: filename,
+          modeLivraison: modeLivraison,
+          fraisLivraison: fraisLivraison
         })
       )
-      .setMimeType(
-        ContentService.MimeType.JSON
-      );
+      .setMimeType(ContentService.MimeType.JSON);
 
+  } catch (erreur) {
 
-  }
-  catch (error) {
-
-    console.error(
-      '========== ERREUR doPost =========='
-    );
-
-
-    console.error(
-      error
-    );
-
+    console.error(erreur);
 
     return ContentService
       .createTextOutput(
         JSON.stringify({
-
           ok: false,
-
-          error:
-            String(error),
-
-          message:
-            error &&
-            error.message
-              ? error.message
-              : String(error)
-
+          error: String(erreur.message || erreur)
         })
       )
-      .setMimeType(
-        ContentService.MimeType.JSON
-      );
-
+      .setMimeType(ContentService.MimeType.JSON);
   }
-
 }
 
 
 /**
- * Test du Web App.
+ * Test simple du Web App
  */
 function doGet() {
 
@@ -733,8 +350,5 @@ function doGet() {
     .createTextOutput(
       'Idée Gourmande - service e-mail actif'
     )
-    .setMimeType(
-      ContentService.MimeType.TEXT
-    );
-
+    .setMimeType(ContentService.MimeType.TEXT);
 }
