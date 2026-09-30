@@ -1,721 +1,516 @@
 <!DOCTYPE html>
-
 <html lang="fr">
-
 <head>
-
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Préparer ma commande | Idée Gourmande</title>
+<title>Commander - Idée Gourmande</title>
 
-<link rel="stylesheet" href="css/style.css">
+<link rel="stylesheet" href="style.css">
 
+<style>
+
+/* ===================================================
+   PAGE COMMANDE
+=================================================== */
+
+.commande-container {
+    max-width: 1100px;
+    margin: 40px auto;
+    padding: 20px;
+}
+
+.commande-container h1 {
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+/* ===================================================
+   PRODUITS
+=================================================== */
+
+.produits-commande {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 25px;
+    margin-bottom: 40px;
+}
+
+.produit-commande {
+    background: white;
+    border-radius: 15px;
+    padding: 20px;
+    box-shadow: 0 5px 20px rgba(0,0,0,.08);
+}
+
+.produit-commande img {
+    width: 100%;
+    height: 180px;
+    object-fit: cover;
+    border-radius: 10px;
+}
+
+.produit-commande h3 {
+    margin-top: 15px;
+}
+
+.prix {
+    font-weight: bold;
+    color: #8b5e3c;
+    margin: 10px 0;
+}
+
+/* ===================================================
+   QUANTITÉ
+=================================================== */
+
+.quantite {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    margin-top: 15px;
+}
+
+.quantite button {
+    width: 40px;
+    height: 40px;
+    padding: 0;
+}
+
+.quantite input {
+    width: 60px;
+    text-align: center;
+    padding: 8px;
+}
+
+/* ===================================================
+   PANIER
+=================================================== */
+
+.panier {
+    background: #fff;
+    border-radius: 15px;
+    padding: 25px;
+    margin-bottom: 40px;
+    box-shadow: 0 5px 20px rgba(0,0,0,.08);
+}
+
+.panier h2 {
+    margin-top: 0;
+}
+
+#panierListe {
+    margin-bottom: 20px;
+}
+
+.total-panier {
+    font-size: 1.3rem;
+    font-weight: bold;
+    text-align: right;
+}
+
+/* ===================================================
+   FORMULAIRE
+=================================================== */
+
+.formulaire-commande {
+    background: white;
+    border-radius: 15px;
+    padding: 30px;
+    box-shadow: 0 5px 20px rgba(0,0,0,.08);
+}
+
+.formulaire-commande h2 {
+    margin-top: 0;
+}
+
+.form-group {
+    margin-bottom: 20px;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: bold;
+}
+
+.form-group input,
+.form-group textarea,
+.form-group select {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    font-family: inherit;
+    font-size: 1rem;
+    box-sizing: border-box;
+}
+
+.form-group textarea {
+    min-height: 100px;
+    resize: vertical;
+}
+
+/* ===================================================
+   PAIEMENT
+=================================================== */
+
+.paiement-box {
+    background: #f8f3e8;
+    border-radius: 12px;
+    padding: 20px;
+    margin-top: 30px;
+    margin-bottom: 30px;
+}
+
+.paiement-box h3 {
+    margin-top: 0;
+}
+
+.twint-number {
+    font-size: 1.5rem;
+    font-weight: bold;
+    text-align: center;
+    margin: 20px 0;
+    letter-spacing: 1px;
+}
+
+.confirmation {
+    margin-top: 15px;
+    font-style: italic;
+}
+
+/* ===================================================
+   MODE DE RÉCEPTION
+=================================================== */
+
+.infos-livraison {
+    margin-top: 20px;
+}
+
+.infos-livraison p {
+    margin-bottom: 18px;
+}
+
+/* ===================================================
+   BOUTON COMMANDE
+=================================================== */
+
+.bouton-commande {
+    text-align: center;
+    margin-top: 30px;
+}
+
+</style>
 </head>
 
 <body>
 
+<!-- ===================================================
+     NAVIGATION
+=================================================== -->
+
 <header>
-
-<div class="top-banner">
-
-🚚 Commandes préparées artisanalement à Genève – Livraison sous vide ou congelée selon les produits pour préserver toute la qualité.
-
-</div>
 
 <nav>
 
-<div class="logo">
+<a href="index.html">
+Accueil
+</a>
 
-<img src="images/logo.svg" alt="Idée Gourmande">
+<a href="produits.html">
+Produits
+</a>
 
-</div>
+<a href="savoir-faire.html">
+Savoir-faire
+</a>
 
-<ul>
+<a href="commande.html">
+Commander
+</a>
 
-<li><a href="index.html">Accueil</a></li>
-<li><a href="savoir-faire.html">Notre savoir-faire</a></li>
-<li><a href="produits.html">Nos spécialités</a></li>
-<li><a href="commande.html">Commander</a></li>
-<li><a href="contact.html">Contact</a></li>
-<li><a href="admin.html">Administration</a></li>
-
-</ul>
+<a href="contact.html">
+Contact
+</a>
 
 </nav>
 
 </header>
 
-<section class="presentation">
+
+<!-- ===================================================
+     CONTENU
+=================================================== -->
+
+<main class="commande-container">
 
 <h1>
-
-Préparer ma commande
-
+🛒 Passer une commande
 </h1>
 
-<p>
-
-Choisissez vos spécialités artisanales, vos options et ajoutez vos produits au panier.
-
-</p>
-
-</section>
-
-<section class="commande-grid">
 
 <!-- ===================================================
-     FOIE GRAS
+     PRODUITS
 =================================================== -->
 
-<div class="commande-card"
-data-produit="foie-gras"
-data-prix="35">
+<section class="produits-commande">
 
-<img src="images/foie-gras-figues.jpg"
-alt="Foie gras de canard au torchon">
+<!-- Les produits existants sont conservés -->
+
+<div class="produit-commande">
+
+<img src="images/produit1.jpg" alt="Produit">
 
 <h3>
-
-🦆 Foie gras de canard au torchon
-
+Produit
 </h3>
 
-<p>
-
-Choisissez votre recette :
-
-</p>
-
-<div class="choix-recette">
-
-<label>
-
-<input
-type="radio"
-name="foieRecette"
-value="figues">
-
-Gelée de figues au vin de messe
-
-</label>
-
-<label>
-
-<input
-type="radio"
-name="foieRecette"
-value="piment">
-
-Piment d'Espelette & Porto Calem
-
-</label>
-
+<div class="prix">
+CHF 0.00
 </div>
 
-<label>
+<div class="quantite">
 
-Quantité (200 g)
-
-</label>
+<button type="button">
+−
+</button>
 
 <input
-class="quantite-produit"
 type="number"
-id="foieQuantite"
-value="1"
-min="1">
+min="0"
+value="0"
+>
 
-<p>
-
-<strong>
-
-35.00 CHF / 200 g
-
-</strong>
-
-</p>
-
-<button
-type="button"
-class="btn ajouter-panier"
-data-produit="foie-gras">
-
-Ajouter au panier
-
+<button type="button">
++
 </button>
 
 </div>
-
-<!-- ===================================================
-     MAGRET
-=================================================== -->
-
-<div class="commande-card"
-data-produit="magret"
-data-prix="25">
-
-<img src="images/magret-fume.jpg"
-alt="Magret de canard fumé et séché">
-
-<h3>
-
-🦆 Magret de canard fumé et séché
-
-</h3>
-
-<p>
-
-Choisissez votre recette :
-
-</p>
-
-<div class="choix-recette">
-
-<label>
-
-<input
-type="radio"
-name="magretRecette"
-value="herbes">
-
-Herbes de Provence
-
-</label>
-
-<label>
-
-<input
-type="radio"
-name="magretRecette"
-value="piment">
-
-Piment d'Espelette
-
-</label>
-
-</div>
-
-<label>
-
-Quantité
-
-</label>
-
-<input
-class="quantite-produit"
-type="number"
-id="magretQuantite"
-value="1"
-min="1">
-
-<p>
-
-<strong>
-
-25.00 CHF
-
-</strong>
-
-</p>
-
-<button
-type="button"
-class="btn ajouter-panier"
-data-produit="magret">
-
-Ajouter au panier
-
-</button>
-
-</div>
-
-<!-- ===================================================
-     VIANDE SÉCHÉE
-=================================================== -->
-
-<div class="commande-card"
-data-produit="viande-sechee"
-data-prix="45">
-
-<img src="images/viande-sechee.jpg"
-alt="Viande séchée artisanale">
-
-<h3>
-
-🥩 Viande séchée artisanale
-
-</h3>
-
-<p>
-
-Recette maison
-
-</p>
-
-<p>
-
-<strong>
-
-45.00 CHF / portion
-
-</strong>
-
-</p>
-
-<label>
-
-Nombre de portions
-
-</label>
-
-<input
-class="quantite-produit"
-type="number"
-id="viandeQuantite"
-value="1"
-min="0">
-
-<p class="confirmation">
-
-≈ 500 g par portion.
-Poids réel confirmé lors de la préparation.
-
-</p>
-
-<button
-type="button"
-class="btn ajouter-panier"
-data-produit="viande-sechee">
-
-Ajouter au panier
-
-</button>
-
-</div>
-
-<!-- ===================================================
-     LARD SEC
-=================================================== -->
-
-<div class="commande-card"
-data-produit="lard-sec"
-data-prix="20">
-
-<img src="images/lard-sec.jpg"
-alt="Lard sec légèrement fumé">
-
-<h3>
-
-🥓 Lard sec légèrement fumé
-
-</h3>
-
-<p>
-
-Recette maison
-
-</p>
-
-<p>
-
-<strong>
-
-20.00 CHF / portion
-
-</strong>
-
-</p>
-
-<label>
-
-Nombre de portions
-
-</label>
-
-<input
-class="quantite-produit"
-type="number"
-id="lardQuantite"
-value="1"
-min="0">
-
-<p class="confirmation">
-
-≈ 500 g par portion.
-Poids réel confirmé lors de la préparation.
-
-</p>
-
-<button
-type="button"
-class="btn ajouter-panier"
-data-produit="lard-sec">
-
-Ajouter au panier
-
-</button>
-
-</div>
-
-<!-- ===================================================
-     SAUMON FUMÉ
-=================================================== -->
-
-<div class="commande-card"
-data-produit="saumon-fume"
-data-prix="8">
-
-<img
-src="images/saumon-fume.jpg"
-alt="Cœur de saumon fumé">
-
-<h3>
-
-🐟 Cœur de saumon fumé
-
-</h3>
-
-<p>
-
-Choisissez votre recette :
-
-</p>
-
-<div class="choix-recette">
-
-<label>
-
-<input
-type="radio"
-name="saumonRecette"
-value="aneth">
-
-Aneth
-
-</label>
-
-<label>
-
-<input
-type="radio"
-name="saumonRecette"
-value="piment">
-
-Piment d'Espelette
-
-</label>
-
-</div>
-
-<label>
-
-Poids souhaité
-
-</label>
-
-<select
-class="poids-produit"
-id="saumonPoids">
-
-<option value="0">
-
-Choisir un poids
-
-</option>
-
-<option value="100">
-
-100 g
-
-</option>
-
-<option value="200">
-
-200 g
-
-</option>
-
-<option value="300">
-
-300 g
-
-</option>
-
-<option value="400">
-
-400 g
-
-</option>
-
-<option value="500">
-
-500 g
-
-</option>
-
-<option value="600">
-
-600 g
-
-</option>
-
-<option value="700">
-
-700 g
-
-</option>
-
-<option value="800">
-
-800 g
-
-</option>
-
-<option value="900">
-
-900 g
-
-</option>
-
-<option value="1000">
-
-1 kg
-
-</option>
-
-</select>
-
-<p>
-
-<strong>
-
-8.00 CHF / 100 g
-
-</strong>
-
-</p>
-
-<p class="confirmation">
-
-Poids réel confirmé lors de la préparation.
-
-</p>
-
-<button
-type="button"
-class="btn ajouter-panier"
-data-produit="saumon-fume">
-
-Ajouter au panier
-
-</button>
 
 </div>
 
 </section>
 
+
 <!-- ===================================================
-     INFORMATION POIDS RÉEL
+     INFORMATIONS SUR LE POIDS
 =================================================== -->
 
-<section class="presentation">
-
-<div class="paiement-box">
+<section class="paiement-box">
 
 <h3>
-
-ℹ️ Information importante
-
+⚖️ Informations sur le poids
 </h3>
 
 <p>
-
-Les produits vendus au poids (cœur de saumon fumé, viande séchée et lard sec) sont préparés artisanalement.
-
+Le poids indiqué pour les produits est donné à titre indicatif.
 </p>
 
 <p>
-
-<strong>
-
-Le poids réel sera confirmé lors de la préparation.
-
-</strong>
-
+Le poids réel peut légèrement varier selon les produits.
 </p>
-
-<p>
-
-Le montant final sera ajusté en fonction du poids effectivement préparé.
-
-</p>
-
-</div>
 
 </section>
+
 
 <!-- ===================================================
      PANIER
 =================================================== -->
 
-<section class="panier-section">
+<section class="panier">
 
-<div class="panier-card">
-
-<h2 id="titrePanier">
-
+<h2>
 🛒 Votre panier
-
 </h2>
 
-<div id="recapCommande">
-
-Aucun produit sélectionné.
-
+<div id="panierListe">
 </div>
 
-<div class="total-box">
+<div class="total-panier">
 
-<span>
-
-Total estimatif
-
+Total :
+<span id="totalCommande">
+CHF 0.00
 </span>
-
-<strong id="total">
-
-0.00 CHF
-
-</strong>
-
-</div>
-
-<button
-type="button"
-id="btnViderPanier"
-class="btn vider-panier">
-
-Vider le panier
-
-</button>
 
 </div>
 
 </section>
 
+
 <!-- ===================================================
      FORMULAIRE CLIENT
 =================================================== -->
 
-<section class="presentation">
+<section class="formulaire-commande">
 
 <h2>
-
-Vos coordonnées
-
+👤 Vos coordonnées
 </h2>
 
-<form
-id="formCommande"
-class="commande-form">
+<form id="commandeForm">
 
-<div class="form-grid">
+<div class="form-group">
 
-<div>
-
-<label>
-
-Prénom
-
+<label for="prenom">
+Prénom *
 </label>
 
 <input
 type="text"
 id="prenom"
-placeholder="Votre prénom"
-required>
+name="prenom"
+required
+>
 
 </div>
 
-<div>
 
-<label>
+<div class="form-group">
 
-Nom
-
+<label for="nom">
+Nom *
 </label>
 
 <input
 type="text"
 id="nom"
-placeholder="Votre nom"
-required>
+name="nom"
+required
+>
 
 </div>
 
-<div>
 
-<label>
+<div class="form-group">
 
+<label for="telephone">
 Téléphone
-
 </label>
 
 <input
 type="tel"
 id="telephone"
-placeholder="079 xxx xx xx">
+name="telephone"
+>
 
 </div>
 
-<div>
 
-<label>
+<div class="form-group">
 
-Adresse e-mail
-
+<label for="email">
+Adresse e-mail *
 </label>
 
 <input
 type="email"
 id="email"
-placeholder="votre@email.ch"
-required>
+name="email"
+required
+>
 
 </div>
 
-<div class="full-width">
 
-<label>
+<div class="form-group">
 
-Adresse de livraison
-
+<label for="adresse">
+Adresse
 </label>
 
 <textarea
 id="adresse"
-rows="4"
-placeholder="Rue, numéro, NPA, ville"></textarea>
+name="adresse"
+></textarea>
 
 </div>
 
-<div class="full-width">
 
-<label>
+<div class="form-group">
 
+<label for="commentaire">
 Commentaire
-
 </label>
 
 <textarea
 id="commentaire"
-rows="3"
-placeholder="Date souhaitée, instructions particulières..."></textarea>
+name="commentaire"
+></textarea>
+
+</div>
+
+
+<!-- ===================================================
+     MODE DE RÉCEPTION
+=================================================== -->
+
+<div class="paiement-box">
+
+<h3>
+🚚 Mode de réception
+</h3>
+
+<p>
+Comment souhaitez-vous recevoir votre commande ?
+</p>
+
+<label for="modeLivraison">
+Choisissez votre mode de réception :
+</label>
+
+<select id="modeLivraison" name="modeLivraison" required>
+
+<option value="">
+-- Sélectionnez une option --
+</option>
+
+<option value="Livraison à Genève">
+🚲 Livraison à Genève — sur rendez-vous
+</option>
+
+<option value="Livraison en Suisse">
+📦 Livraison en Suisse — par la Poste
+</option>
+
+<option value="Retrait à Genève">
+📍 Retrait à Genève — sur rendez-vous
+</option>
+
+</select>
+
+
+<div class="infos-livraison">
+
+<p>
+<strong>🚲 Livraison à Genève</strong><br>
+Livraison personnelle à l’adresse de votre choix, sur rendez-vous.
+Produits réfrigérés et congelés disponibles.
+</p>
+
+<p>
+<strong>📦 Livraison en Suisse</strong><br>
+Expédition par la Poste pour les produits pouvant être transportés
+sans réfrigération.<br>
+
+<strong>
+Frais d'expédition selon le poids du colis — en moyenne CHF 10.50.
+</strong>
+
+</p>
+
+<p>
+<strong>📍 Retrait à Genève</strong><br>
+Possibilité de retirer directement la commande sur rendez-vous
+chez Idée Gourmande.
+</p>
 
 </div>
 
 </div>
+
 
 <!-- ===================================================
      PAIEMENT TWINT
@@ -736,27 +531,39 @@ Merci d'effectuer le paiement avant validation de la commande.
 </div>
 
 <p>
-<strong>1. Effectuez votre paiement TWINT au numéro ci-dessus.</strong>
+<strong>
+1. Effectuez votre paiement TWINT au numéro ci-dessus.
+</strong>
 </p>
 
 <p>
-<strong>2. Indiquez le nom de l'expéditeur du paiement :</strong>
+<strong>
+2. Indiquez le nom de l'expéditeur du paiement :
+</strong>
 </p>
 
 <input
 type="text"
 id="nomExpediteurTwint"
+name="nomExpediteurTwint"
 placeholder="Nom et prénom utilisés pour le paiement TWINT"
-required>
+required
+>
+
 
 <label>
+
 <input
 type="checkbox"
 id="confirmationTwint"
-required>
+name="confirmationTwint"
+required
+>
 
 J'ai effectué le paiement TWINT et indiqué ci-dessus le nom de l'expéditeur.
+
 </label>
+
 
 <p class="confirmation">
 La commande sera confirmée après vérification du paiement.
@@ -764,17 +571,28 @@ La commande sera confirmée après vérification du paiement.
 
 </div>
 
+
+<!-- ===================================================
+     BOUTON DE COMMANDE
+=================================================== -->
+
+<div class="bouton-commande">
+
 <button
-class="btn btn-large"
-type="submit">
-
-Envoyer ma commande
-
+type="submit"
+class="btn"
+>
+✅ Valider ma commande
 </button>
+
+</div>
 
 </form>
 
 </section>
+
+</main>
+
 
 <!-- ===================================================
      FOOTER
@@ -783,36 +601,15 @@ Envoyer ma commande
 <footer>
 
 <p>
-
-© Idée Gourmande - Genève
-
-</p>
-
-<p>
-
-<a href="contact.html">
-
-Contact
-
-</a>
-
- | 
-
-<a href="mentions-legales.html">
-
-Mentions légales
-
-</a>
-
+© Idée Gourmande
 </p>
 
 </footer>
 
+
 <!-- ===================================================
      SCRIPTS
 =================================================== -->
-
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 
 <script src="js/database.js"></script>
 
@@ -821,6 +618,4 @@ Mentions légales
 <script src="js/commande.js?v=3"></script>
 
 </body>
-
 </html>
-
