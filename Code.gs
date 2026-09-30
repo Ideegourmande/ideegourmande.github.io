@@ -12,6 +12,8 @@
 const NOM_EXPEDITEUR = 'Idée Gourmande';
 const EXPEDITEUR = 'ideesgourmandesge@gmail.com';
 
+const FRAIS_LIVRAISON_SUISSE = 10.50;
+
 
 /**
  * Réception des commandes depuis le site.
@@ -23,7 +25,7 @@ function doPost(e) {
     console.log('========== DEBUT doPost ==========');
 
     // ------------------------------------------
-    // Vérification de la requête
+    // VÉRIFICATION DE LA REQUÊTE
     // ------------------------------------------
 
     if (!e) {
@@ -42,7 +44,7 @@ function doPost(e) {
 
 
     // ------------------------------------------
-    // Récupération du JSON
+    // RÉCUPÉRATION DU JSON
     // ------------------------------------------
 
     let raw = '';
@@ -94,7 +96,7 @@ function doPost(e) {
 
 
     // ------------------------------------------
-    // Vérification payload
+    // VÉRIFICATION DU PAYLOAD
     // ------------------------------------------
 
     if (!raw) {
@@ -102,11 +104,6 @@ function doPost(e) {
       console.error(
         'ERREUR : aucun payload reçu.'
       );
-
-      /*
-       * Informations utiles dans les journaux
-       * Apps Script.
-       */
 
       if (e.parameter) {
 
@@ -150,7 +147,7 @@ function doPost(e) {
 
 
     // ------------------------------------------
-    // Décodage JSON
+    // DÉCODAGE JSON
     // ------------------------------------------
 
     let data;
@@ -235,11 +232,11 @@ function doPost(e) {
 
 
     /*
-     * Accepte aussi bien :
+     * Accepte :
      *
      * data:application/pdf;base64,XXXX
      *
-     * que :
+     * ou simplement :
      *
      * XXXX
      */
@@ -320,7 +317,7 @@ function doPost(e) {
 
 
     // ------------------------------------------
-    // NOM FICHIER
+    // NOM DU FICHIER
     // ------------------------------------------
 
     const filename =
@@ -338,7 +335,7 @@ function doPost(e) {
 
 
     // ------------------------------------------
-    // CRÉATION BLOB PDF
+    // CRÉATION DU BLOB PDF
     // ------------------------------------------
 
     const pdfBlob =
@@ -367,6 +364,52 @@ function doPost(e) {
       Number(
         data.total || 0
       ).toFixed(2);
+
+
+    // ------------------------------------------
+    // MODE DE RÉCEPTION
+    // ------------------------------------------
+
+    /*
+     * On accepte le mode depuis :
+     *
+     * 1. data.client.modeLivraison
+     * 2. data.modeLivraison
+     *
+     * Cela rend le système compatible avec
+     * les deux formats actuellement utilisés
+     * par le site.
+     */
+
+    const modeLivraison =
+      String(
+        client.modeLivraison ||
+        data.modeLivraison ||
+        ''
+      ).trim();
+
+
+    // ------------------------------------------
+    // FRAIS DE LIVRAISON
+    // ------------------------------------------
+
+    const fraisLivraison =
+      modeLivraison === 'Livraison en Suisse'
+        ? FRAIS_LIVRAISON_SUISSE
+        : 0;
+
+
+    console.log(
+      'MODE LIVRAISON REÇU PAR CODE.GS : ' +
+      modeLivraison
+    );
+
+
+    console.log(
+      'FRAIS LIVRAISON CALCULÉS POUR LE MAIL : ' +
+      fraisLivraison.toFixed(2) +
+      ' CHF'
+    );
 
 
     // ------------------------------------------
@@ -414,7 +457,15 @@ function doPost(e) {
 
 
     // ------------------------------------------
-    // OBJET / SUJET DU MAIL
+    // NUMÉRO DE COMMANDE
+    // ------------------------------------------
+
+    const numeroCommande =
+      data.numeroCommande || '';
+
+
+    // ------------------------------------------
+    // SUJET DU MAIL
     // ------------------------------------------
 
     const subject =
@@ -422,57 +473,53 @@ function doPost(e) {
         data.subject ||
         (
           'Commande Idée Gourmande n°' +
-          (
-            data.numeroCommande ||
-            ''
-          )
+          numeroCommande
         )
       );
 
-// ------------------------------------------
-// MODE DE RÉCEPTION / FRAIS DE LIVRAISON
-// ------------------------------------------
 
-const modeLivraison =
-  String(
-    client.modeLivraison ||
-    data.modeLivraison ||
-    ''
-  ).trim();
+    // ------------------------------------------
+    // INFORMATIONS DE LIVRAISON
+    // ------------------------------------------
 
-const fraisLivraison =
-  modeLivraison === 'Livraison en Suisse'
-    ? 10.50
-    : 0;
+    const informationsLivraison = [];
 
-const informationsLivraison = [];
-console.log(
-  'MODE LIVRAISON REÇU PAR CODE.GS : ' +
-  modeLivraison
-);
 
-console.log(
-  'FRAIS LIVRAISON CALCULÉS POUR LE MAIL : ' +
-  fraisLivraison
-);
-if (modeLivraison) {
+    if (modeLivraison) {
 
-  informationsLivraison.push(
-    'Mode de réception : ' +
-    modeLivraison
-  );
+      informationsLivraison.push(
+        'Mode de réception : ' +
+        modeLivraison
+      );
 
-}
+    }
+    else {
 
-if (fraisLivraison > 0) {
+      informationsLivraison.push(
+        'Mode de réception : Non renseigné'
+      );
 
-  informationsLivraison.push(
-    'Frais d’expédition : ' +
-    fraisLivraison.toFixed(2) +
-    ' CHF'
-  );
+    }
 
-}
+
+    if (fraisLivraison > 0) {
+
+      informationsLivraison.push(
+        'Frais d’expédition : ' +
+        fraisLivraison.toFixed(2) +
+        ' CHF'
+      );
+
+    }
+    else {
+
+      informationsLivraison.push(
+        'Frais de livraison : 0.00 CHF'
+      );
+
+    }
+
+
     // ------------------------------------------
     // CORPS DU MAIL
     // ------------------------------------------
@@ -488,14 +535,13 @@ if (fraisLivraison > 0) {
       '',
 
       'N° commande : ' +
-        (
-          data.numeroCommande ||
-          ''
-        ),
+        numeroCommande,
 
       '',
 
-      'Client : ' +
+      'CLIENT',
+
+      'Nom : ' +
         (
           client.prenom ||
           ''
@@ -515,7 +561,7 @@ if (fraisLivraison > 0) {
       'E-mail : ' +
         to,
 
-            'Adresse : ' +
+      'Adresse : ' +
         (
           client.adresse ||
           ''
@@ -523,19 +569,27 @@ if (fraisLivraison > 0) {
 
       '',
 
+      'MODE DE RÉCEPTION',
+
       ...informationsLivraison,
 
       '',
 
-      'Produits commandés:',
+      'PRODUITS COMMANDÉS',
 
       lignes,
 
       '',
 
-      'Total : ' +
+      'TOTAL : ' +
         total +
         ' CHF',
+
+      '',
+
+      'PAIEMENT',
+
+      'Paiement : TWINT',
 
       '',
 
@@ -565,6 +619,7 @@ if (fraisLivraison > 0) {
       to
     );
 
+
     console.log(
       'Pièce jointe : ' +
       filename +
@@ -579,6 +634,7 @@ if (fraisLivraison > 0) {
       subject,
       body,
       {
+
         attachments: [
           pdfBlob
         ],
@@ -588,6 +644,7 @@ if (fraisLivraison > 0) {
 
         replyTo:
           EXPEDITEUR
+
       }
     );
 
@@ -613,7 +670,13 @@ if (fraisLivraison > 0) {
             bytes.length,
 
           filename:
-            filename
+            filename,
+
+          modeLivraison:
+            modeLivraison,
+
+          fraisLivraison:
+            fraisLivraison
 
         })
       )
@@ -628,6 +691,7 @@ if (fraisLivraison > 0) {
     console.error(
       '========== ERREUR doPost =========='
     );
+
 
     console.error(
       error
