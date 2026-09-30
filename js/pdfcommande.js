@@ -15,10 +15,6 @@ async function genererPDFCommande(commande) {
     const { jsPDF } = window.jspdf;
     const doc = new jsPDF();
 
-    // ========================================================
-    // INFORMATIONS
-    // ========================================================
-
     const fichier =
         "Commande_" + commande.id + ".pdf";
 
@@ -35,38 +31,17 @@ async function genererPDFCommande(commande) {
 
 
     // ========================================================
-    // PALETTE GRAPHIQUE
+    // COULEURS
     // ========================================================
 
-    const OR =
-        [184, 145, 34];
-
-    const OR_FONCE =
-        [145, 111, 24];
-
-    const BRUN =
-        [117, 75, 48];
-
-    const BRUN_CLAIR =
-        [139, 94, 60];
-
-    const CREME =
-        [248, 244, 236];
-
-    const CREME_FONCE =
-        [238, 231, 217];
-
-    const GRIS =
-        [105, 105, 105];
-
-    const GRIS_CLAIR =
-        [220, 220, 220];
-
-    const NOIR =
-        [45, 45, 45];
-
-    const BLANC =
-        [255, 255, 255];
+    const OR = [184, 145, 34];
+    const OR_FONCE = [145, 111, 24];
+    const BRUN = [117, 75, 48];
+    const CREME = [248, 244, 236];
+    const GRIS = [105, 105, 105];
+    const GRIS_CLAIR = [220, 220, 220];
+    const NOIR = [45, 45, 45];
+    const BLANC = [255, 255, 255];
 
 
     // ========================================================
@@ -79,16 +54,18 @@ async function genererPDFCommande(commande) {
     const pageHeight =
         doc.internal.pageSize.getHeight();
 
-    const marge =
-        20;
+    const marge = 18;
 
     const largeurContenu =
         pageWidth - (marge * 2);
 
 
     // ========================================================
-    // OUTILS GRAPHIQUES
+    // OUTILS
     // ========================================================
+
+    let y = 43;
+
 
     function nouvellePageSiNecessaire(
         hauteurNecessaire
@@ -96,12 +73,12 @@ async function genererPDFCommande(commande) {
 
         if (
             y + hauteurNecessaire >
-            pageHeight - 25
+            pageHeight - 22
         ) {
 
             doc.addPage();
 
-            y = 20;
+            y = 18;
 
             dessinerBandeauPage();
         }
@@ -120,7 +97,7 @@ async function genererPDFCommande(commande) {
             0,
             0,
             pageWidth,
-            10,
+            7,
             "F"
         );
 
@@ -130,22 +107,20 @@ async function genererPDFCommande(commande) {
             OR[2]
         );
 
-        doc.setLineWidth(0.8);
+        doc.setLineWidth(0.6);
 
         doc.line(
             marge,
-            12,
+            9,
             pageWidth - marge,
-            12
+            9
         );
     }
 
 
-    function dessinerTitreSection(
-        titre
-    ) {
+    function dessinerTitreSection(titre) {
 
-        nouvellePageSiNecessaire(18);
+        nouvellePageSiNecessaire(14);
 
         doc.setFillColor(
             CREME[0],
@@ -157,7 +132,7 @@ async function genererPDFCommande(commande) {
             marge,
             y,
             largeurContenu,
-            9,
+            8,
             2,
             2,
             "F"
@@ -168,7 +143,7 @@ async function genererPDFCommande(commande) {
             "bold"
         );
 
-        doc.setFontSize(10);
+        doc.setFontSize(8.5);
 
         doc.setTextColor(
             BRUN[0],
@@ -178,8 +153,8 @@ async function genererPDFCommande(commande) {
 
         doc.text(
             titre,
-            marge + 5,
-            y + 6
+            marge + 4,
+            y + 5.7
         );
 
         doc.setTextColor(
@@ -188,37 +163,7 @@ async function genererPDFCommande(commande) {
             NOIR[2]
         );
 
-        y += 14;
-    }
-
-
-    function texteMultiligne(
-        texte,
-        x,
-        largeur,
-        taille = 9,
-        interligne = 5
-    ) {
-
-        doc.setFontSize(taille);
-
-        const lignes =
-            doc.splitTextToSize(
-                String(texte || ""),
-                largeur
-            );
-
-        doc.text(
-            lignes,
-            x,
-            y
-        );
-
-        y +=
-            lignes.length *
-            interligne;
-
-        return lignes.length;
+        y += 11;
     }
 
 
@@ -236,11 +181,9 @@ async function genererPDFCommande(commande) {
         0,
         0,
         pageWidth,
-        38,
+        32,
         "F"
     );
-
-    // Ligne dorée
 
     doc.setFillColor(
         OR[0],
@@ -250,14 +193,12 @@ async function genererPDFCommande(commande) {
 
     doc.rect(
         0,
-        36,
+        30,
         pageWidth,
         2,
         "F"
     );
 
-
-    // Nom de la société
 
     doc.setTextColor(
         BLANC[0],
@@ -270,39 +211,35 @@ async function genererPDFCommande(commande) {
         "bold"
     );
 
-    doc.setFontSize(22);
+    doc.setFontSize(19);
 
     doc.text(
         "IDÉE GOURMANDE",
         marge,
-        18
+        16
     );
 
-
-    // Sous-titre
 
     doc.setFont(
         "helvetica",
         "normal"
     );
 
-    doc.setFontSize(10);
+    doc.setFontSize(9);
 
     doc.text(
         "Bon de commande",
         marge,
-        27
+        24
     );
 
 
-    // Numéro / date à droite
-
-    doc.setFontSize(9);
+    doc.setFontSize(8);
 
     doc.text(
         "Commande n° " + commande.id,
         pageWidth - marge,
-        18,
+        15,
         {
             align: "right"
         }
@@ -311,7 +248,7 @@ async function genererPDFCommande(commande) {
     doc.text(
         new Date().toLocaleString("fr-CH"),
         pageWidth - marge,
-        27,
+        23,
         {
             align: "right"
         }
@@ -319,20 +256,10 @@ async function genererPDFCommande(commande) {
 
 
     // ========================================================
-    // POSITION DE DÉPART
-    // ========================================================
-
-    let y =
-        50;
-
-
-    // ========================================================
     // CLIENT
     // ========================================================
 
-    dessinerTitreSection(
-        "CLIENT"
-    );
+    dessinerTitreSection("CLIENT");
 
     const nomClient =
         (
@@ -359,8 +286,7 @@ async function genererPDFCommande(commande) {
         ).trim();
 
 
-    const hauteurClient =
-        43;
+    const hauteurClient = 34;
 
     nouvellePageSiNecessaire(
         hauteurClient
@@ -378,30 +304,34 @@ async function genererPDFCommande(commande) {
         GRIS_CLAIR[2]
     );
 
-    doc.setLineWidth(0.4);
+    doc.setLineWidth(0.35);
 
     doc.roundedRect(
         marge,
         y,
         largeurContenu,
         hauteurClient,
-        3,
-        3,
+        2.5,
+        2.5,
         "FD"
     );
 
 
-    // Colonne gauche
+    const colonneDroite =
+        marge + 92;
 
     let clientY =
-        y + 9;
+        y + 7;
+
+
+    // Nom
 
     doc.setFont(
         "helvetica",
         "bold"
     );
 
-    doc.setFontSize(9);
+    doc.setFontSize(7.5);
 
     doc.setTextColor(
         BRUN[0],
@@ -411,7 +341,7 @@ async function genererPDFCommande(commande) {
 
     doc.text(
         "Nom",
-        marge + 6,
+        marge + 5,
         clientY
     );
 
@@ -428,15 +358,12 @@ async function genererPDFCommande(commande) {
 
     doc.text(
         nomClient.trim() || "—",
-        marge + 6,
-        clientY + 6
+        marge + 5,
+        clientY + 5
     );
 
 
-    // Colonne droite
-
-    const colonneDroite =
-        marge + 95;
+    // Téléphone
 
     doc.setFont(
         "helvetica",
@@ -469,13 +396,13 @@ async function genererPDFCommande(commande) {
     doc.text(
         telephone || "—",
         colonneDroite,
-        clientY + 6
+        clientY + 5
     );
 
 
     // E-mail
 
-    clientY += 18;
+    clientY += 14;
 
     doc.setFont(
         "helvetica",
@@ -490,7 +417,7 @@ async function genererPDFCommande(commande) {
 
     doc.text(
         "E-mail",
-        marge + 6,
+        marge + 5,
         clientY
     );
 
@@ -507,8 +434,8 @@ async function genererPDFCommande(commande) {
 
     doc.text(
         email || "—",
-        marge + 6,
-        clientY + 6
+        marge + 5,
+        clientY + 5
     );
 
 
@@ -551,10 +478,10 @@ async function genererPDFCommande(commande) {
     doc.text(
         adresseLignes,
         colonneDroite,
-        clientY + 6
+        clientY + 5
     );
 
-    y += hauteurClient + 12;
+    y += hauteurClient + 8;
 
 
     // ========================================================
@@ -566,14 +493,11 @@ async function genererPDFCommande(commande) {
     );
 
 
-    // --------------------------------------------------------
     // En-tête du tableau
-    // --------------------------------------------------------
 
-    nouvellePageSiNecessaire(18);
+    nouvellePageSiNecessaire(9);
 
-    const hauteurEntete =
-        10;
+    const hauteurEntete = 8;
 
     doc.setFillColor(
         BRUN[0],
@@ -586,8 +510,8 @@ async function genererPDFCommande(commande) {
         y,
         largeurContenu,
         hauteurEntete,
-        2,
-        2,
+        1.5,
+        1.5,
         "F"
     );
 
@@ -602,13 +526,13 @@ async function genererPDFCommande(commande) {
         "bold"
     );
 
-    doc.setFontSize(8.5);
+    doc.setFontSize(7.5);
 
     const colProduit =
         marge + 4;
 
     const colPoids =
-        marge + 105;
+        marge + 103;
 
     const colQuantite =
         marge + 132;
@@ -619,37 +543,34 @@ async function genererPDFCommande(commande) {
     doc.text(
         "PRODUIT",
         colProduit,
-        y + 6.5
+        y + 5.3
     );
 
     doc.text(
         "POIDS",
         colPoids,
-        y + 6.5
+        y + 5.3
     );
 
     doc.text(
         "QTÉ",
         colQuantite,
-        y + 6.5
+        y + 5.3
     );
 
     doc.text(
         "PRIX",
         colPrix,
-        y + 6.5,
+        y + 5.3,
         {
             align: "right"
         }
     );
 
-    y +=
-        hauteurEntete;
+    y += hauteurEntete;
 
 
-    // --------------------------------------------------------
     // Produits
-    // --------------------------------------------------------
 
     produits.forEach(
         function(article, index) {
@@ -678,22 +599,20 @@ async function genererPDFCommande(commande) {
             const lignesNom =
                 doc.splitTextToSize(
                     String(nom),
-                    96
+                    94
                 );
 
             const hauteurLigne =
                 Math.max(
-                    10,
-                    lignesNom.length * 5 + 5
+                    9,
+                    lignesNom.length * 4.5 + 4
                 );
 
 
             nouvellePageSiNecessaire(
-                hauteurLigne + 2
+                hauteurLigne + 1
             );
 
-
-            // Fond alterné
 
             if (index % 2 === 0) {
 
@@ -713,8 +632,6 @@ async function genererPDFCommande(commande) {
             }
 
 
-            // Lignes verticales discrètes
-
             doc.setDrawColor(
                 GRIS_CLAIR[0],
                 GRIS_CLAIR[1],
@@ -731,8 +648,6 @@ async function genererPDFCommande(commande) {
             );
 
 
-            // Produit
-
             doc.setTextColor(
                 NOIR[0],
                 NOIR[1],
@@ -744,47 +659,36 @@ async function genererPDFCommande(commande) {
                 "normal"
             );
 
-            doc.setFontSize(8.5);
+            doc.setFontSize(7.8);
 
             doc.text(
                 lignesNom,
                 colProduit,
-                y + 6
+                y + 5.5
             );
-
-
-            // Poids
 
             doc.text(
                 poids,
                 colPoids,
-                y + 6
+                y + 5.5
             );
-
-
-            // Quantité
 
             doc.text(
                 String(quantite),
                 colQuantite,
-                y + 6
+                y + 5.5
             );
-
-
-            // Prix
 
             doc.text(
                 prix,
                 colPrix,
-                y + 6,
+                y + 5.5,
                 {
                     align: "right"
                 }
             );
 
-
-            y +=
-                hauteurLigne;
+            y += hauteurLigne;
         }
     );
 
@@ -793,11 +697,9 @@ async function genererPDFCommande(commande) {
     // TOTAL
     // ========================================================
 
-    nouvellePageSiNecessaire(
-        28
-    );
+    nouvellePageSiNecessaire(22);
 
-    y += 5;
+    y += 4;
 
     doc.setFillColor(
         CREME[0],
@@ -809,9 +711,9 @@ async function genererPDFCommande(commande) {
         marge,
         y,
         largeurContenu,
-        18,
-        3,
-        3,
+        15,
+        2.5,
+        2.5,
         "F"
     );
 
@@ -820,7 +722,7 @@ async function genererPDFCommande(commande) {
         "bold"
     );
 
-    doc.setFontSize(11);
+    doc.setFontSize(9);
 
     doc.setTextColor(
         BRUN[0],
@@ -830,11 +732,11 @@ async function genererPDFCommande(commande) {
 
     doc.text(
         "TOTAL DE LA COMMANDE",
-        marge + 6,
-        y + 11
+        marge + 5,
+        y + 9.5
     );
 
-    doc.setFontSize(14);
+    doc.setFontSize(12);
 
     doc.setTextColor(
         OR_FONCE[0],
@@ -844,14 +746,14 @@ async function genererPDFCommande(commande) {
 
     doc.text(
         total.toFixed(2) + " CHF",
-        pageWidth - marge - 6,
-        y + 11,
+        pageWidth - marge - 5,
+        y + 9.5,
         {
             align: "right"
         }
     );
 
-    y += 28;
+    y += 22;
 
 
     // ========================================================
@@ -889,24 +791,12 @@ async function genererPDFCommande(commande) {
 
 
     console.log(
-        "MODE DE RÉCEPTION - client.modeLivraison :",
-        modeDepuisCommande
-    );
-
-    console.log(
-        "MODE DE RÉCEPTION - formulaire :",
-        modeDepuisFormulaire
-    );
-
-    console.log(
         "MODE DE RÉCEPTION - valeur finale PDF :",
         modeLivraisonPDF
     );
 
 
-    nouvellePageSiNecessaire(
-        28
-    );
+    nouvellePageSiNecessaire(19);
 
     doc.setFillColor(
         BLANC[0],
@@ -920,15 +810,15 @@ async function genererPDFCommande(commande) {
         OR[2]
     );
 
-    doc.setLineWidth(0.7);
+    doc.setLineWidth(0.6);
 
     doc.roundedRect(
         marge,
         y,
         largeurContenu,
-        20,
-        3,
-        3,
+        16,
+        2.5,
+        2.5,
         "FD"
     );
 
@@ -937,7 +827,7 @@ async function genererPDFCommande(commande) {
         "bold"
     );
 
-    doc.setFontSize(10);
+    doc.setFontSize(8.5);
 
     doc.setTextColor(
         BRUN[0],
@@ -947,11 +837,11 @@ async function genererPDFCommande(commande) {
 
     doc.text(
         modeLivraisonPDF,
-        marge + 7,
-        y + 12
+        marge + 6,
+        y + 10
     );
 
-    y += 28;
+    y += 21;
 
 
     // ========================================================
@@ -963,16 +853,17 @@ async function genererPDFCommande(commande) {
     );
 
 
+    const champNomTwint =
+        document.getElementById(
+            "nomExpediteurTwint"
+        );
+
     const nomTwintPDF =
         String(
             client.nomExpediteurTwint ||
             (
-                document.getElementById(
-                    "nomExpediteurTwint"
-                )
-                    ? document.getElementById(
-                        "nomExpediteurTwint"
-                    ).value
+                champNomTwint
+                    ? champNomTwint.value
                     : ""
             ) ||
             ""
@@ -985,9 +876,7 @@ async function genererPDFCommande(commande) {
     );
 
 
-    nouvellePageSiNecessaire(
-        30
-    );
+    nouvellePageSiNecessaire(23);
 
     doc.setFillColor(
         CREME[0],
@@ -999,9 +888,9 @@ async function genererPDFCommande(commande) {
         marge,
         y,
         largeurContenu,
-        27,
-        3,
-        3,
+        21,
+        2.5,
+        2.5,
         "F"
     );
 
@@ -1011,7 +900,7 @@ async function genererPDFCommande(commande) {
         "normal"
     );
 
-    doc.setFontSize(9);
+    doc.setFontSize(7.5);
 
     doc.setTextColor(
         GRIS[0],
@@ -1021,8 +910,8 @@ async function genererPDFCommande(commande) {
 
     doc.text(
         "Paiement effectué au nom de :",
-        marge + 7,
-        y + 9
+        marge + 6,
+        y + 7
     );
 
 
@@ -1031,7 +920,7 @@ async function genererPDFCommande(commande) {
         "bold"
     );
 
-    doc.setFontSize(10);
+    doc.setFontSize(9);
 
     doc.setTextColor(
         NOIR[0],
@@ -1041,8 +930,8 @@ async function genererPDFCommande(commande) {
 
     doc.text(
         nomTwintPDF || "Non renseigné",
-        marge + 7,
-        y + 17
+        marge + 6,
+        y + 13
     );
 
 
@@ -1051,7 +940,7 @@ async function genererPDFCommande(commande) {
         "normal"
     );
 
-    doc.setFontSize(8);
+    doc.setFontSize(6.8);
 
     doc.setTextColor(
         GRIS[0],
@@ -1060,12 +949,12 @@ async function genererPDFCommande(commande) {
     );
 
     doc.text(
-        "La commande sera confirmée après vérification du paiement.",
-        marge + 7,
-        y + 23
+        "Confirmation après vérification du paiement.",
+        marge + 6,
+        y + 18
     );
 
-    y += 35;
+    y += 26;
 
 
     // ========================================================
@@ -1091,13 +980,13 @@ async function genererPDFCommande(commande) {
         const commentaireLignes =
             doc.splitTextToSize(
                 commentaire,
-                largeurContenu - 12
+                largeurContenu - 10
             );
 
         const hauteurCommentaire =
             Math.max(
-                20,
-                commentaireLignes.length * 5 + 12
+                16,
+                commentaireLignes.length * 4.5 + 8
             );
 
         nouvellePageSiNecessaire(
@@ -1116,15 +1005,15 @@ async function genererPDFCommande(commande) {
             GRIS_CLAIR[2]
         );
 
-        doc.setLineWidth(0.4);
+        doc.setLineWidth(0.35);
 
         doc.roundedRect(
             marge,
             y,
             largeurContenu,
             hauteurCommentaire,
-            3,
-            3,
+            2.5,
+            2.5,
             "FD"
         );
 
@@ -1133,7 +1022,7 @@ async function genererPDFCommande(commande) {
             "normal"
         );
 
-        doc.setFontSize(9);
+        doc.setFontSize(8);
 
         doc.setTextColor(
             NOIR[0],
@@ -1143,12 +1032,12 @@ async function genererPDFCommande(commande) {
 
         doc.text(
             commentaireLignes,
-            marge + 6,
-            y + 8
+            marge + 5,
+            y + 7
         );
 
         y +=
-            hauteurCommentaire + 10;
+            hauteurCommentaire + 5;
     }
 
 
@@ -1174,13 +1063,13 @@ async function genererPDFCommande(commande) {
             GRIS_CLAIR[2]
         );
 
-        doc.setLineWidth(0.4);
+        doc.setLineWidth(0.35);
 
         doc.line(
             marge,
-            pageHeight - 16,
+            pageHeight - 13,
             pageWidth - marge,
-            pageHeight - 16
+            pageHeight - 13
         );
 
 
@@ -1189,7 +1078,7 @@ async function genererPDFCommande(commande) {
             "normal"
         );
 
-        doc.setFontSize(7.5);
+        doc.setFontSize(7);
 
         doc.setTextColor(
             GRIS[0],
@@ -1200,7 +1089,7 @@ async function genererPDFCommande(commande) {
         doc.text(
             "Idée Gourmande · Merci pour votre commande",
             marge,
-            pageHeight - 9
+            pageHeight - 7
         );
 
         doc.text(
@@ -1209,7 +1098,7 @@ async function genererPDFCommande(commande) {
             " / " +
             nombrePages,
             pageWidth - marge,
-            pageHeight - 9,
+            pageHeight - 7,
             {
                 align: "right"
             }
@@ -1387,10 +1276,6 @@ function envoyerCommandeGoogle(payload) {
 
             try {
 
-                // ------------------------------------------------
-                // IFRAME INVISIBLE
-                // ------------------------------------------------
-
                 const iframe =
                     document.createElement(
                         "iframe"
@@ -1407,10 +1292,6 @@ function envoyerCommandeGoogle(payload) {
                     iframe
                 );
 
-
-                // ------------------------------------------------
-                // FORMULAIRE
-                // ------------------------------------------------
 
                 const form =
                     document.createElement(
@@ -1429,10 +1310,6 @@ function envoyerCommandeGoogle(payload) {
                 form.style.display =
                     "none";
 
-
-                // ------------------------------------------------
-                // PAYLOAD
-                // ------------------------------------------------
 
                 const input =
                     document.createElement(
@@ -1454,7 +1331,6 @@ function envoyerCommandeGoogle(payload) {
                     input
                 );
 
-
                 document.body.appendChild(
                     form
                 );
@@ -1465,16 +1341,8 @@ function envoyerCommandeGoogle(payload) {
                 );
 
 
-                // ------------------------------------------------
-                // ENVOI
-                // ------------------------------------------------
-
                 form.submit();
 
-
-                // ------------------------------------------------
-                // NETTOYAGE
-                // ------------------------------------------------
 
                 setTimeout(
                     function() {
@@ -1509,8 +1377,7 @@ function envoyerCommandeGoogle(payload) {
 
 
 // ============================================================
-// GARANTIT LA DISPONIBILITÉ DE LA FONCTION
-// POUR commande.js
+// DISPONIBILITÉ POUR commande.js
 // ============================================================
 
 window.genererPDFCommande =
