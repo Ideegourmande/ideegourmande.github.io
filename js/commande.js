@@ -1010,9 +1010,12 @@ async function envoyerCommande(
                 getValue("adresse"),
 
             commentaire:
-                getValue("commentaire")
+    getValue("commentaire"),
 
-        },
+modeLivraison:
+    getValue("modeLivraison")
+
+},
 
 
         produits:
