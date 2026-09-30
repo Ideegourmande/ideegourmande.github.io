@@ -1,4 +1,3 @@
-```javascript
 /**
  * Idée Gourmande - Envoi automatique des commandes
  *
@@ -628,4 +627,3 @@ function doGet() {
     );
 
 }
-```
