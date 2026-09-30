@@ -11,6 +11,22 @@
 
 <link rel="stylesheet" href="css/style.css">
 
+<style>
+
+/* ===================================================
+   MODE DE RÉCEPTION
+=================================================== */
+
+.infos-livraison {
+    margin-top: 20px;
+}
+
+.infos-livraison p {
+    margin-bottom: 18px;
+}
+
+</style>
+
 </head>
 
 <body>
@@ -718,6 +734,105 @@ placeholder="Date souhaitée, instructions particulières..."></textarea>
 </div>
 
 <!-- ===================================================
+     MODE DE RÉCEPTION
+=================================================== -->
+
+<div class="paiement-box">
+
+<h3>
+🚚 Mode de réception
+</h3>
+
+<p>
+Comment souhaitez-vous recevoir votre commande ?
+</p>
+
+<label for="modeLivraison">
+
+Choisissez votre mode de réception :
+
+</label>
+
+<select
+id="modeLivraison"
+name="modeLivraison"
+required
+
+>
+
+<option value="">
+
+-- Sélectionnez une option --
+
+</option>
+
+<option value="Livraison à Genève">
+
+🚲 Livraison à Genève — sur rendez-vous
+
+</option>
+
+<option value="Livraison en Suisse">
+
+📦 Livraison en Suisse — par la Poste
+
+</option>
+
+<option value="Retrait à Genève">
+
+📍 Retrait à Genève — sur rendez-vous
+
+</option>
+
+</select>
+
+<div class="infos-livraison">
+
+<p>
+
+<strong>
+🚲 Livraison à Genève
+</strong>
+<br>
+
+Livraison personnelle à l’adresse de votre choix, sur rendez-vous.
+Produits réfrigérés et congelés disponibles.
+
+</p>
+
+<p>
+
+<strong>
+📦 Livraison en Suisse
+</strong>
+<br>
+
+Expédition par la Poste pour les produits pouvant être transportés
+sans réfrigération. <br>
+
+<strong>
+Frais d'expédition selon le poids du colis — en moyenne CHF 10.50.
+</strong>
+
+</p>
+
+<p>
+
+<strong>
+📍 Retrait à Genève
+</strong>
+<br>
+
+Possibilité de retirer directement la commande sur rendez-vous
+chez Idée Gourmande.
+
+</p>
+
+</div>
+
+</div>
+
+<!-- ===================================================
      PAIEMENT TWINT
 =================================================== -->
 
@@ -750,12 +865,14 @@ placeholder="Nom et prénom utilisés pour le paiement TWINT"
 required>
 
 <label>
+
 <input
 type="checkbox"
 id="confirmationTwint"
 required>
 
 J'ai effectué le paiement TWINT et indiqué ci-dessus le nom de l'expéditeur.
+
 </label>
 
 <p class="confirmation">
@@ -823,4 +940,3 @@ Mentions légales
 </body>
 
 </html>
-
