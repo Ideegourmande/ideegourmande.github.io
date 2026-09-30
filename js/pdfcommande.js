@@ -2,6 +2,10 @@ const GOOGLE_APPS_SCRIPT_URL =
   "https://script.google.com/macros/s/AKfycby5o5V0dRb9fPpnhmUYCeWB1LxXjGRXfQK0kQ2Tzw2gHK58GQn8VmxlDI1DFWzogAhI/exec";
 
 
+// ============================================================
+// GÉNÉRATION DU PDF DE COMMANDE
+// ============================================================
+
 async function genererPDFCommande(commande) {
 
     if (!window.jspdf || !window.jspdf.jsPDF) {
@@ -11,282 +15,953 @@ async function genererPDFCommande(commande) {
     const { jsPDF } = window.jspdf;
     const doc = new jsPDF();
 
-    // ==============================
+    // ========================================================
     // INFORMATIONS
-    // ==============================
+    // ========================================================
 
-    const fichier = "Commande_" + commande.id + ".pdf";
+    const fichier =
+        "Commande_" + commande.id + ".pdf";
 
-    const client = commande.client || {};
+    const client =
+        commande.client || {};
 
-    const produits = Array.isArray(commande.produits)
-        ? commande.produits
-        : [];
+    const produits =
+        Array.isArray(commande.produits)
+            ? commande.produits
+            : [];
 
-    const total = Number(commande.total || 0);
-
-
-    // ==============================
-    // TITRE
-    // ==============================
-
-    doc.setFontSize(20);
-    doc.setFont("helvetica", "bold");
-    doc.text("IDÉE GOURMANDE", 20, 20);
-
-    doc.setFontSize(14);
-    doc.text("Bon de commande", 20, 30);
-
-    doc.setFontSize(10);
-    doc.setFont("helvetica", "normal");
-
-    doc.text(
-        "N° commande : " + commande.id,
-        20,
-        40
-    );
-
-    doc.text(
-        "Date : " + new Date().toLocaleString("fr-CH"),
-        20,
-        47
-    );
+    const total =
+        Number(commande.total || 0);
 
 
-    // ==============================
-    // CLIENT
-    // ==============================
+    // ========================================================
+    // PALETTE GRAPHIQUE
+    // ========================================================
 
-    let y = 60;
+    const OR =
+        [184, 145, 34];
 
-    doc.setFont("helvetica", "bold");
-    doc.text("CLIENT", 20, y);
+    const OR_FONCE =
+        [145, 111, 24];
 
-    doc.setFont("helvetica", "normal");
+    const BRUN =
+        [117, 75, 48];
 
-    y += 8;
+    const BRUN_CLAIR =
+        [139, 94, 60];
 
-    doc.text(
-        "Nom : " +
-        (client.prenom || "") +
-        " " +
-        (client.nom || ""),
-        20,
-        y
-    );
+    const CREME =
+        [248, 244, 236];
 
-    y += 7;
+    const CREME_FONCE =
+        [238, 231, 217];
 
-    doc.text(
-        "Téléphone : " +
-        (client.telephone || ""),
-        20,
-        y
-    );
+    const GRIS =
+        [105, 105, 105];
 
-    y += 7;
+    const GRIS_CLAIR =
+        [220, 220, 220];
 
-    doc.text(
-        "E-mail : " +
-        (client.email || ""),
-        20,
-        y
-    );
+    const NOIR =
+        [45, 45, 45];
 
-    y += 7;
-
-    const adresse = String(client.adresse || "");
-
-    const adresseLignes = doc.splitTextToSize(
-        "Adresse : " + adresse,
-        170
-    );
-
-    doc.text(
-        adresseLignes,
-        20,
-        y
-    );
-
-    y += adresseLignes.length * 6 + 8;
+    const BLANC =
+        [255, 255, 255];
 
 
-    // ==============================
-    // PRODUITS
-    // ==============================
+    // ========================================================
+    // DIMENSIONS
+    // ========================================================
 
-    doc.setFont("helvetica", "bold");
-    doc.text(
-        "PRODUITS COMMANDÉS",
-        20,
-        y
-    );
+    const pageWidth =
+        doc.internal.pageSize.getWidth();
 
-    doc.setFont("helvetica", "normal");
+    const pageHeight =
+        doc.internal.pageSize.getHeight();
 
-    y += 10;
+    const marge =
+        20;
 
-    produits.forEach(function(article) {
-
-        const nom =
-            article.nom || "Produit";
-
-        const quantite =
-            Number(article.quantite || 1);
-
-        const poids =
-            article.poids
-                ? " (" + article.poids + " g)"
-                : "";
-
-        const prix =
-            Number(article.prix || 0).toFixed(2);
-
-        const ligne =
-            "- " +
-            nom +
-            poids +
-            " x" +
-            quantite +
-            " : " +
-            prix +
-            " CHF";
-
-        const lignes =
-            doc.splitTextToSize(
-                ligne,
-                170
-            );
-
-        doc.text(
-            lignes,
-            20,
-            y
-        );
-
-        y += lignes.length * 6 + 2;
+    const largeurContenu =
+        pageWidth - (marge * 2);
 
 
-        // Nouvelle page si nécessaire
+    // ========================================================
+    // OUTILS GRAPHIQUES
+    // ========================================================
 
-        if (y > 270) {
+    function nouvellePageSiNecessaire(
+        hauteurNecessaire
+    ) {
+
+        if (
+            y + hauteurNecessaire >
+            pageHeight - 25
+        ) {
 
             doc.addPage();
 
             y = 20;
+
+            dessinerBandeauPage();
         }
-    });
+    }
 
 
-    // ==============================
-    // TOTAL
-    // ==============================
+    function dessinerBandeauPage() {
 
-    y += 5;
+        doc.setFillColor(
+            CREME[0],
+            CREME[1],
+            CREME[2]
+        );
+
+        doc.rect(
+            0,
+            0,
+            pageWidth,
+            10,
+            "F"
+        );
+
+        doc.setDrawColor(
+            OR[0],
+            OR[1],
+            OR[2]
+        );
+
+        doc.setLineWidth(0.8);
+
+        doc.line(
+            marge,
+            12,
+            pageWidth - marge,
+            12
+        );
+    }
+
+
+    function dessinerTitreSection(
+        titre
+    ) {
+
+        nouvellePageSiNecessaire(18);
+
+        doc.setFillColor(
+            CREME[0],
+            CREME[1],
+            CREME[2]
+        );
+
+        doc.roundedRect(
+            marge,
+            y,
+            largeurContenu,
+            9,
+            2,
+            2,
+            "F"
+        );
+
+        doc.setFont(
+            "helvetica",
+            "bold"
+        );
+
+        doc.setFontSize(10);
+
+        doc.setTextColor(
+            BRUN[0],
+            BRUN[1],
+            BRUN[2]
+        );
+
+        doc.text(
+            titre,
+            marge + 5,
+            y + 6
+        );
+
+        doc.setTextColor(
+            NOIR[0],
+            NOIR[1],
+            NOIR[2]
+        );
+
+        y += 14;
+    }
+
+
+    function texteMultiligne(
+        texte,
+        x,
+        largeur,
+        taille = 9,
+        interligne = 5
+    ) {
+
+        doc.setFontSize(taille);
+
+        const lignes =
+            doc.splitTextToSize(
+                String(texte || ""),
+                largeur
+            );
+
+        doc.text(
+            lignes,
+            x,
+            y
+        );
+
+        y +=
+            lignes.length *
+            interligne;
+
+        return lignes.length;
+    }
+
+
+    // ========================================================
+    // EN-TÊTE
+    // ========================================================
+
+    doc.setFillColor(
+        BRUN[0],
+        BRUN[1],
+        BRUN[2]
+    );
+
+    doc.rect(
+        0,
+        0,
+        pageWidth,
+        38,
+        "F"
+    );
+
+    // Ligne dorée
+
+    doc.setFillColor(
+        OR[0],
+        OR[1],
+        OR[2]
+    );
+
+    doc.rect(
+        0,
+        36,
+        pageWidth,
+        2,
+        "F"
+    );
+
+
+    // Nom de la société
+
+    doc.setTextColor(
+        BLANC[0],
+        BLANC[1],
+        BLANC[2]
+    );
 
     doc.setFont(
         "helvetica",
         "bold"
     );
 
-    doc.setFontSize(13);
+    doc.setFontSize(22);
 
     doc.text(
-        "TOTAL : " +
-        total.toFixed(2) +
-        " CHF",
-        20,
-        y
+        "IDÉE GOURMANDE",
+        marge,
+        18
     );
 
-    doc.setFontSize(10);
+
+    // Sous-titre
 
     doc.setFont(
         "helvetica",
         "normal"
     );
 
-    y += 12;
-
-
-// ==============================
-// MODE DE RÉCEPTION
-// ==============================
-
-const champModeLivraison =
-    document.getElementById("modeLivraison");
-
-const modeDepuisFormulaire =
-    champModeLivraison
-        ? String(champModeLivraison.value || "").trim()
-        : "";
-
-const modeDepuisCommande =
-    client.modeLivraison
-        ? String(client.modeLivraison).trim()
-        : "";
-
-const modeLivraisonPDF =
-    modeDepuisCommande || modeDepuisFormulaire;
-
-console.log(
-    "MODE DE RÉCEPTION - client.modeLivraison :",
-    modeDepuisCommande
-);
-
-console.log(
-    "MODE DE RÉCEPTION - formulaire :",
-    modeDepuisFormulaire
-);
-
-console.log(
-    "MODE DE RÉCEPTION - valeur finale PDF :",
-    modeLivraisonPDF
-);
-
-doc.setFont("helvetica", "bold");
-
-doc.text(
-    "MODE DE RÉCEPTION",
-    20,
-    y
-);
-
-doc.setFont("helvetica", "normal");
-
-y += 8;
-
-const texteModeLivraison =
-    modeLivraisonPDF || "Non renseigné";
-
-const modeLivraisonLignes =
-    doc.splitTextToSize(
-        texteModeLivraison,
-        170
-    );
-
-doc.text(
-    modeLivraisonLignes,
-    20,
-    y
-);
-
-y +=
-    modeLivraisonLignes.length * 6 +
-    6;
-
-
-    // ==============================
-    // PAIEMENT TWINT
-    // ==============================
+    doc.setFontSize(10);
 
     doc.text(
-        "Paiement : TWINT",
-        20,
-        y
+        "Bon de commande",
+        marge,
+        27
     );
 
-    y += 7;
+
+    // Numéro / date à droite
+
+    doc.setFontSize(9);
+
+    doc.text(
+        "Commande n° " + commande.id,
+        pageWidth - marge,
+        18,
+        {
+            align: "right"
+        }
+    );
+
+    doc.text(
+        new Date().toLocaleString("fr-CH"),
+        pageWidth - marge,
+        27,
+        {
+            align: "right"
+        }
+    );
+
+
+    // ========================================================
+    // POSITION DE DÉPART
+    // ========================================================
+
+    let y =
+        50;
+
+
+    // ========================================================
+    // CLIENT
+    // ========================================================
+
+    dessinerTitreSection(
+        "CLIENT"
+    );
+
+    const nomClient =
+        (
+            client.prenom || ""
+        ) +
+        " " +
+        (
+            client.nom || ""
+        );
+
+    const adresse =
+        String(
+            client.adresse || ""
+        ).trim();
+
+    const telephone =
+        String(
+            client.telephone || ""
+        ).trim();
+
+    const email =
+        String(
+            client.email || ""
+        ).trim();
+
+
+    const hauteurClient =
+        43;
+
+    nouvellePageSiNecessaire(
+        hauteurClient
+    );
+
+    doc.setFillColor(
+        BLANC[0],
+        BLANC[1],
+        BLANC[2]
+    );
+
+    doc.setDrawColor(
+        GRIS_CLAIR[0],
+        GRIS_CLAIR[1],
+        GRIS_CLAIR[2]
+    );
+
+    doc.setLineWidth(0.4);
+
+    doc.roundedRect(
+        marge,
+        y,
+        largeurContenu,
+        hauteurClient,
+        3,
+        3,
+        "FD"
+    );
+
+
+    // Colonne gauche
+
+    let clientY =
+        y + 9;
+
+    doc.setFont(
+        "helvetica",
+        "bold"
+    );
+
+    doc.setFontSize(9);
+
+    doc.setTextColor(
+        BRUN[0],
+        BRUN[1],
+        BRUN[2]
+    );
+
+    doc.text(
+        "Nom",
+        marge + 6,
+        clientY
+    );
+
+    doc.setFont(
+        "helvetica",
+        "normal"
+    );
+
+    doc.setTextColor(
+        NOIR[0],
+        NOIR[1],
+        NOIR[2]
+    );
+
+    doc.text(
+        nomClient.trim() || "—",
+        marge + 6,
+        clientY + 6
+    );
+
+
+    // Colonne droite
+
+    const colonneDroite =
+        marge + 95;
+
+    doc.setFont(
+        "helvetica",
+        "bold"
+    );
+
+    doc.setTextColor(
+        BRUN[0],
+        BRUN[1],
+        BRUN[2]
+    );
+
+    doc.text(
+        "Téléphone",
+        colonneDroite,
+        clientY
+    );
+
+    doc.setFont(
+        "helvetica",
+        "normal"
+    );
+
+    doc.setTextColor(
+        NOIR[0],
+        NOIR[1],
+        NOIR[2]
+    );
+
+    doc.text(
+        telephone || "—",
+        colonneDroite,
+        clientY + 6
+    );
+
+
+    // E-mail
+
+    clientY += 18;
+
+    doc.setFont(
+        "helvetica",
+        "bold"
+    );
+
+    doc.setTextColor(
+        BRUN[0],
+        BRUN[1],
+        BRUN[2]
+    );
+
+    doc.text(
+        "E-mail",
+        marge + 6,
+        clientY
+    );
+
+    doc.setFont(
+        "helvetica",
+        "normal"
+    );
+
+    doc.setTextColor(
+        NOIR[0],
+        NOIR[1],
+        NOIR[2]
+    );
+
+    doc.text(
+        email || "—",
+        marge + 6,
+        clientY + 6
+    );
+
+
+    // Adresse
+
+    doc.setFont(
+        "helvetica",
+        "bold"
+    );
+
+    doc.setTextColor(
+        BRUN[0],
+        BRUN[1],
+        BRUN[2]
+    );
+
+    doc.text(
+        "Adresse",
+        colonneDroite,
+        clientY
+    );
+
+    doc.setFont(
+        "helvetica",
+        "normal"
+    );
+
+    doc.setTextColor(
+        NOIR[0],
+        NOIR[1],
+        NOIR[2]
+    );
+
+    const adresseLignes =
+        doc.splitTextToSize(
+            adresse || "—",
+            72
+        );
+
+    doc.text(
+        adresseLignes,
+        colonneDroite,
+        clientY + 6
+    );
+
+    y += hauteurClient + 12;
+
+
+    // ========================================================
+    // PRODUITS
+    // ========================================================
+
+    dessinerTitreSection(
+        "PRODUITS COMMANDÉS"
+    );
+
+
+    // --------------------------------------------------------
+    // En-tête du tableau
+    // --------------------------------------------------------
+
+    nouvellePageSiNecessaire(18);
+
+    const hauteurEntete =
+        10;
+
+    doc.setFillColor(
+        BRUN[0],
+        BRUN[1],
+        BRUN[2]
+    );
+
+    doc.roundedRect(
+        marge,
+        y,
+        largeurContenu,
+        hauteurEntete,
+        2,
+        2,
+        "F"
+    );
+
+    doc.setTextColor(
+        BLANC[0],
+        BLANC[1],
+        BLANC[2]
+    );
+
+    doc.setFont(
+        "helvetica",
+        "bold"
+    );
+
+    doc.setFontSize(8.5);
+
+    const colProduit =
+        marge + 4;
+
+    const colPoids =
+        marge + 105;
+
+    const colQuantite =
+        marge + 132;
+
+    const colPrix =
+        pageWidth - marge - 4;
+
+    doc.text(
+        "PRODUIT",
+        colProduit,
+        y + 6.5
+    );
+
+    doc.text(
+        "POIDS",
+        colPoids,
+        y + 6.5
+    );
+
+    doc.text(
+        "QTÉ",
+        colQuantite,
+        y + 6.5
+    );
+
+    doc.text(
+        "PRIX",
+        colPrix,
+        y + 6.5,
+        {
+            align: "right"
+        }
+    );
+
+    y +=
+        hauteurEntete;
+
+
+    // --------------------------------------------------------
+    // Produits
+    // --------------------------------------------------------
+
+    produits.forEach(
+        function(article, index) {
+
+            const nom =
+                article.nom ||
+                "Produit";
+
+            const quantite =
+                Number(
+                    article.quantite || 1
+                );
+
+            const poids =
+                article.poids
+                    ? article.poids + " g"
+                    : "—";
+
+            const prix =
+                Number(
+                    article.prix || 0
+                ).toFixed(2) +
+                " CHF";
+
+
+            const lignesNom =
+                doc.splitTextToSize(
+                    String(nom),
+                    96
+                );
+
+            const hauteurLigne =
+                Math.max(
+                    10,
+                    lignesNom.length * 5 + 5
+                );
+
+
+            nouvellePageSiNecessaire(
+                hauteurLigne + 2
+            );
+
+
+            // Fond alterné
+
+            if (index % 2 === 0) {
+
+                doc.setFillColor(
+                    252,
+                    250,
+                    246
+                );
+
+                doc.rect(
+                    marge,
+                    y,
+                    largeurContenu,
+                    hauteurLigne,
+                    "F"
+                );
+            }
+
+
+            // Lignes verticales discrètes
+
+            doc.setDrawColor(
+                GRIS_CLAIR[0],
+                GRIS_CLAIR[1],
+                GRIS_CLAIR[2]
+            );
+
+            doc.setLineWidth(0.2);
+
+            doc.line(
+                marge,
+                y + hauteurLigne,
+                pageWidth - marge,
+                y + hauteurLigne
+            );
+
+
+            // Produit
+
+            doc.setTextColor(
+                NOIR[0],
+                NOIR[1],
+                NOIR[2]
+            );
+
+            doc.setFont(
+                "helvetica",
+                "normal"
+            );
+
+            doc.setFontSize(8.5);
+
+            doc.text(
+                lignesNom,
+                colProduit,
+                y + 6
+            );
+
+
+            // Poids
+
+            doc.text(
+                poids,
+                colPoids,
+                y + 6
+            );
+
+
+            // Quantité
+
+            doc.text(
+                String(quantite),
+                colQuantite,
+                y + 6
+            );
+
+
+            // Prix
+
+            doc.text(
+                prix,
+                colPrix,
+                y + 6,
+                {
+                    align: "right"
+                }
+            );
+
+
+            y +=
+                hauteurLigne;
+        }
+    );
+
+
+    // ========================================================
+    // TOTAL
+    // ========================================================
+
+    nouvellePageSiNecessaire(
+        28
+    );
+
+    y += 5;
+
+    doc.setFillColor(
+        CREME[0],
+        CREME[1],
+        CREME[2]
+    );
+
+    doc.roundedRect(
+        marge,
+        y,
+        largeurContenu,
+        18,
+        3,
+        3,
+        "F"
+    );
+
+    doc.setFont(
+        "helvetica",
+        "bold"
+    );
+
+    doc.setFontSize(11);
+
+    doc.setTextColor(
+        BRUN[0],
+        BRUN[1],
+        BRUN[2]
+    );
+
+    doc.text(
+        "TOTAL DE LA COMMANDE",
+        marge + 6,
+        y + 11
+    );
+
+    doc.setFontSize(14);
+
+    doc.setTextColor(
+        OR_FONCE[0],
+        OR_FONCE[1],
+        OR_FONCE[2]
+    );
+
+    doc.text(
+        total.toFixed(2) + " CHF",
+        pageWidth - marge - 6,
+        y + 11,
+        {
+            align: "right"
+        }
+    );
+
+    y += 28;
+
+
+    // ========================================================
+    // MODE DE RÉCEPTION
+    // ========================================================
+
+    dessinerTitreSection(
+        "MODE DE RÉCEPTION"
+    );
+
+
+    const champModeLivraison =
+        document.getElementById(
+            "modeLivraison"
+        );
+
+    const modeDepuisCommande =
+        client.modeLivraison
+            ? String(
+                client.modeLivraison
+            ).trim()
+            : "";
+
+    const modeDepuisFormulaire =
+        champModeLivraison
+            ? String(
+                champModeLivraison.value || ""
+            ).trim()
+            : "";
+
+    const modeLivraisonPDF =
+        modeDepuisCommande ||
+        modeDepuisFormulaire ||
+        "Non renseigné";
+
+
+    console.log(
+        "MODE DE RÉCEPTION - client.modeLivraison :",
+        modeDepuisCommande
+    );
+
+    console.log(
+        "MODE DE RÉCEPTION - formulaire :",
+        modeDepuisFormulaire
+    );
+
+    console.log(
+        "MODE DE RÉCEPTION - valeur finale PDF :",
+        modeLivraisonPDF
+    );
+
+
+    nouvellePageSiNecessaire(
+        28
+    );
+
+    doc.setFillColor(
+        BLANC[0],
+        BLANC[1],
+        BLANC[2]
+    );
+
+    doc.setDrawColor(
+        OR[0],
+        OR[1],
+        OR[2]
+    );
+
+    doc.setLineWidth(0.7);
+
+    doc.roundedRect(
+        marge,
+        y,
+        largeurContenu,
+        20,
+        3,
+        3,
+        "FD"
+    );
+
+    doc.setFont(
+        "helvetica",
+        "bold"
+    );
+
+    doc.setFontSize(10);
+
+    doc.setTextColor(
+        BRUN[0],
+        BRUN[1],
+        BRUN[2]
+    );
+
+    doc.text(
+        modeLivraisonPDF,
+        marge + 7,
+        y + 12
+    );
+
+    y += 28;
+
+
+    // ========================================================
+    // PAIEMENT TWINT
+    // ========================================================
+
+    dessinerTitreSection(
+        "PAIEMENT TWINT"
+    );
+
 
     const nomTwintPDF =
         String(
@@ -303,36 +978,154 @@ y +=
             ""
         ).trim();
 
+
     console.log(
         "NOM TWINT LU POUR LE PDF :",
         nomTwintPDF
     );
 
-    doc.text(
-        "Expéditeur du paiement TWINT : " +
-        nomTwintPDF,
-        20,
-        y
+
+    nouvellePageSiNecessaire(
+        30
+    );
+
+    doc.setFillColor(
+        CREME[0],
+        CREME[1],
+        CREME[2]
+    );
+
+    doc.roundedRect(
+        marge,
+        y,
+        largeurContenu,
+        27,
+        3,
+        3,
+        "F"
     );
 
 
-    // ==============================
+    doc.setFont(
+        "helvetica",
+        "normal"
+    );
+
+    doc.setFontSize(9);
+
+    doc.setTextColor(
+        GRIS[0],
+        GRIS[1],
+        GRIS[2]
+    );
+
+    doc.text(
+        "Paiement effectué au nom de :",
+        marge + 7,
+        y + 9
+    );
+
+
+    doc.setFont(
+        "helvetica",
+        "bold"
+    );
+
+    doc.setFontSize(10);
+
+    doc.setTextColor(
+        NOIR[0],
+        NOIR[1],
+        NOIR[2]
+    );
+
+    doc.text(
+        nomTwintPDF || "Non renseigné",
+        marge + 7,
+        y + 17
+    );
+
+
+    doc.setFont(
+        "helvetica",
+        "normal"
+    );
+
+    doc.setFontSize(8);
+
+    doc.setTextColor(
+        GRIS[0],
+        GRIS[1],
+        GRIS[2]
+    );
+
+    doc.text(
+        "La commande sera confirmée après vérification du paiement.",
+        marge + 7,
+        y + 23
+    );
+
+    y += 35;
+
+
+    // ========================================================
     // COMMENTAIRE
-    // ==============================
+    // ========================================================
 
-    if (client.commentaire) {
+    if (
+        client.commentaire &&
+        String(
+            client.commentaire
+        ).trim()
+    ) {
 
-        y += 12;
-
-        doc.setFont(
-            "helvetica",
-            "bold"
+        dessinerTitreSection(
+            "COMMENTAIRE"
         );
 
-        doc.text(
-            "COMMENTAIRE",
-            20,
-            y
+        const commentaire =
+            String(
+                client.commentaire
+            ).trim();
+
+        const commentaireLignes =
+            doc.splitTextToSize(
+                commentaire,
+                largeurContenu - 12
+            );
+
+        const hauteurCommentaire =
+            Math.max(
+                20,
+                commentaireLignes.length * 5 + 12
+            );
+
+        nouvellePageSiNecessaire(
+            hauteurCommentaire
+        );
+
+        doc.setFillColor(
+            BLANC[0],
+            BLANC[1],
+            BLANC[2]
+        );
+
+        doc.setDrawColor(
+            GRIS_CLAIR[0],
+            GRIS_CLAIR[1],
+            GRIS_CLAIR[2]
+        );
+
+        doc.setLineWidth(0.4);
+
+        doc.roundedRect(
+            marge,
+            y,
+            largeurContenu,
+            hauteurCommentaire,
+            3,
+            3,
+            "FD"
         );
 
         doc.setFont(
@@ -340,25 +1133,93 @@ y +=
             "normal"
         );
 
-        y += 7;
+        doc.setFontSize(9);
 
-        const commentaireLignes =
-            doc.splitTextToSize(
-                String(client.commentaire),
-                170
-            );
+        doc.setTextColor(
+            NOIR[0],
+            NOIR[1],
+            NOIR[2]
+        );
 
         doc.text(
             commentaireLignes,
-            20,
-            y
+            marge + 6,
+            y + 8
+        );
+
+        y +=
+            hauteurCommentaire + 10;
+    }
+
+
+    // ========================================================
+    // PIED DE PAGE
+    // ========================================================
+
+    const nombrePages =
+        doc.internal.getNumberOfPages();
+
+
+    for (
+        let page = 1;
+        page <= nombrePages;
+        page++
+    ) {
+
+        doc.setPage(page);
+
+        doc.setDrawColor(
+            GRIS_CLAIR[0],
+            GRIS_CLAIR[1],
+            GRIS_CLAIR[2]
+        );
+
+        doc.setLineWidth(0.4);
+
+        doc.line(
+            marge,
+            pageHeight - 16,
+            pageWidth - marge,
+            pageHeight - 16
+        );
+
+
+        doc.setFont(
+            "helvetica",
+            "normal"
+        );
+
+        doc.setFontSize(7.5);
+
+        doc.setTextColor(
+            GRIS[0],
+            GRIS[1],
+            GRIS[2]
+        );
+
+        doc.text(
+            "Idée Gourmande · Merci pour votre commande",
+            marge,
+            pageHeight - 9
+        );
+
+        doc.text(
+            "Page " +
+            page +
+            " / " +
+            nombrePages,
+            pageWidth - marge,
+            pageHeight - 9,
+            {
+                align: "right"
+            }
         );
     }
 
 
-    // ==============================
+    // ========================================================
     // PDF EN MÉMOIRE
-    // ==============================
+    // ========================================================
 
     const pdfBlob =
         doc.output("blob");
@@ -369,9 +1230,9 @@ y +=
     );
 
 
-    // ==============================
+    // ========================================================
     // CONVERSION BASE64
-    // ==============================
+    // ========================================================
 
     const pdfBase64 =
         await new Promise(
@@ -405,9 +1266,9 @@ y +=
         );
 
 
-    // ==============================
+    // ========================================================
     // VÉRIFICATION E-MAIL
-    // ==============================
+    // ========================================================
 
     const emailClient =
         String(
@@ -422,13 +1283,14 @@ y +=
     }
 
 
-    // ==============================
+    // ========================================================
     // DONNÉES À ENVOYER
-    // ==============================
+    // ========================================================
 
     const payload = {
 
-        to: emailClient,
+        to:
+            emailClient,
 
         numeroCommande:
             commande.id,
@@ -459,25 +1321,18 @@ y +=
     );
 
 
-    // ==============================
+    // ========================================================
     // ENVOI COMPATIBLE MOBILE
-    // ==============================
+    // ========================================================
 
     await envoyerCommandeGoogle(
         payload
     );
 
 
-    // ==============================
+    // ========================================================
     // SAUVEGARDE LOCALE DU PDF
-    // ==============================
-
-    // Sur ordinateur, on télécharge
-    // également une copie du PDF.
-    //
-    // Sur mobile, on évite le téléchargement
-    // automatique qui peut perturber le
-    // navigateur pendant l'envoi.
+    // ========================================================
 
     const estMobile =
         /Android|iPhone|iPad|iPod/i.test(
@@ -488,7 +1343,9 @@ y +=
 
         try {
 
-            doc.save(fichier);
+            doc.save(
+                fichier
+            );
 
         } catch (erreur) {
 
@@ -519,13 +1376,10 @@ y +=
 }
 
 
-/**
- * Envoi compatible avec les navigateurs mobiles.
- *
- * On utilise un formulaire HTML invisible
- * plutôt que fetch(), afin d'éviter les
- * problèmes CORS / Load failed sur mobile.
- */
+// ============================================================
+// ENVOI COMPATIBLE AVEC LES NAVIGATEURS MOBILES
+// ============================================================
+
 function envoyerCommandeGoogle(payload) {
 
     return new Promise(
@@ -533,12 +1387,17 @@ function envoyerCommandeGoogle(payload) {
 
             try {
 
-                // Création d'un iframe invisible
+                // ------------------------------------------------
+                // IFRAME INVISIBLE
+                // ------------------------------------------------
 
                 const iframe =
-                    document.createElement("iframe");
+                    document.createElement(
+                        "iframe"
+                    );
 
-                iframe.style.display = "none";
+                iframe.style.display =
+                    "none";
 
                 iframe.name =
                     "googleAppsScript_" +
@@ -549,10 +1408,14 @@ function envoyerCommandeGoogle(payload) {
                 );
 
 
-                // Création du formulaire
+                // ------------------------------------------------
+                // FORMULAIRE
+                // ------------------------------------------------
 
                 const form =
-                    document.createElement("form");
+                    document.createElement(
+                        "form"
+                    );
 
                 form.method =
                     "POST";
@@ -567,10 +1430,14 @@ function envoyerCommandeGoogle(payload) {
                     "none";
 
 
-                // Champ payload
+                // ------------------------------------------------
+                // PAYLOAD
+                // ------------------------------------------------
 
                 const input =
-                    document.createElement("input");
+                    document.createElement(
+                        "input"
+                    );
 
                 input.type =
                     "hidden";
@@ -579,7 +1446,9 @@ function envoyerCommandeGoogle(payload) {
                     "payload";
 
                 input.value =
-                    JSON.stringify(payload);
+                    JSON.stringify(
+                        payload
+                    );
 
                 form.appendChild(
                     input
@@ -596,21 +1465,16 @@ function envoyerCommandeGoogle(payload) {
                 );
 
 
-                // Envoi
+                // ------------------------------------------------
+                // ENVOI
+                // ------------------------------------------------
 
                 form.submit();
 
 
-                /*
-                 * Le Web App Google reçoit
-                 * la commande indépendamment
-                 * de la réponse visible par
-                 * le navigateur.
-                 *
-                 * On laisse quelques secondes
-                 * au serveur pour recevoir le
-                 * PDF et envoyer les deux e-mails.
-                 */
+                // ------------------------------------------------
+                // NETTOYAGE
+                // ------------------------------------------------
 
                 setTimeout(
                     function() {
@@ -644,10 +1508,10 @@ function envoyerCommandeGoogle(payload) {
 }
 
 
-// ==============================
-// GARANTIT LA DISPONIBILITÉ
-// DE LA FONCTION POUR commande.js
-// ==============================
+// ============================================================
+// GARANTIT LA DISPONIBILITÉ DE LA FONCTION
+// POUR commande.js
+// ============================================================
 
 window.genererPDFCommande =
     genererPDFCommande;
