@@ -1222,32 +1222,16 @@ if (fraisLivraisonPDF > 0) {
     // ========================================================
 
     const payload = {
-
-        to:
-            emailClient,
-
-        numeroCommande:
-            commande.id,
-
-        pdfBase64:
-            pdfBase64,
-
-        pdfFilename:
-            fichier,
-
-        client:
-            client,
-
-        produits:
-            produits,
-
-        total:
-            total,
-
-        subject:
-            "Commande Idée Gourmande n°" +
-            commande.id
-    };
+    to: emailClient,
+    numeroCommande: commande.id,
+    pdfBase64: pdfBase64,
+    pdfFilename: fichier,
+    client: client,
+    modeLivraison: client.modeLivraison,
+    produits: produits,
+    total: total,
+    subject: "Commande Idée Gourmande n°" + commande.id
+};
 
 
     console.log(
