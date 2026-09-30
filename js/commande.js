@@ -1107,6 +1107,9 @@ modeLivraison:
         commentaire:
             commande.client.commentaire,
 
+        modeLivraison:
+    commande.modeLivraison,
+
 
         produits:
             commande.produits
