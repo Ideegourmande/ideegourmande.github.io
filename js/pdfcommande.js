@@ -3,7 +3,6 @@ const GOOGLE_APPS_SCRIPT_URL =
 
 async function genererPDFCommande(commande) {
 
-```
 if (!window.jspdf || !window.jspdf.jsPDF) {
     throw new Error("jsPDF n'est pas chargé.");
 }
@@ -171,4 +170,4 @@ doc.setFont(
 );
 
 y += 10;
-```
+
