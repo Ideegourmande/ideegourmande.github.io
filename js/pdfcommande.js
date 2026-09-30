@@ -207,6 +207,47 @@ async function genererPDFCommande(commande) {
     );
 
     y += 12;
+// ==============================
+// MODE DE RÉCEPTION
+// ==============================
+
+const modeLivraisonPDF =
+    String(
+        client.modeLivraison ||
+        document.getElementById("modeLivraison")?.value ||
+        ""
+    ).trim();
+
+doc.setFont(
+    "helvetica",
+    "bold"
+);
+
+doc.text(
+    "Mode de réception :",
+    20,
+    y
+);
+
+doc.setFont(
+    "helvetica",
+    "normal"
+);
+
+y += 7;
+
+doc.text(
+    modeLivraisonPDF || "Non renseigné",
+    20,
+    y
+);
+
+y += 7;
+
+
+// ==============================
+// PAIEMENT TWINT
+// ==============================
 
     doc.text(
     "Paiement : TWINT",
