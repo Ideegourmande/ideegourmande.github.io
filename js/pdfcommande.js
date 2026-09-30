@@ -1385,7 +1385,10 @@ function envoyerCommandeGoogle(payload) {
                     "Envoi de la commande vers Google..."
                 );
 
-
+console.log(
+    "PAYLOAD ENVOYÉ À GOOGLE :",
+    payload
+);
                 form.submit();
 
 
