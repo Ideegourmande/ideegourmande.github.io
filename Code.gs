@@ -1,4 +1,3 @@
-```javascript
 const NOM_EXPEDITEUR = 'Idée Gourmande';
 const EXPEDITEUR = 'ideesgourmandesge@gmail.com';
 
@@ -414,9 +413,12 @@ function doPost(e) {
         : 0;
 
     // Total final utilisé dans les e-mails.
-    // Le PDF reste inchangé.
-    const totalAvecLivraison =
-      total + fraisLivraison;
+// Le PDF reste inchangé.
+const totalProduits =
+  total - fraisLivraison;
+
+const totalAvecLivraison =
+  total;
 
 
     console.log(
@@ -584,8 +586,8 @@ function doPost(e) {
       '',
 
       'TOTAL PRODUITS : ' +
-      total.toFixed(2) +
-      ' CHF',
+totalProduits.toFixed(2) +
+' CHF',
 
       'FRAIS DE LIVRAISON : ' +
       fraisLivraison.toFixed(2) +
@@ -674,8 +676,8 @@ function doPost(e) {
       '',
 
       'TOTAL PRODUITS : ' +
-      total.toFixed(2) +
-      ' CHF',
+totalProduits.toFixed(2) +
+' CHF',
 
       'FRAIS DE LIVRAISON : ' +
       fraisLivraison.toFixed(2) +
@@ -835,4 +837,3 @@ function doGet() {
       ContentService.MimeType.TEXT
     );
 }
-```
