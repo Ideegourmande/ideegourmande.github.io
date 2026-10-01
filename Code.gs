@@ -1,3 +1,4 @@
+```javascript
 const NOM_EXPEDITEUR = 'Idée Gourmande';
 const EXPEDITEUR = 'ideesgourmandesge@gmail.com';
 
@@ -389,7 +390,7 @@ function doPost(e) {
     const total =
       Number(
         data.total || 0
-      ).toFixed(2);
+      );
 
     const numeroCommande =
       data.numeroCommande || '';
@@ -412,6 +413,11 @@ function doPost(e) {
         ? FRAIS_LIVRAISON_SUISSE
         : 0;
 
+    // Total final utilisé dans les e-mails.
+    // Le PDF reste inchangé.
+    const totalAvecLivraison =
+      total + fraisLivraison;
+
 
     console.log(
       'MODE LIVRAISON REÇU PAR CODE.GS : ' +
@@ -421,6 +427,18 @@ function doPost(e) {
     console.log(
       'FRAIS LIVRAISON CALCULÉS POUR LE MAIL : ' +
       fraisLivraison.toFixed(2) +
+      ' CHF'
+    );
+
+    console.log(
+      'TOTAL PRODUITS : ' +
+      total.toFixed(2) +
+      ' CHF'
+    );
+
+    console.log(
+      'TOTAL AVEC LIVRAISON POUR LE MAIL : ' +
+      totalAvecLivraison.toFixed(2) +
       ' CHF'
     );
 
@@ -565,8 +583,16 @@ function doPost(e) {
 
       '',
 
-      'TOTAL : ' +
-      total +
+      'TOTAL PRODUITS : ' +
+      total.toFixed(2) +
+      ' CHF',
+
+      'FRAIS DE LIVRAISON : ' +
+      fraisLivraison.toFixed(2) +
+      ' CHF',
+
+      'TOTAL À PAYER : ' +
+      totalAvecLivraison.toFixed(2) +
       ' CHF',
 
       '',
@@ -647,8 +673,16 @@ function doPost(e) {
 
       '',
 
-      'TOTAL : ' +
-      total +
+      'TOTAL PRODUITS : ' +
+      total.toFixed(2) +
+      ' CHF',
+
+      'FRAIS DE LIVRAISON : ' +
+      fraisLivraison.toFixed(2) +
+      ' CHF',
+
+      'TOTAL À PAYER : ' +
+      totalAvecLivraison.toFixed(2) +
       ' CHF',
 
       '',
@@ -801,3 +835,4 @@ function doGet() {
       ContentService.MimeType.TEXT
     );
 }
+```
