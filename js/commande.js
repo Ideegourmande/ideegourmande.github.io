@@ -1330,16 +1330,43 @@ modeLivraison:
 
 
     // ==================================
-    // CONFIRMATION
-    // ==================================
+// NETTOYAGE DU FORMULAIRE
+// ==================================
 
-    alert(
-        "Votre commande a été envoyée avec succès.\n\n" +
-        "Le PDF a été transmis automatiquement avec le mail.\n\n" +
-        "Cette page reste ouverte."
-    );
+const formulaireCommande =
+    document.getElementById("formCommande");
 
+if (formulaireCommande) {
+    formulaireCommande.reset();
 }
+
+
+// ==================================
+// NETTOYAGE DU PANIER
+// ==================================
+
+panierCommande.length = 0;
+
+window.panierCommande =
+    panierCommande;
+
+afficherPanier();
+
+
+// ==================================
+// MESSAGE DE CONFIRMATION
+// ==================================
+
+alert(
+    "Merci pour votre commande gourmande !"
+);
+
+
+// ==================================
+// RETOUR À L'ACCUEIL
+// ==================================
+
+window.location.href = "index.html";
 
 
 // ======================================
