@@ -1,6 +1,5 @@
 console.log("COMMANDE.JS CHARGE");
 
-
 // ======================================
 // IDEE GOURMANDE
 // commande.js
@@ -8,16 +7,14 @@ console.log("COMMANDE.JS CHARGE");
 // Version 3.0.0
 // ======================================
 
-
 // ======================================
 // PANIER GLOBAL
 // ======================================
 
 let panierCommande = [];
 const FRAIS_LIVRAISON_SUISSE = 10.50;
-window.panierCommande =
-    panierCommande;
 
+window.panierCommande = panierCommande;
 
 // ======================================
 // BASE PRODUITS
@@ -26,131 +23,79 @@ window.panierCommande =
 const produits = {
 
     "foie-gras": {
-
-        nom:
-            "Foie gras de canard au torchon",
-
-        prix:
-            35
-
+        nom: "Foie gras de canard au torchon",
+        prix: 35
     },
-
 
     "magret": {
-
-        nom:
-            "Magret de canard fumé et séché",
-
-        prix:
-            25
-
+        nom: "Magret de canard fumé et séché",
+        prix: 25
     },
-
 
     "viande-sechee": {
-
-        nom:
-            "Viande séchée artisanale",
-
-        prix:
-            45
-
+        nom: "Viande séchée artisanale",
+        prix: 45
     },
-
 
     "lard-sec": {
-
-        nom:
-            "Lard sec légèrement fumé",
-
-        prix:
-            20
-
+        nom: "Lard sec légèrement fumé",
+        prix: 20
     },
 
-
     "saumon-fume": {
-
-        nom:
-            "Cœur de saumon fumé",
-
-        prix:
-            8
-
+        nom: "Cœur de saumon fumé",
+        prix: 8
     }
 
 };
-
 
 // ======================================
 // INITIALISATION PAGE
 // ======================================
 
-document.addEventListener(
-    "DOMContentLoaded",
-    () => {
+document.addEventListener("DOMContentLoaded", () => {
 
-        initialiserBoutonsPanier();
+    initialiserBoutonsPanier();
 
-        afficherPanier();
-        const selectLivraison =
-            document.getElementById(
-                "modeLivraison"
-            );
+    afficherPanier();
 
-        if (selectLivraison) {
+    const selectLivraison =
+        document.getElementById("modeLivraison");
 
-            selectLivraison.addEventListener(
-                "change",
-                afficherPanier
-            );
-
-        }
-
-        const boutonVider =
-            document.getElementById(
-                "btnViderPanier"
-            );
-
-
-        if (boutonVider) {
-
-            boutonVider.addEventListener(
-                "click",
-                viderPanier
-            );
-
-        }
-
-
-        const formulaire =
-            document.getElementById(
-                "formCommande"
-            );
-
-
-        if (formulaire) {
-
-            formulaire.addEventListener(
-                "submit",
-                envoyerCommande
-            );
-
-        }
-
-
-        if (
-            typeof initialiserNomTwint ===
-            "function"
-        ) {
-
-            initialiserNomTwint();
-
-        }
-
+    if (selectLivraison) {
+        selectLivraison.addEventListener(
+            "change",
+            afficherPanier
+        );
     }
-);
 
+    const boutonVider =
+        document.getElementById("btnViderPanier");
+
+    if (boutonVider) {
+        boutonVider.addEventListener(
+            "click",
+            viderPanier
+        );
+    }
+
+    const formulaire =
+        document.getElementById("formCommande");
+
+    if (formulaire) {
+        formulaire.addEventListener(
+            "submit",
+            envoyerCommande
+        );
+    }
+
+    if (typeof initialiserNomTwint === "function") {
+        initialiserNomTwint();
+    }
+
+    initialiserPartageSite();
+
+});
 
 // ======================================
 // BOUTONS AJOUT PANIER
@@ -159,48 +104,35 @@ document.addEventListener(
 function initialiserBoutonsPanier() {
 
     const boutons =
-        document.querySelectorAll(
-            ".ajouter-panier"
-        );
-
+        document.querySelectorAll(".ajouter-panier");
 
     console.log(
         "BOUTONS AJOUT PANIER :",
         boutons.length
     );
 
+    boutons.forEach(bouton => {
 
-    boutons.forEach(
-        bouton => {
+        bouton.addEventListener("click", () => {
 
-            bouton.addEventListener(
-                "click",
-                () => {
-
-                    ajouterAuPanier(
-                        bouton.dataset.produit
-                    );
-
-                }
+            ajouterAuPanier(
+                bouton.dataset.produit
             );
 
-        }
-    );
+        });
+
+    });
 
 }
-
 
 // ======================================
 // AJOUT ARTICLE
 // ======================================
 
-function ajouterAuPanier(
-    reference
-) {
+function ajouterAuPanier(reference) {
 
     const produit =
         produits[reference];
-
 
     if (!produit) {
 
@@ -213,12 +145,10 @@ function ajouterAuPanier(
 
     }
 
-
     const carte =
         document.querySelector(
             `.commande-card[data-produit="${reference}"]`
         );
-
 
     const article = {
 
@@ -241,58 +171,42 @@ function ajouterAuPanier(
 
     };
 
-
     switch (reference) {
 
         case "foie-gras":
 
             article.quantite =
-                lireQuantite(
-                    "foieQuantite"
-                );
+                lireQuantite("foieQuantite");
 
             break;
-
 
         case "magret":
 
             article.quantite =
-                lireQuantite(
-                    "magretQuantite"
-                );
+                lireQuantite("magretQuantite");
 
             break;
-
 
         case "viande-sechee":
 
             article.quantite =
-                lireQuantite(
-                    "viandeQuantite"
-                );
+                lireQuantite("viandeQuantite");
 
             break;
-
 
         case "lard-sec":
 
             article.quantite =
-                lireQuantite(
-                    "lardQuantite"
-                );
+                lireQuantite("lardQuantite");
 
             break;
-
 
         case "saumon-fume":
 
             article.poids =
                 lirePoidsSaumon();
 
-
-            if (
-                article.poids < 100
-            ) {
+            if (article.poids < 100) {
 
                 alert(
                     "Veuillez choisir un poids pour le saumon."
@@ -306,243 +220,140 @@ function ajouterAuPanier(
 
     }
 
-
     if (
-        reference !==
-        "saumon-fume"
-        &&
+        reference !== "saumon-fume" &&
         article.quantite <= 0
     ) {
 
-        alert(
-            "Quantité invalide"
-        );
+        alert("Quantité invalide");
 
         return;
 
     }
 
-
     article.prix =
-        calculerPrixArticle(
-            article
-        );
+        calculerPrixArticle(article);
 
-
-    ajouterOuFusionner(
-        article
-    );
-
+    ajouterOuFusionner(article);
 
     window.panierCommande =
         panierCommande;
-
 
     afficherPanier();
 
 }
 
-
 // ======================================
 // FUSION ARTICLES IDENTIQUES
 // ======================================
 
-function ajouterOuFusionner(
-    article
-) {
+function ajouterOuFusionner(article) {
 
     const existant =
         panierCommande.find(
             a =>
-
-                a.reference ===
-                article.reference
-
-                &&
-
-                (
-                    a.recette || ""
-                )
-                ===
-                (
-                    article.recette || ""
-                )
-
-                &&
-
-                Number(
-                    a.poids || 0
-                )
-                ===
-                Number(
-                    article.poids || 0
-                )
+                a.reference === article.reference &&
+                (a.recette || "") === (article.recette || "") &&
+                Number(a.poids || 0) === Number(article.poids || 0)
         );
-
 
     if (existant) {
 
-        if (
-            article.reference ===
-            "saumon-fume"
-        ) {
+        if (article.reference === "saumon-fume") {
 
             existant.poids =
-                (
-                    Number(
-                        existant.poids
-                    ) || 0
-                )
-                +
-                (
-                    Number(
-                        article.poids
-                    ) || 0
-                );
+                (Number(existant.poids) || 0) +
+                (Number(article.poids) || 0);
 
-        }
-        else {
+        } else {
 
             existant.quantite +=
                 article.quantite;
 
         }
 
-
         existant.prix =
-            calculerPrixArticle(
-                existant
-            );
+            calculerPrixArticle(existant);
 
-    }
-    else {
+    } else {
 
-        panierCommande.push(
-            article
-        );
+        panierCommande.push(article);
 
     }
 
 }
-
 
 // ======================================
 // CALCUL PRIX ARTICLE
 // ======================================
 
-function calculerPrixArticle(
-    article
-) {
+function calculerPrixArticle(article) {
 
     const produit =
-        produits[
-            article.reference
-        ];
-
+        produits[article.reference];
 
     if (!produit) {
-
         return 0;
-
     }
 
-
-    if (
-        article.reference ===
-        "saumon-fume"
-    ) {
+    if (article.reference === "saumon-fume") {
 
         return Number(
-
             (
-                produit.prix
-                *
-                Number(
-                    article.poids
-                )
-                /
+                produit.prix *
+                Number(article.poids) /
                 100
-            )
-            .toFixed(2)
-
+            ).toFixed(2)
         );
 
     }
 
-
     return Number(
-
         (
-            produit.prix
-            *
-            Number(
-                article.quantite
-            )
-        )
-        .toFixed(2)
-
+            produit.prix *
+            Number(article.quantite)
+        ).toFixed(2)
     );
 
 }
-
 
 // ======================================
 // RECETTE
 // ======================================
 
-function getRecette(
-    carte
-) {
+function getRecette(carte) {
 
     if (!carte) {
-
         return "";
-
     }
-
 
     const choix =
         carte.querySelector(
             ".choix-recette input:checked"
         );
 
-
     return choix
-        ?
-        choix.value
-        :
-        "";
+        ? choix.value
+        : "";
 
 }
-
 
 // ======================================
 // LECTURE QUANTITE
 // ======================================
 
-function lireQuantite(
-    id
-) {
+function lireQuantite(id) {
 
     const champ =
-        document.getElementById(
-            id
-        );
-
+        document.getElementById(id);
 
     if (!champ) {
-
         return 0;
-
     }
 
-
-    return Number(
-        champ.value
-    ) || 0;
+    return Number(champ.value) || 0;
 
 }
-
 
 // ======================================
 // LECTURE POIDS SAUMON
@@ -551,21 +362,13 @@ function lireQuantite(
 function lirePoidsSaumon() {
 
     const champ =
-        document.getElementById(
-            "saumonPoids"
-        );
-
+        document.getElementById("saumonPoids");
 
     if (!champ) {
-
         return 0;
-
     }
 
-
-    return Number(
-        champ.value
-    ) || 0;
+    return Number(champ.value) || 0;
 
 }
 
@@ -580,15 +383,14 @@ function calculerFraisLivraison() {
             "modeLivraison"
         )?.value || "";
 
-    if (
-        modeLivraison ===
-        "Livraison en Suisse"
-    ) {
+    if (modeLivraison === "Livraison en Suisse") {
         return FRAIS_LIVRAISON_SUISSE;
     }
 
     return 0;
+
 }
+
 // ======================================
 // AFFICHAGE PANIER
 // ======================================
@@ -600,82 +402,45 @@ function afficherPanier() {
             "recapCommande"
         );
 
-
     const totalZone =
         document.getElementById(
             "total"
         );
 
-
-    if (
-        !zone
-        ||
-        !totalZone
-    ) {
-
+    if (!zone || !totalZone) {
         return;
-
     }
 
-
-    if (
-        panierCommande.length === 0
-    ) {
+    if (panierCommande.length === 0) {
 
         zone.innerHTML =
             "<p>Aucun produit sélectionné.</p>";
 
-
         totalZone.textContent =
             "0.00 CHF";
 
-
-        mettreAJourTitrePanier(
-            0
-        );
-
+        mettreAJourTitrePanier(0);
 
         return;
-
     }
 
-
     let html = "";
-
     let total = 0;
-
     let compteur = 0;
 
+    panierCommande.forEach((article, index) => {
 
-    panierCommande.forEach(
-        (article, index) => {
+        if (article.reference === "saumon-fume") {
+            compteur++;
+        } else {
+            compteur +=
+                Number(article.quantite) || 0;
+        }
 
+        total +=
+            Number(article.prix) || 0;
 
-            if (
-                article.reference ===
-                "saumon-fume"
-            ) {
-
-                compteur++;
-
-            }
-            else {
-
-                compteur +=
-                    Number(
-                        article.quantite
-                    ) || 0;
-
-            }
-
-
-            total +=
-                Number(
-                    article.prix
-                ) || 0;
-
-
-            html += `
+        html += `
 
             <div class="ligne-produit">
 
@@ -701,16 +466,9 @@ function afficherPanier() {
 
                         <span>
                             ${
-                                article.reference ===
-                                "saumon-fume"
-
-                                ?
-
-                                article.poids + " g"
-
-                                :
-
-                                article.quantite
+                                article.reference === "saumon-fume"
+                                ? article.poids + " g"
+                                : article.quantite
                             }
                         </span>
 
@@ -747,10 +505,10 @@ function afficherPanier() {
 
             </div>
 
-            `;
+        `;
 
-        }
-    );
+    });
+
     // ==================================
     // FRAIS DE LIVRAISON
     // ==================================
@@ -792,213 +550,137 @@ function afficherPanier() {
     zone.innerHTML =
         html;
 
-
     totalZone.textContent =
-        total.toFixed(2)
-        +
+        total.toFixed(2) +
         " CHF";
 
-
-    mettreAJourTitrePanier(
-        compteur
-    );
+    mettreAJourTitrePanier(compteur);
 
 }
-
 
 // ======================================
 // DETAILS ARTICLE
 // ======================================
 
-function afficherDetailsArticle(
-    article
-) {
+function afficherDetailsArticle(article) {
 
     let texte = "";
-
 
     if (article.recette) {
 
         texte +=
-            "Recette : "
-            +
-            article.recette
-            +
+            "Recette : " +
+            article.recette +
             "<br>";
 
     }
 
-
     if (
-        article.reference ===
-        "saumon-fume"
-        &&
+        article.reference === "saumon-fume" &&
         article.poids
     ) {
 
         texte +=
-            article.poids
-            +
+            article.poids +
             " g";
 
     }
-
 
     return texte;
 
 }
 
-
 // ======================================
 // TITRE PANIER
 // ======================================
 
-function mettreAJourTitrePanier(
-    nombre
-) {
+function mettreAJourTitrePanier(nombre) {
 
     const titre =
         document.getElementById(
             "titrePanier"
         );
 
-
     if (!titre) {
-
         return;
-
     }
 
-
     titre.textContent =
-        "🛒 Votre panier ("
-        +
-        nombre
-        +
-        " article"
-        +
-        (
-            nombre > 1
-            ?
-            "s"
-            :
-            ""
-        )
-        +
+        "🛒 Votre panier (" +
+        nombre +
+        " article" +
+        (nombre > 1 ? "s" : "") +
         ")";
 
 }
-
 
 // ======================================
 // MODIFIER QUANTITE
 // ======================================
 
-function modifierQuantite(
-    index,
-    variation
-) {
+function modifierQuantite(index, variation) {
 
     const article =
         panierCommande[index];
 
-
     if (!article) {
-
         return;
-
     }
 
-
-    if (
-        article.reference ===
-        "saumon-fume"
-    ) {
+    if (article.reference === "saumon-fume") {
 
         article.poids =
-            (
-                Number(
-                    article.poids
-                ) || 0
-            )
-            +
-            (
-                variation *
-                100
-            );
+            (Number(article.poids) || 0) +
+            (variation * 100);
 
+        if (article.poids < 100) {
 
-        if (
-            article.poids < 100
-        ) {
-
-            supprimerArticle(
-                index
-            );
+            supprimerArticle(index);
 
             return;
-
         }
 
-    }
-    else {
+    } else {
 
         article.quantite +=
             variation;
 
+        if (article.quantite <= 0) {
 
-        if (
-            article.quantite <= 0
-        ) {
-
-            supprimerArticle(
-                index
-            );
+            supprimerArticle(index);
 
             return;
-
         }
 
     }
 
-
     article.prix =
-        calculerPrixArticle(
-            article
-        );
-
+        calculerPrixArticle(article);
 
     window.panierCommande =
         panierCommande;
-
 
     afficherPanier();
 
 }
 
-
 // ======================================
 // SUPPRESSION ARTICLE
 // ======================================
 
-function supprimerArticle(
-    index
-) {
+function supprimerArticle(index) {
 
     panierCommande.splice(
         index,
         1
     );
 
-
     window.panierCommande =
         panierCommande;
-
 
     afficherPanier();
 
 }
-
 
 // ======================================
 // VIDER PANIER
@@ -1008,48 +690,36 @@ function viderPanier() {
 
     panierCommande.length = 0;
 
-
     window.panierCommande =
         panierCommande;
-
 
     afficherPanier();
 
 }
 
-
 // ======================================
 // ENVOI COMMANDE
 // ======================================
 
-async function envoyerCommande(
-    e
-) {
+async function envoyerCommande(e) {
 
     e.preventDefault();
 
-
-    if (
-        panierCommande.length === 0
-    ) {
+    if (panierCommande.length === 0) {
 
         alert(
             "Votre panier est vide."
         );
 
         return;
-
     }
-
 
     const getValue =
         id =>
             document.getElementById(id)
             ?.value
-            ?.trim()
-            ||
+            ?.trim() ||
             "";
-
 
     const commande = {
 
@@ -1057,7 +727,6 @@ async function envoyerCommande(
         // la génération du PDF.
         id:
             Date.now(),
-
 
         client: {
 
@@ -1077,13 +746,12 @@ async function envoyerCommande(
                 getValue("adresse"),
 
             commentaire:
-    getValue("commentaire"),
+                getValue("commentaire"),
 
-modeLivraison:
-    getValue("modeLivraison")
+            modeLivraison:
+                getValue("modeLivraison")
 
-},
-
+        },
 
         produits:
             panierCommande.map(
@@ -1092,35 +760,21 @@ modeLivraison:
                 })
             ),
 
-
         total:
-    panierCommande.reduce(
-        (
-            somme,
-            article
-        ) =>
-
-            somme
-            +
-            (
-                Number(
-                    article.prix
-                ) || 0
-            ),
-
-        0
-    )
-    +
-    calculerFraisLivraison()
+            panierCommande.reduce(
+                (somme, article) =>
+                    somme +
+                    (Number(article.prix) || 0),
+                0
+            ) +
+            calculerFraisLivraison()
 
     };
-
 
     console.log(
         "COMMANDE PREPAREE :",
         commande
     );
-
 
     // ==================================
     // ENREGISTREMENT BASE
@@ -1135,16 +789,12 @@ modeLivraison:
             "ajouterCommande() est introuvable. database.js doit être chargé avant commande.js."
         );
 
-
         alert(
             "Impossible d'enregistrer la commande. La base de données n'est pas disponible."
         );
 
-
         return;
-
     }
-
 
     const commandeEnregistree = {
 
@@ -1158,10 +808,8 @@ modeLivraison:
             ),
 
         client:
-            commande.client.prenom
-            +
-            " "
-            +
+            commande.client.prenom +
+            " " +
             commande.client.nom,
 
         telephone:
@@ -1174,53 +822,33 @@ modeLivraison:
             commande.client.adresse,
 
         commentaire:
-    commande.client.commentaire,
+            commande.client.commentaire,
 
-modeLivraison:
-    commande.client.modeLivraison,
-
+        modeLivraison:
+            commande.client.modeLivraison,
 
         produits:
             commande.produits
-            .map(
-                article =>
-
-                    article.nom
-
-                    +
-
-                    (
-                        article.reference ===
-                        "saumon-fume"
-
-                        ?
-
-                        " (" +
-                        article.poids +
-                        " g)"
-
-                        :
-
+                .map(
+                    article =>
+                        article.nom +
                         (
-                            article.quantite > 1
-
-                            ?
-
-                            " x" +
-                            article.quantite
-
-                            :
-
-                            ""
+                            article.reference === "saumon-fume"
+                            ? " (" +
+                              article.poids +
+                              " g)"
+                            : (
+                                article.quantite > 1
+                                ? " x" +
+                                  article.quantite
+                                : ""
+                            )
                         )
-                    )
-            )
-            .join("\n"),
-
+                )
+                .join("\n"),
 
         produitsListe:
             commande.produits,
-
 
         total:
             commande.total,
@@ -1236,12 +864,10 @@ modeLivraison:
 
     };
 
-
     const resultat =
         ajouterCommande(
             commandeEnregistree
         );
-
 
     if (!resultat) {
 
@@ -1250,9 +876,7 @@ modeLivraison:
         );
 
         return;
-
     }
-
 
     // ==================================
     // PDF + ENVOI AUTOMATIQUE
@@ -1267,15 +891,12 @@ modeLivraison:
             "genererPDFCommande() est introuvable."
         );
 
-
         alert(
             "La commande a été enregistrée, mais le générateur PDF est introuvable."
         );
 
         return;
-
     }
-
 
     try {
 
@@ -1283,91 +904,71 @@ modeLivraison:
             "Génération et envoi automatique du PDF..."
         );
 
-
         await genererPDFCommande(
             commande
         );
-
 
         console.log(
             "PDF traité et envoi terminé."
         );
 
-
-    }
-    catch (error) {
+    } catch (error) {
 
         console.error(
             "Erreur pendant la génération/envoi du PDF :",
             error
         );
 
-
         alert(
             "La commande a été enregistrée, mais une erreur est survenue lors de la génération ou de l'envoi du PDF.\n\n" +
             error.message
         );
 
-
         return;
-
     }
-
 
     // ==================================
     // NETTOYAGE PANIER
     // ==================================
 
-    panierCommande.length =
-        0;
-
+    panierCommande.length = 0;
 
     window.panierCommande =
         panierCommande;
 
-
     afficherPanier();
 
+    // ==================================
+    // NETTOYAGE DU FORMULAIRE
+    // ==================================
+
+    const formulaireCommande =
+        document.getElementById(
+            "formCommande"
+        );
+
+    if (formulaireCommande) {
+
+        formulaireCommande.reset();
+
+    }
 
     // ==================================
-// NETTOYAGE DU FORMULAIRE
-// ==================================
+    // MESSAGE DE CONFIRMATION
+    // ==================================
 
-const formulaireCommande =
-    document.getElementById("formCommande");
+    alert(
+        "Merci pour votre commande gourmande !"
+    );
 
-if (formulaireCommande) {
-    formulaireCommande.reset();
+    // ==================================
+    // RETOUR À L'ACCUEIL
+    // ==================================
+
+    window.location.href =
+        "index.html";
+
 }
-
-
-// ==================================
-// NETTOYAGE DU PANIER
-// ==================================
-
-panierCommande.length = 0;
-
-window.panierCommande =
-    panierCommande;
-
-afficherPanier();
-
-
-// ==================================
-// MESSAGE DE CONFIRMATION
-// ==================================
-
-alert(
-    "Merci pour votre commande gourmande !"
-);
-
-
-// ==================================
-// RETOUR À L'ACCUEIL
-// ==================================
-
-window.location.href = "index.html";
-
 
 // ======================================
 // EXPORT GLOBAL
@@ -1388,6 +989,82 @@ window.viderPanier =
 window.envoyerCommande =
     envoyerCommande;
 
+// ======================================
+// PARTAGE DU SITE
+// ======================================
+
+function initialiserPartageSite() {
+
+    const boutonPartager =
+        document.getElementById(
+            "partagerSite"
+        );
+
+    if (!boutonPartager) {
+        return;
+    }
+
+    boutonPartager.addEventListener(
+        "click",
+        async function(e) {
+
+            e.preventDefault();
+
+            const partage = {
+
+                title:
+                    "Idée Gourmande",
+
+                text:
+                    "Découvrez Idée Gourmande – spécialités artisanales préparées à Genève.",
+
+                url:
+                    window.location.origin +
+                    window.location.pathname
+
+            };
+
+            if (navigator.share) {
+
+                try {
+
+                    await navigator.share(
+                        partage
+                    );
+
+                } catch (erreur) {
+
+                    // L'utilisateur a simplement
+                    // fermé la fenêtre de partage.
+
+                }
+
+            } else {
+
+                try {
+
+                    await navigator.clipboard.writeText(
+                        window.location.href
+                    );
+
+                    alert(
+                        "Le lien du site a été copié. Vous pouvez maintenant le partager."
+                    );
+
+                } catch (erreur) {
+
+                    alert(
+                        "Impossible de copier automatiquement le lien du site."
+                    );
+
+                }
+
+            }
+
+        }
+    );
+
+}
 
 // ======================================
 // FIN
@@ -1396,31 +1073,3 @@ window.envoyerCommande =
 console.log(
     "COMMANDE.JS 3.0.0 CHARGE"
 );
-const boutonPartager = document.getElementById("partagerSite");
-
-if (boutonPartager) {
-boutonPartager.addEventListener("click", async function(e) {
-e.preventDefault();
-
-const partage = {
-title: "Idée Gourmande",
-text: "Découvrez Idée Gourmande – spécialités artisanales préparées à Genève.",
-url: window.location.origin + window.location.pathname
-};
-
-if (navigator.share) {
-try {
-await navigator.share(partage);
-} catch (erreur) {
-// L'utilisateur a simplement fermé la fenêtre de partage
-}
-} else {
-try {
-await navigator.clipboard.writeText(window.location.href);
-alert("Le lien du site a été copié. Vous pouvez maintenant le partager.");
-} catch (erreur) {
-alert("Impossible de copier automatiquement le lien du site.");
-}
-}
-});
-}
