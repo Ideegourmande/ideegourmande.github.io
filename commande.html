@@ -1,942 +1,518 @@
+
 <!DOCTYPE html>
-
 <html lang="fr">
-
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Préparer ma commande | Idée Gourmande</title>
+    <link rel="stylesheet" href="css/style.css">
 
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        .infos-livraison {
+            margin-top: 20px;
+        }
 
-<title>Préparer ma commande | Idée Gourmande</title>
+        .infos-livraison p {
+            margin-bottom: 18px;
+        }
 
-<link rel="stylesheet" href="css/style.css">
+        .choix-poids {
+            display: block;
+            width: 100%;
+            margin: 8px 0 14px;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            font: inherit;
+        }
 
-<style>
+        .information-poids {
+            margin-top: 10px;
+            padding: 12px;
+            border-left: 4px solid #b78a45;
+            background: #faf6ef;
+            border-radius: 4px;
+        }
 
-/* ===================================================
-   MODE DE RÉCEPTION
-=================================================== */
-
-.infos-livraison {
-    margin-top: 20px;
-}
-
-.infos-livraison p {
-    margin-bottom: 18px;
-}
-
-</style>
-
+        .twint-number {
+            margin: 12px 0;
+            font-size: 1.4rem;
+            font-weight: bold;
+        }
+    </style>
 </head>
 
 <body>
-
 <header>
+    <div class="top-banner">
+        🚚 Commandes préparées artisanalement à Genève – Livraison sous vide ou congelée selon les produits pour préserver toute la qualité.
+    </div>
 
-<div class="top-banner">
+    <nav>
+        <div class="logo">
+            <img src="images/logo.svg" alt="Idée Gourmande">
+        </div>
 
-🚚 Commandes préparées artisanalement à Genève – Livraison sous vide ou congelée selon les produits pour préserver toute la qualité.
-
-</div>
-
-<nav>
-
-<div class="logo">
-
-<img src="images/logo.svg" alt="Idée Gourmande">
-
-</div>
-
-<ul>
-
-<li><a href="index.html">Accueil</a></li>
-<li><a href="savoir-faire.html">Notre savoir-faire</a></li>
-<li><a href="produits.html">Nos spécialités</a></li>
-<li><a href="commande.html">Commander</a></li>
-<li><a href="contact.html">Contact</a></li>
-<li><a href="admin.html">Administration</a></li>
-
-</ul>
-
-</nav>
-
+        <ul>
+            <li><a href="index.html">Accueil</a></li>
+            <li><a href="savoir-faire.html">Notre savoir-faire</a></li>
+            <li><a href="produits.html">Nos spécialités</a></li>
+            <li><a href="commande.html">Commander</a></li>
+            <li><a href="contact.html">Contact</a></li>
+            <li><a href="admin.html">Administration</a></li>
+        </ul>
+    </nav>
 </header>
 
 <section class="presentation">
-
-<h1>
-
-Préparer ma commande
-
-</h1>
-
-<p>
-
-Choisissez vos spécialités artisanales, vos options et ajoutez vos produits au panier.
-
-</p>
-
+    <h1>Préparer ma commande</h1>
+    <p>
+        Choisissez vos spécialités artisanales, vos options et ajoutez vos produits au panier.
+        Pour les produits vendus au poids, le montant affiché est une estimation.
+    </p>
 </section>
 
 <section class="commande-grid">
 
-<!-- ===================================================
-     FOIE GRAS
-=================================================== -->
-
-<div class="commande-card"
-data-produit="foie-gras"
-data-prix="35">
-
-<img src="images/foie-gras-figues.jpg"
-alt="Foie gras de canard au torchon">
-
-<h3>
-
-🦆 Foie gras de canard au torchon
-
-</h3>
-
-<p>
-
-Choisissez votre recette :
-
-</p>
-
-<div class="choix-recette">
-
-<label>
-
-<input
-type="radio"
-name="foieRecette"
-value="figues">
-
-Gelée de figues au vin de messe
-
-</label>
-
-<label>
-
-<input
-type="radio"
-name="foieRecette"
-value="piment">
-
-Piment d'Espelette & Porto Calem
-
-</label>
-
-</div>
-
-<label>
-
-Quantité (200 g)
-
-</label>
-
-<input
-class="quantite-produit"
-type="number"
-id="foieQuantite"
-value="1"
-min="1">
-
-<p>
-
-<strong>
-
-35.00 CHF / 200 g
-
-</strong>
-
-</p>
-
-<button
-type="button"
-class="btn ajouter-panier"
-data-produit="foie-gras">
-
-Ajouter au panier
-
-</button>
-
-</div>
-
-<!-- ===================================================
-     MAGRET
-=================================================== -->
-
-<div class="commande-card"
-data-produit="magret"
-data-prix="25">
-
-<img src="images/magret-fume.jpg"
-alt="Magret de canard fumé et séché">
-
-<h3>
-
-🦆 Magret de canard fumé et séché
-
-</h3>
-
-<p>
-
-Choisissez votre recette :
-
-</p>
-
-<div class="choix-recette">
-
-<label>
-
-<input
-type="radio"
-name="magretRecette"
-value="herbes">
-
-Herbes de Provence
-
-</label>
-
-<label>
-
-<input
-type="radio"
-name="magretRecette"
-value="piment">
-
-Piment d'Espelette
-
-</label>
-
-</div>
-
-<label>
-
-Quantité
-
-</label>
-
-<input
-class="quantite-produit"
-type="number"
-id="magretQuantite"
-value="1"
-min="1">
-
-<p>
-
-<strong>
-
-25.00 CHF
-
-</strong>
-
-</p>
-
-<button
-type="button"
-class="btn ajouter-panier"
-data-produit="magret">
-
-Ajouter au panier
-
-</button>
-
-</div>
-
-<!-- ===================================================
-     VIANDE SÉCHÉE
-=================================================== -->
-
-<div class="commande-card"
-data-produit="viande-sechee"
-data-prix="45">
-
-<img src="images/viande-sechee.jpg"
-alt="Viande séchée artisanale">
-
-<h3>
-
-🥩 Viande séchée artisanale
-
-</h3>
-
-<p>
-
-Recette maison
-
-</p>
-
-<p>
-
-<strong>
-
-45.00 CHF / portion
-
-</strong>
-
-</p>
-
-<label>
-
-Nombre de portions
-
-</label>
-
-<input
-class="quantite-produit"
-type="number"
-id="viandeQuantite"
-value="1"
-min="0">
-
-<p class="confirmation">
-
-≈ 500 g par portion.
-Poids réel confirmé lors de la préparation.
-
-</p>
-
-<button
-type="button"
-class="btn ajouter-panier"
-data-produit="viande-sechee">
-
-Ajouter au panier
-
-</button>
-
-</div>
-
-<!-- ===================================================
-     LARD SEC
-=================================================== -->
-
-<div class="commande-card"
-data-produit="lard-sec"
-data-prix="20">
-
-<img src="images/lard-sec.jpg"
-alt="Lard sec légèrement fumé">
-
-<h3>
-
-🥓 Lard sec légèrement fumé
-
-</h3>
-
-<p>
-
-Recette maison
-
-</p>
-
-<p>
-
-<strong>
-
-20.00 CHF / portion
-
-</strong>
-
-</p>
-
-<label>
-
-Nombre de portions
-
-</label>
-
-<input
-class="quantite-produit"
-type="number"
-id="lardQuantite"
-value="1"
-min="0">
-
-<p class="confirmation">
-
-≈ 500 g par portion.
-Poids réel confirmé lors de la préparation.
-
-</p>
-
-<button
-type="button"
-class="btn ajouter-panier"
-data-produit="lard-sec">
-
-Ajouter au panier
-
-</button>
-
-</div>
-
-<!-- ===================================================
-     SAUMON FUMÉ
-=================================================== -->
-
-<div class="commande-card"
-data-produit="saumon-fume"
-data-prix="8">
-
-<img
-src="images/saumon-fume.jpg"
-alt="Cœur de saumon fumé">
-
-<h3>
-
-🐟 Cœur de saumon fumé
-
-</h3>
-
-<p>
-
-Choisissez votre recette :
-
-</p>
-
-<div class="choix-recette">
-
-<label>
-
-<input
-type="radio"
-name="saumonRecette"
-value="aneth">
-
-Aneth
-
-</label>
-
-<label>
-
-<input
-type="radio"
-name="saumonRecette"
-value="piment">
-
-Piment d'Espelette
-
-</label>
-
-</div>
-
-<label>
-
-Poids souhaité
-
-</label>
-
-<select
-class="poids-produit"
-id="saumonPoids">
-
-<option value="0">
-
-Choisir un poids
-
-</option>
-
-<option value="100">
-
-100 g
-
-</option>
-
-<option value="200">
-
-200 g
-
-</option>
-
-<option value="300">
-
-300 g
-
-</option>
-
-<option value="400">
-
-400 g
-
-</option>
-
-<option value="500">
-
-500 g
-
-</option>
-
-<option value="600">
-
-600 g
-
-</option>
-
-<option value="700">
-
-700 g
-
-</option>
-
-<option value="800">
-
-800 g
-
-</option>
-
-<option value="900">
-
-900 g
-
-</option>
-
-<option value="1000">
-
-1 kg
-
-</option>
-
-</select>
-
-<p>
-
-<strong>
-
-8.00 CHF / 100 g
-
-</strong>
-
-</p>
-
-<p class="confirmation">
-
-Poids réel confirmé lors de la préparation.
-
-</p>
-
-<button
-type="button"
-class="btn ajouter-panier"
-data-produit="saumon-fume">
-
-Ajouter au panier
-
-</button>
-
-</div>
-
+    <!-- FOIE GRAS -->
+    <div class="commande-card"
+         data-produit="foie-gras"
+         data-prix="35">
+
+        <img src="images/foie-gras-figues"
+             alt="Foie gras de canard au torchon">
+
+        <h3>🦆 Foie gras de canard au torchon</h3>
+        <p>Choisissez votre recette :</p>
+
+        <div class="choix-recette">
+            <label>
+                <input type="radio" name="foieRecette" value="figues">
+                Gelée de figues au vin de messe
+            </label>
+
+            <label>
+                <input type="radio" name="foieRecette" value="piment">
+                Piment d'Espelette &amp; Porto Calem
+            </label>
+        </div>
+
+        <label for="foieQuantite">Quantité (200 g)</label>
+        <input class="quantite-produit"
+               type="number"
+               id="foieQuantite"
+               value="1"
+               min="1"
+               step="1">
+
+        <p><strong>35.00 CHF / 200 g</strong></p>
+
+        <button type="button"
+                class="btn ajouter-panier"
+                data-produit="foie-gras">
+            Ajouter au panier
+        </button>
+    </div>
+
+    <!-- MAGRET -->
+    <div class="commande-card"
+         data-produit="magret"
+         data-prix="25">
+
+        <img src="images/magret-fume.jpg"
+             alt="Magret de canard fumé et séché">
+
+        <h3>🦆 Magret de canard fumé et séché</h3>
+        <p>Choisissez votre recette :</p>
+
+        <div class="choix-recette">
+            <label>
+                <input type="radio" name="magretRecette" value="herbes">
+                Herbes de Provence
+            </label>
+
+            <label>
+                <input type="radio" name="magretRecette" value="piment">
+                Piment d'Espelette
+            </label>
+        </div>
+
+        <label for="magretQuantite">Quantité</label>
+        <input class="quantite-produit"
+               type="number"
+               id="magretQuantite"
+               value="1"
+               min="1"
+               step="1">
+
+        <p><strong>25.00 CHF</strong></p>
+
+        <button type="button"
+                class="btn ajouter-panier"
+                data-produit="magret">
+            Ajouter au panier
+        </button>
+    </div>
+
+    <!-- VIANDE SÉCHÉE -->
+    <div class="commande-card"
+         data-produit="viande-sechee"
+         data-prix="9">
+
+        <img src="images/viande-sechee.jpg"
+             alt="Viande séchée artisanale">
+
+        <h3>🥩 Viande séchée artisanale</h3>
+        <p>Recette maison</p>
+
+        <p><strong>9.00 CHF / 100 g</strong></p>
+
+        <label for="viandePoids">Fourchette de poids souhaitée</label>
+        <select class="choix-poids poids-produit"
+                id="viandePoids"
+                name="viandePoids">
+            <option value="0">Choisir une fourchette de poids</option>
+            <option value="500-750">500 g – 750 g</option>
+            <option value="750-1000">750 g – 1 kg</option>
+            <option value="1000-1250">1 kg – 1,25 kg</option>
+            <option value="1250-1500">1,25 kg – 1,5 kg</option>
+            <option value="1500-1750">1,5 kg – 1,75 kg</option>
+            <option value="1750-2000">1,75 kg – 2 kg</option>
+            <option value="2000-2250">2 kg – 2,25 kg</option>
+            <option value="2250-2500">2,25 kg – 2,5 kg</option>
+            <option value="2500-2750">2,5 kg – 2,75 kg</option>
+            <option value="2750-3000">2,75 kg – 3 kg</option>
+        </select>
+
+        <p class="confirmation information-poids">
+            Le montant est estimatif. Le prix de référence est de
+            CHF 9.00 / 100 g. Le poids réel sera mesuré après préparation.
+            Si le poids dépasse la limite haute choisie, le dépassement
+            vous est offert : le prix ne dépassera jamais le plafond indiqué.
+        </p>
+
+        <button type="button"
+                class="btn ajouter-panier"
+                data-produit="viande-sechee">
+            Ajouter au panier
+        </button>
+    </div>
+
+    <!-- LARD SEC -->
+    <div class="commande-card"
+         data-produit="lard-sec"
+         data-prix="4">
+
+        <img src="images/lard-sec.jpg"
+             alt="Lard sec légèrement fumé">
+
+        <h3>🥓 Lard sec légèrement fumé</h3>
+        <p>Recette maison</p>
+
+        <p><strong>4.00 CHF / 100 g</strong></p>
+
+        <label for="lardPoids">Fourchette de poids souhaitée</label>
+        <select class="choix-poids poids-produit"
+                id="lardPoids"
+                name="lardPoids">
+            <option value="0">Choisir une fourchette de poids</option>
+            <option value="500-750">500 g – 750 g</option>
+            <option value="750-1000">750 g – 1 kg</option>
+            <option value="1000-1250">1 kg – 1,25 kg</option>
+            <option value="1250-1500">1,25 kg – 1,5 kg</option>
+            <option value="1500-1750">1,5 kg – 1,75 kg</option>
+            <option value="1750-2000">1,75 kg – 2 kg</option>
+            <option value="2000-2250">2 kg – 2,25 kg</option>
+            <option value="2250-2500">2,25 kg – 2,5 kg</option>
+            <option value="2500-2750">2,5 kg – 2,75 kg</option>
+            <option value="2750-3000">2,75 kg – 3 kg</option>
+        </select>
+
+        <p class="confirmation information-poids">
+            Le montant est estimatif. Le prix de référence est de
+            CHF 4.00 / 100 g. Le poids réel sera mesuré après préparation.
+            Si le poids dépasse la limite haute choisie, le dépassement
+            vous est offert : le prix ne dépassera jamais le plafond indiqué.
+        </p>
+
+        <button type="button"
+                class="btn ajouter-panier"
+                data-produit="lard-sec">
+            Ajouter au panier
+        </button>
+    </div>
+
+    <!-- SAUMON FUMÉ -->
+    <div class="commande-card"
+         data-produit="saumon-fume"
+         data-prix="8">
+
+        <img src="images/saumon-fume.jpg"
+             alt="Cœur de saumon fumé">
+
+        <h3>🐟 Cœur de saumon fumé</h3>
+        <p>Choisissez votre recette :</p>
+
+        <div class="choix-recette">
+            <label>
+                <input type="radio" name="saumonRecette" value="aneth">
+                Aneth
+            </label>
+
+            <label>
+                <input type="radio" name="saumonRecette" value="piment">
+                Piment d'Espelette
+            </label>
+        </div>
+
+        <label for="saumonPoids">Poids souhaité</label>
+        <select class="poids-produit" id="saumonPoids">
+            <option value="0">Choisir un poids</option>
+            <option value="100">100 g</option>
+            <option value="200">200 g</option>
+            <option value="300">300 g</option>
+            <option value="400">400 g</option>
+            <option value="500">500 g</option>
+            <option value="600">600 g</option>
+            <option value="700">700 g</option>
+            <option value="800">800 g</option>
+            <option value="900">900 g</option>
+            <option value="1000">1 kg</option>
+        </select>
+
+        <p><strong>8.00 CHF / 100 g</strong></p>
+
+        <p class="confirmation">
+            Le poids réel sera confirmé lors de la préparation.
+        </p>
+
+        <button type="button"
+                class="btn ajouter-panier"
+                data-produit="saumon-fume">
+            Ajouter au panier
+        </button>
+    </div>
 </section>
 
-<!-- ===================================================
-     INFORMATION POIDS RÉEL
-=================================================== -->
-
+<!-- INFORMATION SUR LE POIDS ET LE PRIX -->
 <section class="presentation">
+    <div class="paiement-box">
+        <h3>ℹ️ Information importante sur le poids et le prix</h3>
 
-<div class="paiement-box">
+        <p>
+            Le cœur de saumon fumé, la viande séchée et le lard sec
+            sont préparés artisanalement. Leur poids exact est déterminé
+            après préparation.
+        </p>
 
-<h3>
+        <p>
+            Pour la viande séchée et le lard sec, choisissez une
+            fourchette de poids. Le prix affiché dans le panier est
+            indicatif, sur la base du tarif au 100 g.
+        </p>
 
-ℹ️ Information importante
+        <p>
+            <strong>
+                Le prix final sera calculé à partir du poids réel,
+                sans jamais dépasser le prix correspondant à la limite
+                haute de la fourchette choisie.
+            </strong>
+        </p>
 
-</h3>
+        <p>
+            Si le poids réel dépasse cette limite haute, le poids
+            supplémentaire vous est offert.
+        </p>
 
-<p>
-
-Les produits vendus au poids (cœur de saumon fumé, viande séchée et lard sec) sont préparés artisanalement.
-
-</p>
-
-<p>
-
-<strong>
-
-Le poids réel sera confirmé lors de la préparation.
-
-</strong>
-
-</p>
-
-<p>
-
-Le montant final sera ajusté en fonction du poids effectivement préparé.
-
-</p>
-
-</div>
-
+        <p>
+            Vous recevrez le montant définitif avant de procéder au
+            paiement TWINT.
+        </p>
+    </div>
 </section>
 
-<!-- ===================================================
-     PANIER
-=================================================== -->
-
+<!-- PANIER -->
 <section class="panier-section">
+    <div class="panier-card">
+        <h2 id="titrePanier">🛒 Votre panier</h2>
 
-<div class="panier-card">
+        <div id="recapCommande">
+            Aucun produit sélectionné.
+        </div>
 
-<h2 id="titrePanier">
+        <div class="total-box">
+            <span>Total estimatif</span>
+            <strong id="total">0.00 CHF</strong>
+        </div>
 
-🛒 Votre panier
+        <p class="confirmation">
+            Le total affiché est estimatif pour les produits vendus
+            au poids. Le montant définitif sera confirmé après
+            préparation, avant tout paiement.
+        </p>
 
-</h2>
-
-<div id="recapCommande">
-
-Aucun produit sélectionné.
-
-</div>
-
-<div class="total-box">
-
-<span>
-
-Total estimatif
-
-</span>
-
-<strong id="total">
-
-0.00 CHF
-
-</strong>
-
-</div>
-
-<button
-type="button"
-id="btnViderPanier"
-class="btn vider-panier">
-
-Vider le panier
-
-</button>
-
-</div>
-
+        <button type="button"
+                id="btnViderPanier"
+                class="btn vider-panier">
+            Vider le panier
+        </button>
+    </div>
 </section>
 
-<!-- ===================================================
-     FORMULAIRE CLIENT
-=================================================== -->
-
+<!-- FORMULAIRE CLIENT -->
 <section class="presentation">
-
-<h2>
-
-Vos coordonnées
-
-</h2>
-
-<form
-id="formCommande"
-class="commande-form">
-
-<div class="form-grid">
-
-<div>
-
-<label>
-
-Prénom
-
-</label>
-
-<input
-type="text"
-id="prenom"
-placeholder="Votre prénom"
-required>
-
-</div>
-
-<div>
-
-<label>
-
-Nom
-
-</label>
-
-<input
-type="text"
-id="nom"
-placeholder="Votre nom"
-required>
-
-</div>
-
-<div>
-
-<label>
-
-Téléphone
-
-</label>
-
-<input
-type="tel"
-id="telephone"
-placeholder="079 xxx xx xx">
-
-</div>
-
-<div>
-
-<label>
-
-Adresse e-mail
-
-</label>
-
-<input
-type="email"
-id="email"
-placeholder="votre@email.ch"
-required>
-
-</div>
-
-<div class="full-width">
-
-<label>
-
-Adresse de livraison
-
-</label>
-
-<textarea
-id="adresse"
-rows="4"
-placeholder="Rue, numéro, NPA, ville"></textarea>
-
-</div>
-
-<div class="full-width">
-
-<label>
-
-Commentaire
-
-</label>
-
-<textarea
-id="commentaire"
-rows="3"
-placeholder="Date souhaitée, instructions particulières..."></textarea>
-
-</div>
-
-</div>
-
-<!-- ===================================================
-     MODE DE RÉCEPTION
-=================================================== -->
-
-<div class="paiement-box">
-
-<h3>
-🚚 Mode de réception
-</h3>
-
-<p>
-Comment souhaitez-vous recevoir votre commande ?
-</p>
-
-<label for="modeLivraison">
-
-Choisissez votre mode de réception :
-
-</label>
-
-<select
-id="modeLivraison"
-name="modeLivraison"
-required
-
->
-
-<option value="">
-
--- Sélectionnez une option --
-
-</option>
-
-<option value="Livraison à Genève">
-
-🚲 Livraison à Genève — sur rendez-vous
-
-</option>
-
-<option value="Livraison en Suisse">
-
-📦 Livraison en Suisse — par la Poste
-
-</option>
-
-<option value="Retrait à Genève">
-
-📍 Retrait à Genève — sur rendez-vous
-
-</option>
-
-</select>
-
-<div class="infos-livraison">
-
-<p>
-
-<strong>
-🚲 Livraison à Genève
-</strong>
-<br>
-
-Livraison personnelle à l’adresse de votre choix, sur rendez-vous.
-Produits réfrigérés et congelés disponibles.
-
-</p>
-
-<p>
-
-<strong>
-📦 Livraison en Suisse
-</strong>
-<br>
-
-Expédition par la Poste pour les produits pouvant être transportés
-sans réfrigération. <br>
-
-<strong>
-Frais d'expédition selon le poids du colis — en moyenne CHF 10.50.
-</strong>
-
-</p>
-
-<p>
-
-<strong>
-📍 Retrait à Genève
-</strong>
-<br>
-
-Possibilité de retirer directement la commande sur rendez-vous
-chez Idée Gourmande.
-
-</p>
-
-</div>
-
-</div>
-
-<!-- ===================================================
-     PAIEMENT TWINT
-=================================================== -->
-
-<div class="paiement-box">
-
-<h3>
-💳 Paiement TWINT
-</h3>
-
-<p>
-Merci d'effectuer le paiement avant validation de la commande.
-</p>
-
-<div class="twint-number">
-079 592 78 82
-</div>
-
-<p>
-<strong>1. Effectuez votre paiement TWINT au numéro ci-dessus.</strong>
-</p>
-
-<p>
-<strong>2. Indiquez le nom de l'expéditeur du paiement :</strong>
-</p>
-
-<input
-type="text"
-id="nomExpediteurTwint"
-placeholder="Nom et prénom utilisés pour le paiement TWINT"
-required>
-
-<label>
-
-<input
-type="checkbox"
-id="confirmationTwint"
-required>
-
-J'ai effectué le paiement TWINT et indiqué ci-dessus le nom de l'expéditeur.
-
-</label>
-
-<p class="confirmation">
-La commande sera confirmée après vérification du paiement.
-</p>
-
-</div>
-
-<button
-class="btn btn-large"
-type="submit">
-
-Envoyer ma commande
-
-</button>
-
-</form>
-
+    <h2>Vos coordonnées</h2>
+
+    <form id="formCommande" class="commande-form">
+        <div class="form-grid">
+
+            <div>
+                <label for="prenom">Prénom</label>
+                <input type="text"
+                       id="prenom"
+                       placeholder="Votre prénom"
+                       required>
+            </div>
+
+            <div>
+                <label for="nom">Nom</label>
+                <input type="text"
+                       id="nom"
+                       placeholder="Votre nom"
+                       required>
+            </div>
+
+            <div>
+                <label for="telephone">Téléphone</label>
+                <input type="tel"
+                       id="telephone"
+                       placeholder="079 xxx xx xx"
+                       required>
+            </div>
+
+            <div>
+                <label for="email">Adresse e-mail</label>
+                <input type="email"
+                       id="email"
+                       placeholder="votre@email.ch"
+                       required>
+            </div>
+
+            <div class="full-width">
+                <label for="adresse">Adresse de livraison</label>
+                <textarea id="adresse"
+                          rows="4"
+                          placeholder="Rue, numéro, NPA, ville"></textarea>
+            </div>
+
+            <div class="full-width">
+                <label for="commentaire">Commentaire</label>
+                <textarea id="commentaire"
+                          rows="3"
+                          placeholder="Date souhaitée, instructions particulières..."></textarea>
+            </div>
+        </div>
+
+        <!-- MODE DE RÉCEPTION -->
+        <div class="paiement-box">
+            <h3>🚚 Mode de réception</h3>
+
+            <p>Comment souhaitez-vous recevoir votre commande ?</p>
+
+            <label for="modeLivraison">
+                Choisissez votre mode de réception :
+            </label>
+
+            <select id="modeLivraison"
+                    name="modeLivraison"
+                    required>
+                <option value="">-- Sélectionnez une option --</option>
+                <option value="Livraison à Genève">
+                    🚲 Livraison à Genève — sur rendez-vous
+                </option>
+                <option value="Livraison en Suisse">
+                    📦 Livraison en Suisse — par la Poste
+                </option>
+                <option value="Retrait à Genève">
+                    📍 Retrait à Genève — sur rendez-vous
+                </option>
+            </select>
+
+            <div class="infos-livraison">
+                <p>
+                    <strong>🚲 Livraison à Genève</strong><br>
+                    Livraison personnelle à l’adresse de votre choix,
+                    sur rendez-vous. Produits réfrigérés et congelés disponibles.
+                </p>
+
+                <p>
+                    <strong>📦 Livraison en Suisse</strong><br>
+                    Expédition par la Poste pour les produits pouvant être
+                    transportés sans réfrigération.<br>
+                    <strong>
+                        Frais d’expédition selon le poids du colis —
+                        en moyenne CHF 10.50.
+                    </strong>
+                </p>
+
+                <p>
+                    <strong>📍 Retrait à Genève</strong><br>
+                    Possibilité de retirer directement la commande sur
+                    rendez-vous chez Idée Gourmande.
+                </p>
+            </div>
+        </div>
+
+        <!-- PAIEMENT TWINT : APRÈS CONFIRMATION DU PRIX -->
+        <div class="paiement-box">
+            <h3>💳 Paiement TWINT</h3>
+
+            <p>
+                <strong>Aucun paiement n’est demandé lors de l’envoi
+                de votre commande.</strong>
+            </p>
+
+            <p>
+                Nous préparons votre commande et déterminons le poids
+                réel des produits vendus au poids. Nous vous communiquons
+                ensuite le prix définitif.
+            </p>
+
+            <p>
+                Vous pourrez alors régler le montant confirmé par TWINT
+                au numéro suivant :
+            </p>
+
+            <div class="twint-number">079 592 78 82</div>
+
+            <p>
+                Merci d’attendre la confirmation du montant final avant
+                d’effectuer le paiement.
+            </p>
+        </div>
+
+        <button class="btn btn-large" type="submit">
+            Envoyer ma commande
+        </button>
+    </form>
 </section>
 
-<!-- ===================================================
-     FOOTER
-=================================================== -->
-
+<!-- FOOTER -->
 <footer>
+    <p>© Idée Gourmande - Genève</p>
 
-<p>
-
-© Idée Gourmande - Genève
-
-</p>
-
-<p>
-
-<a href="contact.html">
-
-Contact
-
-</a>
-
- | 
-
-<a href="mentions-legales.html">
-
-Mentions légales
-
-</a>
-
-</p>
-
+    <p>
+        <a href="contact.html">Contact</a>
+        &nbsp;|&nbsp;
+        <a href="mentions-legales.html">Mentions légales</a>
+    </p>
 </footer>
 
-<!-- ===================================================
-     SCRIPTS
-=================================================== -->
-
+<!-- SCRIPTS -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-
 <script src="js/database.js"></script>
-
-<script src="js/pdfcommande.js?v=4"></script>
-
-<script src="js/commande.js?v=3"></script>
+<script src="js/pdfcommande.js?v=5"></script>
+<script src="js/commande.js?v=4"></script>
 
 </body>
-
 </html>
