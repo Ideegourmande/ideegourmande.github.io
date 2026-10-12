@@ -1281,18 +1281,35 @@ console.log(
     let resultatPDF = null;
 
     if (typeof genererPDFCommande === "function") {
-        resultatPDF = genererPDFCommande(commande);
+        try {
+            // Générer le PDF sans lancer un second envoi d'e-mail depuis pdfcommande.js.
+            resultatPDF = await genererPDFCommande(commande, {
+                envoyerEmail: false,
+                typeEmail: "nouvelle-commande"
+            });
+        } catch (erreurPDF) {
+            console.error("Erreur lors de la génération du PDF :", erreurPDF);
+        }
     }
 
-    if (!resultatPDF || !resultatPDF.blob) {
-        alert("La commande a été enregistrée et le PDF a été généré, mais le PDF n'est pas disponible pour l'envoi automatique.");
+    if (!resultatPDF || !resultatPDF.pdf || typeof resultatPDF.pdf.output !== "function") {
+        alert("La commande a été enregistrée, mais le PDF n'a pas pu être préparé pour l'envoi.");
+        return;
+    }
+
+    const pdfBlob = resultatPDF.pdf.output("blob");
+    if (!pdfBlob || pdfBlob.size < 100) {
+        alert("La commande a été enregistrée, mais le fichier PDF est vide ou invalide.");
         return;
     }
 
     const envoiOK =
         await envoyerCommandeAutomatiquement(
             commande,
-            resultatPDF
+            {
+                blob: pdfBlob,
+                filename: resultatPDF.nomFichier || `Commande_${commande.numeroCommande}.pdf`
+            }
         );
 
     // ==================================
