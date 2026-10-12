@@ -1062,8 +1062,16 @@ nomExpediteurTwint:
     };
 
 
-    // Identifiant unique partagé par l'enregistrement, le PDF et l'e-mail.
+    // Identifiant technique pour la base de données.
     commande.id = Date.now();
+
+    // Numéro lisible : nom du commandeur suivi de 3 chiffres.
+    const nomCommande = (commande.client.prenom + commande.client.nom)
+        .normalize("NFD")
+        .replace(/[\u0300-\u036f]/g, "")
+        .replace(/[^a-zA-Z0-9]/g, "") || "Commande";
+    commande.numeroCommande =
+        nomCommande + String(Math.floor(Math.random() * 1000)).padStart(3, "0");
 
    console.log("COMMANDE PREPAREE :", commande);
 console.log(
@@ -1294,7 +1302,7 @@ async function envoyerCommandeAutomatiquement(commande, resultatPDF) {
         }
 
         const numeroCommande =
-            commande.id || Date.now();
+            commande.numeroCommande || commande.id || Date.now();
 
         const payload = {
             to: destinataire,
