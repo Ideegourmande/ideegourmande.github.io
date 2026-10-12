@@ -548,10 +548,23 @@
     const optionsFinales = {
       envoyerEmail: options.envoyerEmail !== false,
       typeEmail: options.typeEmail || "nouvelle-commande",
-      telecharger: options.telecharger === true
+      telecharger: options.telecharger === true,
+      afficher: options.afficher === true
     };
 
     const resultat = creerPDF(commande, optionsFinales);
+
+    if (optionsFinales.afficher) {
+      try {
+        const urlPDF = resultat.doc.output("bloburl");
+        const fenetrePDF = window.open(urlPDF, "_blank");
+        if (!fenetrePDF) {
+          console.warn("Le navigateur a bloqué l’ouverture automatique du PDF.");
+        }
+      } catch (erreurPDF) {
+        console.warn("Impossible d’ouvrir le PDF automatiquement :", erreurPDF);
+      }
+    }
 
     const nomFichier = "commande-" +
       String(resultat.numero).replace(/[^a-zA-Z0-9_-]/g, "") +
