@@ -106,7 +106,7 @@ function formatCHF(v) {
 
 function identifiantCommande(cmd, i) {
   return String(
-    (cmd && (cmd.id || cmd.numero || cmd.reference)) ||
+    (cmd && (cmd.numeroCommande || cmd.id || cmd.numero || cmd.reference)) ||
     ("commande-" + i)
   );
 }
@@ -619,6 +619,7 @@ function normaliserCommandePourPDF(cmd) {
 
   return Object.assign({}, cmd, {
     id: cmd.id || cmd.numero || cmd.reference || "",
+    numeroCommande: cmd.numeroCommande || cmd.id || cmd.numero || cmd.reference || "",
     client: {
       prenom: c.prenom || cmd.prenom || "",
       nom: c.nom || cmd.nom || cmd.nomClient || "",
@@ -703,6 +704,45 @@ function obtenirCommandeParIdentifiant(id) {
 }
 
 /* ---------- Confirmation du poids et du prix final ---------- */
+
+async function obtenirNumeroCommandeCentralAdmin(nomClient, annee) {
+  const url = "https://script.google.com/macros/s/AKfycby5o5V0dRb9fPpnhmUYCeWB1LxXjGRXfQK0kQ2Tzw2gHK58GQn8VmxlDI1DFWzogAhI/exec";
+  return new Promise((resolve, reject) => {
+    const callback = "igNumeroAdmin_" + Date.now() + "_" + Math.floor(Math.random() * 100000);
+    const script = document.createElement("script");
+    const timeout = setTimeout(() => {
+      nettoyer();
+      reject(new Error("Délai dépassé lors de l'attribution du numéro."));
+    }, 15000);
+    function nettoyer() {
+      clearTimeout(timeout);
+      delete window[callback];
+      if (script.parentNode) script.parentNode.removeChild(script);
+    }
+    window[callback] = reponse => {
+      nettoyer();
+      if (!reponse || reponse.ok !== true || !reponse.numero) {
+        reject(new Error(reponse && reponse.error || "Réponse invalide du compteur."));
+        return;
+      }
+      resolve(reponse.numero);
+    };
+    script.onerror = () => {
+      nettoyer();
+      reject(new Error("Le service de numérotation est inaccessible."));
+    };
+    const params = new URLSearchParams({
+      action: "nextOrderNumber",
+      nom: nomClient || "Commande",
+      annee: String(annee),
+      callback
+    });
+    script.src = url + "?" + params.toString();
+    document.head.appendChild(script);
+  });
+}
+
+
 
 async function confirmerPrixCommande(index) {
   const commandes = obtenirCommandes();
@@ -860,6 +900,26 @@ async function confirmerPrixCommande(index) {
       return alert(
         "Le total final est invalide. Aucun e-mail de confirmation n’a été lancé."
       );
+    }
+
+    // Les anciennes commandes n'avaient pas encore de numéro séquentiel.
+    // On leur en attribue un au moment de la confirmation finale.
+    if (!actualisee.numeroCommande) {
+      try {
+        actualisee.numeroCommande = await obtenirNumeroCommandeCentralAdmin(
+          obtenirNomClient(actualisee),
+          new Date().getFullYear()
+        );
+        cmd.numeroCommande = actualisee.numeroCommande;
+        enregistrerDBAdmin();
+      } catch (erreurNumero) {
+        console.error("Attribution du numéro de commande impossible :", erreurNumero);
+        afficherCommandes();
+        return alert(
+          "Le prix a été enregistré, mais aucun numéro de commande n'a pu être attribué. " +
+          "Aucun e-mail de confirmation n'a été envoyé. Réessaie plus tard."
+        );
+      }
     }
 
     let statutEmail = "";
