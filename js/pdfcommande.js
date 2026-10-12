@@ -1,10 +1,14 @@
 /* ==========================================================
    Idée Gourmande — PDF et e-mails des commandes
-   Version 6.0.0
+   Version 6.1.0
 
    - Nouvelle commande : prix indicatifs, aucun paiement demandé.
-   - Confirmation du prix final : montant définitif et instructions TWINT.
-   - Impression PDF seule : n'envoie pas automatiquement d'e-mail.
+   - Confirmation du prix final : poids et prix réellement confirmés.
+   - Le prix final d'une ligne ne doit pas dépasser son plafond.
+   - PDF de confirmation joint à l'e-mail du client.
+   - Copie de l'e-mail à Idée Gourmande.
+   - Impression PDF seule : aucun e-mail envoyé automatiquement.
+   - Les autres produits conservent leur fonctionnement habituel.
    ========================================================== */
 
 (function () {
@@ -18,15 +22,23 @@
   const NUMERO_TWINT = "079 592 78 82";
   const FRAIS_LIVRAISON = 10.50;
 
-  function valeur(valeur, remplacement = "") {
-    return valeur === undefined || valeur === null || valeur === ""
+  const TARIF_VIANDE_SECHEE_100G = 9;
+  const TARIF_LARD_SEC_100G = 4;
+
+  function valeur(valeurInitiale, remplacement = "") {
+    return valeurInitiale === undefined ||
+      valeurInitiale === null ||
+      valeurInitiale === ""
       ? remplacement
-      : valeur;
+      : valeurInitiale;
   }
 
   function montantCHF(nombre) {
     const n = Number(nombre);
-    return (Number.isFinite(n) ? n : 0).toFixed(2) + " CHF";
+
+    return (
+      (Number.isFinite(n) ? n : 0).toFixed(2) + " CHF"
+    );
   }
 
   function echapperHTML(texte) {
@@ -45,7 +57,10 @@
       prenom: valeur(client.prenom, commande.prenom || ""),
       nom: valeur(client.nom, commande.nom || ""),
       email: valeur(client.email, commande.email || ""),
-      telephone: valeur(client.telephone, commande.telephone || ""),
+      telephone: valeur(
+        client.telephone,
+        commande.telephone || ""
+      ),
       adresse: valeur(client.adresse, commande.adresse || ""),
       commentaire: valeur(
         client.commentaire,
@@ -70,34 +85,106 @@
     return [];
   }
 
-  function estProduitAuPoidsReel(article) {
-    const reference = String(
+  function obtenirReference(article) {
+    return String(
       article.reference || article.id || ""
     ).toLowerCase();
+  }
 
-    const nom = String(article.nom || "").toLowerCase();
+  function obtenirNomNormalise(article) {
+    return String(article.nom || "")
+      .toLowerCase()
+      .normalize("NFD")
+      .replace(/[\u0300-\u036f]/g, "");
+  }
+
+  function estProduitAuPoidsReel(article) {
+    const reference = obtenirReference(article);
+    const nom = obtenirNomNormalise(article);
 
     return (
       reference.includes("viande-sechee") ||
+      reference.includes("viande_sechee") ||
       reference.includes("lard-sec") ||
-      nom.includes("viande séchée") ||
+      reference.includes("lard_sec") ||
       nom.includes("viande sechee") ||
       nom.includes("lard sec")
+    );
+  }
+
+  function estLardSec(article) {
+    const reference = obtenirReference(article);
+    const nom = obtenirNomNormalise(article);
+
+    return (
+      reference.includes("lard-sec") ||
+      reference.includes("lard_sec") ||
+      nom.includes("lard sec")
+    );
+  }
+
+  function obtenirTarifAuPoids(article) {
+    return estLardSec(article)
+      ? TARIF_LARD_SEC_100G
+      : TARIF_VIANDE_SECHEE_100G;
+  }
+
+  function obtenirPlafond(article) {
+    const plafondEnregistre =
+      article.prixPlafond ??
+      article.prix_plafond ??
+      article.plafondPrix ??
+      article.plafond_prix;
+
+    if (
+      plafondEnregistre !== undefined &&
+      plafondEnregistre !== null &&
+      plafondEnregistre !== ""
+    ) {
+      const plafond = Number(plafondEnregistre);
+
+      return Number.isFinite(plafond) && plafond >= 0
+        ? plafond
+        : null;
+    }
+
+    const poidsMax = Number(
+      article.poidsMax ?? article.poids_max ?? 0
+    );
+
+    if (!Number.isFinite(poidsMax) || poidsMax <= 0) {
+      return null;
+    }
+
+    return (
+      poidsMax * obtenirTarifAuPoids(article) / 100
     );
   }
 
   function ligneProduit(article, index) {
     const nom = valeur(article.nom, "Article");
     const quantite = Number(article.quantite || 1);
+
     const prix = Number(
-      article.prixFinal ?? article.prix ?? article.prixIndicatif ?? 0
+      article.prixFinal ??
+      article.prix_final ??
+      article.prix ??
+      article.prixIndicatif ??
+      article.prix_indicatif ??
+      0
     );
 
     let detail = "";
 
     if (estProduitAuPoidsReel(article)) {
-      if (article.poidsReel) {
-        detail = "Poids réel : " + article.poidsReel + " g";
+      if (
+        article.poidsReel !== undefined &&
+        article.poidsReel !== null &&
+        article.poidsReel !== ""
+      ) {
+        detail =
+          "Poids réel : " +
+          formaterPoids(article.poidsReel);
       } else if (
         article.poidsMin !== undefined &&
         article.poidsMax !== undefined
@@ -108,18 +195,23 @@
           " à " +
           formaterPoids(article.poidsMax);
       } else if (article.poids) {
-        detail = "Poids : " + article.poids + " g";
+        detail = "Poids : " + formaterPoids(article.poids);
       }
     } else if (article.poids) {
-      detail = "Poids : " + article.poids + " g";
+      detail = "Poids : " + formaterPoids(article.poids);
     }
 
     if (article.recette) {
-      detail += (detail ? " — " : "") + "Recette : " + article.recette;
+      detail +=
+        (detail ? " — " : "") +
+        "Recette : " +
+        article.recette;
     }
 
     if (article.variante) {
-      detail += (detail ? " — " : "") + article.variante;
+      detail +=
+        (detail ? " — " : "") +
+        article.variante;
     }
 
     return {
@@ -141,9 +233,14 @@
 
     if (n >= 1000) {
       const kg = n / 1000;
-      return (Number.isInteger(kg) ? kg.toFixed(0) : kg.toFixed(2)
-        .replace(/0+$/, "")
-        .replace(/\.$/, "")) + " kg";
+
+      const valeurKg = Number.isInteger(kg)
+        ? kg.toFixed(0)
+        : kg.toFixed(2)
+            .replace(/0+$/, "")
+            .replace(/\.$/, "");
+
+      return valeurKg + " kg";
     }
 
     return n + " g";
@@ -156,28 +253,110 @@
   }
 
   function obtenirTotal(commande, client, typeEmail) {
+    const totalEnregistre = Number(
+      commande.totalFinal ??
+      commande.total_final ??
+      commande.total
+    );
+
     if (
-      typeEmail === "confirmation-prix" &&
-      Number.isFinite(Number(commande.total))
+      Number.isFinite(totalEnregistre) &&
+      (
+        commande.totalFinal !== undefined ||
+        commande.total_final !== undefined ||
+        commande.total !== undefined
+      )
     ) {
-      return Number(commande.total);
+      return totalEnregistre;
     }
 
-    if (Number.isFinite(Number(commande.total))) {
-      return Number(commande.total);
-    }
+    const totalProduits = obtenirProduits(commande).reduce(
+      (somme, article) => {
+        const prix = Number(
+          article.prixFinal ??
+          article.prix_final ??
+          article.prix ??
+          article.prixIndicatif ??
+          article.prix_indicatif ??
+          0
+        );
 
-    return obtenirProduits(commande).reduce((somme, article) => {
-      return somme + Number(
-        article.prixFinal ?? article.prix ?? article.prixIndicatif ?? 0
-      );
-    }, 0) + calculerFraisLivraison(client);
+        return somme + (
+          Number.isFinite(prix) ? prix : 0
+        );
+      },
+      0
+    );
+
+    return totalProduits + calculerFraisLivraison(client);
   }
 
-  function ajouterTextePDF(doc, texte, x, y, largeur = 180) {
-    const lignes = doc.splitTextToSize(String(texte || ""), largeur);
+  function ajouterTextePDF(
+    doc,
+    texte,
+    x,
+    y,
+    largeur = 180
+  ) {
+    const lignes = doc.splitTextToSize(
+      String(texte || ""),
+      largeur
+    );
+
     doc.text(lignes, x, y);
+
     return y + lignes.length * 6;
+  }
+
+  function verifierPrixFinal(commande, produits) {
+    if (!commande.prixConfirme) {
+      throw new Error(
+        "Le prix final doit être confirmé avant de créer la confirmation."
+      );
+    }
+
+    produits.forEach((article) => {
+      if (!estProduitAuPoidsReel(article)) {
+        return;
+      }
+
+      const prixFinal = Number(
+        article.prixFinal ??
+        article.prix_final ??
+        article.prix
+      );
+
+      if (!Number.isFinite(prixFinal) || prixFinal < 0) {
+        throw new Error(
+          "Le prix final d'un article au poids est absent ou invalide."
+        );
+      }
+
+      const plafond = obtenirPlafond(article);
+
+      if (plafond === null) {
+        throw new Error(
+          "Impossible de vérifier le plafond d'un article au poids. Vérifie la fourchette et le prix maximal enregistrés avant l'envoi."
+        );
+      }
+
+      if (prixFinal > plafond + 0.001) {
+        throw new Error(
+          "Le prix final d'un article dépasse le plafond annoncé. L'e-mail n'a pas été envoyé."
+        );
+      }
+
+      const poidsReel = Number(
+        article.poidsReel ??
+        article.poids_reel
+      );
+
+      if (!Number.isFinite(poidsReel) || poidsReel <= 0) {
+        throw new Error(
+          "Le poids réel d'un article doit être renseigné avant l'envoi."
+        );
+      }
+    });
   }
 
   function creerPDF(commande, options = {}) {
@@ -189,11 +368,24 @@
 
     const doc = new window.jspdf.jsPDF();
     const client = obtenirClient(commande);
-    const typeEmail = options.typeEmail || "nouvelle-commande";
-    const confirmationFinale = typeEmail === "confirmation-prix";
+    const typeEmail =
+      options.typeEmail || "nouvelle-commande";
+    const confirmationFinale =
+      typeEmail === "confirmation-prix";
     const produits = obtenirProduits(commande);
-    const total = obtenirTotal(commande, client, typeEmail);
+
+    if (confirmationFinale) {
+      verifierPrixFinal(commande, produits);
+    }
+
+    const total = obtenirTotal(
+      commande,
+      client,
+      typeEmail
+    );
+
     const fraisLivraison = calculerFraisLivraison(client);
+
     const numero = valeur(
       commande.id || commande.numeroCommande,
       "Sans numéro"
@@ -218,8 +410,10 @@
 
     doc.setFont("helvetica", "normal");
     doc.setFontSize(10);
+
     doc.text("Commande : " + numero, 15, y);
     y += 6;
+
     doc.text(
       "Date : " + new Date().toLocaleDateString("fr-CH"),
       15,
@@ -230,6 +424,7 @@
     doc.setFont("helvetica", "bold");
     doc.text("Coordonnées du client", 15, y);
     y += 6;
+
     doc.setFont("helvetica", "normal");
 
     y = ajouterTextePDF(
@@ -238,15 +433,36 @@
       15,
       y
     );
-    y = ajouterTextePDF(doc, "Téléphone : " + client.telephone, 15, y);
-    y = ajouterTextePDF(doc, "E-mail : " + client.email, 15, y);
-    y = ajouterTextePDF(doc, "Adresse : " + client.adresse, 15, y);
+
     y = ajouterTextePDF(
       doc,
-      "Réception : " + valeur(client.modeLivraison, "À convenir"),
+      "Téléphone : " + client.telephone,
       15,
       y
     );
+
+    y = ajouterTextePDF(
+      doc,
+      "E-mail : " + client.email,
+      15,
+      y
+    );
+
+    y = ajouterTextePDF(
+      doc,
+      "Adresse : " + client.adresse,
+      15,
+      y
+    );
+
+    y = ajouterTextePDF(
+      doc,
+      "Réception : " +
+        valeur(client.modeLivraison, "À convenir"),
+      15,
+      y
+    );
+
     y += 5;
 
     doc.setFont("helvetica", "bold");
@@ -257,26 +473,35 @@
 
     produits.forEach((article, index) => {
       const ligne = ligneProduit(article, index);
-      const libelle = ligne.quantite + " × " + ligne.nom;
+      const libelle =
+        ligne.quantite + " × " + ligne.nom;
 
       if (y > 255) {
         doc.addPage();
         y = 18;
       }
 
-      y = ajouterTextePDF(doc, libelle, 15, y);
       y = ajouterTextePDF(
         doc,
-        ligne.detail || " ",
-        20,
-        y,
-        170
+        libelle,
+        15,
+        y
       );
+
+      if (ligne.detail) {
+        y = ajouterTextePDF(
+          doc,
+          ligne.detail,
+          20,
+          y,
+          170
+        );
+      }
 
       if (confirmationFinale) {
         y = ajouterTextePDF(
           doc,
-          "Prix : " + montantCHF(ligne.prix),
+          "Prix confirmé : " + montantCHF(ligne.prix),
           20,
           y
         );
@@ -288,19 +513,13 @@
           y
         );
 
-        const plafond = Number(
-          article.prixPlafond ??
-          (
-            Number(article.poidsMax || 0) *
-            (String(article.reference || "").includes("lard-sec") ? 4 : 9) /
-            100
-          )
-        );
+        const plafond = obtenirPlafond(article);
 
-        if (plafond > 0) {
+        if (plafond !== null && plafond > 0) {
           y = ajouterTextePDF(
             doc,
-            "Prix maximal selon la fourchette : " + montantCHF(plafond),
+            "Prix maximal selon la fourchette : " +
+              montantCHF(plafond),
             20,
             y
           );
@@ -324,10 +543,12 @@
 
     y += 3;
     doc.setFont("helvetica", "normal");
+    doc.setFontSize(10);
 
     if (fraisLivraison > 0) {
       doc.text(
-        "Frais de livraison : " + montantCHF(fraisLivraison),
+        "Frais de livraison : " +
+          montantCHF(fraisLivraison),
         15,
         y
       );
@@ -352,7 +573,9 @@
     if (confirmationFinale) {
       y = ajouterTextePDF(
         doc,
-        "Le prix final a été confirmé. Vous pouvez maintenant régler ce montant par TWINT au 079 592 78 82.",
+        "Le prix final a été confirmé. Vous pouvez régler ce montant par TWINT au " +
+          NUMERO_TWINT +
+          ".",
         15,
         y,
         180
@@ -365,9 +588,10 @@
         y,
         180
       );
+
       y = ajouterTextePDF(
         doc,
-        "Pour la viande séchée et le lard sec, le poids réel sera mesuré après préparation. Le prix final sera confirmé avant tout paiement. Le prix ne dépassera pas le plafond de la fourchette choisie.",
+        "Pour la viande séchée et le lard sec, le poids réel sera mesuré après préparation. Le prix final sera confirmé avant tout paiement et ne dépassera pas le plafond de la fourchette choisie.",
         15,
         y,
         180
@@ -375,20 +599,39 @@
     }
 
     if (client.commentaire) {
+      if (y > 260) {
+        doc.addPage();
+        y = 18;
+      }
+
       y += 5;
       doc.setFont("helvetica", "bold");
       doc.text("Commentaire", 15, y);
       y += 6;
+
       doc.setFont("helvetica", "normal");
-      ajouterTextePDF(doc, client.commentaire, 15, y, 180);
+
+      ajouterTextePDF(
+        doc,
+        client.commentaire,
+        15,
+        y,
+        180
+      );
     }
 
-    doc.setFontSize(8);
-    doc.text(
-      NOM_ENTREPRISE + " — Merci pour votre confiance !",
-      15,
-      285
-    );
+    const nombrePages = doc.getNumberOfPages();
+
+    for (let page = 1; page <= nombrePages; page++) {
+      doc.setPage(page);
+      doc.setFont("helvetica", "normal");
+      doc.setFontSize(8);
+      doc.text(
+        NOM_ENTREPRISE + " — Merci pour votre confiance !",
+        15,
+        285
+      );
+    }
 
     return {
       doc,
@@ -406,13 +649,50 @@
     const uri = doc.output("datauristring");
     const separateur = uri.indexOf(",");
 
-    return separateur >= 0 ? uri.substring(separateur + 1) : uri;
+    return separateur >= 0
+      ? uri.substring(separateur + 1)
+      : uri;
   }
 
   function envoyerCommandeGoogle(payload) {
     return new Promise((resolve, reject) => {
       let iframe;
       let formulaire;
+      let termine = false;
+      let temporisateur;
+
+      function nettoyage() {
+        if (temporisateur) {
+          window.clearTimeout(temporisateur);
+        }
+
+        if (formulaire && formulaire.parentNode) {
+          formulaire.parentNode.removeChild(formulaire);
+        }
+
+        if (iframe && iframe.parentNode) {
+          iframe.parentNode.removeChild(iframe);
+        }
+      }
+
+      function terminer(erreur) {
+        if (termine) {
+          return;
+        }
+
+        termine = true;
+        nettoyage();
+
+        if (erreur) {
+          reject(erreur);
+        } else {
+          resolve({
+            ok: true,
+            message:
+              "La requête d'envoi a été transmise au service e-mail. La livraison effective des e-mails doit être vérifiée séparément."
+          });
+        }
+      }
 
       try {
         const identifiant = "ig-mail-" + Date.now();
@@ -437,68 +717,62 @@
         document.body.appendChild(iframe);
         document.body.appendChild(formulaire);
 
-        let termine = false;
-
-        const nettoyage = () => {
-          if (formulaire && formulaire.parentNode) {
-            formulaire.parentNode.removeChild(formulaire);
-          }
-
-          if (iframe && iframe.parentNode) {
-            iframe.parentNode.removeChild(iframe);
-          }
-        };
-
-        const terminer = (erreur) => {
-          if (termine) return;
-          termine = true;
-          nettoyage();
-
-          if (erreur) {
-            reject(erreur);
-          } else {
-            resolve({
-              ok: true,
-              message:
-                "La requête d'envoi a été transmise au service e-mail. L'envoi effectif doit être vérifié."
-            });
-          }
-        };
-
-        iframe.addEventListener("load", () => {
-          // Le navigateur ne permet pas de lire la réponse du service
-          // externe dans cet iframe. Le chargement ne garantit donc pas
-          // que l'e-mail a effectivement été livré.
-          window.setTimeout(() => terminer(), 1200);
-        }, { once: true });
+        iframe.addEventListener(
+          "load",
+          () => {
+            /*
+             * Pour des raisons de sécurité du navigateur, la réponse
+             * Google Apps Script ne peut pas être lue ici.
+             * Un chargement ne prouve pas que les e-mails sont livrés.
+             */
+            temporisateur = window.setTimeout(
+              () => terminer(),
+              1200
+            );
+          },
+          { once: true }
+        );
 
         formulaire.submit();
 
-        // Délai de secours si l'événement load ne survient pas.
-        window.setTimeout(() => terminer(), 8000);
+        temporisateur = window.setTimeout(
+          () => terminer(),
+          8000
+        );
       } catch (erreur) {
-        if (formulaire && formulaire.parentNode) {
-          formulaire.parentNode.removeChild(formulaire);
-        }
-        if (iframe && iframe.parentNode) {
-          iframe.parentNode.removeChild(iframe);
-        }
+        nettoyage();
         reject(erreur);
       }
     });
   }
 
-  async function genererPDFCommande(commande, options = {}) {
+  async function genererPDFCommande(
+    commande,
+    options = {}
+  ) {
     const optionsFinales = {
       envoyerEmail: options.envoyerEmail !== false,
-      typeEmail: options.typeEmail || "nouvelle-commande",
+      typeEmail:
+        options.typeEmail || "nouvelle-commande",
       telecharger: options.telecharger === true
     };
 
-    const resultat = creerPDF(commande, optionsFinales);
+    const resultat = creerPDF(
+      commande,
+      optionsFinales
+    );
+
     const nomFichier =
-      "commande-" + String(resultat.numero).replace(/[^a-zA-Z0-9_-]/g, "") +
-      (resultat.confirmationFinale ? "-prix-final.pdf" : ".pdf");
+      "commande-" +
+      String(resultat.numero).replace(
+        /[^a-zA-Z0-9_-]/g,
+        ""
+      ) +
+      (
+        resultat.confirmationFinale
+          ? "-prix-final.pdf"
+          : ".pdf"
+      );
 
     if (optionsFinales.telecharger) {
       resultat.doc.save(nomFichier);
@@ -513,34 +787,58 @@
       };
     }
 
-    if (!resultat.client.email || !resultat.client.email.includes("@")) {
+    if (
+      !resultat.client.email ||
+      !resultat.client.email.includes("@")
+    ) {
       throw new Error(
         "L'adresse e-mail du client est absente ou invalide."
       );
     }
 
-    const produitsPourEmail = resultat.produits.map((article, index) => {
-      const ligne = ligneProduit(article, index);
+    const produitsPourEmail = resultat.produits.map(
+      (article, index) => {
+        const ligne = ligneProduit(article, index);
 
-      return {
-        nom: ligne.nom,
-        reference: article.reference || article.id || "",
-        quantite: ligne.quantite,
-        poids: article.poids || "",
-        poidsMin: article.poidsMin ?? null,
-        poidsMax: article.poidsMax ?? null,
-        poidsReel: article.poidsReel ?? null,
-        prix: Number(article.prixFinal ?? article.prix ?? article.prixIndicatif ?? 0),
-        prixIndicatif: article.prixIndicatif ?? null,
-        prixPlafond: article.prixPlafond ?? null,
-        recette: article.recette || "",
-        variante: article.variante || ""
-      };
-    });
+        return {
+          nom: ligne.nom,
+          reference: article.reference || article.id || "",
+          quantite: ligne.quantite,
+          poids: article.poids || "",
+          poidsMin: article.poidsMin ?? null,
+          poidsMax: article.poidsMax ?? null,
+          poidsReel:
+            article.poidsReel ??
+            article.poids_reel ??
+            null,
+          prix: Number(
+            article.prixFinal ??
+            article.prix_final ??
+            article.prix ??
+            article.prixIndicatif ??
+            article.prix_indicatif ??
+            0
+          ),
+          prixFinal:
+            article.prixFinal ??
+            article.prix_final ??
+            null,
+          prixIndicatif:
+            article.prixIndicatif ??
+            article.prix_indicatif ??
+            null,
+          prixPlafond: obtenirPlafond(article),
+          recette: article.recette || "",
+          variante: article.variante || ""
+        };
+      }
+    );
 
     const sujet = resultat.confirmationFinale
-      ? "Idée Gourmande — Confirmation du prix final de la commande " + resultat.numero
-      : "Idée Gourmande — Confirmation de réception de la commande " + resultat.numero;
+      ? "Idée Gourmande — Confirmation du prix final de la commande " +
+        resultat.numero
+      : "Idée Gourmande — Confirmation de réception de la commande " +
+        resultat.numero;
 
     const payload = {
       typeEmail: optionsFinales.typeEmail,
@@ -578,15 +876,17 @@
   async function imprimerPDFCommande(commande) {
     return genererPDFCommande(commande, {
       envoyerEmail: false,
-      typeEmail: commande && commande.prixConfirme
-        ? "confirmation-prix"
-        : "nouvelle-commande",
+      typeEmail:
+        commande && commande.prixConfirme
+          ? "confirmation-prix"
+          : "nouvelle-commande",
       telecharger: true
     });
   }
 
   window.genererPDFCommande = genererPDFCommande;
   window.envoyerCommandeGoogle = envoyerCommandeGoogle;
-  window.envoyerEmailConfirmationPrix = envoyerEmailConfirmationPrix;
+  window.envoyerEmailConfirmationPrix =
+    envoyerEmailConfirmationPrix;
   window.imprimerPDFCommande = imprimerPDFCommande;
 })();
