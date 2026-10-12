@@ -818,10 +818,10 @@ function finaliserPoidsReelCommande(idCommande, poidsParLigne, prixParLigne) {
         indicesSoumis.add(index);
     }
 
-    if (lignesAValider.length === 0) {
-        console.warn("Aucune ligne de poids réel à valider.");
-        return false;
-    }
+    // Une commande peut ne contenir aucun produit au poids réel.
+    // Dans ce cas, on poursuit la finalisation normale du stock et du total.
+    // Les éventuelles lignes au poids réel non confirmées restent bloquées
+    // par la vérification "poidsManquants" plus bas.
 
     // Vérifier les lignes déjà confirmées qui ne sont pas resoumises.
     for (let index = 0; index < produits.length; index++) {
