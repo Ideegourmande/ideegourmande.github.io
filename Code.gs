@@ -386,7 +386,8 @@ function doPost(e) {
         ? data.produits
         : [];
 
-    const total =
+    const typeEmail = String(data.typeEmail || 'nouvelle-commande');
+    let total =
       Number(
         data.total || 0
       );
@@ -407,18 +408,31 @@ function doPost(e) {
       ).trim();
 
     const fraisLivraison =
-      modeLivraison ===
-      'Livraison en Suisse'
-        ? FRAIS_LIVRAISON_SUISSE
-        : 0;
+      Number.isFinite(Number(data.fraisLivraison))
+        ? Math.max(0, Number(data.fraisLivraison))
+        : (modeLivraison === 'Livraison en Suisse'
+          ? FRAIS_LIVRAISON_SUISSE
+          : 0);
 
-    // Total final utilisé dans les e-mails.
-// Le PDF reste inchangé.
-const totalProduits =
-  total - fraisLivraison;
+    // Pour une confirmation finale, recalculer depuis les prix transmis
+    // après la pesée afin de ne pas envoyer un ancien total indicatif.
+    if (typeEmail === 'confirmation-prix') {
+      const totalProduitsFinal = produits.reduce(function(somme, article) {
+        const prix = Number(
+          article.prixFinal !== undefined && article.prixFinal !== null
+            ? article.prixFinal
+            : article.prix
+        );
+        return somme + (Number.isFinite(prix) && prix >= 0 ? prix : 0);
+      }, 0);
+      total = Math.round((totalProduitsFinal + fraisLivraison) * 100) / 100;
+    }
 
-const totalAvecLivraison =
-  total;
+    const totalProduits =
+      Math.round((total - fraisLivraison) * 100) / 100;
+
+    const totalAvecLivraison =
+      total;
 
 
     console.log(
@@ -530,11 +544,15 @@ const totalAvecLivraison =
     // ============================================================
 
     const sujetCommande =
-      'Nouvelle commande Idée Gourmande n°' +
+      (typeEmail === 'confirmation-prix'
+        ? 'Prix final confirmé — commande Idée Gourmande n°'
+        : 'Nouvelle commande Idée Gourmande n°') +
       numeroCommande;
 
     const sujetClient =
-      'Confirmation de votre commande Idée Gourmande n°' +
+      (typeEmail === 'confirmation-prix'
+        ? 'Confirmation du prix final de votre commande Idée Gourmande n°'
+        : 'Confirmation de votre commande Idée Gourmande n°') +
       numeroCommande;
 
 
@@ -547,7 +565,9 @@ const totalAvecLivraison =
       'Bonjour,',
       '',
 
-      'Une nouvelle commande a été reçue sur le site Idée Gourmande.',
+      (typeEmail === 'confirmation-prix'
+        ? 'Le prix final de votre commande a été confirmé.'
+        : 'Une nouvelle commande a été reçue sur le site Idée Gourmande.'),
       '',
 
       'N° commande : ' +
@@ -678,7 +698,9 @@ totalProduits.toFixed(2) +
 
       '',
 
-      'Nous vous remercions pour votre commande auprès d’Idée Gourmande.',
+      (typeEmail === 'confirmation-prix'
+        ? 'Le prix final de votre commande a été confirmé. Merci de régler le montant indiqué ci-dessous par TWINT.'
+        : 'Nous vous remercions pour votre commande auprès d’Idée Gourmande.'),
 
       '',
 
