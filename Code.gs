@@ -482,6 +482,13 @@ function doPost(e) {
                 ' g)'
               : '';
 
+          const prixAffiche =
+            typeEmail === 'confirmation-prix' &&
+            article.prixFinal !== undefined &&
+            article.prixFinal !== null
+              ? article.prixFinal
+              : (article.prix || 0);
+
           return (
             '- ' +
             (
@@ -491,9 +498,7 @@ function doPost(e) {
             q +
             poids +
             ' : ' +
-            Number(
-              article.prix || 0
-            ).toFixed(2) +
+            Number(prixAffiche).toFixed(2) +
             ' CHF'
           );
 
