@@ -1,7 +1,7 @@
-
+```javascript
 /* =========================================================
    IDEE GOURMANDE — BASE DE DONNEES CENTRALE
-   Version 3.3.0
+   Version 3.3.1
 
    Commandes, stock, achats automatiques, clients, archives,
    migrations et traitement différé des poids réels.
@@ -17,7 +17,7 @@
 const CLE_BASE = "ideeGourmandeDB";
 const CLE_ANCIENNES_COMMANDES = "commandes";
 const CLE_ANCIENNES_ARCHIVES = "commandesArchivees";
-const VERSION_DATABASE = "3.3.0";
+const VERSION_DATABASE = "3.3.1";
 
 const emplacementsDefaut = [
     "Congélateur du réduit",
@@ -538,18 +538,10 @@ function creerOuCompleterAchatAutomatique(article, quantite) {
 // =========================================================
 // TRAITEMENT DU STOCK PAR LIGNE
 // =========================================================
-//
-// Les lignes déjà traitées sont mémorisées pour éviter une
-// double déduction en cas de nouvel essai.
-//
-// Viande séchée et lard sec : attente du poids réel.
-// Les autres produits continuent à être traités normalement.
-// =========================================================
 
 function traiterStockCommande(commande) {
     if (!commande) return false;
 
-    // Compatibilité avec les anciennes commandes déjà traitées.
     if (
         commande.stockTraite === true &&
         !Array.isArray(commande.stockLignesTraitees)
@@ -581,11 +573,8 @@ function traiterStockCommande(commande) {
         const ligne = produits[index];
 
         if (!ligne) continue;
-
-        // Une ligne déjà consommée ne doit jamais être déduite à nouveau.
         if (commande.stockLignesTraitees.includes(index)) continue;
 
-        // Pas de poids estimé pour la viande séchée ou le lard sec.
         if (estProduitAPoidsReel(ligne) && !(Number(ligne.poidsReel) > 0)) {
             poidsEnAttente = true;
             continue;
@@ -604,7 +593,6 @@ function traiterStockCommande(commande) {
 
         const demande = calculerQuantiteCommande(ligne, articleStock);
 
-        // Une quantité nulle n'entraîne aucune déduction.
         if (!(demande > 0)) {
             commande.stockLignesTraitees.push(index);
             sauvegarderDB();
@@ -633,8 +621,6 @@ function traiterStockCommande(commande) {
             creerOuCompleterAchatAutomatique(articleStock, manque);
         }
 
-        // Enregistrer immédiatement cette ligne pour protéger les stocks
-        // même si une autre ligne de la commande rencontre une erreur.
         commande.stockLignesTraitees.push(index);
         sauvegarderDB();
     }
@@ -650,8 +636,6 @@ function traiterStockCommande(commande) {
 
     commande.stockErreurMessage = "";
 
-    // La commande n'est entièrement traitée que si toutes les lignes
-    // ont été traitées, y compris les lignes nécessitant un poids réel.
     commande.stockTraite =
         commande.stockLignesTraitees.length === produits.length &&
         !poidsEnAttente;
@@ -665,15 +649,19 @@ function traiterStockCommande(commande) {
 }
 
 // =========================================================
-// ENREGISTREMENT DU POIDS REEL
+// ENREGISTREMENT DU POIDS REEL ET DU PRIX FINAL MANUEL
 // =========================================================
 //
-// poidsParLigne est un objet dont les clés sont les indices des
-// lignes dans produitsListe, par exemple : { "0": 720, "1": 960 }.
-// Le poids est exprimé en grammes.
+// poidsParLigne : { "0": 720, "1": 960 } — poids en grammes.
+// prixParLigne  : { "0": 64.80, "1": 38.40 } — prix en CHF.
+//
+// Seuls viande séchée et lard sec sont concernés.
+// Le prix final ne peut pas dépasser le plafond annoncé.
+// Une ligne dont le stock a déjà été déduit ne peut pas recevoir
+// un poids différent, afin d'éviter une double déduction.
 // =========================================================
 
-function finaliserPoidsReelCommande(idCommande, poidsParLigne) {
+function finaliserPoidsReelCommande(idCommande, poidsParLigne, prixParLigne) {
     const commande = db.commandes.find(function (element) {
         return String(element.id || element.numero || "") ===
             String(idCommande);
@@ -688,9 +676,10 @@ function finaliserPoidsReelCommande(idCommande, poidsParLigne) {
         ? commande.produitsListe
         : (Array.isArray(commande.produits) ? commande.produits : []);
 
-    if (!poidsParLigne || typeof poidsParLigne !== "object") {
-        return false;
-    }
+    if (!poidsParLigne || typeof poidsParLigne !== "object") return false;
+    if (!prixParLigne || typeof prixParLigne !== "object") return false;
+
+    const lignesAValider = [];
 
     for (const cle in poidsParLigne) {
         if (!Object.prototype.hasOwnProperty.call(poidsParLigne, cle)) continue;
@@ -706,48 +695,104 @@ function finaliserPoidsReelCommande(idCommande, poidsParLigne) {
             !Number.isFinite(poids) ||
             poids <= 0
         ) {
-            continue;
+            return false;
+        }
+
+        if (!Object.prototype.hasOwnProperty.call(prixParLigne, cle)) {
+            console.warn("Prix final manquant pour la ligne", index);
+            return false;
+        }
+
+        const prix = Number(prixParLigne[cle]);
+
+        if (!Number.isFinite(prix) || prix < 0) {
+            console.warn("Prix final invalide pour la ligne", index);
+            return false;
         }
 
         const ligne = produits[index];
-        ligne.poidsReel = poids;
+        const reference = normaliserReference(ligne.reference);
+        const tarifPar100g = reference === "viande-sechee" ? 9 : 4;
 
-        const prixPar100g = normaliserReference(ligne.reference) === "viande-sechee"
-            ? 9
-            : 4;
+        const plafondAnnonce = Number(ligne.prixPlafond);
+        const plafondPoids =
+            (Number(ligne.poidsMax) || 0) / 100 * tarifPar100g;
 
-        const plafond = Number(ligne.prixPlafond) ||
-            ((Number(ligne.poidsMax) || 0) / 100 * prixPar100g);
+        const plafond = Number.isFinite(plafondAnnonce) && plafondAnnonce > 0
+            ? plafondAnnonce
+            : plafondPoids;
 
-        // Le poids supplémentaire au-delà de la fourchette est gratuit.
-        ligne.prixFinal = Math.round(
-            Math.min((poids / 100) * prixPar100g, plafond) * 100
-        ) / 100;
+        if (prix > plafond + 0.0001) {
+            console.warn(
+                "Le prix final dépasse le plafond autorisé.",
+                { ligne: index, prix: prix, plafond: plafond }
+            );
+            return false;
+        }
 
-        ligne.prix = ligne.prixFinal;
+        const dejaTraitee =
+            Array.isArray(commande.stockLignesTraitees) &&
+            commande.stockLignesTraitees.includes(index);
+
+        const ancienPoids = Number(ligne.poidsReel) || 0;
+
+        if (
+            dejaTraitee &&
+            ancienPoids > 0 &&
+            Math.abs(ancienPoids - poids) > 0.0001
+        ) {
+            console.warn(
+                "Poids non modifié : le stock de cette ligne a déjà été déduit.",
+                index
+            );
+            return false;
+        }
+
+        lignesAValider.push({
+            index: index,
+            ligne: ligne,
+            poids: poids,
+            prix: Math.round(prix * 100) / 100
+        });
     }
 
-    // Le stock des lignes ayant déjà été traité n'est pas déduit à nouveau.
+    if (lignesAValider.length === 0) return false;
+
+    // Toutes les valeurs ont été contrôlées avant de modifier la commande.
+    lignesAValider.forEach(function (element) {
+        element.ligne.poidsReel = element.poids;
+        element.ligne.prixFinal = element.prix;
+        element.ligne.prix = element.prix;
+    });
+
+    commande.prixConfirme = false;
+    commande.dateConfirmationPrix = null;
     commande.stockErreur = false;
     commande.stockErreurMessage = "";
 
     const resultatStock = traiterStockCommande(commande);
 
-    // Le prix global est recalculé uniquement lorsque toutes les lignes
-    // à poids réel ont un poids réel enregistré.
     const poidsManquants = produits.some(function (ligne) {
-        return estProduitAPoidsReel(ligne) && !(Number(ligne.poidsReel) > 0);
+        return estProduitAPoidsReel(ligne) &&
+            !(Number(ligne.poidsReel) > 0);
     });
 
     if (!poidsManquants) {
         const totalProduits = produits.reduce(function (total, ligne) {
-            return total + (Number(ligne.prixFinal ?? ligne.prix) || 0);
+            const prixLigne =
+                ligne.prixFinal !== undefined && ligne.prixFinal !== null
+                    ? Number(ligne.prixFinal)
+                    : Number(ligne.prix);
+
+            return total + (Number.isFinite(prixLigne) ? prixLigne : 0);
         }, 0);
 
         const fraisLivraison =
             commande.modeLivraison === "Livraison en Suisse" ? 10.50 : 0;
 
-        commande.total = Math.round((totalProduits + fraisLivraison) * 100) / 100;
+        commande.total =
+            Math.round((totalProduits + fraisLivraison) * 100) / 100;
+
         commande.prixConfirme = true;
         commande.paiementConfirme = false;
         commande.paiementEnAttente = true;
@@ -814,7 +859,6 @@ function ajouterCommande(commande) {
     if (!Array.isArray(db.mouvements)) db.mouvements = [];
     if (!Array.isArray(db.clients)) db.clients = [];
 
-    // Une nouvelle commande est conservée avant tout traitement du stock.
     db.commandes.push(commande);
     enregistrerClientCommande(commande);
     sauvegarderDB();
@@ -932,3 +976,4 @@ console.log("DATABASE.JS CHARGE", {
     clients: db.clients.length,
     mouvements: db.mouvements.length
 });
+```
