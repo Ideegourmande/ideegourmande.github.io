@@ -1,1024 +1,506 @@
+
 console.log("COMMANDE.JS CHARGE");
 
-
 // ======================================
-// IDEE GOURMANDE
-// commande.js
-// Gestion complète du panier
-// Version 2.1.0
-// ======================================
-
-
-// ======================================
-// PANIER GLOBAL
+// IDEE GOURMANDE — GESTION DU PANIER
 // ======================================
 
 let panierCommande = [];
-
-window.panierCommande =
-    panierCommande;
-
-
-// ======================================
-// BASE PRODUITS
-// ======================================
+window.panierCommande = panierCommande;
 
 const produits = {
-
     "foie-gras": {
-
-        nom:
-            "Foie gras de canard au torchon",
-
-        prix:
-            35
-
+        nom: "Foie gras de canard au torchon",
+        prix: 35
     },
-
-
     "magret": {
-
-        nom:
-            "Magret de canard fumé et séché",
-
-        prix:
-            25
-
+        nom: "Magret de canard fumé et séché",
+        prix: 25
     },
-
-
     "viande-sechee": {
-
-        nom:
-            "Viande séchée artisanale",
-
-        prix:
-            45
-
+        nom: "Viande séchée artisanale",
+        prix: 45
     },
-
-
     "lard-sec": {
-
-        nom:
-            "Lard sec légèrement fumé",
-
-        prix:
-            20
-
+        nom: "Lard sec légèrement fumé",
+        prix: 20
     },
-
-
     "saumon-fume": {
-
-        nom:
-            "Cœur de saumon fumé",
-
-        prix:
-            8
-
+        nom: "Cœur de saumon fumé",
+        prix: 8
     }
-
 };
 
-
 // ======================================
-// INITIALISATION PAGE
-// ======================================
-
-document.addEventListener(
-    "DOMContentLoaded",
-    () => {
-
-        initialiserBoutonsPanier();
-
-        afficherPanier();
-
-
-        const boutonVider =
-            document.getElementById(
-                "btnViderPanier"
-            );
-
-
-        if(boutonVider){
-
-            boutonVider.addEventListener(
-                "click",
-                viderPanier
-            );
-
-        }
-
-
-        const formulaire =
-            document.getElementById(
-                "formCommande"
-            );
-
-
-        if(formulaire){
-
-            formulaire.addEventListener(
-                "submit",
-                envoyerCommande
-            );
-
-        }
-
-
-        if(
-            typeof initialiserNomTwint ===
-            "function"
-        ){
-
-            initialiserNomTwint();
-
-        }
-
-    }
-);
-
-
-// ======================================
-// BOUTONS AJOUT PANIER
+// INITIALISATION
 // ======================================
 
-function initialiserBoutonsPanier(){
-
-    const boutons =
-        document.querySelectorAll(
-            ".ajouter-panier"
-        );
-
-
-    console.log(
-        "BOUTONS AJOUT PANIER :",
-        boutons.length
-    );
-
-
-    boutons.forEach(
-        bouton => {
-
-            bouton.addEventListener(
-                "click",
-                () => {
-
-                    ajouterAuPanier(
-                        bouton.dataset.produit
-                    );
-
-                }
-            );
-
-        }
-    );
-
-}
-
-
-// ======================================
-// AJOUT ARTICLE
-// ======================================
-
-function ajouterAuPanier(
-    reference
-){
-
-    const produit =
-        produits[reference];
-
-
-    if(!produit){
-
-        console.error(
-            "Produit inconnu",
-            reference
-        );
-
-        return;
-
-    }
-
-
-    const carte =
-        document.querySelector(
-            `.commande-card[data-produit="${reference}"]`
-        );
-
-
-    const article = {
-
-        reference,
-
-        nom:
-            produit.nom,
-
-        recette:
-            getRecette(carte),
-
-        quantite:
-            1,
-
-        poids:
-            null,
-
-        prix:
-            0
-
-    };
-
-
-    switch(reference){
-
-        case "foie-gras":
-
-            article.quantite =
-                lireQuantite(
-                    "foieQuantite"
-                );
-
-            break;
-
-
-        case "magret":
-
-            article.quantite =
-                lireQuantite(
-                    "magretQuantite"
-                );
-
-            break;
-
-
-        case "viande-sechee":
-
-            article.quantite =
-                lireQuantite(
-                    "viandeQuantite"
-                );
-
-            break;
-
-
-        case "lard-sec":
-
-            article.quantite =
-                lireQuantite(
-                    "lardQuantite"
-                );
-
-            break;
-
-
-        case "saumon-fume":
-
-            article.poids =
-                lirePoidsSaumon();
-
-
-            if(
-                article.poids < 100
-            ){
-
-                alert(
-                    "Veuillez choisir un poids pour le saumon."
-                );
-
-                return;
-
-            }
-
-            break;
-
-    }
-
-
-    if(
-        reference !==
-        "saumon-fume"
-        &&
-        article.quantite <= 0
-    ){
-
-        alert(
-            "Quantité invalide"
-        );
-
-        return;
-
-    }
-
-
-    article.prix =
-        calculerPrixArticle(
-            article
-        );
-
-
-    ajouterOuFusionner(
-        article
-    );
-
-
-    window.panierCommande =
-        panierCommande;
-
-
+document.addEventListener("DOMContentLoaded", () => {
+    initialiserBoutonsPanier();
     afficherPanier();
 
+    const boutonVider = document.getElementById("btnViderPanier");
+    if (boutonVider) {
+        boutonVider.addEventListener("click", viderPanier);
+    }
+
+    const formulaire = document.getElementById("formCommande");
+    if (formulaire) {
+        formulaire.addEventListener("submit", envoyerCommande);
+    }
+
+    if (typeof initialiserNomTwint === "function") {
+        initialiserNomTwint();
+    }
+});
+
+// ======================================
+// BOUTONS D'AJOUT AU PANIER
+// ======================================
+
+function initialiserBoutonsPanier() {
+    const boutons = document.querySelectorAll(".ajouter-panier");
+
+    boutons.forEach(bouton => {
+        bouton.addEventListener("click", () => {
+            ajouterAuPanier(bouton.dataset.produit);
+        });
+    });
 }
 
-
 // ======================================
-// FUSION ARTICLES IDENTIQUES
-// ======================================
-
-function ajouterOuFusionner(
-    article
-){
-
-    const existant =
-        panierCommande.find(
-            a =>
-
-                a.reference ===
-                article.reference
-
-                &&
-
-                (
-                    a.recette || ""
-                )
-                ===
-                (
-                    article.recette || ""
-                )
-
-                &&
-
-                Number(
-                    a.poids || 0
-                )
-                ===
-                Number(
-                    article.poids || 0
-                )
-        );
-
-
-    if(existant){
-
-        if(
-            article.reference ===
-            "saumon-fume"
-        ){
-
-            // Pour le saumon, chaque ajout
-            // correspond au poids sélectionné.
-
-            existant.poids =
-                (
-                    Number(
-                        existant.poids
-                    ) || 0
-                )
-                +
-                (
-                    Number(
-                        article.poids
-                    ) || 0
-                );
-
-        }
-        else{
-
-            existant.quantite +=
-                article.quantite;
-
-        }
-
-
-        existant.prix =
-            calculerPrixArticle(
-                existant
-            );
-
-    }
-    else{
-
-        panierCommande.push(
-            article
-        );
-
-    }
-
-}
-
-
-// ======================================
-// CALCUL PRIX ARTICLE
+// AJOUT D'UN ARTICLE
 // ======================================
 
-function calculerPrixArticle(
-    article
-){
+function ajouterAuPanier(reference) {
+    const produit = produits[reference];
 
-    const produit =
-        produits[
-            article.reference
-        ];
-
-
-    if(!produit){
-
-        return 0;
-
+    if (!produit) {
+        console.error("Produit inconnu :", reference);
+        return;
     }
 
-
-    // Saumon : prix pour 100 g
-
-    if(
-        article.reference ===
-        "saumon-fume"
-    ){
-
-        return Number(
-
-            (
-                produit.prix
-                *
-                Number(
-                    article.poids
-                )
-                /
-                100
-            )
-            .toFixed(2)
-
-        );
-
-    }
-
-
-    // Autres produits :
-    // prix par unité
-
-    return Number(
-
-        (
-            produit.prix
-            *
-            Number(
-                article.quantite
-            )
-        )
-        .toFixed(2)
-
+    const carte = document.querySelector(
+        `.commande-card[data-produit="${reference}"]`
     );
 
+    const article = {
+        reference,
+        nom: produit.nom,
+        recette: getRecette(carte),
+        quantite: 1,
+        poids: null,
+        prix: 0
+    };
+
+    switch (reference) {
+        case "foie-gras":
+            article.quantite = lireQuantite("foieQuantite");
+            break;
+
+        case "magret":
+            article.quantite = lireQuantite("magretQuantite");
+            break;
+
+        case "viande-sechee":
+        case "lard-sec": {
+            const idPoids = reference === "viande-sechee"
+                ? "viandePoids"
+                : "lardPoids";
+
+            const champPoids = document.getElementById(idPoids);
+            const valeurPoids = champPoids
+                ? String(champPoids.value || "")
+                : "";
+
+            const matchPoids = valeurPoids.match(/^(\d+)-(\d+)$/);
+
+            if (!matchPoids) {
+                alert(
+                    "Veuillez choisir une fourchette de poids pour " +
+                    (reference === "viande-sechee"
+                        ? "la viande séchée."
+                        : "le lard sec.")
+                );
+                return;
+            }
+
+            article.poidsMin = Number(matchPoids[1]);
+            article.poidsMax = Number(matchPoids[2]);
+            article.poids = article.poidsMin;
+            article.quantite = 1;
+            article.prixPar100g = reference === "lard-sec" ? 4 : 9;
+
+            article.prixIndicatif = Number(
+                (article.poidsMin * article.prixPar100g / 100).toFixed(2)
+            );
+
+            article.prixPlafond = Number(
+                (article.poidsMax * article.prixPar100g / 100).toFixed(2)
+            );
+
+            break;
+        }
+
+        case "saumon-fume":
+            article.poids = lirePoidsSaumon();
+
+            if (article.poids < 100) {
+                alert("Veuillez choisir un poids pour le saumon.");
+                return;
+            }
+            break;
+    }
+
+    if (
+        reference !== "saumon-fume" &&
+        article.reference !== "viande-sechee" &&
+        article.reference !== "lard-sec" &&
+        article.quantite <= 0
+    ) {
+        alert("Veuillez choisir une quantité valide.");
+        return;
+    }
+
+    article.prix = calculerPrixArticle(article);
+
+    ajouterOuFusionner(article);
+    window.panierCommande = panierCommande;
+    afficherPanier();
 }
 
+// ======================================
+// FUSION DES ARTICLES IDENTIQUES
+// ======================================
+
+function ajouterOuFusionner(article) {
+    const existant = panierCommande.find(a =>
+        a.reference === article.reference &&
+        (a.recette || "") === (article.recette || "") &&
+        Number(a.poids || 0) === Number(article.poids || 0) &&
+        Number(a.poidsMin || 0) === Number(article.poidsMin || 0) &&
+        Number(a.poidsMax || 0) === Number(article.poidsMax || 0)
+    );
+
+    if (!existant) {
+        panierCommande.push(article);
+        return;
+    }
+
+    if (article.reference === "saumon-fume") {
+        existant.poids =
+            (Number(existant.poids) || 0) +
+            (Number(article.poids) || 0);
+    } else if (
+        article.reference !== "viande-sechee" &&
+        article.reference !== "lard-sec"
+    ) {
+        existant.quantite += article.quantite;
+    }
+
+    existant.prix = calculerPrixArticle(existant);
+}
 
 // ======================================
-// RECETTE
+// CALCUL DU PRIX
 // ======================================
 
-function getRecette(
-    carte
-){
+function calculerPrixArticle(article) {
+    const produit = produits[article.reference];
 
-    if(!carte){
+    if (!produit) {
+        return 0;
+    }
 
+    if (
+        article.reference === "viande-sechee" ||
+        article.reference === "lard-sec"
+    ) {
+        const tarif = article.reference === "lard-sec" ? 4 : 9;
+        const poidsMin = Number(article.poidsMin || article.poids || 0);
+
+        return Number((poidsMin * tarif / 100).toFixed(2));
+    }
+
+    if (article.reference === "saumon-fume") {
+        return Number(
+            (produit.prix * Number(article.poids) / 100).toFixed(2)
+        );
+    }
+
+    return Number(
+        (produit.prix * Number(article.quantite)).toFixed(2)
+    );
+}
+
+// ======================================
+// RECETTE ET LECTURE DES CHAMPS
+// ======================================
+
+function getRecette(carte) {
+    if (!carte) {
         return "";
-
     }
 
-
-    const choix =
-        carte.querySelector(
-            ".choix-recette input:checked"
-        );
-
-
-    return choix
-        ?
-        choix.value
-        :
-        "";
-
+    const choix = carte.querySelector(".choix-recette input:checked");
+    return choix ? choix.value : "";
 }
 
-
-// ======================================
-// LECTURE QUANTITE
-// ======================================
-
-function lireQuantite(
-    id
-){
-
-    const champ =
-        document.getElementById(
-            id
-        );
-
-
-    if(!champ){
-
+function lireQuantite(id) {
+    const champ = document.getElementById(id);
+    if (!champ) {
         return 0;
-
     }
 
-
-    return Number(
-        champ.value
-    ) || 0;
-
+    return Number(champ.value) || 0;
 }
 
-
-// ======================================
-// LECTURE POIDS SAUMON
-// ======================================
-
-function lirePoidsSaumon(){
-
-    const champ =
-        document.getElementById(
-            "saumonPoids"
-        );
-
-
-    if(!champ){
-
+function lirePoidsSaumon() {
+    const champ = document.getElementById("saumonPoids");
+    if (!champ) {
         return 0;
-
     }
 
-
-    return Number(
-        champ.value
-    ) || 0;
-
+    return Number(champ.value) || 0;
 }
 
-
 // ======================================
-// AFFICHAGE PANIER
+// AFFICHAGE DU PANIER
 // ======================================
 
-function afficherPanier(){
+function afficherPanier() {
+    const zone = document.getElementById("recapCommande");
+    const totalZone = document.getElementById("total");
 
-    const zone =
-        document.getElementById(
-            "recapCommande"
-        );
-
-
-    const totalZone =
-        document.getElementById(
-            "total"
-        );
-
-
-    if(
-        !zone
-        ||
-        !totalZone
-    ){
-
+    if (!zone || !totalZone) {
         return;
-
     }
 
-
-    if(
-        panierCommande.length === 0
-    ){
-
-        zone.innerHTML =
-            "<p>Aucun produit sélectionné.</p>";
-
-
-        totalZone.textContent =
-            "0.00 CHF";
-
-
-        mettreAJourTitrePanier(
-            0
-        );
-
-
+    if (panierCommande.length === 0) {
+        zone.innerHTML = "<p>Aucun produit sélectionné.</p>";
+        totalZone.textContent = "0.00 CHF";
+        mettreAJourTitrePanier(0);
         return;
-
     }
-
 
     let html = "";
-
     let total = 0;
-
     let compteur = 0;
 
+    panierCommande.forEach((article, index) => {
+        if (article.reference === "saumon-fume") {
+            compteur++;
+        } else {
+            compteur += Number(article.quantite) || 0;
+        }
 
-    panierCommande.forEach(
-        (article,index) => {
+        total += Number(article.prix) || 0;
 
+        const produitAuPoids =
+            article.reference === "viande-sechee" ||
+            article.reference === "lard-sec";
 
-            if(
-                article.reference ===
-                "saumon-fume"
-            ){
+        let quantiteAffichee;
 
-                compteur++;
+        if (article.reference === "saumon-fume") {
+            quantiteAffichee = article.poids + " g";
+        } else if (
+            produitAuPoids &&
+            article.poidsMin &&
+            article.poidsMax
+        ) {
+            quantiteAffichee =
+                article.poidsMin + "–" + article.poidsMax + " g";
+        } else {
+            quantiteAffichee = article.quantite;
+        }
 
-            }
-            else{
+        const controlesQuantite = produitAuPoids
+            ? ""
+            : `
+                <button
+                    type="button"
+                    class="btn-quantite moins"
+                    onclick="modifierQuantite(${index},-1)"
+                    aria-label="Diminuer la quantité"
+                >−</button>
 
-                compteur +=
-                    Number(
-                        article.quantite
-                    ) || 0;
+                <span>${quantiteAffichee}</span>
 
-            }
+                <button
+                    type="button"
+                    class="btn-quantite plus"
+                    onclick="modifierQuantite(${index},1)"
+                    aria-label="Augmenter la quantité"
+                >+</button>
+            `;
 
-
-            total +=
-                Number(
-                    article.prix
-                ) || 0;
-
-
-            html += `
-
+        html += `
             <div class="ligne-produit">
-
-
                 <div class="infos-produit">
-
-
-                    <strong>
-
-                        ${article.nom}
-
-                    </strong>
-
-
+                    <strong>${article.nom}</strong>
                     <br>
-
-
                     ${afficherDetailsArticle(article)}
 
-
                     <div class="gestion-quantite">
-
-
-                        <button
-                            type="button"
-                            class="btn-quantite moins"
-                            onclick="modifierQuantite(${index},-1)"
-                        >
-
-                            −
-
-                        </button>
-
-
-                        <span>
-
-                            ${
-                                article.reference ===
-                                "saumon-fume"
-
-                                ?
-
-                                article.poids + " g"
-
-                                :
-
-                                article.quantite
-                            }
-
-                        </span>
-
-
-                        <button
-                            type="button"
-                            class="btn-quantite plus"
-                            onclick="modifierQuantite(${index},1)"
-                        >
-
-                            +
-
-                        </button>
-
-
+                        ${controlesQuantite}
                     </div>
-
-
                 </div>
 
-
                 <div class="prix-produit">
-
-
-                    <strong>
-
-                        ${article.prix.toFixed(2)}
-                        CHF
-
-                    </strong>
-
-
+                    <strong>${Number(article.prix || 0).toFixed(2)} CHF</strong>
                     <br><br>
-
-
                     <button
                         type="button"
                         class="btn-supprimer"
                         onclick="supprimerArticle(${index})"
-                    >
-
-                        Supprimer
-
-                    </button>
-
-
+                    >Supprimer</button>
                 </div>
-
-
             </div>
+        `;
+    });
 
-            `;
-
-        }
-    );
-
-
-    zone.innerHTML =
-        html;
-
-
-    totalZone.textContent =
-        total.toFixed(2)
-        +
-        " CHF";
-
-
-    mettreAJourTitrePanier(
-        compteur
-    );
-
+    zone.innerHTML = html;
+    totalZone.textContent = total.toFixed(2) + " CHF";
+    mettreAJourTitrePanier(compteur);
 }
 
-
 // ======================================
-// DETAILS ARTICLE
+// DÉTAILS D'UN ARTICLE
 // ======================================
 
-function afficherDetailsArticle(
-    article
-){
-
+function afficherDetailsArticle(article) {
     let texte = "";
 
-
-    if(article.recette){
-
-        texte +=
-            "Recette : "
-            +
-            article.recette
-            +
-            "<br>";
-
+    if (article.recette) {
+        texte += "Recette : " + article.recette + "<br>";
     }
 
+    if (article.reference === "saumon-fume" && article.poids) {
+        texte += article.poids + " g";
+    }
 
-    if(
-        article.reference ===
-        "saumon-fume"
-        &&
-        article.poids
-    ){
-
+    if (
+        (article.reference === "viande-sechee" ||
+         article.reference === "lard-sec") &&
+        article.poidsMin &&
+        article.poidsMax
+    ) {
         texte +=
-            article.poids
-            +
+            "Fourchette choisie : " +
+            article.poidsMin +
+            "–" +
+            article.poidsMax +
             " g";
 
-    }
+        texte +=
+            "<br>Prix estimatif : " +
+            Number(article.prixIndicatif || article.prix || 0).toFixed(2) +
+            " CHF";
 
+        texte +=
+            "<br>Plafond : " +
+            Number(article.prixPlafond || 0).toFixed(2) +
+            " CHF";
+    }
 
     return texte;
-
 }
 
-
 // ======================================
-// TITRE PANIER
+// TITRE DU PANIER
 // ======================================
 
-function mettreAJourTitrePanier(
-    nombre
-){
+function mettreAJourTitrePanier(nombre) {
+    const titre = document.getElementById("titrePanier");
 
-    const titre =
-        document.getElementById(
-            "titrePanier"
-        );
-
-
-    if(!titre){
-
+    if (!titre) {
         return;
-
     }
-
 
     titre.textContent =
-        "🛒 Votre panier ("
-        +
-        nombre
-        +
-        " article"
-        +
-        (
-            nombre > 1
-            ?
-            "s"
-            :
-            ""
-        )
-        +
+        "🛒 Votre panier (" +
+        nombre +
+        " article" +
+        (nombre > 1 ? "s" : "") +
         ")";
-
 }
 
-
 // ======================================
-// MODIFIER QUANTITE
+// MODIFIER LA QUANTITÉ
 // ======================================
 
-function modifierQuantite(
-    index,
-    variation
-){
+function modifierQuantite(index, variation) {
+    const article = panierCommande[index];
 
-    const article =
-        panierCommande[index];
-
-
-    if(!article){
-
+    if (!article) {
         return;
-
     }
 
+    if (
+        article.reference === "viande-sechee" ||
+        article.reference === "lard-sec"
+    ) {
+        return;
+    }
 
-    if(
-        article.reference ===
-        "saumon-fume"
-    ){
-
+    if (article.reference === "saumon-fume") {
         article.poids =
-            (
-                Number(
-                    article.poids
-                ) || 0
-            )
-            +
-            (
-                variation *
-                100
-            );
+            (Number(article.poids) || 0) +
+            (variation * 100);
 
-
-        if(
-            article.poids < 100
-        ){
-
-            supprimerArticle(
-                index
-            );
-
+        if (article.poids < 100) {
+            supprimerArticle(index);
             return;
-
         }
+    } else {
+        article.quantite += variation;
 
-    }
-    else{
-
-        article.quantite +=
-            variation;
-
-
-        if(
-            article.quantite <= 0
-        ){
-
-            supprimerArticle(
-                index
-            );
-
+        if (article.quantite <= 0) {
+            supprimerArticle(index);
             return;
-
         }
-
     }
 
-
-    article.prix =
-        calculerPrixArticle(
-            article
-        );
-
-
-    window.panierCommande =
-        panierCommande;
-
-
+    article.prix = calculerPrixArticle(article);
+    window.panierCommande = panierCommande;
     afficherPanier();
-
 }
 
-
 // ======================================
-// SUPPRESSION ARTICLE
+// SUPPRIMER UN ARTICLE
 // ======================================
 
-function supprimerArticle(
-    index
-){
-
-    panierCommande.splice(
-        index,
-        1
-    );
-
-
-    window.panierCommande =
-        panierCommande;
-
-
+function supprimerArticle(index) {
+    panierCommande.splice(index, 1);
+    window.panierCommande = panierCommande;
     afficherPanier();
-
 }
 
-
 // ======================================
-// VIDER PANIER
+// VIDER LE PANIER
 // ======================================
 
-function viderPanier(){
-
+function viderPanier() {
     panierCommande.length = 0;
-
-
-    window.panierCommande =
-        panierCommande;
-
-
+    window.panierCommande = panierCommande;
     afficherPanier();
-
 }
 
-
 // ======================================
-// ENVOI COMMANDE
+// ENVOYER LA COMMANDE
 // ======================================
 
-async function envoyerCommande(
-    e
-){
-
+async function envoyerCommande(e) {
     e.preventDefault();
 
-
-    if(
-        panierCommande.length === 0
-    ){
-
-        alert(
-            "Votre panier est vide."
-        );
-
+    if (panierCommande.length === 0) {
+        alert("Votre panier est vide.");
         return;
-
     }
 
-
-    const getValue =
-        id =>
-            document.getElementById(id)
-            ?.value
-            ?.trim()
-            ||
-            "";
-
+    const getValue = id =>
+        document.getElementById(id)?.value?.trim() || "";
 
     const commande = {
         client: {
@@ -1028,226 +510,109 @@ async function envoyerCommande(
             email: getValue("email"),
             adresse: getValue("adresse"),
             commentaire: getValue("commentaire"),
-            nomExpediteurTwint:
-                (document.getElementById("nomExpediteurTwint") || { value: "" }).value.trim()
+            modeLivraison: getValue("modeLivraison"),
+            nomExpediteurTwint: getValue("nomExpediteurTwint")
         },
 
-        produits:
-            panierCommande.map(
-                article => ({
-                    ...article
-                })
-            ),
+        produits: panierCommande.map(article => ({ ...article })),
 
-        total:
-            panierCommande.reduce(
-                (
-                    somme,
-                    article
-                ) =>
-
-                    somme
-                    +
-                    (
-                        Number(
-                            article.prix
-                        ) || 0
-                    ),
-
-                0
-            )
-
+        total: panierCommande.reduce(
+            (somme, article) => somme + (Number(article.prix) || 0),
+            0
+        )
     };
 
+    commande.id = "IG-" + Date.now().toString(36).toUpperCase();
 
-    // Identifiant court partagé par l'enregistrement,
-    // le PDF et l'e-mail.
-    commande.id =
-        "IG-" + Date.now().toString(36).toUpperCase();
+    console.log("COMMANDE PRÉPARÉE :", commande);
 
-
-    console.log(
-        "COMMANDE PREPAREE :",
-        commande
-    );
-
-    console.log(
-        "NOM TWINT AVANT PDF :",
-        commande.client.nomExpediteurTwint
-    );
-
-    console.log(
-        "EXPEDITEUR TWINT :",
-        commande.client.nomExpediteurTwint
-    );
-
-
-    // ==================================
-    // ENREGISTREMENT BASE
-    // ==================================
-
-    if(
-        typeof ajouterCommande !==
-        "function"
-    ){
-
+    // Vérifier la disponibilité de la base de données.
+    if (typeof ajouterCommande !== "function") {
         console.error(
-            "ajouterCommande() est introuvable. database.js doit être chargé avant commande.js."
+            "ajouterCommande() est introuvable. Vérifiez le chargement de js/database.js."
         );
-
 
         alert(
             "Impossible d'enregistrer la commande. La base de données n'est pas disponible."
         );
-
-
         return;
-
     }
-
 
     const commandeEnregistree = {
+        id: commande.id,
+        date: new Date().toLocaleDateString("fr-FR"),
 
-        id:
-            commande.id,
+        client: commande.client.prenom + " " + commande.client.nom,
+        telephone: commande.client.telephone,
+        email: commande.client.email,
+        adresse: commande.client.adresse,
+        commentaire: commande.client.commentaire,
+        modeLivraison: commande.client.modeLivraison,
+        clientDetails: { ...commande.client },
 
-        date:
-            new Date()
-            .toLocaleDateString(
-                "fr-FR"
-            ),
+        produits: commande.produits.map(article => {
+            let description = article.nom;
 
-        client:
-            commande.client.prenom
-            +
-            " "
-            +
-            commande.client.nom,
+            if (article.reference === "saumon-fume") {
+                description += " (" + article.poids + " g)";
+            } else if (
+                article.reference === "viande-sechee" ||
+                article.reference === "lard-sec"
+            ) {
+                description +=
+                    " (" +
+                    article.poidsMin +
+                    "–" +
+                    article.poidsMax +
+                    " g)";
+            } else if (article.quantite > 1) {
+                description += " x" + article.quantite;
+            }
 
-        telephone:
-            commande.client.telephone,
+            return description;
+        }).join("\n"),
 
-        email:
-            commande.client.email,
-
-        adresse:
-            commande.client.adresse,
-
-        commentaire:
-            commande.client.commentaire,
-
-
-        // Texte pour l'affichage
-        // des anciennes interfaces.
-
-        produits:
-            commande.produits
-            .map(
-                article =>
-
-                    article.nom
-
-                    +
-
-                    (
-                        article.reference ===
-                        "saumon-fume"
-
-                        ?
-
-                        " (" +
-                        article.poids +
-                        " g)"
-
-                        :
-
-                        (
-                            article.quantite > 1
-
-                            ?
-
-                            " x" +
-                            article.quantite
-
-                            :
-
-                            ""
-                        )
-                    )
-            )
-            .join("\n"),
-
-
-        // Structure complète utilisée
-        // par database.js.
-
-        produitsListe:
-            commande.produits,
-
-
-        total:
-            commande.total,
-
-        statut:
-            "Nouvelle",
-
-        stockTraite:
-            false,
-
-        stockErreur:
-            false
-
+        produitsListe: commande.produits,
+        total: commande.total,
+        statut: "Nouvelle",
+        stockTraite: false,
+        stockErreur: false
     };
 
+    let resultat;
 
-    const resultat =
-        ajouterCommande(
-            commandeEnregistree
-        );
-
-
-    if(!resultat){
-
-        alert(
-            "La commande n'a pas pu être enregistrée."
-        );
-
+    try {
+        resultat = ajouterCommande(commandeEnregistree);
+    } catch (erreur) {
+        console.error("Erreur lors de l'enregistrement :", erreur);
+        alert("Une erreur est survenue pendant l'enregistrement de la commande.");
         return;
-
     }
 
+    if (!resultat) {
+        alert("La commande n'a pas pu être enregistrée.");
+        return;
+    }
 
     // ==================================
-    // PDF + DEMANDE D'ENVOI AUTOMATIQUE
+    // PDF ET DEMANDE D'ENVOI PAR E-MAIL
     // ==================================
 
     let envoiOK = false;
     let erreurEnvoi = "";
 
     try {
-
-        if (
-            typeof genererPDFCommande !== "function"
-        ) {
+        if (typeof window.genererPDFCommande !== "function") {
             throw new Error(
-                "La fonction de génération du PDF n'est pas disponible."
+                "Le module PDF n'est pas chargé. Vérifiez js/pdfcommande.js."
             );
         }
 
-
-        // La génération du PDF et l'envoi sont asynchrones :
-        // on attend le résultat renvoyé par js/pdfcommande.js.
-
-        const resultatEmail =
-            await genererPDFCommande(
-                commande,
-                {
-                    envoyerEmail: true,
-                    typeEmail: "nouvelle-commande",
-                    telecharger: false
-                }
-            );
-
+        const resultatEmail = await window.genererPDFCommande(commande, {
+            envoyerEmail: true,
+            typeEmail: "nouvelle-commande",
+            telecharger: false
+        });
 
         envoiOK = Boolean(
             resultatEmail &&
@@ -1255,285 +620,44 @@ async function envoyerCommande(
             resultatEmail.transmis
         );
 
-
-        if(!envoiOK){
-
-            erreurEnvoi =
-                (
-                    resultatEmail &&
-                    resultatEmail.message
-                )
-                ?
-                resultatEmail.message
-                :
-                "La demande d'envoi n'a pas été confirmée.";
-
+        if (!envoiOK) {
+            erreurEnvoi = resultatEmail && resultatEmail.message
+                ? resultatEmail.message
+                : "La transmission de la demande d'e-mail n'a pas été confirmée.";
         }
-
-    } catch(erreur) {
-
-        console.error(
-            "Erreur lors de la demande d'envoi de l'e-mail :",
-            erreur
-        );
-
-
-        erreurEnvoi =
-            erreur && erreur.message
-            ?
-            erreur.message
-            :
-            "Une erreur inconnue est survenue.";
-
+    } catch (erreur) {
+        console.error("Erreur PDF / e-mail :", erreur);
+        erreurEnvoi = erreur && erreur.message
+            ? erreur.message
+            : String(erreur);
     }
 
-
-    // ==================================
-    // NETTOYAGE PANIER
-    // ==================================
-
+    // La commande est déjà enregistrée : vider le panier.
     panierCommande.length = 0;
-
-    window.panierCommande =
-        panierCommande;
-
+    window.panierCommande = panierCommande;
     afficherPanier();
 
-
-    if(envoiOK){
-
+    if (envoiOK) {
         alert(
             "Commande enregistrée. La demande d'envoi du PDF par e-mail a été transmise. " +
-            "La réception effective du message doit être vérifiée séparément."
+            "Vérifiez la réception du message."
         );
-
-    }
-    else{
-
+    } else {
         alert(
-            "Commande enregistrée, mais la demande d'envoi de l'e-mail a échoué. " +
-            "Vérifiez l'adresse e-mail du client et la configuration Google Apps Script. " +
-            (
-                erreurEnvoi
-                ?
-                "\n\nDétail : " + erreurEnvoi
-                :
-                ""
-            )
+            "Commande enregistrée, mais la demande d'envoi de l'e-mail a échoué.\n\n" +
+            (erreurEnvoi || "Vérifiez la configuration du service d'e-mail.")
         );
-
     }
-
 }
 
-
 // ======================================
-// ENVOI AUTOMATIQUE PAR GOOGLE APPS SCRIPT
-// ======================================
-
-const EMAIL_API_URL =
-    "https://script.google.com/macros/s/AKfycbzKiedAF-Qjr6gisEk9f6VeeKRnEu_WqTXJyj2QqNVXqTNPhJUIEPkKcdRNheq6w6wY/exec";
-
-
-async function blobToBase64(blob) {
-
-    if (!blob) {
-        throw new Error("Blob PDF manquant.");
-    }
-
-
-    const buffer =
-        await blob.arrayBuffer();
-
-    const bytes =
-        new Uint8Array(buffer);
-
-
-    let binary = "";
-
-    const tailleBloc = 0x8000;
-
-
-    for (
-        let i = 0;
-        i < bytes.length;
-        i += tailleBloc
-    ) {
-
-        binary += String.fromCharCode(
-            ...bytes.subarray(
-                i,
-                Math.min(
-                    i + tailleBloc,
-                    bytes.length
-                )
-            )
-        );
-
-    }
-
-
-    return btoa(binary);
-
-}
-
-
-async function envoyerCommandeAutomatiquement(
-    commande,
-    resultatPDF
-) {
-
-    const destinataire =
-        String(
-            commande?.client?.email || ""
-        ).trim();
-
-
-    if (!destinataire) {
-
-        console.error(
-            "Adresse e-mail client absente."
-        );
-
-        return false;
-
-    }
-
-
-    try {
-
-        const pdfBase64 =
-            await blobToBase64(
-                resultatPDF.blob
-            );
-
-
-        if (
-            !pdfBase64 ||
-            pdfBase64.length < 100
-        ) {
-
-            throw new Error(
-                "Le contenu PDF est vide ou invalide."
-            );
-
-        }
-
-
-        const numeroCommande =
-            commande.id || Date.now();
-
-
-        const payload = {
-
-            to:
-                destinataire,
-
-            subject:
-                `Commande Idée Gourmande n°${numeroCommande}`,
-
-            client:
-                commande.client || {},
-
-            produits:
-                commande.produits || [],
-
-            total:
-                commande.total || 0,
-
-            numeroCommande,
-
-            pdfBase64,
-
-            pdfFilename:
-                resultatPDF.filename ||
-                `Commande_${numeroCommande}.pdf`
-
-        };
-
-
-        /*
-         * application/x-www-form-urlencoded est une requête CORS
-         * simple. Le payload complet est placé dans le paramètre
-         * "payload", que Google Apps Script lit via e.parameter.
-         */
-
-        const formulaire =
-            new URLSearchParams();
-
-        formulaire.set(
-            "payload",
-            JSON.stringify(payload)
-        );
-
-
-        await fetch(
-            EMAIL_API_URL,
-            {
-                method: "POST",
-                mode: "no-cors",
-                headers: {
-                    "Content-Type":
-                        "application/x-www-form-urlencoded;charset=UTF-8"
-                },
-                body: formulaire.toString()
-            }
-        );
-
-
-        /*
-         * En mode no-cors, le navigateur ne permet pas de lire
-         * la réponse. La transmission de la requête ne garantit
-         * donc pas que l'e-mail a effectivement été délivré.
-         */
-
-        console.log(
-            "Demande d'envoi transmise à Google Apps Script.",
-            "Taille PDF base64 :",
-            pdfBase64.length
-        );
-
-
-        return true;
-
-    } catch(erreur) {
-
-        console.error(
-            "Erreur envoi automatique :",
-            erreur
-        );
-
-        return false;
-
-    }
-
-}
-
-
-// ======================================
-// EXPORT GLOBAL
+// EXPORT DES FONCTIONS UTILISÉES PAR LA PAGE
 // ======================================
 
-window.ajouterAuPanier =
-    ajouterAuPanier;
+window.ajouterAuPanier = ajouterAuPanier;
+window.modifierQuantite = modifierQuantite;
+window.supprimerArticle = supprimerArticle;
+window.viderPanier = viderPanier;
+window.envoyerCommande = envoyerCommande;
 
-window.modifierQuantite =
-    modifierQuantite;
-
-window.supprimerArticle =
-    supprimerArticle;
-
-window.viderPanier =
-    viderPanier;
-
-window.envoyerCommande =
-    envoyerCommande;
-
-
-// ======================================
-// FIN
-// ======================================
-
-console.log(
-    "COMMANDE.JS 2.1.0 CHARGE"
-);
+console.log("COMMANDE.JS CORRIGÉ CHARGÉ");
