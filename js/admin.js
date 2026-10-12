@@ -1,4 +1,3 @@
-```javascript
 /* ============================================================
    Idée Gourmande — Administration — Version 3.1.0
    Pesée réelle, saisie manuelle du prix final plafonné,
@@ -1204,4 +1203,3 @@ window.addEventListener("storage", function (event) {
     console.error("Erreur de synchronisation locale :", e);
   }
 });
-```
