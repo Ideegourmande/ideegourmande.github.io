@@ -437,7 +437,10 @@ function rendreZonePoidsReel(cmd, indexCommande) {
 /* ---------- Préparation du SMS ---------- */
 
 function boutonSMSCommande(cmd, index) {
-  if (!cmd || !cmd.prixConfirme) return "";
+  if (!cmd) return "";
+  if (!cmd.prixConfirme) {
+    return '<p class="sms-en-attente" style="margin-top:10px;color:#555">Le SMS de confirmation sera disponible après la pesée et la confirmation du prix final.</p>';
+  }
 
   const tel = obtenirTelephoneClient(cmd);
 
