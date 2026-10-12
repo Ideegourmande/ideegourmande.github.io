@@ -621,6 +621,30 @@ totalProduits.toFixed(2) +
 
 
     // ============================================================
+    // VÉRIFICATION DE L'ADRESSE D'EXPÉDITION
+    // ============================================================
+
+    const aliasAutorises = GmailApp.getAliases().map(function(alias) {
+      return String(alias).trim().toLowerCase();
+    });
+
+    const compteEffectif = String(
+      Session.getEffectiveUser().getEmail() || ''
+    ).trim().toLowerCase();
+
+    const expediteurDemande = EXPEDITEUR.trim().toLowerCase();
+
+    if (
+      compteEffectif !== expediteurDemande &&
+      aliasAutorises.indexOf(expediteurDemande) === -1
+    ) {
+      throw new Error(
+        'Adresse expéditeur non autorisée : ' + EXPEDITEUR +
+        '. Connecte le déploiement Apps Script avec ce compte Gmail ou ajoute cette adresse comme alias d’envoi autorisé dans Gmail, puis redéploie le script.'
+      );
+    }
+
+    // ============================================================
     // ENVOI À L'ENTREPRISE
     // ============================================================
 
