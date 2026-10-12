@@ -575,6 +575,43 @@ function traiterStockCommande(commande) {
     let erreurRencontree = false;
     let poidsEnAttente = false;
 
+    // Prévalidation complète : ne jamais commencer les déductions si une
+    // ligne traitable est invalide ou si son article est absent du stock.
+    for (let index = 0; index < produits.length; index++) {
+        const ligne = produits[index];
+        if (!ligne || commande.stockLignesTraitees.includes(index)) continue;
+        if (estProduitAPoidsReel(ligne) && !(Number(ligne.poidsReel) > 0)) {
+            poidsEnAttente = true;
+            continue;
+        }
+
+        const articleStock = trouverArticleStock(ligne);
+        if (!articleStock) {
+            commande.stockTraite = false;
+            commande.stockErreur = true;
+            commande.stockErreurMessage =
+                "Article introuvable dans le stock : " +
+                (ligne.nom || ligne.reference || "Article inconnu");
+            commande.stockErreurDate = new Date().toLocaleString("fr-FR");
+            sauvegarderDB();
+            return false;
+        }
+
+        const demande = calculerQuantiteCommande(ligne, articleStock);
+        if (!Number.isFinite(demande) || demande < 0) {
+            commande.stockTraite = false;
+            commande.stockErreur = true;
+            commande.stockErreurMessage =
+                "Quantité invalide pour : " +
+                (ligne.nom || ligne.reference || "Article inconnu");
+            commande.stockErreurDate = new Date().toLocaleString("fr-FR");
+            sauvegarderDB();
+            return false;
+        }
+    }
+
+    poidsEnAttente = false;
+
     for (let index = 0; index < produits.length; index++) {
         const ligne = produits[index];
 
