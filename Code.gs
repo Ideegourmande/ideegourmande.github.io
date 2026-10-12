@@ -853,13 +853,56 @@ totalProduits.toFixed(2) +
 /**
  * Test simple du Web App
  */
-function doGet() {
+function doGet(e) {
+  const params = e && e.parameter ? e.parameter : {};
+
+  // Attribution d'un numéro séquentiel, protégée contre les requêtes simultanées.
+  if (params.action === 'nextOrderNumber') {
+    const callback = String(params.callback || '');
+    if (!/^[A-Za-z_$][A-Za-z0-9_$]*$/.test(callback)) {
+      return ContentService
+        .createTextOutput('Callback JSONP invalide.')
+        .setMimeType(ContentService.MimeType.TEXT);
+    }
+
+    let resultat;
+    try {
+      const nom = String(params.nom || 'Commande')
+        .replace(/[<>]/g, '')
+        .trim()
+        .substring(0, 100) || 'Commande';
+      const annee = Number(params.annee);
+      if (!Number.isInteger(annee) || annee < 2020 || annee > 2100) {
+        throw new Error('Année invalide.');
+      }
+
+      const verrou = LockService.getScriptLock();
+      verrou.waitLock(10000);
+      try {
+        const proprietes = PropertiesService.getScriptProperties();
+        const cle = 'COMPTEUR_COMMANDES_' + annee;
+        const prochain = Number(proprietes.getProperty(cle) || '0') + 1;
+        if (prochain > 999) {
+          throw new Error('Le compteur a dépassé 999 pour ' + annee + '.');
+        }
+        proprietes.setProperty(cle, String(prochain));
+        resultat = {
+          ok: true,
+          numero: nom + ' - ' + annee + '-' + String(prochain).padStart(3, '0')
+        };
+      } finally {
+        verrou.releaseLock();
+      }
+    } catch (erreur) {
+      resultat = { ok: false, error: String(erreur.message || erreur) };
+    }
+
+    return ContentService
+      .createTextOutput(callback + '(' + JSON.stringify(resultat) + ');')
+      .setMimeType(ContentService.MimeType.JAVASCRIPT);
+  }
 
   return ContentService
-    .createTextOutput(
-      'Idée Gourmande - service e-mail actif'
-    )
-    .setMimeType(
-      ContentService.MimeType.TEXT
-    );
+    .createTextOutput('Idée Gourmande - service e-mail actif')
+    .setMimeType(ContentService.MimeType.TEXT);
 }
