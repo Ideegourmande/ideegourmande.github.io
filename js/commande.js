@@ -1029,7 +1029,7 @@ async function envoyerCommande(
             adresse: getValue("adresse"),
             commentaire: getValue("commentaire"),
             nomExpediteurTwint:
-                document.getElementById("nomExpediteurTwint").value.trim()
+                (document.getElementById("nomExpediteurTwint") || { value: "" }).value.trim()
         },
 
         produits:
