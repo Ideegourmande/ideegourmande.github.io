@@ -1,8 +1,8 @@
-
+```javascript
 /* ============================================================
-   Idée Gourmande — Administration — Version 3.0.0
-   Pesée réelle, prix final plafonné, e-mail de confirmation,
-   SMS prérempli à envoyer manuellement, impression PDF sans e-mail.
+   Idée Gourmande — Administration — Version 3.1.0
+   Pesée réelle, saisie manuelle du prix final plafonné,
+   e-mail de confirmation, SMS prérempli et impression PDF.
    ============================================================ */
 "use strict";
 
@@ -17,7 +17,9 @@ function obtenirDBAdmin() {
       const base = chargerDB();
       if (base) return base;
     }
-  } catch (e) {}
+  } catch (e) {
+    console.error("Erreur de lecture de la base :", e);
+  }
   return {};
 }
 
@@ -52,7 +54,8 @@ function texteSecurise(v) {
 }
 
 function valeurNombre(v) {
-  const n = Number(String(v == null ? "" : v).replace(",", "."));
+  if (v === null || v === undefined || String(v).trim() === "") return 0;
+  const n = Number(String(v).replace(",", "."));
   return Number.isFinite(n) ? n : 0;
 }
 
@@ -64,29 +67,44 @@ function formatCHF(v) {
 }
 
 function identifiantCommande(cmd, i) {
-  return String((cmd && (cmd.id || cmd.numero || cmd.reference)) || ("commande-" + i));
+  return String(
+    (cmd && (cmd.id || cmd.numero || cmd.reference)) ||
+    ("commande-" + i)
+  );
 }
 
 function obtenirNomClient(cmd) {
   if (cmd && cmd.client && typeof cmd.client === "object") {
-    return [cmd.client.prenom, cmd.client.nom].filter(Boolean).join(" ").trim() || "Client";
+    return [
+      cmd.client.prenom,
+      cmd.client.nom
+    ].filter(Boolean).join(" ").trim() || "Client";
   }
   return String((cmd && (cmd.nomClient || cmd.client)) || "Client");
 }
 
 function obtenirEmailClient(cmd) {
-  return (cmd && cmd.client && typeof cmd.client === "object" && cmd.client.email) ||
-    (cmd && (cmd.email || cmd.emailClient)) || "";
+  return (
+    (cmd && cmd.client && typeof cmd.client === "object" && cmd.client.email) ||
+    (cmd && (cmd.email || cmd.emailClient)) ||
+    ""
+  );
 }
 
 function obtenirTelephoneClient(cmd) {
-  return (cmd && cmd.client && typeof cmd.client === "object" && cmd.client.telephone) ||
-    (cmd && (cmd.telephone || cmd.phone)) || "";
+  return (
+    (cmd && cmd.client && typeof cmd.client === "object" && cmd.client.telephone) ||
+    (cmd && (cmd.telephone || cmd.phone)) ||
+    ""
+  );
 }
 
 function obtenirAdresseClient(cmd) {
-  return (cmd && cmd.client && typeof cmd.client === "object" && cmd.client.adresse) ||
-    (cmd && cmd.adresse) || "";
+  return (
+    (cmd && cmd.client && typeof cmd.client === "object" && cmd.client.adresse) ||
+    (cmd && cmd.adresse) ||
+    ""
+  );
 }
 
 function obtenirLignesCommande(cmd) {
@@ -101,11 +119,18 @@ function estLignePoidsReel(ligne) {
   if (typeof estProduitAPoidsReel === "function") {
     try {
       return estProduitAPoidsReel(ligne);
-    } catch (e) {}
+    } catch (e) {
+      console.error("Erreur de détection du produit au poids :", e);
+    }
   }
 
   const ref = String(
-    ligne.reference || ligne.id || ligne.slug || ligne.nom || ligne.nomProduit || ""
+    ligne.reference ||
+    ligne.id ||
+    ligne.slug ||
+    ligne.nom ||
+    ligne.nomProduit ||
+    ""
   ).toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
 
   return ref.includes("viande-sechee") ||
@@ -116,33 +141,64 @@ function estLignePoidsReel(ligne) {
 
 function cleProduitPoids(ligne) {
   const ref = String(
-    ligne && (ligne.reference || ligne.id || ligne.slug || ligne.nom || "") || ""
+    ligne && (
+      ligne.reference ||
+      ligne.id ||
+      ligne.slug ||
+      ligne.nom ||
+      ligne.nomProduit ||
+      ""
+    ) || ""
   ).toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
 
   return ref.includes("lard") ? "lard-sec" : "viande-sechee";
 }
 
 function tarifLignePoids(ligne) {
-  const tarif = valeurNombre(ligne && (ligne.prixPar100g || ligne.tarif100g));
-  return tarif > 0 ? tarif : TARIFS_POIDS_REEL[cleProduitPoids(ligne)];
+  const tarif = valeurNombre(
+    ligne && (ligne.prixPar100g || ligne.tarif100g)
+  );
+
+  return tarif > 0
+    ? tarif
+    : TARIFS_POIDS_REEL[cleProduitPoids(ligne)];
 }
 
+/*
+ * Le plafond correspond au montant annoncé pour la ligne.
+ * On ne crée pas de plafond arbitraire si les données de la
+ * commande ne contiennent ni plafond ni poids maximal.
+ */
 function lirePrixPlafond(ligne) {
-  const plafond = valeurNombre(ligne && (ligne.prixPlafond || ligne.prix_plafond));
+  const plafond = valeurNombre(
+    ligne && (ligne.prixPlafond || ligne.prix_plafond)
+  );
+
   if (plafond > 0) return plafond;
 
-  const max = valeurNombre(ligne && (ligne.poidsMax || ligne.poids_max));
-  return max > 0 ? max / 100 * tarifLignePoids(ligne) : 0;
+  const max = valeurNombre(
+    ligne && (ligne.poidsMax || ligne.poids_max)
+  );
+
+  return max > 0
+    ? max / 100 * tarifLignePoids(ligne)
+    : 0;
 }
 
 function libelleFourchette(ligne) {
   const min = valeurNombre(ligne && (ligne.poidsMin || ligne.poids_min));
   const max = valeurNombre(ligne && (ligne.poidsMax || ligne.poids_max));
 
-  if (!(min > 0 && max > 0)) return "Fourchette choisie par le client";
+  if (!(min > 0 && max > 0)) {
+    return "Fourchette choisie par le client";
+  }
 
   const f = g => g >= 1000
-    ? (g % 1000 === 0 ? (g / 1000) + " kg" : (g / 1000).toLocaleString("fr-CH") + " kg")
+    ? (
+        g % 1000 === 0
+          ? (g / 1000) + " kg"
+          : (g / 1000).toLocaleString("fr-CH") + " kg"
+      )
     : g + " g";
 
   return f(min) + " – " + f(max);
@@ -157,87 +213,180 @@ function definirTexte(id, valeur) {
 
 function afficherProduitsCommande(cmd, indexCommande) {
   const lignes = obtenirLignesCommande(cmd);
-  if (!lignes.length) return "<p>Aucun détail de produit disponible.</p>";
+
+  if (!lignes.length) {
+    return "<p>Aucun détail de produit disponible.</p>";
+  }
 
   return "<ul class=\"admin-produits\">" + lignes.map(ligne => {
     const nom = texteSecurise(
-      ligne.nom || ligne.nomProduit || ligne.produit || ligne.reference || "Produit"
+      ligne.nom ||
+      ligne.nomProduit ||
+      ligne.produit ||
+      ligne.reference ||
+      "Produit"
     );
+
     const qte = valeurNombre(ligne.quantite || ligne.qte || 1) || 1;
     let details = "";
 
     if (estLignePoidsReel(ligne)) {
       details = '<div class="admin-poids-details">' +
-        '<span>Fourchette : ' + texteSecurise(libelleFourchette(ligne)) + '</span>' +
-        '<br><span>Tarif : ' + formatCHF(tarifLignePoids(ligne)) + ' / 100 g</span>';
+        '<span>Fourchette : ' +
+        texteSecurise(libelleFourchette(ligne)) +
+        '</span>' +
+        '<br><span>Tarif indicatif : ' +
+        formatCHF(tarifLignePoids(ligne)) +
+        ' / 100 g</span>';
 
       if (valeurNombre(ligne.poidsReel) > 0) {
-        details += '<br><strong>Poids réel : ' + valeurNombre(ligne.poidsReel) + ' g</strong>' +
+        details +=
+          '<br><strong>Poids réel : ' +
+          valeurNombre(ligne.poidsReel) +
+          ' g</strong>' +
           '<br><strong>Prix final : ' +
-          formatCHF(ligne.prixFinal != null ? ligne.prixFinal : ligne.prix) +
+          formatCHF(
+            ligne.prixFinal != null ? ligne.prixFinal : ligne.prix
+          ) +
           '</strong>';
       } else {
-        details += '<br><span>Prix indicatif : ' +
-          formatCHF(ligne.prixIndicatif != null ? ligne.prixIndicatif : ligne.prix) +
-          ' — plafond : ' + formatCHF(lirePrixPlafond(ligne)) + '</span>';
+        details +=
+          '<br><span>Prix indicatif : ' +
+          formatCHF(
+            ligne.prixIndicatif != null
+              ? ligne.prixIndicatif
+              : ligne.prix
+          ) +
+          ' — plafond annoncé : ' +
+          formatCHF(lirePrixPlafond(ligne)) +
+          '</span>';
       }
 
       details += "</div>";
     } else if (ligne.poids) {
-      details = '<div class="admin-poids-details">Poids : ' +
-        texteSecurise(ligne.poids) + ' g</div>';
+      details =
+        '<div class="admin-poids-details">Poids : ' +
+        texteSecurise(ligne.poids) +
+        ' g</div>';
     }
 
-    const prix = valeurNombre(ligne.prixFinal != null ? ligne.prixFinal : ligne.prix);
+    const prix = valeurNombre(
+      ligne.prixFinal != null ? ligne.prixFinal : ligne.prix
+    );
 
-    return '<li><strong>' + nom + '</strong> × ' + qte +
-      (prix > 0 ? ' — ' + formatCHF(prix) : '') + details + '</li>';
+    return "<li><strong>" + nom + "</strong> × " + qte +
+      (prix > 0 ? " — " + formatCHF(prix) : "") +
+      details +
+      "</li>";
   }).join("") + "</ul>";
 }
 
 function commandeNecessitePoidsReel(cmd) {
   return obtenirLignesCommande(cmd).some(
-    l => estLignePoidsReel(l) && !(valeurNombre(l.poidsReel) > 0)
+    ligne =>
+      estLignePoidsReel(ligne) &&
+      !(valeurNombre(ligne.poidsReel) > 0)
   );
 }
 
-/* ---------- Saisie du poids réel ---------- */
+/* ---------- Saisie du poids et du prix réels ---------- */
 
 function rendreZonePoidsReel(cmd, indexCommande) {
   const lignes = obtenirLignesCommande(cmd);
 
-  const aPeser = lignes.map((ligne, indexLigne) => ({ ligne, indexLigne }))
-    .filter(x => estLignePoidsReel(x.ligne) && !(valeurNombre(x.ligne.poidsReel) > 0));
+  const aPeser = lignes
+    .map((ligne, indexLigne) => ({ ligne, indexLigne }))
+    .filter(x =>
+      estLignePoidsReel(x.ligne) &&
+      !(valeurNombre(x.ligne.poidsReel) > 0)
+    );
 
   if (!aPeser.length) {
     return lignes.some(estLignePoidsReel) && cmd.prixConfirme
-      ? '<div class="admin-prix-confirme"><strong>Prix final confirmé</strong><br>' +
-        (cmd.paiementConfirme ? "Paiement confirmé." : "En attente du paiement.") +
+      ? '<div class="admin-prix-confirme" style="margin-top:12px;padding:12px;border:1px solid #9bc7a9;border-radius:8px">' +
+        '<strong>Prix final confirmé : ' +
+        formatCHF(cmd.total) +
+        '</strong><br>' +
+        (cmd.paiementConfirme
+          ? "Paiement confirmé."
+          : "En attente du paiement.") +
         "</div>"
       : "";
   }
 
-  return '<section class="admin-finalisation-poids" style="margin-top:12px;padding:12px;border:1px solid #d9c8a8;border-radius:8px">' +
+  let html =
+    '<section class="admin-finalisation-poids" ' +
+    'style="margin-top:12px;padding:12px;border:1px solid #d9c8a8;border-radius:8px">' +
     '<h4 style="margin:0 0 8px">Finaliser le poids et le prix</h4>' +
-    '<p style="margin:0 0 10px">Saisis le poids réellement mesuré en grammes. Si le poids dépasse la limite choisie, le surplus est offert : le prix ne dépassera jamais le plafond annoncé.</p>' +
+    '<p style="margin:0 0 10px">' +
+    "Saisis le poids réellement mesuré en grammes et le prix final " +
+    "en CHF pour chaque ligne. Le prix saisi ne peut pas dépasser " +
+    "le plafond annoncé au client." +
+    "</p>";
 
-    aPeser.map(x =>
+  html += aPeser.map(x => {
+    const nom = texteSecurise(
+      x.ligne.nom ||
+      x.ligne.nomProduit ||
+      x.ligne.reference ||
+      "Produit"
+    );
+
+    const plafond = lirePrixPlafond(x.ligne);
+
+    return (
+      '<div style="margin:12px 0;padding:10px;background:#faf8f3;border-radius:6px">' +
+
       '<label for="poids-reel-' + indexCommande + '-' + x.indexLigne +
-      '" style="display:block;margin:8px 0 4px"><strong>' +
-      texteSecurise(x.ligne.nom || x.ligne.nomProduit || x.ligne.reference || "Produit") +
-      '</strong> (' + texteSecurise(libelleFourchette(x.ligne)) +
-      ') — plafond ' + formatCHF(lirePrixPlafond(x.ligne)) + '</label>' +
+      '" style="display:block;margin:4px 0">' +
+      '<strong>' + nom + '</strong><br>' +
+      texteSecurise(libelleFourchette(x.ligne)) +
+      "</label>" +
+
+      '<label for="poids-reel-' + indexCommande + '-' + x.indexLigne +
+      '" style="display:block;margin:6px 0 4px">Poids réel (grammes)</label>' +
 
       '<input id="poids-reel-' + indexCommande + '-' + x.indexLigne +
-      '" class="champ-poids-reel" type="number" min="1" step="1" inputmode="numeric"' +
-      ' data-commande-index="' + indexCommande +
+      '" class="champ-poids-reel" type="number" min="1" step="1" ' +
+      'inputmode="numeric" required ' +
+      'data-commande-index="' + indexCommande +
       '" data-ligne-index="' + x.indexLigne +
-      '" placeholder="Poids réel en grammes" style="max-width:240px;width:100%;padding:8px">'
-    ).join("") +
+      '" placeholder="Ex. 235" ' +
+      'style="max-width:260px;width:100%;padding:8px">' +
 
+      '<label for="prix-reel-' + indexCommande + '-' + x.indexLigne +
+      '" style="display:block;margin:10px 0 4px">Prix final de cette ligne (CHF)</label>' +
+
+      '<input id="prix-reel-' + indexCommande + '-' + x.indexLigne +
+      '" class="champ-prix-reel" type="number" min="0" step="0.01" ' +
+      'inputmode="decimal" required ' +
+      'data-commande-index="' + indexCommande +
+      '" data-ligne-index="' + x.indexLigne +
+      '" data-plafond="' + plafond +
+      '" placeholder="Ex. 21.15" ' +
+      'style="max-width:260px;width:100%;padding:8px">' +
+
+      '<small style="display:block;margin-top:5px">Plafond annoncé : ' +
+      formatCHF(plafond) +
+      "</small>" +
+
+      (plafond <= 0
+        ? '<p style="color:#a12622;margin:6px 0">Attention : le plafond annoncé est absent ou invalide. Vérifie les données de cette ligne avant de confirmer.</p>'
+        : "") +
+
+      "</div>"
+    );
+  }).join("");
+
+  html +=
     '<div style="margin-top:12px">' +
-    '<button type="button" onclick="confirmerPrixCommande(' + indexCommande + ')">' +
-    'Calculer et confirmer le prix final</button></div></section>';
+    '<button type="button" onclick="confirmerPrixCommande(' +
+    indexCommande +
+    ')">Confirmer les poids et les prix saisis</button>' +
+    "</div>" +
+    "</section>";
+
+  return html;
 }
 
 /* ---------- Préparation du SMS ---------- */
@@ -246,18 +395,26 @@ function boutonSMSCommande(cmd, index) {
   if (!cmd || !cmd.prixConfirme) return "";
 
   const tel = obtenirTelephoneClient(cmd);
-  if (!tel) return "<p>Numéro de téléphone absent : impossible de préparer le SMS.</p>";
 
-  const msg = "Bonjour " + obtenirNomClient(cmd) +
-    ", le prix final de votre commande " + identifiantCommande(cmd, index) +
-    " chez Idée Gourmande est de " + formatCHF(cmd.total) +
-    ". Vous pouvez régler par TWINT au " + NUMERO_TWINT_ADMIN +
+  if (!tel) {
+    return "<p>Numéro de téléphone absent : impossible de préparer le SMS.</p>";
+  }
+
+  const msg =
+    "Bonjour " + obtenirNomClient(cmd) +
+    ", le prix final de votre commande " +
+    identifiantCommande(cmd, index) +
+    " chez Idée Gourmande est de " +
+    formatCHF(cmd.total) +
+    ". Vous pouvez régler par TWINT au " +
+    NUMERO_TWINT_ADMIN +
     ". Merci et belle journée !";
 
   const lien = "sms:" + tel.replace(/[^\d+]/g, "") +
     "&body=" + encodeURIComponent(msg);
 
-  return '<p style="margin-top:10px"><a href="' + texteSecurise(lien) +
+  return '<p style="margin-top:10px">' +
+    '<a href="' + texteSecurise(lien) +
     '" style="display:inline-block;padding:9px 12px;border-radius:6px;background:#237b59;color:white;text-decoration:none">' +
     "Préparer le SMS de confirmation</a></p>" +
     "<small>Le SMS n’est pas envoyé automatiquement : ouvre ce lien sur l’iPhone puis appuie sur Envoyer.</small>";
@@ -270,7 +427,8 @@ function afficherListeCommandes(commandes) {
   if (!conteneur) return;
 
   if (!Array.isArray(commandes) || !commandes.length) {
-    conteneur.innerHTML = '<p class="message-vide">Aucune commande pour le moment.</p>';
+    conteneur.innerHTML =
+      '<p class="message-vide">Aucune commande pour le moment.</p>';
     return;
   }
 
@@ -284,33 +442,59 @@ function afficherListeCommandes(commandes) {
     const date = cmd.date || cmd.dateCommande || "";
 
     return '<article class="commande-admin" style="border:1px solid #ddd;border-radius:10px;padding:16px;margin:12px 0">' +
+
       '<div style="display:flex;flex-wrap:wrap;gap:8px;align-items:center;justify-content:space-between">' +
       '<h3 style="margin:0">Commande ' + texteSecurise(id) + '</h3>' +
       '<span>' + texteSecurise(date) + '</span></div>' +
 
       '<p><strong>Client :</strong> ' + texteSecurise(nom) + '</p>' +
-      (email ? '<p><strong>E-mail :</strong> <a href="mailto:' +
-        texteSecurise(email) + '">' + texteSecurise(email) + '</a></p>' : "") +
-      (tel ? '<p><strong>Téléphone :</strong> ' + texteSecurise(tel) + '</p>' : "") +
-      (adresse ? '<p><strong>Adresse :</strong> ' + texteSecurise(adresse) + '</p>' : "") +
-      (cmd.commentaire ? '<p><strong>Commentaire :</strong> ' +
-        texteSecurise(cmd.commentaire) + '</p>' : "") +
 
-      "<h4>Produits</h4>" + afficherProduitsCommande(cmd, index) +
+      (email
+        ? '<p><strong>E-mail :</strong> <a href="mailto:' +
+          texteSecurise(email) + '">' +
+          texteSecurise(email) + '</a></p>'
+        : "") +
 
-      '<p><strong>' + (cmd.prixConfirme ? "Prix final confirmé :" : "Total actuel :") +
+      (tel
+        ? '<p><strong>Téléphone :</strong> ' +
+          texteSecurise(tel) + '</p>'
+        : "") +
+
+      (adresse
+        ? '<p><strong>Adresse :</strong> ' +
+          texteSecurise(adresse) + '</p>'
+        : "") +
+
+      (cmd.commentaire
+        ? '<p><strong>Commentaire :</strong> ' +
+          texteSecurise(cmd.commentaire) + '</p>'
+        : "") +
+
+      "<h4>Produits</h4>" +
+      afficherProduitsCommande(cmd, index) +
+
+      '<p><strong>' +
+      (cmd.prixConfirme ? "Prix final confirmé :" : "Total actuel :") +
       "</strong> " + formatCHF(cmd.total) +
-      (commandeNecessitePoidsReel(cmd) ? " <span>(prix à confirmer après pesée)</span>" : "") +
+      (commandeNecessitePoidsReel(cmd)
+        ? " <span>(prix à confirmer après pesée)</span>"
+        : "") +
       "</p>" +
 
       rendreZonePoidsReel(cmd, index) +
       boutonSMSCommande(cmd, index) +
 
-      '<p><label for="statut-' + index + '"><strong>Statut :</strong> </label>' +
-      '<select id="statut-' + index + '" onchange="changerStatut(' + index + ',this.value)">' +
+      '<p><label for="statut-' + index +
+      '"><strong>Statut :</strong> </label>' +
+      '<select id="statut-' + index +
+      '" onchange="changerStatut(' + index + ',this.value)">' +
+
       ["Nouvelle", "En préparation", "Prête", "Livrée", "Annulée"].map(s =>
-        '<option value="' + s + '"' + (s === statut ? " selected" : "") + ">" + s + "</option>"
+        '<option value="' + s + '"' +
+        (s === statut ? " selected" : "") +
+        ">" + s + "</option>"
       ).join("") +
+
       "</select></p>" +
 
       '<div style="display:flex;flex-wrap:wrap;gap:8px;margin-top:10px">' +
@@ -327,11 +511,11 @@ function afficherCommandes() {
 }
 
 function changerStatut(index, valeur) {
-  const c = obtenirCommandes();
-  if (!c[index]) return;
+  const commandes = obtenirCommandes();
+  if (!commandes[index]) return;
 
-  c[index].statut = valeur;
-  c[index].dateModification = new Date().toISOString();
+  commandes[index].statut = valeur;
+  commandes[index].dateModification = new Date().toISOString();
 
   enregistrerDBAdmin();
   afficherCommandes();
@@ -341,14 +525,16 @@ function changerStatut(index, valeur) {
 /* ---------- PDF et e-mail ---------- */
 
 function normaliserCommandePourPDF(cmd) {
-  const c = cmd.client && typeof cmd.client === "object" ? cmd.client : {};
+  const c = cmd.client && typeof cmd.client === "object"
+    ? cmd.client
+    : {};
 
   return Object.assign({}, cmd, {
     id: cmd.id || cmd.numero || "",
     client: {
       prenom: c.prenom || cmd.prenom || "",
       nom: c.nom || cmd.nom || cmd.nomClient || "",
-      email: c.email || cmd.email || "",
+      email: c.email || cmd.email || cmd.emailClient || "",
       telephone: c.telephone || cmd.telephone || "",
       adresse: c.adresse || cmd.adresse || "",
       commentaire: c.commentaire || cmd.commentaire || "",
@@ -368,11 +554,16 @@ function imprimerCommande(index) {
     const pdf = normaliserCommandePourPDF(cmd);
 
     if (typeof genererPDFCommande === "function") {
-      genererPDFCommande(pdf, { envoyerEmail: false, telecharger: true });
+      genererPDFCommande(pdf, {
+        envoyerEmail: false,
+        telecharger: true
+      });
     } else if (typeof imprimerPDFCommande === "function") {
       imprimerPDFCommande(pdf);
     } else {
-      alert("Le module PDF n’est pas chargé. Vérifie js/pdfcommande.js dans admin.html.");
+      alert(
+        "Le module PDF n’est pas chargé. Vérifie js/pdfcommande.js dans admin.html."
+      );
     }
   } catch (e) {
     console.error(e);
@@ -385,7 +576,9 @@ function renvoyerEmail(index) {
   if (!cmd) return alert("Commande introuvable.");
 
   const email = obtenirEmailClient(cmd);
-  if (!email) return alert("Aucune adresse e-mail enregistrée pour ce client.");
+  if (!email) {
+    return alert("Aucune adresse e-mail enregistrée pour ce client.");
+  }
 
   const sujet = cmd.prixConfirme
     ? "Confirmation du prix final — commande " + identifiantCommande(cmd, index)
@@ -393,8 +586,10 @@ function renvoyerEmail(index) {
 
   const corps = cmd.prixConfirme
     ? "Bonjour " + obtenirNomClient(cmd) +
-      ",\r\n\r\nLe prix final de votre commande est de " + formatCHF(cmd.total) +
-      ". Vous pouvez régler par TWINT au " + NUMERO_TWINT_ADMIN +
+      ",\r\n\r\nLe prix final de votre commande est de " +
+      formatCHF(cmd.total) +
+      ". Vous pouvez régler par TWINT au " +
+      NUMERO_TWINT_ADMIN +
       ".\r\n\r\nMerci, Idée Gourmande."
     : "Bonjour " + obtenirNomClient(cmd) +
       ",\r\n\r\nNous vous confirmerons le prix final après la pesée des produits concernés." +
@@ -406,7 +601,9 @@ function renvoyerEmail(index) {
 }
 
 function obtenirCommandeParIdentifiant(id) {
-  return obtenirCommandes().find(c => String(c.id) === String(id)) || null;
+  return obtenirCommandes().find(
+    c => String(c.id) === String(id)
+  ) || null;
 }
 
 /* ---------- Confirmation du poids et du prix final ---------- */
@@ -416,51 +613,133 @@ async function confirmerPrixCommande(index) {
   const cmd = commandes[index];
 
   if (!cmd) return alert("Commande introuvable.");
-  if (cmd.prixConfirme) return alert("Le prix de cette commande est déjà confirmé.");
 
+  if (cmd.prixConfirme) {
+    return alert("Le prix de cette commande est déjà confirmé.");
+  }
+
+  const lignes = obtenirLignesCommande(cmd);
   const poidsParLigne = {};
+  const prixParLigne = {};
   let erreur = "";
 
-  const inputs = document.querySelectorAll(
+  const inputsPoids = document.querySelectorAll(
     '.champ-poids-reel[data-commande-index="' + index + '"]'
   );
 
-  inputs.forEach(input => {
-    const poids = Math.round(valeurNombre(input.value));
-    const li = input.getAttribute("data-ligne-index");
+  const inputsPrix = document.querySelectorAll(
+    '.champ-prix-reel[data-commande-index="' + index + '"]'
+  );
 
-    if (!(poids > 0)) {
-      erreur = "Saisis un poids réel positif pour chaque produit concerné.";
-    } else {
-      poidsParLigne[li] = poids;
+  inputsPoids.forEach(input => {
+    const poids = valeurNombre(input.value);
+    const ligneIndex = input.getAttribute("data-ligne-index");
+
+    if (!(poids > 0) || !Number.isInteger(poids)) {
+      erreur = "Saisis un poids réel positif, en grammes entiers, pour chaque produit.";
+      return;
     }
+
+    poidsParLigne[ligneIndex] = poids;
+  });
+
+  inputsPrix.forEach(input => {
+    const valeurSaisie = String(input.value == null ? "" : input.value).trim();
+    const prix = valeurNombre(valeurSaisie);
+    const ligneIndex = input.getAttribute("data-ligne-index");
+    const plafond = valeurNombre(input.getAttribute("data-plafond"));
+
+    if (valeurSaisie === "" || !Number.isFinite(Number(valeurSaisie.replace(",", ".")))) {
+      erreur = "Saisis un prix final valide pour chaque ligne concernée.";
+      return;
+    }
+
+    if (prix < 0) {
+      erreur = "Le prix final ne peut pas être négatif.";
+      return;
+    }
+
+    if (!(plafond > 0)) {
+      erreur = "Le plafond annoncé est absent ou invalide. Vérifie cette commande avant de continuer.";
+      return;
+    }
+
+    /*
+     * La comparaison est faite en centimes pour éviter les
+     * différences d'arrondi des nombres décimaux.
+     */
+    if (Math.round(prix * 100) > Math.round(plafond * 100)) {
+      erreur =
+        "Le prix saisi (" + formatCHF(prix) +
+        ") dépasse le plafond annoncé (" + formatCHF(plafond) + ").";
+      return;
+    }
+
+    prixParLigne[ligneIndex] = Math.round(prix * 100) / 100;
   });
 
   if (erreur) return alert(erreur);
 
-  const attendu = obtenirLignesCommande(cmd).filter(
-    l => estLignePoidsReel(l) && !(valeurNombre(l.poidsReel) > 0)
+  const nombreLignesAConfirmer = lignes.filter(
+    ligne =>
+      estLignePoidsReel(ligne) &&
+      !(valeurNombre(ligne.poidsReel) > 0)
   ).length;
 
-  if (Object.keys(poidsParLigne).length !== attendu) {
-    return alert("Saisis le poids réel pour chaque ligne de viande séchée et de lard sec.");
+  if (
+    Object.keys(poidsParLigne).length !== nombreLignesAConfirmer ||
+    Object.keys(prixParLigne).length !== nombreLignesAConfirmer
+  ) {
+    return alert(
+      "Saisis le poids réel et le prix final pour chaque ligne de viande séchée et de lard sec."
+    );
   }
 
+  const resume = lignes
+    .map((ligne, i) => {
+      if (poidsParLigne[i] == null || prixParLigne[i] == null) return "";
+      return (
+        (ligne.nom || ligne.nomProduit || ligne.reference || "Produit") +
+        " : " + poidsParLigne[i] + " g — " +
+        formatCHF(prixParLigne[i])
+      );
+    })
+    .filter(Boolean)
+    .join("\n");
+
   if (!confirm(
-    "Confirmer les poids saisis, calculer le prix final et mettre à jour le stock ? " +
-    "Le prix restera plafonné au montant annoncé au client."
-  )) return;
+    "Vérifie les poids et les prix saisis :\n\n" +
+    resume +
+    "\n\nConfirmer ces valeurs et mettre à jour le stock ?"
+  )) {
+    return;
+  }
 
   try {
     if (typeof finaliserPoidsReelCommande !== "function") {
       return alert(
-        "La fonction de finalisation est absente. Vérifie que js/database.js version 3.3.0 est chargé."
+        "La fonction de finalisation est absente. Vérifie que js/database.js est chargé et à jour."
       );
     }
 
-    const resultat = finaliserPoidsReelCommande(cmd.id, poidsParLigne);
+    /*
+     * Les trois arguments sont nécessaires :
+     * 1. identifiant de commande ;
+     * 2. poids réels indexés par ligne ;
+     * 3. prix manuels indexés par ligne.
+     */
+    const resultat = finaliserPoidsReelCommande(
+      cmd.id,
+      poidsParLigne,
+      prixParLigne
+    );
+
     if (resultat === false) {
-      return alert("La base de données n’a pas pu finaliser cette commande.");
+      afficherCommandes();
+      return alert(
+        "La base de données n’a pas pu finaliser cette commande. " +
+        "Vérifie le stock et les données de la commande avant de réessayer."
+      );
     }
 
     enregistrerDBAdmin();
@@ -470,7 +749,7 @@ async function confirmerPrixCommande(index) {
     if (!actualisee.prixConfirme) {
       afficherCommandes();
       return alert(
-        "Les poids ont été enregistrés, mais la commande n’est pas marquée comme confirmée. Vérifie la base de données."
+        "Les données ont été transmises, mais la commande n’est pas marquée comme confirmée. Vérifie la base de données."
       );
     }
 
@@ -478,31 +757,37 @@ async function confirmerPrixCommande(index) {
 
     if (typeof envoyerEmailConfirmationPrix === "function") {
       try {
-        const r = await envoyerEmailConfirmationPrix(normaliserCommandePourPDF(actualisee));
-        statutEmail = r === false
-          ? "L’envoi de l’e-mail n’a pas été confirmé."
-          : "La demande d’envoi de l’e-mail de confirmation a été lancée.";
+        const resultatEmail = await envoyerEmailConfirmationPrix(
+          normaliserCommandePourPDF(actualisee)
+        );
+
+        statutEmail = resultatEmail === false
+          ? "La demande d’envoi de l’e-mail a échoué."
+          : "La demande d’envoi de l’e-mail de confirmation a été lancée. Vérifie également la réception du message.";
       } catch (e) {
-        console.error(e);
-        statutEmail = "L’e-mail n’a pas pu être lancé : " + e.message;
+        console.error("Erreur d’envoi de l’e-mail :", e);
+        statutEmail =
+          "L’e-mail n’a pas pu être lancé : " + e.message;
       }
     } else {
-      statutEmail = "La fonction d’e-mail de confirmation est absente de js/pdfcommande.js.";
+      statutEmail =
+        "La fonction d’e-mail de confirmation est absente de js/pdfcommande.js.";
     }
 
     afficherCommandes();
 
     if (typeof afficherResumeStock === "function") afficherResumeStock();
     if (typeof afficherStatistiques === "function") afficherStatistiques();
+    if (typeof afficherResumeAchats === "function") afficherResumeAchats();
 
     alert(
-      "Prix final confirmé : " + formatCHF(actualisee.total) + ".\n" +
+      "Prix final confirmé : " + formatCHF(actualisee.total) + ".\n\n" +
       statutEmail +
       "\n\nPour le SMS, utilise le bouton « Préparer le SMS de confirmation ». " +
-      "Le SMS devra être envoyé manuellement depuis l’iPhone."
+      "Le SMS doit être envoyé manuellement depuis l’iPhone."
     );
   } catch (e) {
-    console.error(e);
+    console.error("Erreur pendant la confirmation du prix :", e);
     alert("Erreur pendant la confirmation du prix : " + e.message);
   }
 }
@@ -522,8 +807,8 @@ function supprimerAchatsAutomatiquesCommande(cmd) {
 }
 
 function archiverCommande(index) {
-  const c = obtenirCommandes();
-  const cmd = c[index];
+  const commandes = obtenirCommandes();
+  const cmd = commandes[index];
   if (!cmd) return;
 
   if (!confirm("Archiver cette commande ?")) return;
@@ -535,7 +820,7 @@ function archiverCommande(index) {
   base.archives.push(cmd);
 
   supprimerAchatsAutomatiquesCommande(cmd);
-  c.splice(index, 1);
+  commandes.splice(index, 1);
 
   enregistrerDBAdmin();
   afficherCommandes();
@@ -545,14 +830,16 @@ function archiverCommande(index) {
 }
 
 function supprimerCommande(index) {
-  const c = obtenirCommandes();
-  const cmd = c[index];
+  const commandes = obtenirCommandes();
+  const cmd = commandes[index];
   if (!cmd) return;
 
-  if (!confirm("Supprimer définitivement cette commande ? Cette action est irréversible.")) return;
+  if (!confirm(
+    "Supprimer définitivement cette commande ? Cette action est irréversible."
+  )) return;
 
   supprimerAchatsAutomatiquesCommande(cmd);
-  c.splice(index, 1);
+  commandes.splice(index, 1);
 
   enregistrerDBAdmin();
   afficherCommandes();
@@ -564,27 +851,28 @@ function supprimerCommande(index) {
 /* ---------- Statistiques et tableaux de bord ---------- */
 
 function afficherStatistiques() {
-  const c = obtenirCommandes();
+  const commandes = obtenirCommandes();
   const auj = new Date().toLocaleDateString("fr-CH");
+  const aujISO = new Date().toISOString().slice(0, 10);
 
-  const jour = c.filter(x => {
-    const d = x.date || x.dateCommande || "";
-    return d && (
-      d.includes(auj) ||
-      d.slice(0, 10) === new Date().toISOString().slice(0, 10)
+  const jour = commandes.filter(x => {
+    const date = String(x.date || x.dateCommande || "");
+    return date && (
+      date.includes(auj) ||
+      date.slice(0, 10) === aujISO
     );
   });
 
-  const ca = c.filter(x => x.paiementConfirme || x.statut === "Livrée")
+  const ca = commandes
+    .filter(x => x.paiementConfirme || x.statut === "Livrée")
     .reduce((s, x) => s + valeurNombre(x.total), 0);
 
-  definirTexte("nbCommandes", c.length);
+  definirTexte("nbCommandes", commandes.length);
   definirTexte("caTotal", formatCHF(ca));
   definirTexte("commandeJour", jour.length);
-  definirTexte(
-    "nbAchats",
-    Array.isArray(obtenirDBAdmin().achats) ? obtenirDBAdmin().achats.length : 0
-  );
+
+  const achats = obtenirDBAdmin().achats;
+  definirTexte("nbAchats", Array.isArray(achats) ? achats.length : 0);
   definirTexte("sessionActive", "Active");
 
   afficherDernieresCommandes();
@@ -594,51 +882,68 @@ function afficherDernieresCommandes() {
   const el = document.getElementById("dernieresCommandes");
   if (!el) return;
 
-  const c = obtenirCommandes().slice().reverse().slice(0, 5);
+  const commandes = obtenirCommandes().slice().reverse().slice(0, 5);
 
-  el.innerHTML = c.length
-    ? c.map(cmd =>
-        "<li><strong>" + texteSecurise(identifiantCommande(cmd, 0)) +
-        "</strong> — " + texteSecurise(obtenirNomClient(cmd)) +
-        " — " + formatCHF(cmd.total) + "</li>"
+  el.innerHTML = commandes.length
+    ? commandes.map(cmd =>
+        "<li><strong>" +
+        texteSecurise(identifiantCommande(cmd, 0)) +
+        "</strong> — " +
+        texteSecurise(obtenirNomClient(cmd)) +
+        " — " + formatCHF(cmd.total) +
+        "</li>"
       ).join("")
     : "<li>Aucune commande.</li>";
 }
 
 function afficherResumeStock() {
   const base = obtenirDBAdmin();
-  const p = Array.isArray(base.produits)
+
+  const produits = Array.isArray(base.produits)
     ? base.produits
     : (Array.isArray(base.stock) ? base.stock : []);
 
-  const q = p.reduce(
-    (s, x) => s + valeurNombre(x.quantite || x.stock || x.quantiteStock), 0
+  const quantiteStock = produit =>
+    valeurNombre(produit.quantite || produit.stock || produit.quantiteStock);
+
+  const total = produits.reduce(
+    (s, produit) => s + quantiteStock(produit),
+    0
   );
 
-  const crit = p.filter(x =>
-    valeurNombre(x.quantite || x.stock || x.quantiteStock) <=
-    valeurNombre(x.seuilAlerte || x.stockMinimum || x.seuil)
+  const critiques = produits.filter(produit =>
+    quantiteStock(produit) <=
+    valeurNombre(
+      produit.seuilAlerte ||
+      produit.stockMinimum ||
+      produit.seuil
+    )
   );
 
-  definirTexte("totalArticlesStock", q);
+  definirTexte("totalArticlesStock", total);
 
-  definirTexte("valeurStock", formatCHF(p.reduce(
-    (s, x) =>
-      s + valeurNombre(x.quantite || x.stock || x.quantiteStock) *
-      valeurNombre(x.prixAchat || x.prixUnitaire || x.prix),
+  definirTexte("valeurStock", formatCHF(produits.reduce(
+    (s, produit) =>
+      s + quantiteStock(produit) *
+      valeurNombre(
+        produit.prixAchat ||
+        produit.prixUnitaire ||
+        produit.prix
+      ),
     0
   )));
 
-  definirTexte("stockCritiqueStock", crit.length);
-  definirTexte("stockCritique", crit.length);
+  definirTexte("stockCritiqueStock", critiques.length);
+  definirTexte("stockCritique", critiques.length);
 
   const liste = document.getElementById("listeAlertes");
 
   if (liste) {
-    liste.innerHTML = crit.length
-      ? crit.map(x =>
-          "<li>" + texteSecurise(x.nom || x.nomProduit || "Article") +
-          " — stock : " + valeurNombre(x.quantite || x.stock || x.quantiteStock) +
+    liste.innerHTML = critiques.length
+      ? critiques.map(produit =>
+          "<li>" +
+          texteSecurise(produit.nom || produit.nomProduit || "Article") +
+          " — stock : " + quantiteStock(produit) +
           "</li>"
         ).join("")
       : "<li>Aucune alerte de stock.</li>";
@@ -650,21 +955,27 @@ function afficherAlertes() {
 }
 
 function afficherResumeAchats() {
-  const a = Array.isArray(obtenirDBAdmin().achats) ? obtenirDBAdmin().achats : [];
+  const achats = Array.isArray(obtenirDBAdmin().achats)
+    ? obtenirDBAdmin().achats
+    : [];
 
   definirTexte(
     "achatsEnAttente",
-    a.filter(x => !x.receptionne && x.statut !== "Réceptionné").length
+    achats.filter(
+      x => !x.receptionne && x.statut !== "Réceptionné"
+    ).length
   );
 
   definirTexte(
     "achatsReceptionnes",
-    a.filter(x => x.receptionne || x.statut === "Réceptionné").length
+    achats.filter(
+      x => x.receptionne || x.statut === "Réceptionné"
+    ).length
   );
 
   definirTexte(
     "nombreFournisseurs",
-    new Set(a.map(x => x.fournisseur).filter(Boolean)).size
+    new Set(achats.map(x => x.fournisseur).filter(Boolean)).size
   );
 }
 
@@ -677,21 +988,25 @@ function sauvegarderBaseFichier() {
   );
 
   const url = URL.createObjectURL(blob);
-  const a = document.createElement("a");
+  const lien = document.createElement("a");
 
-  a.href = url;
-  a.download = "idee-gourmande-sauvegarde-" +
+  lien.href = url;
+  lien.download = "idee-gourmande-sauvegarde-" +
     new Date().toISOString().slice(0, 10) + ".json";
 
-  document.body.appendChild(a);
-  a.click();
-  a.remove();
+  document.body.appendChild(lien);
+  lien.click();
+  lien.remove();
 
-  URL.revokeObjectURL(url);
+  setTimeout(() => URL.revokeObjectURL(url), 1000);
 }
 
 function restaurerBaseFichier(event) {
-  const fichier = event && event.target && event.target.files && event.target.files[0];
+  const fichier = event &&
+    event.target &&
+    event.target.files &&
+    event.target.files[0];
+
   if (!fichier) return;
 
   if (!confirm(
@@ -707,11 +1022,19 @@ function restaurerBaseFichier(event) {
     try {
       const base = JSON.parse(lecteur.result);
 
-      if (!base || typeof base !== "object" || !Array.isArray(base.commandes)) {
-        throw new Error("Fichier de sauvegarde Idée Gourmande invalide.");
+      if (
+        !base ||
+        typeof base !== "object" ||
+        !Array.isArray(base.commandes)
+      ) {
+        throw new Error(
+          "Fichier de sauvegarde Idée Gourmande invalide."
+        );
       }
 
-      const cle = typeof CLE_BASE !== "undefined" ? CLE_BASE : "ideeGourmandeDB";
+      const cle = typeof CLE_BASE !== "undefined"
+        ? CLE_BASE
+        : "ideeGourmandeDB";
 
       localStorage.setItem(
         CLE_SECURITE_RESTAURATION,
@@ -727,6 +1050,10 @@ function restaurerBaseFichier(event) {
     }
   };
 
+  lecteur.onerror = function () {
+    alert("Impossible de lire le fichier de sauvegarde.");
+  };
+
   lecteur.readAsText(fichier);
 }
 
@@ -736,9 +1063,9 @@ function reinitialiserCommandesEtAchats() {
     "Fais une sauvegarde avant de continuer. Cette action est irréversible."
   )) return;
 
-  const b = obtenirDBAdmin();
-  b.commandes = [];
-  b.achats = [];
+  const base = obtenirDBAdmin();
+  base.commandes = [];
+  base.achats = [];
 
   enregistrerDBAdmin();
   afficherCommandes();
@@ -758,39 +1085,59 @@ function deconnexion() {
 
 function rechercherCommandes() {
   const champ =
+    document.getElementById("rechercheCommande") ||
     document.getElementById("rechercheCommandes") ||
     document.getElementById("recherche");
 
   if (!champ) return;
 
-  const t = champ.value.toLowerCase().trim();
+  const terme = champ.value.toLowerCase().trim();
 
-  const c = obtenirCommandes().filter(cmd =>
-    [
+  const commandes = obtenirCommandes().filter(cmd => {
+    const valeurs = [
       identifiantCommande(cmd, 0),
       obtenirNomClient(cmd),
       obtenirEmailClient(cmd),
       obtenirTelephoneClient(cmd),
-      cmd.statut,
-      ...obtenirLignesCommande(cmd).map(l => l.nom || l.reference)
-    ].join(" ").toLowerCase().includes(t)
-  );
+      cmd.statut || "",
+      ...obtenirLignesCommande(cmd).map(
+        ligne => ligne.nom || ligne.nomProduit || ligne.reference || ""
+      )
+    ];
 
-  afficherListeCommandes(c);
+    return valeurs.join(" ").toLowerCase().includes(terme);
+  });
+
+  afficherListeCommandes(commandes);
+}
+
+function rechercherCommande() {
+  rechercherCommandes();
 }
 
 function trierCommandes(critere) {
-  const c = obtenirCommandes().slice();
+  const select = document.getElementById("triCommandes");
+
+  if (!critere && select) critere = select.value;
+
+  const commandes = obtenirCommandes().slice();
 
   if (critere === "date") {
-    c.sort((a, b) => String(b.date || "").localeCompare(String(a.date || "")));
+    commandes.sort((a, b) =>
+      String(b.date || b.dateCommande || "")
+        .localeCompare(String(a.date || a.dateCommande || ""))
+    );
   } else if (critere === "total") {
-    c.sort((a, b) => valeurNombre(b.total) - valeurNombre(a.total));
+    commandes.sort(
+      (a, b) => valeurNombre(b.total) - valeurNombre(a.total)
+    );
   } else if (critere === "client") {
-    c.sort((a, b) => obtenirNomClient(a).localeCompare(obtenirNomClient(b), "fr"));
+    commandes.sort((a, b) =>
+      obtenirNomClient(a).localeCompare(obtenirNomClient(b), "fr")
+    );
   }
 
-  afficherListeCommandes(c);
+  afficherListeCommandes(commandes);
 }
 
 /* ---------- Fonctions accessibles depuis le HTML ---------- */
@@ -812,6 +1159,7 @@ Object.assign(window, {
   reinitialiserCommandesEtAchats,
   deconnexion,
   rechercherCommandes,
+  rechercherCommande,
   trierCommandes,
   afficherResumeStock,
   afficherResumeAchats,
@@ -830,13 +1178,20 @@ document.addEventListener("DOMContentLoaded", function () {
     afficherAlertes();
     afficherDernieresCommandes();
   } catch (e) {
-    console.error("Erreur d’initialisation de l’administration :", e);
+    console.error(
+      "Erreur d’initialisation de l’administration :",
+      e
+    );
   }
 });
 
 window.addEventListener("storage", function (event) {
   try {
-    if (typeof CLE_BASE !== "undefined" && event.key && event.key !== CLE_BASE) return;
+    if (
+      typeof CLE_BASE !== "undefined" &&
+      event.key &&
+      event.key !== CLE_BASE
+    ) return;
 
     if (typeof chargerDB === "function") chargerDB();
 
@@ -849,3 +1204,4 @@ window.addEventListener("storage", function (event) {
     console.error("Erreur de synchronisation locale :", e);
   }
 });
+```
