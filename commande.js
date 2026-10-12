@@ -1112,6 +1112,9 @@ console.log(
         id:
             commande.id,
 
+        numeroCommande:
+            commande.numeroCommande,
+
         date:
             new Date()
             .toLocaleDateString(
