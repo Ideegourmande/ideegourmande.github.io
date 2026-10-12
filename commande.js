@@ -988,6 +988,51 @@ function viderPanier(){
 
 
 // ======================================
+// COMPTEUR CENTRAL DES COMMANDES
+// ======================================
+
+function obtenirNumeroCommande(nomClient, annee) {
+    return new Promise((resolve, reject) => {
+        const callback = "igNumeroCommande_" + Date.now() + "_" +
+            Math.floor(Math.random() * 100000);
+        const script = document.createElement("script");
+        const timeout = setTimeout(() => {
+            nettoyer();
+            reject(new Error("Délai dépassé lors de la réservation du numéro."));
+        }, 15000);
+
+        function nettoyer() {
+            clearTimeout(timeout);
+            delete window[callback];
+            if (script.parentNode) script.parentNode.removeChild(script);
+        }
+
+        window[callback] = function(reponse) {
+            nettoyer();
+            if (!reponse || reponse.ok !== true || !reponse.numero) {
+                reject(new Error(reponse && reponse.error || "Réponse invalide du compteur."));
+                return;
+            }
+            resolve(reponse.numero);
+        };
+
+        script.onerror = function() {
+            nettoyer();
+            reject(new Error("Le service de numérotation est inaccessible."));
+        };
+
+        const params = new URLSearchParams({
+            action: "nextOrderNumber",
+            nom: nomClient,
+            annee: String(annee),
+            callback
+        });
+        script.src = EMAIL_API_URL + "?" + params.toString();
+        document.head.appendChild(script);
+    });
+}
+
+// ======================================
 // ENVOI COMMANDE
 // ======================================
 
@@ -1065,13 +1110,21 @@ nomExpediteurTwint:
     // Identifiant technique pour la base de données.
     commande.id = Date.now();
 
-    // Numéro lisible : nom du commandeur - année - 3 chiffres.
+    // Numéro de commande séquentiel, attribué par Google Apps Script.
     const nomCommande = (commande.client.prenom + " " + commande.client.nom).trim()
         || "Commande";
     const anneeCommande = new Date().getFullYear();
-    commande.numeroCommande =
-        nomCommande + " - " + anneeCommande + "-" +
-        String(Math.floor(Math.random() * 1000)).padStart(3, "0");
+
+    try {
+        commande.numeroCommande = await obtenirNumeroCommande(
+            nomCommande,
+            anneeCommande
+        );
+    } catch (erreurNumero) {
+        console.error("Impossible d'obtenir le numéro de commande :", erreurNumero);
+        alert("Impossible d'attribuer un numéro de commande. Veuillez réessayer dans quelques instants.");
+        return;
+    }
 
    console.log("COMMANDE PREPAREE :", commande);
 console.log(
