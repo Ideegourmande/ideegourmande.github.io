@@ -1,6 +1,6 @@
 /* ==========================================================
 Idée Gourmande — PDF et e-mails des commandes
-Version 6.2.0
+Version 6.2.1
 
 * Nouvelle commande : prix indicatifs, aucun paiement demandé.
 * Confirmation finale : poids réel et prix confirmé.
@@ -72,7 +72,7 @@ return Math.round((Number(nombre) + Number.EPSILON) * 100) / 100;
 }
 
 function echapperHTML(texte) {
-return String(texte ?? "")
+return String(texte === undefined || texte === null ? "" : texte)
 .replace(/&/g, "&")
 .replace(/</g, "<")
 .replace(/>/g, ">")
@@ -189,6 +189,8 @@ const nom = obtenirNomNormalise(article);
 return (
   reference.includes("lard-sec") ||
   reference.includes("lard_sec") ||
+  nom.includes("lard-sec") ||
+  nom.includes("lard_sec") ||
   nom.includes("lard sec")
 );
 ```
@@ -220,7 +222,7 @@ for (const champ of champsPlafond) {
   ) {
     const plafond = nombreValide(champ);
 
-    return plafond !== null && plafond >= 0
+    return plafond !== null && plafond > 0
       ? arrondirCentimes(plafond)
       : null;
   }
@@ -245,7 +247,8 @@ function obtenirPrixFinalArticle(article) {
 const champs = [
 article.prixFinal,
 article.prix_final,
-article.prix
+article.prixConfirme,
+article.prix_confirme
 ];
 
 ```
@@ -302,10 +305,7 @@ produits.forEach(article => {
 
   const prixFinal = obtenirPrixFinalArticle(article);
 
-  if (
-    prixFinal === null ||
-    prixFinal < 0
-  ) {
+  if (prixFinal === null || prixFinal < 0) {
     throw new Error(
       "Le prix final d'un article au poids est absent ou invalide."
     );
@@ -389,18 +389,22 @@ const quantite =
     ? quantiteNombre
     : 1;
 
-const prix = estProduitAuPoidsReel(article)
-  ? (
-      article.poidsReel != null &&
-      String(article.poidsReel).trim() !== ""
-        ? obtenirPrixFinalArticle(article)
-        : obtenirPrixIndicatifArticle(article)
-    )
-  : nombreValide(
-      article.prixFinal ??
-      article.prix_final ??
-      article.prix
-    );
+let prix;
+
+if (estProduitAuPoidsReel(article)) {
+  const prixFinal = obtenirPrixFinalArticle(article);
+  const prixIndicatif = obtenirPrixIndicatifArticle(article);
+
+  prix = prixFinal !== null
+    ? prixFinal
+    : prixIndicatif;
+} else {
+  prix = nombreValide(
+    article.prixFinal ??
+    article.prix_final ??
+    article.prix
+  );
+}
 
 let detail = "";
 
@@ -505,18 +509,21 @@ for (const champ of champsTotal) {
 
 const totalProduits = obtenirProduits(commande).reduce(
   (somme, article) => {
-    const prix = estProduitAuPoidsReel(article)
-      ? (
-          article.poidsReel != null &&
-          String(article.poidsReel).trim() !== ""
-            ? obtenirPrixFinalArticle(article)
-            : obtenirPrixIndicatifArticle(article)
-        )
-      : nombreValide(
-          article.prixFinal ??
-          article.prix_final ??
-          article.prix
-        );
+    let prix;
+
+    if (estProduitAuPoidsReel(article)) {
+      const prixFinal = obtenirPrixFinalArticle(article);
+
+      prix = prixFinal !== null
+        ? prixFinal
+        : obtenirPrixIndicatifArticle(article);
+    } else {
+      prix = nombreValide(
+        article.prixFinal ??
+        article.prix_final ??
+        article.prix
+      );
+    }
 
     return somme + (
       prix !== null && prix >= 0
@@ -928,7 +935,7 @@ return separateur >= 0
 
   iframe.addEventListener("load", function () {
   /*
-  * Un événement load ne permet pas de vérifier le résultat
+  * L'événement load ne permet pas de vérifier le résultat
   * de MailApp.sendEmail côté serveur.
   */
   temporisateur = window.setTimeout(
