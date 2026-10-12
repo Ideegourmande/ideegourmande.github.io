@@ -611,7 +611,7 @@ async function envoyerCommande(e) {
         const resultatEmail = await window.genererPDFCommande(commande, {
             envoyerEmail: true,
             typeEmail: "nouvelle-commande",
-            telecharger: false
+            telecharger: true
         });
 
         envoiOK = Boolean(
