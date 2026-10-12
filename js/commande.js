@@ -488,6 +488,54 @@ function viderPanier() {
 }
 
 // ======================================
+// COMPTEUR CENTRAL DES COMMANDES
+// ======================================
+
+const URL_COMPTEUR_COMMANDES =
+    "https://script.google.com/macros/s/AKfycby5o5V0dRb9fPpnhmUYCeWB1LxXjGRXfQK0kQ2Tzw2gHK58GQn8VmxlDI1DFWzogAhI/exec";
+
+function obtenirNumeroCommande(nomClient, annee) {
+    return new Promise((resolve, reject) => {
+        const callback = "igNumeroCommande_" + Date.now() + "_" +
+            Math.floor(Math.random() * 100000);
+        const script = document.createElement("script");
+        const timeout = setTimeout(() => {
+            nettoyer();
+            reject(new Error("Délai dépassé lors de la réservation du numéro."));
+        }, 15000);
+
+        function nettoyer() {
+            clearTimeout(timeout);
+            delete window[callback];
+            if (script.parentNode) script.parentNode.removeChild(script);
+        }
+
+        window[callback] = function(reponse) {
+            nettoyer();
+            if (!reponse || reponse.ok !== true || !reponse.numero) {
+                reject(new Error(reponse && reponse.error || "Réponse invalide du compteur."));
+                return;
+            }
+            resolve(reponse.numero);
+        };
+
+        script.onerror = function() {
+            nettoyer();
+            reject(new Error("Le service de numérotation est inaccessible."));
+        };
+
+        const params = new URLSearchParams({
+            action: "nextOrderNumber",
+            nom: nomClient,
+            annee: String(annee),
+            callback
+        });
+        script.src = URL_COMPTEUR_COMMANDES + "?" + params.toString();
+        document.head.appendChild(script);
+    });
+}
+
+// ======================================
 // ENVOYER LA COMMANDE
 // ======================================
 
@@ -522,7 +570,20 @@ async function envoyerCommande(e) {
         )
     };
 
+    // ID technique interne conservé pour la base de données.
     commande.id = "IG-" + Date.now().toString(36).toUpperCase();
+
+    // Numéro lisible et séquentiel utilisé sur les e-mails et les PDF.
+    try {
+        commande.numeroCommande = await obtenirNumeroCommande(
+            (commande.client.prenom + " " + commande.client.nom).trim() || "Commande",
+            new Date().getFullYear()
+        );
+    } catch (erreurNumero) {
+        console.error("Impossible d'obtenir le numéro de commande :", erreurNumero);
+        alert("Le numéro de commande n'a pas pu être attribué. Aucune commande n'a été enregistrée. Réessaie dans quelques instants.");
+        return;
+    }
 
     console.log("COMMANDE PRÉPARÉE :", commande);
 
@@ -540,6 +601,7 @@ async function envoyerCommande(e) {
 
     const commandeEnregistree = {
         id: commande.id,
+        numeroCommande: commande.numeroCommande,
         date: new Date().toLocaleDateString("fr-FR"),
 
         client: commande.client.prenom + " " + commande.client.nom,
