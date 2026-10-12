@@ -316,7 +316,7 @@
 
     const total = obtenirTotal(commande, client);
     const fraisLivraison = calculerFraisLivraison(client);
-    const numero = valeur(commande.id || commande.numeroCommande || commande.numero, "Sans numéro");
+    const numero = valeur(commande.numeroCommande || commande.id || commande.numero, "Sans numéro");
 
     let y = 18;
 
