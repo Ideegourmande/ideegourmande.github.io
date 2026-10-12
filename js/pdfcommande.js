@@ -19,7 +19,7 @@ const URL_SCRIPT_GOOGLE =
 "https://script.google.com/macros/s/AKfycby5o5V0dRb9fPpnhmUYCeWB1LxXjGRXfQK0kQ2Tzw2gHK58GQn8VmxlDI1DFWzogAhI/exec";
 
 const NOM_ENTREPRISE = "Idée Gourmande";
-const EMAIL_ENTREPRISE = "[ideesgourmandesge@gmail.com](mailto:ideesgourmandesge@gmail.com)";
+const EMAIL_ENTREPRISE = "ideesgourmandesge@gmail.com";
 const NUMERO_TWINT = "079 592 78 82";
 const FRAIS_LIVRAISON = 10.50;
 
@@ -77,6 +77,7 @@ return String(texte === undefined || texte === null ? "" : texte)
 .replace(/"/g, """)
 .replace(/'/g, "'");
 }
+
 
 /* ---------- Données de la commande ---------- */
 
