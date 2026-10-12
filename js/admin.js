@@ -334,6 +334,37 @@ function commandeNecessitePoidsReel(cmd) {
   );
 }
 
+/* ---------- Calcul automatique du prix selon le poids ---------- */
+
+function calculerPrixAutomatiquePoids(champPoids) {
+  if (!champPoids) return;
+
+  const commandeIndex = champPoids.getAttribute("data-commande-index");
+  const ligneIndex = champPoids.getAttribute("data-ligne-index");
+  const prixChamp = document.getElementById(
+    "prix-reel-" + commandeIndex + "-" + ligneIndex
+  );
+  if (!prixChamp) return;
+
+  const poids = valeurNombre(champPoids.value);
+  const tarif = valeurNombre(prixChamp.getAttribute("data-tarif"));
+
+  if (!(poids > 0) || !Number.isInteger(poids) || !(tarif > 0)) {
+    prixChamp.value = "";
+    prixChamp.setCustomValidity("Saisis d'abord un poids réel entier en grammes.");
+    return;
+  }
+
+  const prix = Math.round((poids * tarif / 100 + Number.EPSILON) * 100) / 100;
+  const plafond = valeurNombre(prixChamp.getAttribute("data-plafond"));
+  prixChamp.value = prix.toFixed(2);
+  prixChamp.setCustomValidity(
+    plafond > 0 && prix > plafond
+      ? "Le prix calculé dépasse le plafond annoncé."
+      : ""
+  );
+}
+
 /* ---------- Saisie du poids et du prix réels ---------- */
 
 function rendreZonePoidsReel(cmd, indexCommande) {
@@ -396,20 +427,22 @@ function rendreZonePoidsReel(cmd, indexCommande) {
       'inputmode="numeric" required ' +
       'data-commande-index="' + indexCommande +
       '" data-ligne-index="' + x.indexLigne +
-      '" placeholder="Ex. 235" ' +
+      '" oninput="calculerPrixAutomatiquePoids(this)" ' +
+      'placeholder="Saisis le poids en grammes" ' +
       'style="max-width:260px;width:100%;padding:8px">' +
 
       '<label for="prix-reel-' + indexCommande + '-' + x.indexLigne +
-      '" style="display:block;margin:10px 0 4px">Prix final de cette ligne (CHF)</label>' +
+      '" style="display:block;margin:10px 0 4px">Prix calculé automatiquement (CHF)</label>' +
 
       '<input id="prix-reel-' + indexCommande + '-' + x.indexLigne +
       '" class="champ-prix-reel" type="number" min="0" step="0.01" ' +
-      'inputmode="decimal" required ' +
+      'inputmode="decimal" readonly required ' +
       'data-commande-index="' + indexCommande +
       '" data-ligne-index="' + x.indexLigne +
       '" data-plafond="' + plafond +
-      '" placeholder="Ex. 21.15" ' +
-      'style="max-width:260px;width:100%;padding:8px">' +
+      '" data-tarif="' + tarifLignePoids(x.ligne) +
+      '" placeholder="Saisis le poids pour calculer le prix" ' +
+      'style="max-width:260px;width:100%;padding:8px;background:#f1f1f1">' +
 
       '<small style="display:block;margin-top:5px">Plafond annoncé : ' +
       formatCHF(plafond) +
@@ -709,24 +742,13 @@ async function confirmerPrixCommande(index) {
   });
 
   inputsPrix.forEach(input => {
-    const valeurSaisie = String(
-      input.value == null ? "" : input.value
-    ).trim();
-
-    const prix = valeurNombre(valeurSaisie);
     const ligneIndex = input.getAttribute("data-ligne-index");
+    const poids = poidsParLigne[ligneIndex];
+    const tarif = valeurNombre(input.getAttribute("data-tarif"));
     const plafond = valeurNombre(input.getAttribute("data-plafond"));
 
-    if (
-      valeurSaisie === "" ||
-      !Number.isFinite(Number(valeurSaisie.replace(",", ".")))
-    ) {
-      erreur = "Saisis un prix final valide pour chaque ligne concernée.";
-      return;
-    }
-
-    if (prix < 0) {
-      erreur = "Le prix final ne peut pas être négatif.";
+    if (!(poids > 0) || !(tarif > 0)) {
+      erreur = "Saisis un poids réel valide pour calculer automatiquement le prix.";
       return;
     }
 
@@ -736,14 +758,17 @@ async function confirmerPrixCommande(index) {
       return;
     }
 
+    const prix = Math.round((poids * tarif / 100 + Number.EPSILON) * 100) / 100;
+
     if (Math.round(prix * 100) > Math.round(plafond * 100)) {
       erreur =
-        "Le prix saisi (" + formatCHF(prix) +
+        "Le prix calculé automatiquement (" + formatCHF(prix) +
         ") dépasse le plafond annoncé (" + formatCHF(plafond) + ").";
       return;
     }
 
-    prixParLigne[ligneIndex] = Math.round(prix * 100) / 100;
+    prixParLigne[ligneIndex] = prix;
+    input.value = prix.toFixed(2);
   });
 
   if (erreur) return alert(erreur);
@@ -772,7 +797,8 @@ async function confirmerPrixCommande(index) {
       return (
         (ligne.nom || ligne.nomProduit || ligne.reference || "Produit") +
         " : " + poidsParLigne[i] + " g — " +
-        formatCHF(prixParLigne[i])
+        formatCHF(prixParLigne[i]) +
+        " (calculé automatiquement à " + formatCHF(tarifLignePoids(ligne)) + " / 100 g)"
       );
     })
     .filter(Boolean)
