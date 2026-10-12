@@ -634,7 +634,7 @@
     return genererPDFCommande(commande, {
       envoyerEmail: true,
       typeEmail: "confirmation-prix",
-      telecharger: false
+      telecharger: true
     });
   }
 
