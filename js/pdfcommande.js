@@ -1,6 +1,6 @@
 /* ==========================================================
 Idée Gourmande — PDF et e-mails des commandes
-Version 6.2.1
+Version 6.2.2
 
 * Nouvelle commande : prix indicatifs, aucun paiement demandé.
 * Confirmation finale : poids réel et prix confirmé.
@@ -45,25 +45,23 @@ String(v).trim() === ""
 return null;
 }
 
-```
-const n = Number(String(v).replace(",", "."));
 
+const n = Number(String(v).replace(",", "."));
 return Number.isFinite(n) ? n : null;
-```
+
 
 }
 
 function montantCHF(nombre) {
 const n = Number(nombre);
 
-```
 return (
   (Number.isFinite(n) ? n : 0).toLocaleString("fr-CH", {
     minimumFractionDigits: 2,
     maximumFractionDigits: 2
   }) + " CHF"
 );
-```
+
 
 }
 
@@ -88,7 +86,7 @@ commande.client && typeof commande.client === "object"
 ? commande.client
 : {};
 
-```
+
 return {
   prenom: valeur(client.prenom, commande.prenom || ""),
   nom: valeur(
@@ -116,7 +114,7 @@ return {
     commande.modeLivraison || ""
   )
 };
-```
+
 
 }
 
@@ -125,13 +123,12 @@ if (Array.isArray(commande.produitsListe)) {
 return commande.produitsListe;
 }
 
-```
 if (Array.isArray(commande.produits)) {
   return commande.produits;
 }
 
 return [];
-```
+
 
 }
 
@@ -164,7 +161,6 @@ if (!article || typeof article !== "object") {
 return false;
 }
 
-```
 const reference = obtenirReference(article);
 const nom = obtenirNomNormalise(article);
 const texte = reference + " " + nom;
@@ -177,7 +173,7 @@ return (
   texte.includes("lard_sec") ||
   texte.includes("lard sec")
 );
-```
+
 
 }
 
@@ -185,7 +181,6 @@ function estLardSec(article) {
 const reference = obtenirReference(article);
 const nom = obtenirNomNormalise(article);
 
-```
 return (
   reference.includes("lard-sec") ||
   reference.includes("lard_sec") ||
@@ -193,7 +188,7 @@ return (
   nom.includes("lard_sec") ||
   nom.includes("lard sec")
 );
-```
+
 
 }
 
@@ -213,7 +208,6 @@ article.plafondPrix,
 article.plafond_prix
 ];
 
-```
 for (const champ of champsPlafond) {
   if (
     champ !== undefined &&
@@ -239,7 +233,7 @@ if (poidsMax === null || poidsMax <= 0) {
 return arrondirCentimes(
   poidsMax * obtenirTarifAuPoids(article) / 100
 );
-```
+
 
 }
 
@@ -251,7 +245,6 @@ article.prixConfirme,
 article.prix_confirme
 ];
 
-```
 for (const champ of champs) {
   if (
     champ !== undefined &&
@@ -263,7 +256,7 @@ for (const champ of champs) {
 }
 
 return null;
-```
+
 
 }
 
@@ -274,7 +267,6 @@ article.prix_indicatif,
 article.prix
 ];
 
-```
 for (const champ of champs) {
   if (
     champ !== undefined &&
@@ -286,7 +278,7 @@ for (const champ of champs) {
 }
 
 return null;
-```
+
 
 }
 
@@ -297,7 +289,6 @@ throw new Error(
 );
 }
 
-```
 produits.forEach(article => {
   if (!estProduitAuPoidsReel(article)) {
     return;
@@ -342,7 +333,7 @@ produits.forEach(article => {
     );
   }
 });
-```
+
 
 }
 
@@ -351,7 +342,6 @@ produits.forEach(article => {
 function formaterPoids(poids) {
 const n = Number(poids);
 
-```
 if (!Number.isFinite(n)) {
   return String(poids) + " g";
 }
@@ -369,7 +359,7 @@ if (n >= 1000) {
 }
 
 return n + " g";
-```
+
 
 }
 
@@ -379,7 +369,6 @@ article.nom || article.nomProduit || article.produit,
 "Article"
 );
 
-```
 const quantiteNombre = nombreValide(
   article.quantite ?? article.qte
 );
@@ -464,7 +453,7 @@ return {
   prix: prix === null ? 0 : prix,
   article
 };
-```
+
 
 }
 
@@ -478,7 +467,6 @@ return client.modeLivraison === "Livraison en Suisse"
 
 * Si un total enregistré est disponible, il est considéré comme
 * le total de référence et inclut déjà les frais de livraison.
-*
 * Les frais ne sont ajoutés qu'en l'absence de total enregistré.
 * Cela évite de compter deux fois la livraison.
   */
@@ -489,11 +477,8 @@ return client.modeLivraison === "Livraison en Suisse"
   commande.total
   ];
 
-```
 for (const champ of champsTotal) {
-```
 
-```
   if (
     champ !== undefined &&
     champ !== null &&
@@ -537,7 +522,7 @@ const totalProduits = obtenirProduits(commande).reduce(
 return arrondirCentimes(
   totalProduits + calculerFraisLivraison(client)
 );
-```
+
 
 }
 
@@ -555,11 +540,9 @@ String(texte || ""),
 largeur
 );
 
-```
 doc.text(lignes, x, y);
 
 return y + lignes.length * 6;
-```
 
 }
 
@@ -570,7 +553,6 @@ throw new Error(
 );
 }
 
-```
 const doc = new window.jspdf.jsPDF();
 const client = obtenirClient(commande);
 const typeEmail =
@@ -837,7 +819,6 @@ return {
   typeEmail,
   confirmationFinale
 };
-```
 
 }
 
@@ -847,11 +828,9 @@ function obtenirBase64PDF(doc) {
 const uri = doc.output("datauristring");
 const separateur = uri.indexOf(",");
 
-```
 return separateur >= 0
   ? uri.substring(separateur + 1)
   : uri;
-```
 
 }
 
@@ -971,7 +950,6 @@ if (!commande || typeof commande !== "object") {
 throw new Error("Les données de la commande sont absentes.");
 }
 
-```
 const optionsFinales = {
   envoyerEmail: options.envoyerEmail !== false,
   typeEmail: options.typeEmail || "nouvelle-commande",
@@ -1048,6 +1026,12 @@ const produitsPourEmail = resultat.produits.map(
       prixFinal:
         article.prixFinal ??
         article.prix_final ??
+        article.prixConfirme ??
+        article.prix_confirme ??
+        null,
+      prixConfirme:
+        article.prixConfirme ??
+        article.prix_confirme ??
         null,
       prixIndicatif:
         article.prixIndicatif ??
@@ -1083,11 +1067,12 @@ const payload = {
   total: resultat.total,
   fraisLivraison: resultat.fraisLivraison,
   numeroTwint: NUMERO_TWINT,
+  prixConfirme: commande.prixConfirme === true,
   subject: sujet
 };
 
 return envoyerCommandeGoogle(payload);
-```
+
 
 }
 
@@ -1098,13 +1083,12 @@ throw new Error(
 );
 }
 
-```
 return genererPDFCommande(commande, {
   envoyerEmail: true,
   typeEmail: "confirmation-prix",
   telecharger: false
 });
-```
+
 
 }
 
