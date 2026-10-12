@@ -646,7 +646,8 @@ function imprimerCommande(index) {
     if (typeof genererPDFCommande === "function") {
       genererPDFCommande(pdf, {
         envoyerEmail: false,
-        telecharger: true
+        telecharger: true,
+        afficher: true
       });
     } else if (typeof imprimerPDFCommande === "function") {
       imprimerPDFCommande(pdf);
