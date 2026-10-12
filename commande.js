@@ -1065,13 +1065,13 @@ nomExpediteurTwint:
     // Identifiant technique pour la base de données.
     commande.id = Date.now();
 
-    // Numéro lisible : nom du commandeur suivi de 3 chiffres.
-    const nomCommande = (commande.client.prenom + commande.client.nom)
-        .normalize("NFD")
-        .replace(/[\u0300-\u036f]/g, "")
-        .replace(/[^a-zA-Z0-9]/g, "") || "Commande";
+    // Numéro lisible : nom du commandeur - année - 3 chiffres.
+    const nomCommande = (commande.client.prenom + " " + commande.client.nom).trim()
+        || "Commande";
+    const anneeCommande = new Date().getFullYear();
     commande.numeroCommande =
-        nomCommande + String(Math.floor(Math.random() * 1000)).padStart(3, "0");
+        nomCommande + " - " + anneeCommande + "-" +
+        String(Math.floor(Math.random() * 1000)).padStart(3, "0");
 
    console.log("COMMANDE PREPAREE :", commande);
 console.log(
