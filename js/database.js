@@ -1,4 +1,4 @@
-```javascript
+
 /* =========================================================
    IDEE GOURMANDE — BASE DE DONNEES CENTRALE
    Version 3.3.1
@@ -976,4 +976,3 @@ console.log("DATABASE.JS CHARGE", {
     clients: db.clients.length,
     mouvements: db.mouvements.length
 });
-```
