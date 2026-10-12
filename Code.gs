@@ -631,6 +631,7 @@ totalProduits.toFixed(2) +
       {
         attachments: [pdfBlob],
         name: NOM_EXPEDITEUR,
+        from: EXPEDITEUR,
         replyTo: emailClient
       }
     );
@@ -727,6 +728,7 @@ totalProduits.toFixed(2) +
       {
         attachments: [pdfBlob],
         name: NOM_EXPEDITEUR,
+        from: EXPEDITEUR,
         replyTo: EXPEDITEUR
       }
     );
