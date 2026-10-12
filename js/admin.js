@@ -458,14 +458,15 @@ function boutonSMSCommande(cmd, index) {
     NUMERO_TWINT_ADMIN +
     ". Merci et belle journée !";
 
+  const separateurSMS = /iPhone|iPad|iPod/i.test(navigator.userAgent) ? "&" : "?";
   const lien = "sms:" + tel.replace(/[^\d+]/g, "") +
-    "&body=" + encodeURIComponent(msg);
+    separateurSMS + "body=" + encodeURIComponent(msg);
 
   return '<p style="margin-top:10px">' +
     '<a href="' + texteSecurise(lien) +
     '" style="display:inline-block;padding:9px 12px;border-radius:6px;background:#237b59;color:white;text-decoration:none">' +
     "Préparer le SMS de confirmation</a></p>" +
-    "<small>Le SMS n’est pas envoyé automatiquement : ouvre ce lien sur l’iPhone puis appuie sur Envoyer.</small>";
+    "<small>Le SMS n’est pas envoyé automatiquement : le lien ouvre l’application de messages de ton appareil. Vérifie le numéro et le texte, puis appuie sur Envoyer.</small>";
 }
 
 /* ---------- Liste des commandes ---------- */
