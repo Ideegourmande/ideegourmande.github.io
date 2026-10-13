@@ -113,20 +113,19 @@ function ajouterAuPanier(reference) {
                 ? String(champPoids.value || "")
                 : "";
 
-            const matchPoids = valeurPoids.match(/^(\d+)-(\d+)$/);
+            const poidsChoisi = Number(valeurPoids);
 
-            if (!matchPoids) {
+            if (!Number.isInteger(poidsChoisi) || poidsChoisi < 100 || poidsChoisi > 3000 || poidsChoisi % 100 !== 0) {
                 alert(
-                    "Veuillez choisir une fourchette de poids pour " +
-                    (reference === "viande-sechee"
-                        ? "la viande séchée."
-                        : "le lard sec.")
+                    "Veuillez choisir un poids approximatif (par tranches de 100 g) pour " +
+                    (reference === "viande-sechee" ? "la viande séchée." : "le lard sec.")
                 );
                 return;
             }
 
-            article.poidsMin = Number(matchPoids[1]);
-            article.poidsMax = Number(matchPoids[2]);
+            // Le poids sélectionné sert de référence et de plafond de prix.
+            article.poidsMin = poidsChoisi;
+            article.poidsMax = poidsChoisi;
             article.poids = article.poidsMin;
             article.quantite = 1;
             article.prixPar100g = reference === "lard-sec" ? 4 : 9;
@@ -309,8 +308,9 @@ function afficherPanier() {
             article.poidsMin &&
             article.poidsMax
         ) {
-            quantiteAffichee =
-                article.poidsMin + "–" + article.poidsMax + " g";
+            quantiteAffichee = article.poidsMin === article.poidsMax
+                ? "Environ " + article.poidsMin + " g"
+                : article.poidsMin + "–" + article.poidsMax + " g";
         } else {
             quantiteAffichee = article.quantite;
         }
@@ -386,12 +386,9 @@ function afficherDetailsArticle(article) {
         article.poidsMin &&
         article.poidsMax
     ) {
-        texte +=
-            "Fourchette choisie : " +
-            article.poidsMin +
-            "–" +
-            article.poidsMax +
-            " g";
+        texte += article.poidsMin === article.poidsMax
+            ? "Poids souhaité : environ " + article.poidsMin + " g"
+            : "Fourchette choisie : " + article.poidsMin + "–" + article.poidsMax + " g";
 
         texte +=
             "<br>Prix estimatif : " +
