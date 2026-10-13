@@ -56,7 +56,9 @@
   function obtenirClient(commande) {
     const client = commande.client && typeof commande.client === "object"
       ? commande.client
-      : {};
+      : (commande.clientDetails && typeof commande.clientDetails === "object"
+        ? commande.clientDetails
+        : {});
 
     return {
       prenom: valeur(client.prenom, commande.prenom || ""),
