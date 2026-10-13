@@ -758,30 +758,6 @@ function finaliserPoidsReelCommande(idCommande, poidsParLigne, prixParLigne) {
         }
 
         const ligne = produits[index];
-        const reference = normaliserReference(ligne.reference);
-        const tarifPar100g = reference === "viande-sechee" ? 9 : 4;
-        const quantite = Math.max(1, Number(ligne.quantite) || 1);
-
-        const plafondAnnonce = Number(ligne.prixPlafond);
-        const plafondPoids =
-            (Number(ligne.poidsMax) || 0) / 100 *
-            tarifPar100g *
-            quantite;
-
-        const plafond =
-            Number.isFinite(plafondAnnonce) && plafondAnnonce > 0
-                ? plafondAnnonce
-                : plafondPoids;
-
-        if (!(plafond > 0) || prix > plafond + 0.0001) {
-            console.warn("Prix final supérieur au plafond autorisé.", {
-                ligne: index,
-                prix: prix,
-                plafond: plafond
-            });
-            return false;
-        }
-
         const dejaTraitee =
             Array.isArray(commande.stockLignesTraitees) &&
             commande.stockLignesTraitees.includes(index);
@@ -842,28 +818,12 @@ function finaliserPoidsReelCommande(idCommande, poidsParLigne, prixParLigne) {
             Array.isArray(commande.stockLignesTraitees) &&
             commande.stockLignesTraitees.includes(index);
 
-        const reference = normaliserReference(ligne.reference);
-        const tarifPar100g = reference === "viande-sechee" ? 9 : 4;
-        const quantite = Math.max(1, Number(ligne.quantite) || 1);
-        const plafondAnnonce = Number(ligne.prixPlafond);
-        const plafondPoids =
-            (Number(ligne.poidsMax) || 0) / 100 *
-            tarifPar100g *
-            quantite;
-
-        const plafond =
-            Number.isFinite(plafondAnnonce) && plafondAnnonce > 0
-                ? plafondAnnonce
-                : plafondPoids;
-
         if (
             !dejaTraitee ||
             !Number.isFinite(poidsExistant) ||
             poidsExistant <= 0 ||
             !Number.isFinite(prixExistant) ||
             prixExistant < 0 ||
-            !(plafond > 0) ||
-            prixExistant > plafond + 0.0001
         ) {
             console.warn("Une ligne de poids réel reste à confirmer.", index);
             return false;
