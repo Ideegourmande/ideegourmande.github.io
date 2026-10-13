@@ -1,7 +1,7 @@
 
 /* ============================================================
    Idée Gourmande — Administration — Version 3.2.1
-   Pesée réelle, prix final plafonné, e-mail, SMS et PDF.
+   Pesée réelle, prix final ajustable, e-mail, SMS et PDF.
    Correction de l'échappement HTML, de l'affichage et des index.
    ============================================================ */
 "use strict";
@@ -212,22 +212,6 @@ function tarifLignePoids(ligne) {
   return tarif > 0
     ? tarif
     : TARIFS_POIDS_REEL[cleProduitPoids(ligne)];
-}
-
-function lirePrixPlafond(ligne) {
-  const plafond = valeurNombre(
-    ligne && (ligne.prixPlafond || ligne.prix_plafond)
-  );
-
-  if (plafond > 0) return plafond;
-
-  const max = valeurNombre(
-    ligne && (ligne.poidsMax || ligne.poids_max)
-  );
-
-  return max > 0
-    ? max / 100 * tarifLignePoids(ligne)
-    : 0;
 }
 
 function libelleFourchette(ligne) {
