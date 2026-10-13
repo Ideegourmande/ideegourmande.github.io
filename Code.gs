@@ -474,11 +474,16 @@ function doPost(e) {
                 article.quantite
               : '';
 
+          const estPoidsApproximatif =
+            (article.reference === 'viande-sechee' || article.reference === 'lard-sec') &&
+            Number(article.poidsMin || 0) > 0 &&
+            Number(article.poidsMin) === Number(article.poidsMax);
+
           const poids =
             article.poids
-              ? ' (' +
-                article.poids +
-                ' g)'
+              ? (estPoidsApproximatif
+                  ? ' (environ ' + article.poids + ' g)'
+                  : ' (' + article.poids + ' g)')
               : '';
 
           const prixAffiche =
