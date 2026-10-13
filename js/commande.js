@@ -115,9 +115,9 @@ function ajouterAuPanier(reference) {
 
             const poidsChoisi = Number(valeurPoids);
 
-            if (!Number.isInteger(poidsChoisi) || poidsChoisi < 100 || poidsChoisi > 3000 || poidsChoisi % 100 !== 0) {
+            if (!Number.isInteger(poidsChoisi) || poidsChoisi < 500 || poidsChoisi > 3000 || poidsChoisi % 100 !== 0) {
                 alert(
-                    "Veuillez choisir un poids approximatif (par tranches de 100 g) pour " +
+                    "Veuillez choisir un poids approximatif d’au moins 500 g (par tranches de 100 g) pour " +
                     (reference === "viande-sechee" ? "la viande séchée." : "le lard sec.")
                 );
                 return;
