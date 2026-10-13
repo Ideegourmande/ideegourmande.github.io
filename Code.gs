@@ -606,6 +606,13 @@ function doPost(e) {
       lignes,
 
       '',
+      ...(typeEmail === 'confirmation-prix' ? [] : [
+        'INFORMATION SUR LE POIDS ET LE PRIX',
+        'Ce récapitulatif est indicatif et ne constitue pas une demande de paiement.',
+        'Pour le cœur de saumon fumé, la viande séchée et le lard sec, le poids réel sera mesuré ou confirmé après préparation.',
+        'Le prix final sera confirmé avant paiement. Pour la viande séchée et le lard sec, il ne dépassera pas le montant correspondant au poids approximatif choisi.',
+        ''
+      ]),
 
       'MODE DE RÉCEPTION',
 
@@ -723,6 +730,13 @@ totalProduits.toFixed(2) +
       lignes,
 
       '',
+      ...(typeEmail === 'confirmation-prix' ? [] : [
+        'INFORMATION SUR LE POIDS ET LE PRIX',
+        'Ce récapitulatif est indicatif et ne constitue pas une demande de paiement.',
+        'Pour le cœur de saumon fumé, la viande séchée et le lard sec, le poids réel sera mesuré ou confirmé après préparation.',
+        'Le prix final sera confirmé avant paiement. Pour la viande séchée et le lard sec, il ne dépassera pas le montant correspondant au poids approximatif choisi.',
+        ''
+      ]),
 
       'MODE DE RÉCEPTION',
 
