@@ -368,7 +368,7 @@
     doc.text("ARTISANAT GOURMAND · GENÈVE", marge, 30);
     doc.setFontSize(15);
     doc.setTextColor(255, 255, 255);
-    doc.text(confirmationFinale ? "Confirmation du prix final" : "Récapitulatif de commande", marge, 43);
+    doc.setFontSize(confirmationFinale ? 15 : 12);\n    doc.text(confirmationFinale ? "Confirmation du prix final" : "Récapitulatif de commande et de livraison avant paiement", marge, 43);
     doc.setFontSize(9);
     doc.setTextColor(231, 235, 228);
     doc.text("COMMANDE N° " + String(numero), largeurPage - marge, 22, { align: "right" });
@@ -480,7 +480,7 @@
     doc.setFillColor(239, 235, 222);
     const texteInfo = confirmationFinale
       ? "Le prix final est confirmé. Vous pouvez régler ce montant par TWINT au " + NUMERO_TWINT + "."
-      : "Ce récapitulatif est indicatif et ne constitue pas une demande de paiement. Pour le cœur de saumon fumé, la viande séchée et le lard sec, le poids réel sera mesuré ou confirmé après préparation. Le prix final sera confirmé avant paiement. Pour la viande séchée et le lard sec, il ne dépassera pas le plafond annoncé pour le poids approximatif choisi.";
+      : "Récapitulatif de commande et de livraison avant paiement. Les poids et montants des produits vendus au poids sont estimatifs. Le poids réel et le prix définitif seront confirmés après préparation, avant tout paiement.";
     const infoLignes = doc.splitTextToSize(texteInfo, largeurInterieure - 12);
     const infoH = 10 + infoLignes.length * 4.2;
     doc.roundedRect(marge, y, largeurInterieure, infoH, 2, 2, "F");
