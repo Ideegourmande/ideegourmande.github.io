@@ -385,8 +385,6 @@ function rendreZonePoidsReel(cmd, indexCommande) {
       "Produit"
     );
 
-    const plafond = lirePrixPlafond(x.ligne);
-
     return (
       '<div style="margin:12px 0;padding:10px;background:#faf8f3;border-radius:6px">' +
 
