@@ -387,10 +387,7 @@ function doPost(e) {
         : [];
 
     const typeEmail = String(data.typeEmail || 'nouvelle-commande');
-    let total =
-      Number(
-        data.total || 0
-      );
+    let total = 0;
 
     const numeroCommande =
       data.numeroCommande || '';
@@ -414,26 +411,28 @@ function doPost(e) {
           ? FRAIS_LIVRAISON_SUISSE
           : 0);
 
-    // Pour une confirmation finale, recalculer depuis les prix transmis
-    // après la pesée afin de ne pas envoyer un ancien total indicatif.
-    if (typeEmail === 'confirmation-prix') {
-      const totalProduitsFinal = produits.reduce(function(somme, article) {
-        const prix = Number(
-          article.prixFinal !== undefined && article.prixFinal !== null
+    // Le total est recalculé à partir des prix des lignes affichées.
+    // Pour une commande initiale, utiliser le prix indicatif du produit
+    // au poids lorsqu'il est fourni; pour une confirmation, le prix final.
+    const totalProduitsCalcules = produits.reduce(function(somme, article) {
+      const valeurPrix = typeEmail === 'confirmation-prix'
+        ? (article.prixFinal !== undefined && article.prixFinal !== null
             ? article.prixFinal
-            : article.prix
-        );
-        return somme + (Number.isFinite(prix) && prix >= 0 ? prix : 0);
-      }, 0);
-      total = Math.round((totalProduitsFinal + fraisLivraison) * 100) / 100;
-    }
+            : article.prix)
+        : (article.prixIndicatif !== undefined && article.prixIndicatif !== null
+            ? article.prixIndicatif
+            : article.prix);
+      const prix = Number(valeurPrix);
+      return somme + (Number.isFinite(prix) && prix >= 0 ? prix : 0);
+    }, 0);
 
     const totalProduits =
-      Math.round((total - fraisLivraison) * 100) / 100;
+      Math.round(totalProduitsCalcules * 100) / 100;
+
+    total = Math.round((totalProduits + fraisLivraison) * 100) / 100;
 
     const totalAvecLivraison =
       total;
-
 
     console.log(
       'MODE LIVRAISON REÇU PAR CODE.GS : ' +
@@ -487,7 +486,11 @@ function doPost(e) {
             article.prixFinal !== undefined &&
             article.prixFinal !== null
               ? article.prixFinal
-              : (article.prix || 0);
+              : (typeEmail !== 'confirmation-prix' &&
+                 article.prixIndicatif !== undefined &&
+                 article.prixIndicatif !== null
+                  ? article.prixIndicatif
+                  : (article.prix || 0));
 
           return (
             '- ' +
