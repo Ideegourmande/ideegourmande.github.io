@@ -356,13 +356,8 @@ function calculerPrixAutomatiquePoids(champPoids) {
   }
 
   const prix = Math.round((poids * tarif / 100 + Number.EPSILON) * 100) / 100;
-  const plafond = valeurNombre(prixChamp.getAttribute("data-plafond"));
   prixChamp.value = prix.toFixed(2);
-  prixChamp.setCustomValidity(
-    plafond > 0 && prix > plafond
-      ? "Le prix calculé dépasse le plafond annoncé."
-      : ""
-  );
+  prixChamp.setCustomValidity("");
 }
 
 /* ---------- Saisie du poids et du prix réels ---------- */
@@ -395,9 +390,8 @@ function rendreZonePoidsReel(cmd, indexCommande) {
     'style="margin-top:12px;padding:12px;border:1px solid #d9c8a8;border-radius:8px">' +
     '<h4 style="margin:0 0 8px">Finaliser le poids et le prix</h4>' +
     '<p style="margin:0 0 10px">' +
-    "Saisis le poids réellement mesuré en grammes et le prix final " +
-    "en CHF pour chaque ligne. Le prix saisi ne peut pas dépasser " +
-    "le plafond annoncé au client." +
+    "Saisis le poids réellement mesuré en grammes. Le prix est calculé automatiquement " +
+    "selon le tarif indicatif, mais tu peux le modifier librement pour appliquer un ajustement commercial." +
     "</p>";
 
   html += aPeser.map(x => {
@@ -432,25 +426,19 @@ function rendreZonePoidsReel(cmd, indexCommande) {
       'style="max-width:260px;width:100%;padding:8px">' +
 
       '<label for="prix-reel-' + indexCommande + '-' + x.indexLigne +
-      '" style="display:block;margin:10px 0 4px">Prix calculé automatiquement (CHF)</label>' +
+      '" style="display:block;margin:10px 0 4px">Prix final (CHF) — modifiable</label>' +
 
       '<input id="prix-reel-' + indexCommande + '-' + x.indexLigne +
       '" class="champ-prix-reel" type="number" min="0" step="0.01" ' +
-      'inputmode="decimal" readonly required ' +
+      'inputmode="decimal" required ' +
       'data-commande-index="' + indexCommande +
       '" data-ligne-index="' + x.indexLigne +
       '" data-plafond="' + plafond +
       '" data-tarif="' + tarifLignePoids(x.ligne) +
       '" placeholder="Saisis le poids pour calculer le prix" ' +
-      'style="max-width:260px;width:100%;padding:8px;background:#f1f1f1">' +
+      'style="max-width:260px;width:100%;padding:8px">' +
 
-      '<small style="display:block;margin-top:5px">Plafond annoncé : ' +
-      formatCHF(plafond) +
-      "</small>" +
-
-      (plafond <= 0
-        ? '<p style="color:#a12622;margin:6px 0">Attention : le plafond annoncé est absent ou invalide. Vérifie les données de cette ligne avant de confirmer.</p>'
-        : "") +
+      '<small style="display:block;margin-top:5px">Le montant calculé peut être ajusté manuellement à la hausse ou à la baisse.</small>' +
 
       "</div>"
     );
@@ -784,32 +772,14 @@ async function confirmerPrixCommande(index) {
 
   inputsPrix.forEach(input => {
     const ligneIndex = input.getAttribute("data-ligne-index");
-    const poids = poidsParLigne[ligneIndex];
-    const tarif = valeurNombre(input.getAttribute("data-tarif"));
-    const plafond = valeurNombre(input.getAttribute("data-plafond"));
+    const prixSaisi = valeurNombre(input.value);
 
-    if (!(poids > 0) || !(tarif > 0)) {
-      erreur = "Saisis un poids réel valide pour calculer automatiquement le prix.";
+    if (!(poids > 0) || !Number.isFinite(prixSaisi) || prixSaisi < 0) {
+      erreur = "Saisis un poids réel valide et un prix final positif ou nul pour chaque produit.";
       return;
     }
 
-    if (!(plafond > 0)) {
-      erreur =
-        "Le plafond annoncé est absent ou invalide. Vérifie cette commande avant de continuer.";
-      return;
-    }
-
-    const prix = Math.round((poids * tarif / 100 + Number.EPSILON) * 100) / 100;
-
-    if (Math.round(prix * 100) > Math.round(plafond * 100)) {
-      erreur =
-        "Le prix calculé automatiquement (" + formatCHF(prix) +
-        ") dépasse le plafond annoncé (" + formatCHF(plafond) + ").";
-      return;
-    }
-
-    prixParLigne[ligneIndex] = prix;
-    input.value = prix.toFixed(2);
+    prixParLigne[ligneIndex] = Math.round((prixSaisi + Number.EPSILON) * 100) / 100;
   });
 
   if (erreur) return alert(erreur);
@@ -839,7 +809,7 @@ async function confirmerPrixCommande(index) {
         (ligne.nom || ligne.nomProduit || ligne.reference || "Produit") +
         " : " + poidsParLigne[i] + " g — " +
         formatCHF(prixParLigne[i]) +
-        " (calculé automatiquement à " + formatCHF(tarifLignePoids(ligne)) + " / 100 g)"
+        " (tarif indicatif : " + formatCHF(tarifLignePoids(ligne)) + " / 100 g)"
       );
     })
     .filter(Boolean)
