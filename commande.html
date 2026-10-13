@@ -170,10 +170,6 @@
         <label for="viandePoids">Poids souhaité (par tranches d’environ 100 g)</label>
         <select class="choix-poids poids-produit" id="viandePoids" name="viandePoids">
             <option value="0">Choisir un poids approximatif</option>
-            <option value="100">Environ 100 g</option>
-            <option value="200">Environ 200 g</option>
-            <option value="300">Environ 300 g</option>
-            <option value="400">Environ 400 g</option>
             <option value="500">Environ 500 g</option>
             <option value="600">Environ 600 g</option>
             <option value="700">Environ 700 g</option>
@@ -204,8 +200,8 @@
 
         <p class="confirmation information-poids">
             Le montant est estimatif. Le prix de référence est de
-            CHF 9.00 / 100 g. Le poids réel sera mesuré après préparation.
-            Choisissez un poids approximatif par tranches de 100 g.
+            CHF 9.00 / 100 g. Le poids réel sera confirmé lors de la préparation.
+            Poids minimal de commande : environ 500 g. Choisissez ensuite un poids approximatif par tranches de 100 g.
             Le prix final ne dépassera pas le montant correspondant au poids choisi.
         </p>
 
@@ -232,10 +228,6 @@
         <label for="lardPoids">Poids souhaité (par tranches d’environ 100 g)</label>
         <select class="choix-poids poids-produit" id="lardPoids" name="lardPoids">
             <option value="0">Choisir un poids approximatif</option>
-            <option value="100">Environ 100 g</option>
-            <option value="200">Environ 200 g</option>
-            <option value="300">Environ 300 g</option>
-            <option value="400">Environ 400 g</option>
             <option value="500">Environ 500 g</option>
             <option value="600">Environ 600 g</option>
             <option value="700">Environ 700 g</option>
@@ -266,8 +258,8 @@
 
         <p class="confirmation information-poids">
             Le montant est estimatif. Le prix de référence est de
-            CHF 4.00 / 100 g. Le poids réel sera mesuré après préparation.
-            Choisissez un poids approximatif par tranches de 100 g.
+            CHF 4.00 / 100 g. Le poids réel sera confirmé lors de la préparation.
+            Poids minimal de commande : environ 500 g. Choisissez ensuite un poids approximatif par tranches de 100 g.
             Le prix final ne dépassera pas le montant correspondant au poids choisi.
         </p>
 
@@ -342,15 +334,14 @@
         </p>
 
         <p>
-            Pour la viande séchée et le lard sec, choisissez un poids approximatif
-            par tranches de 100 g. Le prix affiché dans le panier est
-            indicatif, sur la base du tarif au 100 g.
+            Pour la viande séchée et le lard sec, le poids minimal de commande est d’environ 500 g.
+            Choisissez ensuite un poids approximatif par tranches de 100 g. Le poids réel
+            sera confirmé lors de la préparation. Le prix affiché dans le panier est indicatif.
         </p>
 
         <p>
             <strong>
-                Le prix final sera calculé à partir du poids réel et ne dépassera
-                jamais le prix correspondant au poids approximatif choisi.
+                Le prix final sera calculé à partir du poids réel et confirmé avant paiement.
             </strong>
         </p>
 
@@ -546,7 +537,7 @@
 <!-- SCRIPTS -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <script src="js/database.js?v=6"></script>
-<script src="js/pdfcommande.js?v=13"></script>
+<script src="js/pdfcommande.js?v=14"></script>
 <script src="js/commande.js?v=10"></script>
 
 </body>
