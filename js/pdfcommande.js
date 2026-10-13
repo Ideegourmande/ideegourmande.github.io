@@ -480,7 +480,7 @@
     doc.setFillColor(239, 235, 222);
     const texteInfo = confirmationFinale
       ? "Le prix final est confirmé. Vous pouvez régler ce montant par TWINT au " + NUMERO_TWINT + "."
-      : "Ce récapitulatif est indicatif et ne constitue pas une demande de paiement. Pour le cœur de saumon fumé, la viande séchée et le lard sec, le poids réel sera mesuré ou confirmé après préparation. Le prix final sera confirmé avant paiement et ne dépassera pas le plafond annoncé pour le poids choisi.";
+      : "Ce récapitulatif est indicatif et ne constitue pas une demande de paiement. Pour le cœur de saumon fumé, la viande séchée et le lard sec, le poids réel sera mesuré ou confirmé après préparation. Le prix final sera confirmé avant paiement. Pour la viande séchée et le lard sec, il ne dépassera pas le plafond annoncé pour le poids approximatif choisi.";
     const infoLignes = doc.splitTextToSize(texteInfo, largeurInterieure - 12);
     const infoH = 10 + infoLignes.length * 4.2;
     doc.roundedRect(marge, y, largeurInterieure, infoH, 2, 2, "F");
