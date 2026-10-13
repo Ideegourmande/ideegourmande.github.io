@@ -665,9 +665,17 @@ function renvoyerEmail(index) {
       ",\r\n\r\nNous vous confirmerons le prix final après la pesée des produits concernés." +
       "\r\n\r\nMerci, Idée Gourmande.";
 
-  window.location.href = "mailto:" + encodeURIComponent(email) +
-    "?subject=" + encodeURIComponent(sujet) +
+  // Ouvre la fenêtre de rédaction Gmail en ciblant le compte Idée Gourmande.
+  // L'expéditeur sera ce compte si la session Gmail est ouverte dessus
+  // (ou si cette adresse est configurée comme alias d'envoi).
+  const compteGmail = "ideesgourmandesge@gmail.com";
+  const urlGmail = "https://mail.google.com/mail/?view=cm&fs=1" +
+    "&authuser=" + encodeURIComponent(compteGmail) +
+    "&to=" + encodeURIComponent(email) +
+    "&su=" + encodeURIComponent(sujet) +
     "&body=" + encodeURIComponent(corps);
+
+  window.open(urlGmail, "_blank", "noopener");
 }
 
 function obtenirCommandeParIdentifiant(id) {
