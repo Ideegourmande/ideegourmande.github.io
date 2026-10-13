@@ -982,13 +982,33 @@ function ajouterCommande(commande) {
         return false;
     }
 
+    // Garder une copie pour pouvoir annuler proprement si le navigateur
+    // refuse d'enregistrer la commande (quota, stockage indisponible, etc.).
+    let instantaneAvant;
+    try {
+        instantaneAvant = JSON.stringify(db);
+    } catch (erreur) {
+        console.error("Impossible de préparer la sauvegarde de sécurité.", erreur);
+        return false;
+    }
+
     if (!Array.isArray(db.achats)) db.achats = [];
     if (!Array.isArray(db.mouvements)) db.mouvements = [];
     if (!Array.isArray(db.clients)) db.clients = [];
 
     db.commandes.push(commande);
     enregistrerClientCommande(commande);
-    sauvegarderDB();
+
+    if (!sauvegarderDB()) {
+        try {
+            db = JSON.parse(instantaneAvant);
+            window.db = db;
+        } catch (erreur) {
+            console.error("Impossible de restaurer la base après l'échec d'enregistrement.", erreur);
+        }
+        console.error("Commande non enregistrée : le navigateur n'a pas pu sauvegarder les données.");
+        return false;
+    }
 
     const resultatStock = traiterStockCommande(commande);
 
