@@ -268,15 +268,8 @@
   function obtenirTotal(commande, client) {
     const confirmationFinale = commande.prixConfirme === true;
 
-    if (!confirmationFinale) {
-      for (const champ of [commande.totalFinal, commande.total_final, commande.total]) {
-        if (champ !== undefined && champ !== null && String(champ).trim() !== "") {
-          const total = nombreValide(champ);
-          if (total !== null && total >= 0) return arrondirCentimes(total);
-        }
-      }
-    }
-
+    // Recalculer depuis les mêmes prix que ceux affichés sur les lignes,
+    // plutôt que de réutiliser un ancien total pouvant exclure la livraison.
     const totalProduits = obtenirProduits(commande).reduce((somme, article) => {
       let prix;
 
@@ -286,7 +279,9 @@
           ? prixFinal
           : (prixFinal !== null ? prixFinal : obtenirPrixIndicatifArticle(article));
       } else {
-        prix = nombreValide(article.prixFinal ?? article.prix_final ?? article.prix);
+        prix = nombreValide(
+          article.prixFinal ?? article.prix_final ?? article.prix
+        );
       }
 
       return somme + (prix !== null && prix >= 0 ? prix : 0);
