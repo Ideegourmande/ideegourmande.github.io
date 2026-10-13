@@ -302,8 +302,7 @@ function afficherProduitsCommande(cmd, indexCommande) {
               ? ligne.prixIndicatif
               : ligne.prix
           ) +
-          ' — plafond annoncé : ' +
-          formatCHF(lirePrixPlafond(ligne)) +
+          ' — montant indicatif avant pesée' +
           '</span>';
       }
 
@@ -433,7 +432,6 @@ function rendreZonePoidsReel(cmd, indexCommande) {
       'inputmode="decimal" required ' +
       'data-commande-index="' + indexCommande +
       '" data-ligne-index="' + x.indexLigne +
-      '" data-plafond="' + plafond +
       '" data-tarif="' + tarifLignePoids(x.ligne) +
       '" placeholder="Saisis le poids pour calculer le prix" ' +
       'style="max-width:260px;width:100%;padding:8px">' +
@@ -772,6 +770,7 @@ async function confirmerPrixCommande(index) {
 
   inputsPrix.forEach(input => {
     const ligneIndex = input.getAttribute("data-ligne-index");
+    const poids = poidsParLigne[ligneIndex];
     const prixSaisi = valeurNombre(input.value);
 
     if (!(poids > 0) || !Number.isFinite(prixSaisi) || prixSaisi < 0) {
