@@ -123,7 +123,7 @@ function ajouterAuPanier(reference) {
                 return;
             }
 
-            // Le poids sélectionné sert de référence et de plafond de prix.
+            // Le poids sélectionné est une estimation, pas une limite de prix.
             article.poidsMin = poidsChoisi;
             article.poidsMax = poidsChoisi;
             article.poids = article.poidsMin;
@@ -132,10 +132,6 @@ function ajouterAuPanier(reference) {
 
             article.prixIndicatif = Number(
                 (article.poidsMin * article.prixPar100g / 100).toFixed(2)
-            );
-
-            article.prixPlafond = Number(
-                (article.poidsMax * article.prixPar100g / 100).toFixed(2)
             );
 
             break;
@@ -393,11 +389,6 @@ function afficherDetailsArticle(article) {
         texte +=
             "<br>Prix estimatif : " +
             Number(article.prixIndicatif || article.prix || 0).toFixed(2) +
-            " CHF";
-
-        texte +=
-            "<br>Plafond : " +
-            Number(article.prixPlafond || 0).toFixed(2) +
             " CHF";
     }
 
