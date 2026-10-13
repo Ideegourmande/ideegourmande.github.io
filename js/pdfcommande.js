@@ -185,15 +185,6 @@
         throw new Error("Le prix final d'un article au poids est absent ou invalide.");
       }
 
-      const plafond = obtenirPlafond(article);
-      if (plafond === null) {
-        throw new Error("Impossible de vérifier le plafond annoncé. Vérifie le poids maximal et le prix plafond enregistrés.");
-      }
-
-      if (Math.round(prixFinal * 100) > Math.round(plafond * 100)) {
-        throw new Error("Le prix final dépasse le plafond annoncé. Aucun e-mail n'a été demandé.");
-      }
-
       const poidsReel = nombreValide(article.poidsReel ?? article.poids_reel);
       if (poidsReel === null || poidsReel <= 0 || !Number.isInteger(poidsReel)) {
         throw new Error("Le poids réel doit être renseigné en grammes entiers avant l'envoi.");
@@ -408,8 +399,7 @@
     produits.forEach((article, index) => {
       const ligne = ligneProduit(article, index);
       const detailLignes = ligne.detail ? doc.splitTextToSize(ligne.detail, largeurInterieure - 14) : [];
-      const plafond = estProduitAuPoidsReel(article) && !confirmationFinale ? obtenirPlafond(article) : null;
-      const lignesPrix = confirmationFinale || estProduitAuPoidsReel(article) ? 1 + (plafond !== null && plafond > 0 ? 1 : 0) : 1;
+      const lignesPrix = 1;
       const hauteurBloc = Math.max(21, 11 + detailLignes.length * 4 + lignesPrix * 4.5);
 
       if (y + hauteurBloc > 263) nouvellePage();
@@ -441,12 +431,6 @@
         : (estProduitAuPoidsReel(article) ? "Prix indicatif" : "Prix");
       doc.text(libellePrix + " : " + formatMontant(ligne.prix), xPrix, yDetail + 1, { align: "right" });
 
-      if (plafond !== null && plafond > 0) {
-        doc.setFont("helvetica", "normal");
-        doc.setFontSize(7.5);
-        doc.setTextColor(...gris);
-        doc.text("Plafond de la fourchette : " + formatMontant(plafond), xPrix, yDetail + 5.5, { align: "right" });
-      }
       y += hauteurBloc + 3;
     });
 
