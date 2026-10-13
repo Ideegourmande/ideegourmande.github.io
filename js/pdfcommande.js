@@ -359,7 +359,8 @@
     doc.text("ARTISANAT GOURMAND · GENÈVE", marge, 30);
     doc.setFontSize(15);
     doc.setTextColor(255, 255, 255);
-    doc.setFontSize(confirmationFinale ? 15 : 12);\n    doc.text(confirmationFinale ? "Confirmation du prix final" : "Récapitulatif de commande et de livraison avant paiement", marge, 43);
+    doc.setFontSize(confirmationFinale ? 15 : 12);
+    doc.text(confirmationFinale ? "Confirmation du prix final" : "Récapitulatif de commande et de livraison avant paiement", marge, 43);
     doc.setFontSize(9);
     doc.setTextColor(231, 235, 228);
     doc.text("COMMANDE N° " + String(numero), largeurPage - marge, 22, { align: "right" });
