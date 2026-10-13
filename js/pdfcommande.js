@@ -313,135 +313,208 @@
     const fraisLivraison = calculerFraisLivraison(client);
     const numero = valeur(commande.numeroCommande || commande.id || commande.numero, "Sans numéro");
 
-    let y = 18;
+    // Palette éditoriale : vert profond, ivoire et accent doré.
+    const vert = [35, 68, 56];
+    const or = [184, 145, 78];
+    const ivoire = [249, 247, 240];
+    const gris = [92, 96, 91];
+    const largeurPage = doc.internal.pageSize.getWidth();
+    const hauteurPage = doc.internal.pageSize.getHeight();
+    const marge = 16;
+    const largeurInterieure = largeurPage - marge * 2;
+    const formatMontant = nombre => montantCHF(nombre);
 
+    function nouvellePage() {
+      doc.addPage();
+      y = 20;
+      doc.setFillColor(...ivoire);
+      doc.rect(0, 0, largeurPage, hauteurPage, "F");
+      doc.setFillColor(...vert);
+      doc.rect(0, 0, largeurPage, 5, "F");
+    }
+
+    function titreSection(texte) {
+      y += 4;
+      doc.setFont("helvetica", "bold");
+      doc.setFontSize(10);
+      doc.setTextColor(...vert);
+      doc.text(String(texte).toUpperCase(), marge, y);
+      y += 3;
+      doc.setDrawColor(...or);
+      doc.setLineWidth(0.45);
+      doc.line(marge, y, marge + 22, y);
+      y += 7;
+      doc.setTextColor(40, 43, 40);
+      doc.setFont("helvetica", "normal");
+    }
+
+    let y = 0;
+    doc.setFillColor(...ivoire);
+    doc.rect(0, 0, largeurPage, hauteurPage, "F");
+    doc.setFillColor(...vert);
+    doc.rect(0, 0, largeurPage, 53, "F");
+    doc.setFillColor(...or);
+    doc.rect(0, 53, largeurPage, 1.8, "F");
+
+    doc.setTextColor(255, 255, 255);
     doc.setFont("helvetica", "bold");
-    doc.setFontSize(18);
-    doc.text(NOM_ENTREPRISE, 15, y);
-    y += 9;
-
-    doc.setFontSize(14);
-    doc.text(confirmationFinale ? "Confirmation du prix final" : "Récapitulatif de commande", 15, y);
-    y += 9;
-
+    doc.setFontSize(23);
+    doc.text(NOM_ENTREPRISE, marge, 22);
     doc.setFont("helvetica", "normal");
-    doc.setFontSize(10);
-    doc.text("Commande : " + numero, 15, y);
-    y += 6;
-    doc.text("Date : " + new Date().toLocaleDateString("fr-CH"), 15, y);
-    y += 10;
+    doc.setFontSize(9);
+    doc.setTextColor(231, 235, 228);
+    doc.text("ARTISANAT GOURMAND · GENÈVE", marge, 30);
+    doc.setFontSize(15);
+    doc.setTextColor(255, 255, 255);
+    doc.text(confirmationFinale ? "Confirmation du prix final" : "Récapitulatif de commande", marge, 43);
+    doc.setFontSize(9);
+    doc.setTextColor(231, 235, 228);
+    doc.text("COMMANDE N° " + String(numero), largeurPage - marge, 22, { align: "right" });
+    doc.text("Émise le " + new Date().toLocaleDateString("fr-CH"), largeurPage - marge, 30, { align: "right" });
 
+    y = 66;
+    doc.setTextColor(40, 43, 40);
+    titreSection("Informations client");
+
+    const colonneGauche = marge + 3;
+    const colonneDroite = marge + largeurInterieure / 2 + 2;
+    doc.setFillColor(255, 255, 255);
+    doc.setDrawColor(231, 227, 216);
+    doc.roundedRect(marge, y - 3, largeurInterieure, 33, 2, 2, "FD");
+    doc.setFontSize(9);
     doc.setFont("helvetica", "bold");
-    doc.text("Coordonnées du client", 15, y);
-    y += 6;
+    doc.setTextColor(...vert);
+    doc.text("CLIENT", colonneGauche, y + 4);
+    doc.text("CONTACT", colonneDroite, y + 4);
     doc.setFont("helvetica", "normal");
+    doc.setTextColor(45, 48, 45);
+    doc.text((client.prenom + " " + client.nom).trim() || "—", colonneGauche, y + 10);
+    doc.setFontSize(8);
+    doc.setTextColor(...gris);
+    doc.text(doc.splitTextToSize("Adresse : " + (client.adresse || "—"), largeurInterieure / 2 - 8), colonneGauche, y + 17);
+    doc.setTextColor(45, 48, 45);
+    doc.text("Tél. : " + (client.telephone || "—"), colonneDroite, y + 10);
+    doc.text(doc.splitTextToSize("E-mail : " + (client.email || "—"), largeurInterieure / 2 - 8), colonneDroite, y + 17);
+    doc.setTextColor(...gris);
+    doc.text("Réception : " + valeur(client.modeLivraison, "À convenir"), colonneGauche, y + 26);
+    y += 39;
 
-    y = ajouterTextePDF(doc, "Client : " + client.prenom + " " + client.nom, 15, y);
-    y = ajouterTextePDF(doc, "Téléphone : " + client.telephone, 15, y);
-    y = ajouterTextePDF(doc, "E-mail : " + client.email, 15, y);
-    y = ajouterTextePDF(doc, "Adresse : " + client.adresse, 15, y);
-    y = ajouterTextePDF(doc, "Réception : " + valeur(client.modeLivraison, "À convenir"), 15, y);
-    y += 5;
+    titreSection("Articles commandés");
 
-    doc.setFont("helvetica", "bold");
-    doc.text("Articles commandés", 15, y);
-    y += 7;
-    doc.setFont("helvetica", "normal");
-
+    const xNom = marge + 3;
+    const xPrix = largeurPage - marge - 3;
     produits.forEach((article, index) => {
       const ligne = ligneProduit(article, index);
+      const detailLignes = ligne.detail ? doc.splitTextToSize(ligne.detail, largeurInterieure - 14) : [];
+      const plafond = estProduitAuPoidsReel(article) && !confirmationFinale ? obtenirPlafond(article) : null;
+      const lignesPrix = confirmationFinale || estProduitAuPoidsReel(article) ? 1 + (plafond !== null && plafond > 0 ? 1 : 0) : 1;
+      const hauteurBloc = Math.max(21, 11 + detailLignes.length * 4 + lignesPrix * 4.5);
 
-      if (y > 255) {
-        doc.addPage();
-        y = 18;
+      if (y + hauteurBloc > 263) nouvellePage();
+
+      doc.setFillColor(255, 255, 255);
+      doc.setDrawColor(231, 227, 216);
+      doc.roundedRect(marge, y - 3, largeurInterieure, hauteurBloc, 2, 2, "FD");
+      doc.setFillColor(...or);
+      doc.roundedRect(marge, y - 3, 1.5, hauteurBloc, 0.7, 0.7, "F");
+
+      doc.setFont("helvetica", "bold");
+      doc.setFontSize(9.5);
+      doc.setTextColor(...vert);
+      doc.text(ligne.quantite + " × " + ligne.nom, xNom + 2, y + 3);
+      doc.setFont("helvetica", "normal");
+      doc.setFontSize(8);
+      doc.setTextColor(...gris);
+      let yDetail = y + 8;
+      if (detailLignes.length) {
+        doc.text(detailLignes, xNom + 2, yDetail);
+        yDetail += detailLignes.length * 4;
       }
 
-      y = ajouterTextePDF(doc, ligne.quantite + " × " + ligne.nom, 15, y);
+      doc.setFont("helvetica", "bold");
+      doc.setFontSize(8.5);
+      doc.setTextColor(45, 48, 45);
+      const libellePrix = confirmationFinale
+        ? "Prix confirmé"
+        : (estProduitAuPoidsReel(article) ? "Prix indicatif" : "Prix");
+      doc.text(libellePrix + " : " + formatMontant(ligne.prix), xPrix, yDetail + 1, { align: "right" });
 
-      if (ligne.detail) y = ajouterTextePDF(doc, ligne.detail, 20, y, 170);
-
-      if (confirmationFinale) {
-        y = ajouterTextePDF(doc, "Prix confirmé : " + montantCHF(ligne.prix), 20, y);
-      } else if (estProduitAuPoidsReel(article)) {
-        y = ajouterTextePDF(doc, "Prix indicatif : " + montantCHF(ligne.prix), 20, y);
-        const plafond = obtenirPlafond(article);
-
-        if (plafond !== null && plafond > 0) {
-          y = ajouterTextePDF(doc, "Prix maximal selon la fourchette : " + montantCHF(plafond), 20, y);
-        }
-      } else {
-        y = ajouterTextePDF(doc, "Prix : " + montantCHF(ligne.prix), 20, y);
+      if (plafond !== null && plafond > 0) {
+        doc.setFont("helvetica", "normal");
+        doc.setFontSize(7.5);
+        doc.setTextColor(...gris);
+        doc.text("Plafond de la fourchette : " + formatMontant(plafond), xPrix, yDetail + 5.5, { align: "right" });
       }
-
-      y += 3;
+      y += hauteurBloc + 3;
     });
 
-    if (y > 255) {
-      doc.addPage();
-      y = 18;
-    }
-
+    if (y > 252) nouvellePage();
     y += 3;
-    doc.setFont("helvetica", "normal");
-    doc.setFontSize(10);
 
+    const fraisLivraison = calculerFraisLivraison(client);
+    const total = obtenirTotal(commande, client);
+    const blocTotalH = fraisLivraison > 0 ? 32 : 24;
+    doc.setFillColor(255, 255, 255);
+    doc.setDrawColor(231, 227, 216);
+    doc.roundedRect(largeurPage - marge - 83, y, 83, blocTotalH, 2, 2, "FD");
+    doc.setFont("helvetica", "normal");
+    doc.setFontSize(8.5);
+    doc.setTextColor(...gris);
+    let yTotal = y + 7;
     if (fraisLivraison > 0) {
-      doc.text("Frais de livraison : " + montantCHF(fraisLivraison), 15, y);
-      y += 7;
+      doc.text("Livraison", largeurPage - marge - 79, yTotal);
+      doc.text(formatMontant(fraisLivraison), largeurPage - marge - 4, yTotal, { align: "right" });
+      yTotal += 7;
     }
-
+    doc.setDrawColor(...or);
+    doc.line(largeurPage - marge - 79, yTotal - 3, largeurPage - marge - 4, yTotal - 3);
     doc.setFont("helvetica", "bold");
-    doc.setFontSize(12);
-    doc.text(
-      (confirmationFinale ? "PRIX FINAL À PAYER : " : "TOTAL INDICATIF : ") + montantCHF(total),
-      15,
-      y
-    );
-
-    y += 9;
-    doc.setFont("helvetica", "normal");
     doc.setFontSize(10);
+    doc.setTextColor(...vert);
+    doc.text(confirmationFinale ? "TOTAL À PAYER" : "TOTAL INDICATIF", largeurPage - marge - 79, yTotal + 2);
+    doc.setFontSize(11);
+    doc.text(formatMontant(total), largeurPage - marge - 4, yTotal + 2, { align: "right" });
+    y += blocTotalH + 8;
 
-    if (confirmationFinale) {
-      y = ajouterTextePDF(
-        doc,
-        "Le prix final a été confirmé. Vous pouvez régler ce montant par TWINT au " + NUMERO_TWINT + ".",
-        15,
-        y,
-        180
-      );
-    } else {
-      y = ajouterTextePDF(doc, "Ce récapitulatif ne constitue pas une demande de paiement.", 15, y, 180);
-      y = ajouterTextePDF(
-        doc,
-        "Pour la viande séchée et le lard sec, le poids réel sera mesuré après préparation. Le prix final sera confirmé avant tout paiement et ne dépassera pas le plafond annoncé pour la fourchette choisie.",
-        15,
-        y,
-        180
-      );
-    }
+    if (y > 250) nouvellePage();
+    doc.setFillColor(239, 235, 222);
+    const texteInfo = confirmationFinale
+      ? "Le prix final est confirmé. Vous pouvez régler ce montant par TWINT au " + NUMERO_TWINT + "."
+      : "Ce récapitulatif est indicatif et ne constitue pas une demande de paiement. Pour la viande séchée et le lard sec, le poids réel sera mesuré après préparation. Le prix final sera confirmé avant paiement et ne dépassera pas le plafond annoncé pour la fourchette choisie.";
+    const infoLignes = doc.splitTextToSize(texteInfo, largeurInterieure - 12);
+    const infoH = 10 + infoLignes.length * 4.2;
+    doc.roundedRect(marge, y, largeurInterieure, infoH, 2, 2, "F");
+    doc.setFillColor(...or);
+    doc.rect(marge, y, 1.5, infoH, "F");
+    doc.setFont("helvetica", "normal");
+    doc.setFontSize(8);
+    doc.setTextColor(65, 67, 61);
+    doc.text(infoLignes, marge + 6, y + 6);
+    y += infoH + 5;
 
     if (client.commentaire) {
-      if (y > 260) {
-        doc.addPage();
-        y = 18;
-      }
-
-      y += 5;
+      if (y > 265) nouvellePage();
       doc.setFont("helvetica", "bold");
-      doc.text("Commentaire", 15, y);
-      y += 6;
+      doc.setFontSize(9);
+      doc.setTextColor(...vert);
+      doc.text("COMMENTAIRE", marge, y);
+      y += 5;
       doc.setFont("helvetica", "normal");
-      ajouterTextePDF(doc, client.commentaire, 15, y, 180);
+      doc.setFontSize(8.5);
+      doc.setTextColor(45, 48, 45);
+      y = ajouterTextePDF(doc, client.commentaire, marge, y, largeurInterieure);
     }
 
     const nombrePages = doc.getNumberOfPages();
-
     for (let page = 1; page <= nombrePages; page++) {
       doc.setPage(page);
+      doc.setFillColor(...vert);
+      doc.rect(0, hauteurPage - 13, largeurPage, 13, "F");
       doc.setFont("helvetica", "normal");
       doc.setFontSize(8);
-      doc.text(NOM_ENTREPRISE + " — Merci pour votre confiance !", 15, 285);
+      doc.setTextColor(255, 255, 255);
+      doc.text("Idée Gourmande · Genève", marge, hauteurPage - 5);
+      doc.text("Merci pour votre confiance", largeurPage - marge, hauteurPage - 5, { align: "right" });
     }
 
     return {
