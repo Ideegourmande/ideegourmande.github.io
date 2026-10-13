@@ -451,8 +451,6 @@
     if (y > 252) nouvellePage();
     y += 3;
 
-    const fraisLivraison = calculerFraisLivraison(client);
-    const total = obtenirTotal(commande, client);
     const blocTotalH = fraisLivraison > 0 ? 32 : 24;
     doc.setFillColor(255, 255, 255);
     doc.setDrawColor(231, 227, 216);
