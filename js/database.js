@@ -823,7 +823,7 @@ function finaliserPoidsReelCommande(idCommande, poidsParLigne, prixParLigne) {
             !Number.isFinite(poidsExistant) ||
             poidsExistant <= 0 ||
             !Number.isFinite(prixExistant) ||
-            prixExistant < 0 ||
+            prixExistant < 0
         ) {
             console.warn("Une ligne de poids réel reste à confirmer.", index);
             return false;
