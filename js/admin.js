@@ -583,14 +583,19 @@ function changerStatut(index, valeur) {
 function normaliserCommandePourPDF(cmd) {
   const c = cmd.client && typeof cmd.client === "object"
     ? cmd.client
-    : {};
+    : (cmd.clientDetails && typeof cmd.clientDetails === "object"
+      ? cmd.clientDetails
+      : {});
+  const nomComplet = typeof cmd.client === "string"
+    ? cmd.client.trim().split(/\\s+/)
+    : [];
 
   return Object.assign({}, cmd, {
     id: cmd.id || cmd.numero || cmd.reference || "",
     numeroCommande: cmd.numeroCommande || cmd.id || cmd.numero || cmd.reference || "",
     client: {
-      prenom: c.prenom || cmd.prenom || "",
-      nom: c.nom || cmd.nom || cmd.nomClient || "",
+      prenom: c.prenom || cmd.prenom || nomComplet.shift() || "",
+      nom: c.nom || cmd.nom || cmd.nomClient || nomComplet.join(" "),
       email: c.email || cmd.email || cmd.emailClient || "",
       telephone: c.telephone || cmd.telephone || cmd.phone || "",
       adresse: c.adresse || cmd.adresse || "",
