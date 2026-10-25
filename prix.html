@@ -1,4 +1,4 @@
-```html
+
 <!DOCTYPE html>
 <html lang="fr">
 <head>
@@ -14,33 +14,24 @@
       color: #333;
     }
     h1 { color: #6b3e26; }
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      margin-top: 20px;
-    }
-    th, td {
-      padding: 12px;
-      border-bottom: 1px solid #ddd;
-      text-align: left;
-    }
+    table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+    th, td { padding: 12px; border-bottom: 1px solid #ddd; text-align: left; }
     th { background: #f5eee8; }
+    input[type="number"] { width: 110px; padding: 8px; box-sizing: border-box; }
     .prix { text-align: right; white-space: nowrap; }
-    button {
-      margin-top: 20px;
-      padding: 10px 16px;
-      cursor: pointer;
-    }
+    button { margin: 18px 8px 0 0; padding: 10px 16px; cursor: pointer; }
+    .securite { margin-top: 24px; padding: 16px; background: #f5eee8; border-radius: 8px; }
+    .securite input { padding: 9px; max-width: 100%; box-sizing: border-box; }
     #status { margin-top: 16px; }
   </style>
 </head>
 <body>
   <h1>Gestion des prix</h1>
-  <p>Prix partagés d’Idée Gourmande</p>
+  <p>Les modifications enregistrées seront partagées sur le site.</p>
 
   <table>
     <thead>
-      <tr><th>Produit</th><th class="prix">Prix</th></tr>
+      <tr><th>Produit</th><th class="prix">Prix (CHF)</th></tr>
     </thead>
     <tbody id="listePrix">
       <tr><td colspan="2">Chargement des prix…</td></tr>
@@ -48,6 +39,17 @@
   </table>
 
   <button id="recharger" type="button">Recharger les prix</button>
+
+  <section class="securite">
+    <label for="motDePasse"><strong>Mot de passe d’administration</strong></label>
+    <p>
+      <input id="motDePasse" type="password"
+             autocomplete="current-password"
+             placeholder="Saisir le secret d’administration">
+    </p>
+    <button id="enregistrer" type="button">Enregistrer les prix</button>
+  </section>
+
   <p id="status" role="status" aria-live="polite"></p>
 
   <script>
@@ -63,29 +65,48 @@
       "saumon-fume": "Cœur de saumon fumé"
     };
 
+    let prixCharges = false;
+
     function afficherPrix(prix) {
       const tableau = document.getElementById("listePrix");
       tableau.replaceChildren();
 
       Object.keys(PRODUITS).forEach(function(reference) {
+        const valeur = prix[reference];
+
+        if (typeof valeur !== "number" ||
+            !Number.isFinite(valeur) || valeur < 0) {
+          throw new Error("Prix invalide pour " + PRODUITS[reference]);
+        }
+
         const ligne = document.createElement("tr");
         const nom = document.createElement("td");
-        const montant = document.createElement("td");
+        const cellulePrix = document.createElement("td");
+        const champ = document.createElement("input");
 
         nom.textContent = PRODUITS[reference];
-        montant.className = "prix";
+        champ.type = "number";
+        champ.min = "0";
+        champ.max = "100000";
+        champ.step = "0.01";
+        champ.required = true;
+        champ.value = valeur.toFixed(2);
+        champ.dataset.reference = reference;
+        champ.setAttribute("aria-label", "Prix de " + PRODUITS[reference]);
 
-        const valeur = Number(prix[reference]);
-        montant.textContent = valeur.toFixed(2) + " CHF";
-
-        ligne.append(nom, montant);
+        cellulePrix.className = "prix";
+        cellulePrix.appendChild(champ);
+        ligne.append(nom, cellulePrix);
         tableau.appendChild(ligne);
       });
+
+      prixCharges = true;
     }
 
     function chargerPrix() {
       const status = document.getElementById("status");
       status.textContent = "Chargement des prix…";
+      prixCharges = false;
 
       const ancienne = document.getElementById("appelPrix");
       if (ancienne) ancienne.remove();
@@ -103,7 +124,7 @@
           }
 
           afficherPrix(reponse.prices);
-          status.textContent = "Prix partagés chargés.";
+          status.textContent = "Prix chargés. Tu peux les modifier.";
         } catch (erreur) {
           status.textContent = "Erreur : " + erreur.message;
         } finally {
@@ -115,25 +136,91 @@
 
       const script = document.createElement("script");
       script.id = "appelPrix";
-      script.src = URL_API
-        + "?action=getPrices&callback="
-        + encodeURIComponent(callback);
-
+      script.src = URL_API + "?action=getPrices&callback=" +
+                   encodeURIComponent(callback);
       script.onerror = function() {
         delete window[callback];
-        status.textContent =
-          "Impossible de charger les prix. Réessaie plus tard.";
+        prixCharges = false;
+        status.textContent = "Impossible de charger les prix. Réessaie.";
         script.remove();
       };
 
       document.body.appendChild(script);
     }
 
+    async function enregistrerPrix() {
+      const status = document.getElementById("status");
+      const bouton = document.getElementById("enregistrer");
+      const motDePasse = document.getElementById("motDePasse").value;
+
+      if (!prixCharges) {
+        status.textContent = "Charge d’abord les prix.";
+        return;
+      }
+
+      if (!motDePasse) {
+        status.textContent = "Saisis le mot de passe d’administration.";
+        return;
+      }
+
+      const prix = {};
+
+      for (const reference of Object.keys(PRODUITS)) {
+        const champ = document.querySelector(
+          'input[data-reference="' + reference + '"]'
+        );
+        const valeur = Number(champ.value);
+
+        if (champ.value.trim() === "" ||
+            !Number.isFinite(valeur) || valeur < 0 ||
+            valeur > 100000) {
+          status.textContent =
+            "Vérifie le prix de " + PRODUITS[reference] + ".";
+          champ.focus();
+          return;
+        }
+
+        prix[reference] = Math.round(valeur * 100) / 100;
+      }
+
+      bouton.disabled = true;
+      status.textContent = "Envoi de la demande d’enregistrement…";
+
+      try {
+        const donnees = new URLSearchParams();
+        donnees.set("action", "savePrices");
+        donnees.set("token", motDePasse);
+        donnees.set("prices", JSON.stringify(prix));
+
+        /*
+         * Envoi sans lecture de la réponse : Apps Script peut rediriger
+         * la requête et le navigateur peut bloquer la lecture CORS.
+         * L’envoi seul ne prouve donc pas que la sauvegarde a réussi.
+         */
+        await fetch(URL_API, {
+          method: "POST",
+          mode: "no-cors",
+          body: donnees
+        });
+
+        status.textContent =
+          "Demande envoyée. Recharge les prix pour vérifier si " +
+          "l’enregistrement a bien été effectué.";
+        document.getElementById("motDePasse").value = "";
+      } catch (erreur) {
+        status.textContent =
+          "Échec de l’envoi. Vérifie ta connexion et réessaie.";
+      } finally {
+        bouton.disabled = false;
+      }
+    }
+
     document.getElementById("recharger")
       .addEventListener("click", chargerPrix);
+    document.getElementById("enregistrer")
+      .addEventListener("click", enregistrerPrix);
 
     chargerPrix();
   </script>
 </body>
 </html>
-```
