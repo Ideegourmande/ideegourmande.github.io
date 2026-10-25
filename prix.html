@@ -1,0 +1,139 @@
+```html
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Gestion des prix - Idée Gourmande</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      max-width: 680px;
+      margin: 30px auto;
+      padding: 0 16px;
+      color: #333;
+    }
+    h1 { color: #6b3e26; }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 20px;
+    }
+    th, td {
+      padding: 12px;
+      border-bottom: 1px solid #ddd;
+      text-align: left;
+    }
+    th { background: #f5eee8; }
+    .prix { text-align: right; white-space: nowrap; }
+    button {
+      margin-top: 20px;
+      padding: 10px 16px;
+      cursor: pointer;
+    }
+    #status { margin-top: 16px; }
+  </style>
+</head>
+<body>
+  <h1>Gestion des prix</h1>
+  <p>Prix partagés d’Idée Gourmande</p>
+
+  <table>
+    <thead>
+      <tr><th>Produit</th><th class="prix">Prix</th></tr>
+    </thead>
+    <tbody id="listePrix">
+      <tr><td colspan="2">Chargement des prix…</td></tr>
+    </tbody>
+  </table>
+
+  <button id="recharger" type="button">Recharger les prix</button>
+  <p id="status" role="status" aria-live="polite"></p>
+
+  <script>
+    "use strict";
+
+    const URL_API = "https://script.google.com/macros/s/AKfycby5o5V0dRb9fPpnhmUYCeWB1LxXjGRXfQK0kQ2Tzw2gHK58GQn8VmxlDI1DFWzogAhI/exec";
+
+    const PRODUITS = {
+      "foie-gras": "Foie gras",
+      "magret": "Magret fumé",
+      "viande-sechee": "Viande séchée",
+      "lard-sec": "Lard sec",
+      "saumon-fume": "Cœur de saumon fumé"
+    };
+
+    function afficherPrix(prix) {
+      const tableau = document.getElementById("listePrix");
+      tableau.replaceChildren();
+
+      Object.keys(PRODUITS).forEach(function(reference) {
+        const ligne = document.createElement("tr");
+        const nom = document.createElement("td");
+        const montant = document.createElement("td");
+
+        nom.textContent = PRODUITS[reference];
+        montant.className = "prix";
+
+        const valeur = Number(prix[reference]);
+        montant.textContent = valeur.toFixed(2) + " CHF";
+
+        ligne.append(nom, montant);
+        tableau.appendChild(ligne);
+      });
+    }
+
+    function chargerPrix() {
+      const status = document.getElementById("status");
+      status.textContent = "Chargement des prix…";
+
+      const ancienne = document.getElementById("appelPrix");
+      if (ancienne) ancienne.remove();
+
+      const callback = "prixCallback_" + Date.now();
+
+      window[callback] = function(reponse) {
+        try {
+          if (!reponse || !reponse.ok || !reponse.prices) {
+            throw new Error(
+              reponse && reponse.error
+                ? reponse.error
+                : "Réponse de prix invalide."
+            );
+          }
+
+          afficherPrix(reponse.prices);
+          status.textContent = "Prix partagés chargés.";
+        } catch (erreur) {
+          status.textContent = "Erreur : " + erreur.message;
+        } finally {
+          delete window[callback];
+          const script = document.getElementById("appelPrix");
+          if (script) script.remove();
+        }
+      };
+
+      const script = document.createElement("script");
+      script.id = "appelPrix";
+      script.src = URL_API
+        + "?action=getPrices&callback="
+        + encodeURIComponent(callback);
+
+      script.onerror = function() {
+        delete window[callback];
+        status.textContent =
+          "Impossible de charger les prix. Réessaie plus tard.";
+        script.remove();
+      };
+
+      document.body.appendChild(script);
+    }
+
+    document.getElementById("recharger")
+      .addEventListener("click", chargerPrix);
+
+    chargerPrix();
+  </script>
+</body>
+</html>
+```
