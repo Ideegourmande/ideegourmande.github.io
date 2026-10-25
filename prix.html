@@ -203,9 +203,8 @@
           body: donnees
         });
 
-        status.textContent =
-          "Demande envoyée. Recharge les prix pour vérifier si " +
-          "l’enregistrement a bien été effectué.";
+                status.textContent =
+          "Demande envoyée. Recharge les prix et vérifie si les montants ont changé.";
         document.getElementById("motDePasse").value = "";
       } catch (erreur) {
         status.textContent =
