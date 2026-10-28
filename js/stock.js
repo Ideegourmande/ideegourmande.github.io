@@ -1,6 +1,6 @@
 // ======================================
 // IDEE GOURMANDE - GESTION DU STOCK
-// Version 2.3.4
+// Version 2.4.0
 // Compatible database.js 2.0.1
 // ======================================
 
@@ -787,6 +787,9 @@ document.addEventListener(
     const boutonAnnulerPiece = document.getElementById("btnAnnulerPiece");
     if(boutonAnnulerPiece) boutonAnnulerPiece.addEventListener("click", annulerModificationPiece);
 
+    const selectSortieArticle = document.getElementById("sortieArticle");
+    if(selectSortieArticle) selectSortieArticle.addEventListener("change", actualiserAideQuantiteSortie);
+
 
 
     const bouton =
@@ -806,3 +809,145 @@ document.addEventListener(
 
 
 });
+
+
+//--------------------------------------
+// Sortie manuelle pour une commande
+//--------------------------------------
+
+function ouvrirSortieCommande(){
+    if(!verifierDB()) return;
+    const popup = document.getElementById("popupSortieCommande");
+    if(!popup) return;
+
+    const selectArticle = document.getElementById("sortieArticle");
+    selectArticle.innerHTML = "";
+    db.articles.forEach((article, index) => {
+        const option = document.createElement("option");
+        option.value = String(index);
+        option.textContent = article.nom + " — stock : " + article.stock + " " + (article.unite || "");
+        selectArticle.appendChild(option);
+    });
+
+    remplirListePiecesSortie();
+    document.getElementById("sortieQuantite").value = "";
+    document.getElementById("sortieCommande").value = "";
+    document.getElementById("sortieMode").value = "vrac";
+    changerModeSortie();
+    popup.style.display = "flex";
+}
+
+function remplirListePiecesSortie(){
+    const select = document.getElementById("sortiePiece");
+    if(!select) return;
+    select.innerHTML = "";
+    db.piecesEmballees.forEach(piece => {
+        const option = document.createElement("option");
+        option.value = String(piece.id);
+        const nom = nomsProduitsPieces[piece.produit] || piece.produit;
+        option.textContent = nom + " — pièce " + piece.numero + " (" + piece.poids + " g)";
+        select.appendChild(option);
+    });
+    if(!db.piecesEmballees.length){
+        const option = document.createElement("option");
+        option.value = "";
+        option.textContent = "Aucune pièce emballée disponible";
+        select.appendChild(option);
+    }
+}
+
+function changerModeSortie(){
+    const mode = document.getElementById("sortieMode").value;
+    document.getElementById("blocSortieArticle").style.display = mode === "vrac" ? "block" : "none";
+    document.getElementById("blocSortiePiece").style.display = mode === "emballe" ? "block" : "none";
+    if(mode === "vrac") actualiserAideQuantiteSortie();
+    else remplirListePiecesSortie();
+}
+
+function actualiserAideQuantiteSortie(){
+    const select = document.getElementById("sortieArticle");
+    const index = select ? Number(select.value) : -1;
+    const article = db.articles[index];
+    const unite = String(article && article.unite || "").toLowerCase();
+    const grammes = unite === "kg" || unite === "g";
+    document.getElementById("labelSortieQuantite").textContent =
+        grammes ? "Quantité à retirer (grammes)" : "Quantité à retirer (" + (article && article.unite || "unité") + ")";
+    document.getElementById("aideSortieQuantite").textContent = grammes
+        ? "Saisis le poids réel en grammes, par exemple 487."
+        : "Saisis la quantité dans l’unité utilisée par cet article.";
+}
+
+function fermerSortieCommande(){
+    const popup = document.getElementById("popupSortieCommande");
+    if(popup) popup.style.display = "none";
+}
+
+function confirmerSortieCommande(){
+    if(!verifierDB()) return;
+    const mode = document.getElementById("sortieMode").value;
+    const reference = document.getElementById("sortieCommande").value.trim();
+    const maintenant = new Date().toLocaleString("fr-CH");
+
+    if(mode === "emballe"){
+        const id = document.getElementById("sortiePiece").value;
+        const piece = db.piecesEmballees.find(element => String(element.id) === String(id));
+        if(!piece){
+            alert("Aucune pièce emballée disponible. Choisis une autre méthode de sortie.");
+            return;
+        }
+        const nom = nomsProduitsPieces[piece.produit] || piece.produit;
+        const confirmation = "Sortir " + nom + " — pièce " + piece.numero + " (" + piece.poids + " g)" +
+            (reference ? "\\nCommande : " + reference : "") + " ?";
+        if(!confirm(confirmation)) return;
+
+        db.piecesEmballees = db.piecesEmballees.filter(element => String(element.id) !== String(id));
+        db.mouvements.push({
+            date: maintenant,
+            article: nom + " — pièce " + piece.numero,
+            action: "Sortie pour commande" + (reference ? " (" + reference + ")" : ""),
+            ancienStock: piece.poids,
+            nouveauStock: 0,
+            difference: -Number(piece.poids || 0)
+        });
+    } else {
+        const index = Number(document.getElementById("sortieArticle").value);
+        const article = db.articles[index];
+        const quantiteSaisie = Number(document.getElementById("sortieQuantite").value);
+        if(!article){
+            alert("Choisis un article.");
+            return;
+        }
+        if(!Number.isFinite(quantiteSaisie) || quantiteSaisie <= 0){
+            alert("Saisis une quantité supérieure à zéro.");
+            return;
+        }
+        const unite = String(article.unite || "").toLowerCase();
+        const quantiteStock = unite === "kg" ? quantiteSaisie / 1000 : quantiteSaisie;
+        if(quantiteStock > Number(article.stock || 0) + 1e-9){
+            alert("La quantité demandée dépasse le stock disponible (" + article.stock + " " + (article.unite || "") + ").");
+            return;
+        }
+        const nouveauStock = Math.round((Number(article.stock) - quantiteStock) * 1000000) / 1000000;
+        const confirmation = "Retirer " + quantiteSaisie + (unite === "kg" || unite === "g" ? " g" : " " + (article.unite || "")) +
+            " de « " + article.nom + " » ?" + (reference ? "\\nCommande : " + reference : "");
+        if(!confirm(confirmation)) return;
+
+        const ancienStock = Number(article.stock || 0);
+        article.stock = nouveauStock;
+        db.mouvements.push({
+            date: maintenant,
+            article: article.nom,
+            action: "Sortie pour commande" + (reference ? " (" + reference + ")" : ""),
+            ancienStock: ancienStock,
+            nouveauStock: nouveauStock,
+            difference: nouveauStock - ancienStock
+        });
+    }
+
+    sauvegarderDB();
+    afficherStock();
+    afficherPiecesEmballees();
+    remplirListePiecesSortie();
+    fermerSortieCommande();
+    alert("Sortie enregistrée.");
+}
