@@ -1,6 +1,6 @@
 // ======================================
 // IDEE GOURMANDE - GESTION DU STOCK
-// Version 2.3.3
+// Version 2.3.4
 // Compatible database.js 2.0.1
 // ======================================
 
@@ -126,7 +126,7 @@ function afficherStock(){
     db.articles.forEach((article,index)=>{
 
         const nomFiltre = String(article.nom || "").toLocaleLowerCase("fr");
-        if(!nomFiltre.includes("foie gras") && !nomFiltre.includes("foie gras aux figues") && !nomFiltre.includes("magret")) return;
+        if(!nomFiltre.includes("foie gras") && !nomFiltre.includes("figue") && !nomFiltre.includes("magret")) return;
 
 
         articlesAffiches++;
