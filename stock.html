@@ -46,6 +46,10 @@ if(localStorage.getItem("adminConnecte")!=="oui"){
 ➕ Nouvel article
 </button>
 
+<button class="btn" type="button" onclick="ouvrirSortieCommande()">
+📦 Sortie pour commande
+</button>
+
 <button class="btn" onclick="imprimerStock()">
 🖨️ Imprimer
 </button>
@@ -170,6 +174,40 @@ onkeyup="rechercherArticle()">
 </div>
 </section>
 
+<div id="popupSortieCommande" class="popup" style="display:none;">
+  <div class="popup-content">
+    <h2>Sortie pour commande</h2>
+    <p>Le stock sera modifié uniquement après confirmation.</p>
+
+    <label for="sortieMode">Type de sortie</label>
+    <select id="sortieMode" onchange="changerModeSortie()">
+      <option value="vrac">Produit en grande pièce / stock général</option>
+      <option value="emballe">Pièce déjà emballée</option>
+    </select>
+
+    <div id="blocSortieArticle" style="margin-top:12px;">
+      <label for="sortieArticle">Article du stock général</label>
+      <select id="sortieArticle"></select>
+      <label for="sortieQuantite" id="labelSortieQuantite">Quantité à retirer</label>
+      <input type="number" id="sortieQuantite" min="0.01" step="any" placeholder="Ex. 500">
+      <p id="aideSortieQuantite" style="font-size:0.9em;">Pour un article en kg ou g, saisis la quantité en grammes.</p>
+    </div>
+
+    <div id="blocSortiePiece" style="display:none;margin-top:12px;">
+      <label for="sortiePiece">Pièce emballée à sortir</label>
+      <select id="sortiePiece"></select>
+      <p>La pièce sélectionnée sera retirée de la liste des pièces emballées.</p>
+    </div>
+
+    <label for="sortieCommande" style="margin-top:12px;">Référence ou nom de commande (facultatif)</label>
+    <input type="text" id="sortieCommande" placeholder="Ex. commande du 28 octobre">
+
+    <br><br>
+    <button class="btn" type="button" onclick="confirmerSortieCommande()">Confirmer la sortie</button>
+    <button class="btn" type="button" onclick="fermerSortieCommande()">Annuler</button>
+  </div>
+</div>
+
 <footer>
 
 <p>
@@ -276,7 +314,7 @@ onkeyup="rechercherArticle()">
 
 <script src="js/database.js?v=3.3.4"></script>
 
-<script src="js/stock.js?v=2.3.4"></script>
+<script src="js/stock.js?v=2.4.0"></script>
 
 
 </body>
