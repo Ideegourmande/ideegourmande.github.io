@@ -54,6 +54,9 @@ if(localStorage.getItem("adminConnecte")!=="oui"){
 🖨️ Imprimer
 </button>
 
+<button class="btn" type="button" id="btnImporterSauvegarde">📥 Importer une sauvegarde</button>
+<input type="file" id="fichierSauvegardeStock" accept=".json,application/json" style="display:none;">
+
 </section>
 
 
@@ -314,7 +317,7 @@ onkeyup="rechercherArticle()">
 
 <script src="js/database.js?v=3.3.4"></script>
 
-<script src="js/stock.js?v=2.4.0"></script>
+<script src="js/stock.js?v=2.5.0"></script>
 
 
 </body>
