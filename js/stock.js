@@ -1,6 +1,6 @@
 // ======================================
 // IDEE GOURMANDE - GESTION DU STOCK
-// Version 2.3.0
+// Version 2.3.1
 // Compatible database.js 2.0.1
 // ======================================
 
@@ -123,6 +123,9 @@ function afficherStock(){
 
 
     db.articles.forEach((article,index)=>{
+
+        const nomFiltre = String(article.nom || "").toLocaleLowerCase("fr");
+        if(!nomFiltre.includes("foie gras") && !nomFiltre.includes("canard")) return;
 
 
         let etat="";
@@ -592,7 +595,9 @@ function imprimerStock(){
 const nomsProduitsPieces = {
     "viande-sechee": "Viande séchée",
     "lard-sec": "Lard sec",
-    "saumon-fume": "Saumon fumé"
+    "saumon-aneth": "Saumon fumé à l’aneth",
+    "saumon-piments": "Saumon fumé aux piments",
+    "saumon-fume": "Saumon fumé (ancienne entrée)"
 };
 
 let idPieceEnEdition = null;
@@ -617,7 +622,7 @@ function afficherPiecesEmballees(){
     const resume = document.getElementById("resumePiecesStock");
     if(!tbody || !resume) return;
 
-    const produits = Object.keys(nomsProduitsPieces);
+    const produits = Object.keys(nomsProduitsPieces).filter(produit => produit !== "saumon-fume" || db.piecesEmballees.some(piece => piece.produit === "saumon-fume"));
     resume.innerHTML = produits.map(produit => {
         const pieces = db.piecesEmballees.filter(piece => piece.produit === produit);
         const poids = pieces.reduce((total,piece) => total + (Number(piece.poids) || 0),0);
@@ -641,7 +646,7 @@ function afficherPiecesEmballees(){
     tbody.innerHTML = liste.map(piece => `<tr>
         <td>${echapperTexteStock(nomsProduitsPieces[piece.produit] || piece.produit)}</td>
         <td>Pièce ${Number(piece.numero) || 1}</td>
-        <td>${Number(piece.poids).toLocaleString("fr-CH")} g</td>
+        <td style="text-align:center; padding-left:20px; padding-right:20px;">${Number(piece.poids).toLocaleString("fr-CH")} g</td>
         <td class="action-stock">
             <button type="button" class="btn-stock" onclick="modifierPieceEmballee('${piece.id}')" aria-label="Modifier la pièce">✏️</button>
             <button type="button" class="btn-stock" onclick="supprimerPieceEmballee('${piece.id}')" aria-label="Supprimer la pièce">🗑️</button>
