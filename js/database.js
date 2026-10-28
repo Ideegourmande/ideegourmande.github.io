@@ -1,7 +1,7 @@
 
 /* =========================================================
    IDEE GOURMANDE — BASE DE DONNEES CENTRALE
-   Version 3.3.3
+   Version 3.3.4
 
    Commandes, stock, achats automatiques, clients, archives,
    migrations et traitement différé des poids réels.
@@ -17,7 +17,7 @@
 const CLE_BASE = "ideeGourmandeDB";
 const CLE_ANCIENNES_COMMANDES = "commandes";
 const CLE_ANCIENNES_ARCHIVES = "commandesArchivees";
-const VERSION_DATABASE = "3.3.3";
+const VERSION_DATABASE = "3.3.4";
 
 const emplacementsDefaut = [
     "Congélateur du réduit",
@@ -31,6 +31,7 @@ const emplacementsDefaut = [
 const structureDB = {
     commandes: [],
     articles: [],
+    piecesEmballees: [],
     emplacements: [...emplacementsDefaut],
     mouvements: [],
     achats: [],
@@ -51,6 +52,7 @@ function creerStructureDB() {
     return {
         commandes: [],
         articles: [],
+        piecesEmballees: [],
         emplacements: [...emplacementsDefaut],
         mouvements: [],
         achats: [],
@@ -90,6 +92,7 @@ Object.keys(structureDB).forEach(function (cle) {
 [
     "commandes",
     "articles",
+    "piecesEmballees",
     "emplacements",
     "mouvements",
     "achats",
