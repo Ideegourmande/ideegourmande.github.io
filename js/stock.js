@@ -1,6 +1,6 @@
 // ======================================
 // IDEE GOURMANDE - GESTION DU STOCK
-// Version 2.4.0
+// Version 2.5.0
 // Compatible database.js 2.0.1
 // ======================================
 
@@ -763,6 +763,56 @@ function supprimerPieceEmballee(id){
 }
 
 
+
+
+//--------------------------------------
+// Importation sécurisée d'une sauvegarde JSON
+//--------------------------------------
+
+function importerSauvegardeStock(fichier){
+    if(!fichier) return;
+
+    const lecteur = new FileReader();
+    lecteur.onload = function(){
+        let donnees;
+        try {
+            donnees = JSON.parse(String(lecteur.result || ""));
+        } catch(erreur) {
+            alert("Le fichier n'est pas un JSON valide. Aucune donnée n'a été modifiée.");
+            return;
+        }
+
+        if(!donnees || typeof donnees !== "object" || Array.isArray(donnees) ||
+           !Array.isArray(donnees.articles) || !Array.isArray(donnees.commandes) ||
+           !Array.isArray(donnees.mouvements)){
+            alert("Ce fichier ne semble pas être une sauvegarde Idée Gourmande complète. Aucune donnée n'a été modifiée.");
+            return;
+        }
+
+        const resume = "La sauvegarde contient :\\n" +
+            donnees.articles.length + " article(s)\\n" +
+            (Array.isArray(donnees.piecesEmballees) ? donnees.piecesEmballees.length : 0) + " pièce(s) emballée(s)\\n" +
+            donnees.commandes.length + " commande(s)\\n\\n" +
+            "L'importation remplacera les données locales de ce navigateur (stock, mouvements, pièces, commandes et paramètres).\\n" +
+            "Assure-toi d'avoir conservé la sauvegarde actuelle avant de continuer.\\n\\nContinuer ?";
+        if(!confirm(resume)) return;
+
+        try {
+            localStorage.setItem("ideeGourmandeDB", JSON.stringify(donnees));
+            alert("Sauvegarde importée. La page va se recharger.");
+            window.location.reload();
+        } catch(erreur) {
+            alert("Impossible d'enregistrer la sauvegarde dans ce navigateur. Aucune importation confirmée.");
+            console.error("Erreur d'importation de sauvegarde", erreur);
+        }
+    };
+    lecteur.onerror = function(){
+        alert("Impossible de lire le fichier sélectionné.");
+    };
+    lecteur.readAsText(fichier);
+}
+
+
 //--------------------------------------
 // Initialisation
 //--------------------------------------
@@ -781,6 +831,17 @@ document.addEventListener(
 
     afficherStock();
     afficherPiecesEmballees();
+
+    const boutonImport = document.getElementById("btnImporterSauvegarde");
+    const fichierImport = document.getElementById("fichierSauvegardeStock");
+    if(boutonImport && fichierImport){
+        boutonImport.addEventListener("click", function(){ fichierImport.click(); });
+        fichierImport.addEventListener("change", function(){
+            const fichier = fichierImport.files && fichierImport.files[0];
+            importerSauvegardeStock(fichier);
+            fichierImport.value = "";
+        });
+    }
 
     const boutonPiece = document.getElementById("btnEnregistrerPiece");
     if(boutonPiece) boutonPiece.addEventListener("click", enregistrerPieceEmballee);
