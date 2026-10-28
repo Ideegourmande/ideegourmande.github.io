@@ -1,6 +1,6 @@
 // ======================================
 // IDEE GOURMANDE - GESTION DU STOCK
-// Version 2.2.0
+// Version 2.3.0
 // Compatible database.js 2.0.1
 // ======================================
 
@@ -34,6 +34,10 @@ function verifierDB(){
 
     if(!db.emplacements){
         db.emplacements = [];
+    }
+
+    if(!Array.isArray(db.piecesEmballees)){
+        db.piecesEmballees = [];
     }
 
     return true;
@@ -579,6 +583,178 @@ function imprimerStock(){
 
 
 
+
+
+// ======================================
+// PIECES EMBALLEES (POIDS INDIVIDUELS)
+// ======================================
+
+const nomsProduitsPieces = {
+    "viande-sechee": "Viande séchée",
+    "lard-sec": "Lard sec",
+    "saumon-fume": "Saumon fumé"
+};
+
+let idPieceEnEdition = null;
+
+function echapperTexteStock(valeur){
+    return String(valeur ?? "").replace(/[&<>"']/g, function(caractere){
+        return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[caractere];
+    });
+}
+
+function prochainNumeroPiece(produit){
+    const numeros = db.piecesEmballees
+        .filter(piece => piece.produit === produit)
+        .map(piece => Number(piece.numero) || 0);
+    return (numeros.length ? Math.max(...numeros) : 0) + 1;
+}
+
+function afficherPiecesEmballees(){
+    if(!verifierDB()) return;
+
+    const tbody = document.getElementById("tbodyPiecesStock");
+    const resume = document.getElementById("resumePiecesStock");
+    if(!tbody || !resume) return;
+
+    const produits = Object.keys(nomsProduitsPieces);
+    resume.innerHTML = produits.map(produit => {
+        const pieces = db.piecesEmballees.filter(piece => piece.produit === produit);
+        const poids = pieces.reduce((total,piece) => total + (Number(piece.poids) || 0),0);
+        return `<div class="stat-card" style="min-width:170px;">
+            <h3>${nomsProduitsPieces[produit]}</h3>
+            <strong>${pieces.length} pièce(s)</strong>
+            <div>${poids.toLocaleString("fr-CH")} g au total</div>
+        </div>`;
+    }).join("");
+
+    const liste = [...db.piecesEmballees].sort((a,b) => {
+        const ordre = produits.indexOf(a.produit) - produits.indexOf(b.produit);
+        return ordre || Number(a.numero) - Number(b.numero);
+    });
+
+    if(!liste.length){
+        tbody.innerHTML = '<tr><td colspan="4">Aucune pièce enregistrée pour le moment.</td></tr>';
+        return;
+    }
+
+    tbody.innerHTML = liste.map(piece => `<tr>
+        <td>${echapperTexteStock(nomsProduitsPieces[piece.produit] || piece.produit)}</td>
+        <td>Pièce ${Number(piece.numero) || 1}</td>
+        <td>${Number(piece.poids).toLocaleString("fr-CH")} g</td>
+        <td class="action-stock">
+            <button type="button" class="btn-stock" onclick="modifierPieceEmballee('${piece.id}')" aria-label="Modifier la pièce">✏️</button>
+            <button type="button" class="btn-stock" onclick="supprimerPieceEmballee('${piece.id}')" aria-label="Supprimer la pièce">🗑️</button>
+        </td>
+    </tr>`).join("");
+}
+
+function enregistrerPieceEmballee(){
+    if(!verifierDB()) return;
+
+    const select = document.getElementById("pieceProduit");
+    const poidsChamp = document.getElementById("piecePoids");
+    const produit = select.value;
+    const poids = Number(poidsChamp.value);
+
+    if(!nomsProduitsPieces[produit]){
+        alert("Veuillez choisir un produit.");
+        return;
+    }
+    if(!Number.isFinite(poids) || poids <= 0){
+        alert("Veuillez saisir un poids en grammes supérieur à zéro.");
+        poidsChamp.focus();
+        return;
+    }
+
+    if(idPieceEnEdition !== null){
+        const piece = db.piecesEmballees.find(element => String(element.id) === String(idPieceEnEdition));
+        if(!piece) {
+            annulerModificationPiece();
+            return;
+        }
+        const ancienProduit = piece.produit;
+        piece.produit = produit;
+        piece.poids = Math.round(poids);
+        if(ancienProduit !== produit){
+            piece.numero = prochainNumeroPiece(produit);
+        }
+        db.mouvements.push({
+            date:new Date().toLocaleString("fr-CH"),
+            article:nomsProduitsPieces[produit] + " — pièce " + piece.numero,
+            action:"Modification du poids emballé",
+            ancienStock:0,
+            nouveauStock:piece.poids,
+            difference:0
+        });
+    } else {
+        const piece = {
+            id: (window.crypto && typeof window.crypto.randomUUID === "function")
+                ? window.crypto.randomUUID()
+                : String(Date.now()) + "-" + Math.random().toString(36).slice(2,9),
+            produit:produit,
+            numero:prochainNumeroPiece(produit),
+            poids:Math.round(poids),
+            dateAjout:new Date().toISOString()
+        };
+        db.piecesEmballees.push(piece);
+        db.mouvements.push({
+            date:new Date().toLocaleString("fr-CH"),
+            article:nomsProduitsPieces[produit] + " — pièce " + piece.numero,
+            action:"Ajout d'une pièce emballée",
+            ancienStock:0,
+            nouveauStock:piece.poids,
+            difference:piece.poids
+        });
+    }
+
+    sauvegarderDB();
+    annulerModificationPiece();
+    afficherPiecesEmballees();
+}
+
+function modifierPieceEmballee(id){
+    const piece = db.piecesEmballees.find(element => String(element.id) === String(id));
+    if(!piece) return;
+    idPieceEnEdition = piece.id;
+    document.getElementById("pieceProduit").value = piece.produit;
+    document.getElementById("piecePoids").value = piece.poids;
+    document.getElementById("btnEnregistrerPiece").textContent = "💾 Enregistrer la modification";
+    document.getElementById("btnAnnulerPiece").style.display = "inline-block";
+    document.getElementById("piecePoids").focus();
+}
+
+function annulerModificationPiece(){
+    idPieceEnEdition = null;
+    const poids = document.getElementById("piecePoids");
+    if(poids) poids.value = "";
+    const enregistrer = document.getElementById("btnEnregistrerPiece");
+    if(enregistrer) enregistrer.textContent = "➕ Ajouter une pièce";
+    const annuler = document.getElementById("btnAnnulerPiece");
+    if(annuler) annuler.style.display = "none";
+}
+
+function supprimerPieceEmballee(id){
+    const piece = db.piecesEmballees.find(element => String(element.id) === String(id));
+    if(!piece) return;
+    const nom = nomsProduitsPieces[piece.produit] || piece.produit;
+    if(!confirm("Supprimer " + nom + " — pièce " + piece.numero + " (" + piece.poids + " g) ?")) return;
+
+    db.mouvements.push({
+        date:new Date().toLocaleString("fr-CH"),
+        article:nom + " — pièce " + piece.numero,
+        action:"Suppression d'une pièce emballée",
+        ancienStock:piece.poids,
+        nouveauStock:0,
+        difference:-piece.poids
+    });
+    db.piecesEmballees = db.piecesEmballees.filter(element => String(element.id) !== String(id));
+    if(String(idPieceEnEdition) === String(id)) annulerModificationPiece();
+    sauvegarderDB();
+    afficherPiecesEmballees();
+}
+
+
 //--------------------------------------
 // Initialisation
 //--------------------------------------
@@ -595,8 +771,13 @@ document.addEventListener(
 
     chargerEmplacements();
 
-
     afficherStock();
+    afficherPiecesEmballees();
+
+    const boutonPiece = document.getElementById("btnEnregistrerPiece");
+    if(boutonPiece) boutonPiece.addEventListener("click", enregistrerPieceEmballee);
+    const boutonAnnulerPiece = document.getElementById("btnAnnulerPiece");
+    if(boutonAnnulerPiece) boutonAnnulerPiece.addEventListener("click", annulerModificationPiece);
 
 
 
