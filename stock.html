@@ -138,6 +138,37 @@ onkeyup="rechercherArticle()">
 
 
 
+
+<section class="panier-section">
+<div class="panier-card">
+<h2>Pièces emballées — viande séchée, lard sec et saumon fumé</h2>
+<p>Ajoute chaque pièce séparément avec son poids emballé en grammes.</p>
+<div class="form-pieces-stock" style="display:flex;flex-wrap:wrap;gap:12px;align-items:end;margin:16px 0;">
+  <div>
+    <label for="pieceProduit">Produit</label><br>
+    <select id="pieceProduit">
+      <option value="viande-sechee">Viande séchée</option>
+      <option value="lard-sec">Lard sec</option>
+      <option value="saumon-fume">Saumon fumé</option>
+    </select>
+  </div>
+  <div>
+    <label for="piecePoids">Poids emballé (g)</label><br>
+    <input type="number" id="piecePoids" min="1" step="1" placeholder="Ex. 340">
+  </div>
+  <button type="button" class="btn" id="btnEnregistrerPiece">➕ Ajouter une pièce</button>
+  <button type="button" class="btn" id="btnAnnulerPiece" style="display:none;">Annuler la modification</button>
+</div>
+<div id="resumePiecesStock" style="display:flex;flex-wrap:wrap;gap:12px;margin:16px 0;"></div>
+<div style="overflow-x:auto;">
+<table id="tablePiecesStock">
+<thead><tr><th>Produit</th><th>Pièce</th><th>Poids emballé</th><th>Action</th></tr></thead>
+<tbody id="tbodyPiecesStock"></tbody>
+</table>
+</div>
+</div>
+</section>
+
 <footer>
 
 <p>
@@ -242,9 +273,9 @@ onkeyup="rechercherArticle()">
 
 
 
-<script src="js/database.js"></script>
+<script src="js/database.js?v=3.3.4"></script>
 
-<script src="js/stock.js"></script>
+<script src="js/stock.js?v=2.3.0"></script>
 
 
 </body>
