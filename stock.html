@@ -149,7 +149,8 @@ onkeyup="rechercherArticle()">
     <select id="pieceProduit">
       <option value="viande-sechee">Viande séchée</option>
       <option value="lard-sec">Lard sec</option>
-      <option value="saumon-fume">Saumon fumé</option>
+      <option value="saumon-aneth">Saumon fumé à l’aneth</option>
+      <option value="saumon-piments">Saumon fumé aux piments</option>
     </select>
   </div>
   <div>
@@ -162,7 +163,7 @@ onkeyup="rechercherArticle()">
 <div id="resumePiecesStock" style="display:flex;flex-wrap:wrap;gap:12px;margin:16px 0;"></div>
 <div style="overflow-x:auto;">
 <table id="tablePiecesStock">
-<thead><tr><th>Produit</th><th>Pièce</th><th>Poids emballé</th><th>Action</th></tr></thead>
+<thead><tr><th>Produit</th><th>Pièce</th><th style="text-align:center;">Poids emballé</th><th>Action</th></tr></thead>
 <tbody id="tbodyPiecesStock"></tbody>
 </table>
 </div>
@@ -275,7 +276,7 @@ onkeyup="rechercherArticle()">
 
 <script src="js/database.js?v=3.3.4"></script>
 
-<script src="js/stock.js?v=2.3.0"></script>
+<script src="js/stock.js?v=2.3.1"></script>
 
 
 </body>
