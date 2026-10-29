@@ -51,7 +51,7 @@
 
                 <li>
                     <a href="commande.html">
-                        Commander
+                        Voir les prix et commander
                     </a>
                 </li>
 
@@ -128,13 +128,9 @@
 
                 </ul>
 
-                <span class="prix">
-                    <span data-prix-reference="foie-gras" data-prix-format="200 g – {prix} CHF">200 g – 35.00 CHF</span>
-                </span>
-
                 <a class="btn"
                    href="commande.html">
-                    Commander
+                    Voir les prix et commander
                 </a>
 
             </div>
@@ -164,13 +160,9 @@
 
                 </ul>
 
-                <span class="prix">
-                    <span data-prix-reference="magret" data-prix-format="{prix} CHF">25.00 CHF</span>
-                </span>
-
                 <a class="btn"
                    href="commande.html">
-                    Commander
+                    Voir les prix et commander
                 </a>
 
             </div>
@@ -210,13 +202,9 @@
 
                 </ul>
 
-                <span class="prix">
-                    <span data-prix-reference="viande-sechee" data-prix-format="500 g – {prix} CHF">500 g – 45.00 CHF</span>
-                </span>
-
                 <a class="btn"
                    href="commande.html">
-                    Commander
+                    Voir les prix et commander
                 </a>
 
             </div>
@@ -242,13 +230,9 @@
 
                 </ul>
 
-                <span class="prix">
-                    <span data-prix-reference="lard-sec" data-prix-format="500 g – {prix} CHF">500 g – 20.00 CHF</span>
-                </span>
-
                 <a class="btn"
                    href="commande.html">
-                    Commander
+                    Voir les prix et commander
                 </a>
 
             </div>
@@ -291,13 +275,9 @@
 
                 </ul>
 
-                <span class="prix">
-                    <span data-prix-reference="saumon-fume" data-prix-format="{prix} CHF / 100 g">8.00 CHF / 100 g</span>
-                </span>
-
                 <a class="btn"
                    href="commande.html">
-                    Commander
+                    Voir les prix et commander
                 </a>
 
             </div>
@@ -342,34 +322,6 @@
 
     </footer>
 
-<script>
-(function(){
-  "use strict";
-  var urlApi = "https://script.google.com/macros/s/AKfycby5o5V0dRb9fPpnhmUYCeWB1LxXjGRXfQK0kQ2Tzw2gHK58GQn8VmxlDI1DFWzogAhI/exec";
-  var callback = "prixProduitsCallback_" + Date.now();
-  window[callback] = function(reponse){
-    try {
-      if (!reponse || !reponse.ok || !reponse.prices) return;
-      document.querySelectorAll("[data-prix-reference][data-prix-format]").forEach(function(element){
-        var valeurBrute = reponse.prices[element.getAttribute("data-prix-reference")];
-        var valeur = typeof valeurBrute === "number" ? valeurBrute :
-          (typeof valeurBrute === "string" && valeurBrute.trim() !== "" ? Number(valeurBrute.replace(",", ".")) : NaN);
-        if (!Number.isFinite(valeur) || valeur < 0) return;
-        element.textContent = element.getAttribute("data-prix-format").replace("{prix}", valeur.toFixed(2));
-      });
-    } finally {
-      delete window[callback];
-      var ancien = document.getElementById("appelPrixProduits");
-      if (ancien) ancien.remove();
-    }
-  };
-  var script = document.createElement("script");
-  script.id = "appelPrixProduits";
-  script.src = urlApi + "?action=getPrices&callback=" + encodeURIComponent(callback);
-  script.onerror = function(){ delete window[callback]; script.remove(); };
-  document.body.appendChild(script);
-})();
-</script>
 
 </body>
 
