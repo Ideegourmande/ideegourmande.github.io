@@ -788,7 +788,7 @@ function exporterSauvegardeStock(){
         const lien = document.createElement("a");
         const date = new Date().toISOString().slice(0,10);
         lien.href = url;
-        lien.download = "sauvegarde-idee-gourmande-" + date + ".json";
+        lien.download = "sauvegarde-stock-idee-gourmande-" + date + ".json";
         document.body.appendChild(lien);
         lien.click();
         lien.remove();
