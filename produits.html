@@ -351,8 +351,10 @@
     try {
       if (!reponse || !reponse.ok || !reponse.prices) return;
       document.querySelectorAll("[data-prix-reference][data-prix-format]").forEach(function(element){
-        var valeur = reponse.prices[element.getAttribute("data-prix-reference")];
-        if (typeof valeur !== "number" || !Number.isFinite(valeur) || valeur < 0) return;
+        var valeurBrute = reponse.prices[element.getAttribute("data-prix-reference")];
+        var valeur = typeof valeurBrute === "number" ? valeurBrute :
+          (typeof valeurBrute === "string" && valeurBrute.trim() !== "" ? Number(valeurBrute.replace(",", ".")) : NaN);
+        if (!Number.isFinite(valeur) || valeur < 0) return;
         element.textContent = element.getAttribute("data-prix-format").replace("{prix}", valeur.toFixed(2));
       });
     } finally {
