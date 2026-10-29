@@ -1160,7 +1160,7 @@ async function sauvegarderFichierAutomatiqueStock(){
         const tampon = function(n){ return String(n).padStart(2,"0"); };
         const nomFichier = "sauvegarde-stock-idee-gourmande-" +
             date.getFullYear() + "-" + tampon(date.getMonth()+1) + "-" + tampon(date.getDate()) +
-            "-" + tampon(date.getHours()) + "-" + tampon(date.getMinutes()) + "-" + tampon(date.getSeconds()) + ".json";
+            "-" + tampon(date.getHours()) + "-" + tampon(date.getMinutes()) + "-" + tampon(date.getSeconds()) + "-" + String(date.getMilliseconds()).padStart(3,"0") + ".json";
         const fichier = await dossierSauvegardeStock.getFileHandle(nomFichier, {create:true});
         const ecrivain = await fichier.createWritable();
         await ecrivain.write(donnees);
