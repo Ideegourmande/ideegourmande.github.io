@@ -874,6 +874,15 @@ document.addEventListener(
     const boutonExport = document.getElementById("btnExporterSauvegarde");
     if(boutonExport) boutonExport.addEventListener("click", exporterSauvegardeStock);
 
+    const boutonImportIphone = document.getElementById("btnImporterSauvegardeOneDrive");
+    if(boutonImportIphone){
+        boutonImportIphone.addEventListener("click", function(){
+            alert("Sur iPhone, vérifie d’abord que le dossier Stock du PC est synchronisé avec OneDrive. Dans le sélecteur de fichiers, ouvre OneDrive puis le dossier Stock et choisis le fichier sauvegarde-stock-idee-gourmande le plus récent.");
+            const fichierImport = document.getElementById("fichierSauvegardeStock");
+            if(fichierImport) fichierImport.click();
+        });
+    }
+
     const boutonImport = document.getElementById("btnImporterSauvegarde");
     const fichierImport = document.getElementById("fichierSauvegardeStock");
     if(boutonImport && fichierImport){
