@@ -1,6 +1,6 @@
 // ======================================
 // IDEE GOURMANDE - GESTION DU STOCK
-// Version 2.5.0
+// Version 2.6.0
 // Compatible database.js 2.0.1
 // ======================================
 
@@ -766,6 +766,41 @@ function supprimerPieceEmballee(id){
 
 
 //--------------------------------------
+// Exportation d'une sauvegarde JSON complète
+//--------------------------------------
+
+function exporterSauvegardeStock(){
+    if(!verifierDB() || typeof sauvegarderDB !== "function"){
+        alert("Impossible de préparer la sauvegarde.");
+        return;
+    }
+
+    // S'assurer que les données les plus récentes sont enregistrées.
+    if(!sauvegarderDB()){
+        alert("Le navigateur n'a pas pu enregistrer les données. Vérifie l'espace disponible.");
+        return;
+    }
+
+    try {
+        const contenu = JSON.stringify(db, null, 2);
+        const fichier = new Blob([contenu], {type:"application/json;charset=utf-8"});
+        const url = URL.createObjectURL(fichier);
+        const lien = document.createElement("a");
+        const date = new Date().toISOString().slice(0,10);
+        lien.href = url;
+        lien.download = "sauvegarde-idee-gourmande-" + date + ".json";
+        document.body.appendChild(lien);
+        lien.click();
+        lien.remove();
+        setTimeout(function(){ URL.revokeObjectURL(url); }, 1000);
+        alert("Sauvegarde téléchargée. Conserve ce fichier dans un endroit sûr.");
+    } catch(erreur) {
+        console.error("Erreur d'exportation de sauvegarde", erreur);
+        alert("La sauvegarde n'a pas pu être créée.");
+    }
+}
+
+//--------------------------------------
 // Importation sécurisée d'une sauvegarde JSON
 //--------------------------------------
 
@@ -831,6 +866,9 @@ document.addEventListener(
 
     afficherStock();
     afficherPiecesEmballees();
+
+    const boutonExport = document.getElementById("btnExporterSauvegarde");
+    if(boutonExport) boutonExport.addEventListener("click", exporterSauvegardeStock);
 
     const boutonImport = document.getElementById("btnImporterSauvegarde");
     const fichierImport = document.getElementById("fichierSauvegardeStock");
