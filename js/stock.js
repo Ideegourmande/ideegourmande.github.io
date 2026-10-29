@@ -804,6 +804,123 @@ function exporterSauvegardeStock(){
 // Importation sécurisée d'une sauvegarde JSON
 //--------------------------------------
 
+
+// Fusion prudente : les données sont combinées par identifiant stable.
+// Sans date de modification explicite, la version locale d'un élément commun est conservée.
+function dateModificationFiable(element){
+    if(!element || typeof element !== "object") return 0;
+    const champs = ["updatedAt", "dateModification", "modifiedAt", "modified_at", "updated_at"];
+    for(const champ of champs){
+        const valeur = element[champ];
+        if(typeof valeur === "string" || typeof valeur === "number"){
+            const temps = typeof valeur === "number" ? valeur : Date.parse(valeur);
+            if(Number.isFinite(temps) && temps > 0) return temps;
+        }
+    }
+    return 0;
+}
+
+function cleFusionElement(element){
+    if(!element || typeof element !== "object") return "";
+    const id = element.id ?? element.uuid ?? element._id;
+    if(id !== undefined && id !== null && String(id).trim() !== "") return "id:" + String(id).trim();
+    return "";
+}
+
+function fusionnerListesPrudemment(locales, importees, nomListe){
+    const resultat = Array.isArray(locales) ? locales.slice() : [];
+    const indexParId = new Map();
+    resultat.forEach(function(element, index){
+        const cle = cleFusionElement(element);
+        if(cle && !indexParId.has(cle)) indexParId.set(cle, index);
+    });
+    let ajoutees = 0, remplacees = 0, sansId = 0;
+    (Array.isArray(importees) ? importees : []).forEach(function(element){
+        const cle = cleFusionElement(element);
+        if(!cle){
+            // Les éléments sans identifiant ne sont ajoutés que s'ils ne sont pas déjà identiques.
+            const signature = JSON.stringify(element);
+            if(!resultat.some(function(existant){ return JSON.stringify(existant) === signature; })){
+                resultat.push(element); ajoutees++; sansId++;
+            }
+            return;
+        }
+        if(!indexParId.has(cle)){
+            indexParId.set(cle, resultat.length);
+            resultat.push(element);
+            ajoutees++;
+            return;
+        }
+        const index = indexParId.get(cle);
+        const local = resultat[index];
+        const dateLocale = dateModificationFiable(local);
+        const dateImport = dateModificationFiable(element);
+        if(dateImport > 0 && dateLocale > 0 && dateImport > dateLocale){
+            resultat[index] = element;
+            remplacees++;
+        }
+        // En cas de dates absentes, identiques ou non fiables, conserver la version locale.
+    });
+    return {valeurs: resultat, ajoutees: ajoutees, remplacees: remplacees, sansId: sansId};
+}
+
+function fusionnerSauvegardeStock(fichier){
+    if(!fichier) return;
+    const lecteur = new FileReader();
+    lecteur.onload = function(){
+        let importee;
+        try { importee = JSON.parse(String(lecteur.result || "")); }
+        catch(erreur){ alert("Le fichier n'est pas un JSON valide. Aucune donnée n'a été modifiée."); return; }
+        if(!importee || typeof importee !== "object" || Array.isArray(importee) ||
+           !Array.isArray(importee.articles) || !Array.isArray(importee.commandes) ||
+           !Array.isArray(importee.mouvements)){
+            alert("Ce fichier ne semble pas être une sauvegarde Idée Gourmande complète. Aucune donnée n'a été modifiée.");
+            return;
+        }
+        let locale;
+        try { locale = JSON.parse(localStorage.getItem("ideeGourmandeDB") || "{}"); }
+        catch(erreur){ alert("La base locale est illisible. Aucune donnée n'a été modifiée."); return; }
+        const collections = ["commandes","articles","piecesEmballees","mouvements","achats","sessions","archives","clients"];
+        const fusion = {};
+        let ajouts = 0, remplacements = 0, sansId = 0;
+        collections.forEach(function(nom){
+            const resultat = fusionnerListesPrudemment(locale[nom], importee[nom], nom);
+            fusion[nom] = resultat.valeurs;
+            ajouts += resultat.ajoutees;
+            remplacements += resultat.remplacees;
+            sansId += resultat.sansId;
+        });
+        // Les emplacements sont une liste de noms : union sans doublons, sans supprimer les locaux.
+        fusion.emplacements = Array.from(new Set([...(Array.isArray(locale.emplacements)?locale.emplacements:[]), ...(Array.isArray(importee.emplacements)?importee.emplacements:[])]));
+        if(!fusion.emplacements.length) fusion.emplacements = ["Congélateur du réduit","Congélateur bahut","Congélateur GI","Chambre froide","Cave","Réserve sèche"];
+        // Paramètres/statistiques : préserver la base locale, compléter uniquement les clés absentes.
+        fusion.statistiques = Object.assign({}, importee.statistiques || {}, locale.statistiques || {});
+        fusion.parametres = Object.assign({}, importee.parametres || {}, locale.parametres || {});
+        fusion.parametres.versionDatabase = locale.parametres?.versionDatabase || importee.parametres?.versionDatabase || "3.3.4";
+        const confirmation = "La fusion va réunir les éléments sans remplacer la base entière.\\n\\n" +
+            "Éléments ajoutés : " + ajouts + "\\n" +
+            "Versions remplacées grâce à une date de modification explicite plus récente : " + remplacements + "\\n" +
+            "Éléments ajoutés sans identifiant (doublons possibles si les données diffèrent) : " + sansId + "\\n\\n" +
+            "Attention : les suppressions ne sont pas propagées. Sans date fiable, la version locale est conservée. Continuer ?";
+        if(!confirm(confirmation)) return;
+        try{
+            const actuelles = localStorage.getItem("ideeGourmandeDB");
+            if(actuelles){
+                localStorage.setItem("ideeGourmandeDB_avant_import", actuelles);
+                localStorage.setItem("ideeGourmandeDB_avant_import_date", new Date().toISOString());
+            }
+            localStorage.setItem("ideeGourmandeDB", JSON.stringify(Object.assign({}, locale, fusion)));
+            alert("Fusion terminée. Une copie de sécurité de l'ancienne base a été conservée sur cet appareil. La page va se recharger.");
+            window.location.reload();
+        }catch(erreur){
+            alert("Impossible d'enregistrer la fusion. Aucune fusion confirmée.");
+            console.error("Erreur de fusion de sauvegarde", erreur);
+        }
+    };
+    lecteur.onerror = function(){ alert("Impossible de lire le fichier sélectionné."); };
+    lecteur.readAsText(fichier);
+}
+
 function importerSauvegardeStock(fichier){
     if(!fichier) return;
 
@@ -912,14 +1029,20 @@ document.addEventListener(
     }
 
     const boutonImport = document.getElementById("btnImporterSauvegarde");
+    const boutonFusion = document.getElementById("btnFusionnerSauvegarde");
     const fichierImport = document.getElementById("fichierSauvegardeStock");
+    let modeImportSauvegarde = "remplacer";
     if(boutonImport && fichierImport){
-        boutonImport.addEventListener("click", function(){ fichierImport.click(); });
+        boutonImport.addEventListener("click", function(){ modeImportSauvegarde = "remplacer"; fichierImport.click(); });
         fichierImport.addEventListener("change", function(){
             const fichier = fichierImport.files && fichierImport.files[0];
-            importerSauvegardeStock(fichier);
+            if(modeImportSauvegarde === "fusionner") fusionnerSauvegardeStock(fichier);
+            else importerSauvegardeStock(fichier);
             fichierImport.value = "";
         });
+    }
+    if(boutonFusion && fichierImport){
+        boutonFusion.addEventListener("click", function(){ modeImportSauvegarde = "fusionner"; fichierImport.click(); });
     }
 
     const boutonPiece = document.getElementById("btnEnregistrerPiece");
