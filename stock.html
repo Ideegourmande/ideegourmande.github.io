@@ -59,10 +59,11 @@ if(localStorage.getItem("adminConnecte")!=="oui"){
 <button class="btn" type="button" id="btnChoisirDossierSauvegarde">📂 Choisir le dossier de sauvegarde automatique</button>
 <p id="etatSauvegardeAutomatique" role="status">Sauvegarde automatique non configurée.</p>
 
-<button class="btn" type="button" id="btnImporterSauvegarde">📥 Importer une sauvegarde</button>
+<button class="btn" type="button" id="btnFusionnerSauvegarde">🔀 Fusionner une sauvegarde</button>
+<button class="btn" type="button" id="btnImporterSauvegarde">📥 Importer une sauvegarde (remplacer)</button>
 <button class="btn" type="button" id="btnImporterSauvegardeOneDrive">📱 Importer depuis OneDrive (Stock du PC)</button>
 <button class="btn" type="button" id="btnRestaurerAvantImport" hidden>↩️ Restaurer les données d’avant import</button>
-<p>Pour transférer les changements entre appareils : télécharge une sauvegarde sur l’appareil source, dépose-la dans OneDrive, puis importe-la sur l’autre appareil. L’import remplace les données de destination ; ce n’est pas une fusion automatique.</p>
+<p>Pour transférer les changements entre appareils : dépose une sauvegarde dans OneDrive, puis utilise « Fusionner une sauvegarde » sur l’autre appareil. Les éléments avec identifiant sont réunis ; les dates de modification ne sont utilisées que si elles sont explicites. Les suppressions ne sont pas synchronisées automatiquement.</p>
 <input type="file" id="fichierSauvegardeStock" accept=".json,application/json" style="display:none;">
 
 </section>
