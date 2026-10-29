@@ -56,6 +56,9 @@ if(localStorage.getItem("adminConnecte")!=="oui"){
 
 <button class="btn" type="button" id="btnExporterSauvegarde">💾 Télécharger une sauvegarde</button>
 
+<button class="btn" type="button" id="btnChoisirDossierSauvegarde">📂 Choisir le dossier de sauvegarde automatique</button>
+<p id="etatSauvegardeAutomatique" role="status">Sauvegarde automatique non configurée.</p>
+
 <button class="btn" type="button" id="btnImporterSauvegarde">📥 Importer une sauvegarde</button>
 <input type="file" id="fichierSauvegardeStock" accept=".json,application/json" style="display:none;">
 
@@ -319,7 +322,7 @@ onkeyup="rechercherArticle()">
 
 <script src="js/database.js?v=3.3.4"></script>
 
-<script src="js/stock.js?v=2.6.0"></script>
+<script src="js/stock.js?v=2.7.0"></script>
 
 
 </body>
