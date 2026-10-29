@@ -61,6 +61,8 @@ if(localStorage.getItem("adminConnecte")!=="oui"){
 
 <button class="btn" type="button" id="btnImporterSauvegarde">📥 Importer une sauvegarde</button>
 <button class="btn" type="button" id="btnImporterSauvegardeOneDrive">📱 Importer depuis OneDrive (Stock du PC)</button>
+<button class="btn" type="button" id="btnRestaurerAvantImport" hidden>↩️ Restaurer les données d’avant import</button>
+<p>Pour transférer les changements entre appareils : télécharge une sauvegarde sur l’appareil source, dépose-la dans OneDrive, puis importe-la sur l’autre appareil. L’import remplace les données de destination ; ce n’est pas une fusion automatique.</p>
 <input type="file" id="fichierSauvegardeStock" accept=".json,application/json" style="display:none;">
 
 </section>
@@ -323,7 +325,7 @@ onkeyup="rechercherArticle()">
 
 <script src="js/database.js?v=3.3.4"></script>
 
-<script src="js/stock.js?v=2.8.0"></script>
+<script src="js/stock.js?v=2.9.0"></script>
 
 
 </body>
