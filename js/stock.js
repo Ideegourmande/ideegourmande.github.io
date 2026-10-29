@@ -867,6 +867,10 @@ document.addEventListener(
     afficherStock();
     afficherPiecesEmballees();
 
+    const boutonDossier = document.getElementById("btnChoisirDossierSauvegarde");
+    if(boutonDossier) boutonDossier.addEventListener("click", choisirDossierSauvegardeStock);
+    chargerDossierSauvegardeStock();
+
     const boutonExport = document.getElementById("btnExporterSauvegarde");
     if(boutonExport) boutonExport.addEventListener("click", exporterSauvegardeStock);
 
@@ -1049,4 +1053,137 @@ function confirmerSortieCommande(){
     remplirListePiecesSortie();
     fermerSortieCommande();
     alert("Sortie enregistrée.");
+}
+
+
+// ======================================
+// SAUVEGARDE AUTOMATIQUE VERS UN DOSSIER
+// Microsoft Edge / navigateurs compatibles
+// ======================================
+const CLE_DOSSIER_SAUVEGARDE_STOCK = "ideeGourmandeDossierSauvegardeStock";
+let dossierSauvegardeStock = null;
+let sauvegardeAutomatiqueEnCours = false;
+let sauvegardeAutomatiqueEnAttente = false;
+
+function ouvrirDBSauvegardeStock(){
+    return new Promise(function(resolve, reject){
+        const requete = indexedDB.open("ideeGourmandeSauvegardes", 1);
+        requete.onupgradeneeded = function(){
+            requete.result.createObjectStore("parametres");
+        };
+        requete.onsuccess = function(){ resolve(requete.result); };
+        requete.onerror = function(){ reject(requete.error); };
+    });
+}
+
+async function memoriserDossierSauvegardeStock(handle){
+    const stockage = await ouvrirDBSauvegardeStock();
+    await new Promise(function(resolve, reject){
+        const transaction = stockage.transaction("parametres", "readwrite");
+        transaction.objectStore("parametres").put(handle, CLE_DOSSIER_SAUVEGARDE_STOCK);
+        transaction.oncomplete = resolve;
+        transaction.onerror = function(){ reject(transaction.error); };
+    });
+    stockage.close();
+}
+
+async function chargerDossierSauvegardeStock(){
+    try{
+        const stockage = await ouvrirDBSauvegardeStock();
+        const handle = await new Promise(function(resolve, reject){
+            const transaction = stockage.transaction("parametres", "readonly");
+            const requete = transaction.objectStore("parametres").get(CLE_DOSSIER_SAUVEGARDE_STOCK);
+            requete.onsuccess = function(){ resolve(requete.result || null); };
+            requete.onerror = function(){ reject(requete.error); };
+        });
+        stockage.close();
+        if(handle){
+            dossierSauvegardeStock = handle;
+            actualiserEtatSauvegardeStock("Dossier mémorisé. Vérification de l’autorisation…");
+            const permission = await handle.queryPermission({mode:"readwrite"});
+            if(permission === "granted"){
+                actualiserEtatSauvegardeStock("Sauvegarde automatique activée.");
+            } else {
+                actualiserEtatSauvegardeStock("Clique sur « Choisir le dossier » pour réautoriser l’accès.");
+            }
+        }
+    }catch(erreur){
+        console.warn("Impossible de restaurer le dossier de sauvegarde.", erreur);
+    }
+}
+
+function actualiserEtatSauvegardeStock(message){
+    const statut = document.getElementById("etatSauvegardeAutomatique");
+    if(statut) statut.textContent = message;
+}
+
+async function choisirDossierSauvegardeStock(){
+    if(!window.showDirectoryPicker){
+        alert("Cette fonction nécessite une version récente de Microsoft Edge sur ordinateur et une connexion sécurisée HTTPS.");
+        return;
+    }
+    try{
+        const handle = await window.showDirectoryPicker({mode:"readwrite"});
+        const permission = await handle.requestPermission({mode:"readwrite"});
+        if(permission !== "granted"){
+            actualiserEtatSauvegardeStock("Autorisation refusée. La sauvegarde automatique reste inactive.");
+            return;
+        }
+        dossierSauvegardeStock = handle;
+        await memoriserDossierSauvegardeStock(handle);
+        actualiserEtatSauvegardeStock("Dossier choisi. Sauvegarde automatique activée.");
+        await sauvegarderFichierAutomatiqueStock();
+        alert("Dossier configuré. Une première sauvegarde vient d’être créée. Les prochaines modifications seront sauvegardées automatiquement.");
+    }catch(erreur){
+        if(erreur && erreur.name !== "AbortError"){
+            console.error("Erreur de sélection du dossier de sauvegarde.", erreur);
+            alert("Impossible de configurer la sauvegarde automatique. Vérifie les autorisations du navigateur.");
+        }
+    }
+}
+
+async function sauvegarderFichierAutomatiqueStock(){
+    if(!dossierSauvegardeStock || sauvegardeAutomatiqueEnCours){
+        if(sauvegardeAutomatiqueEnCours) sauvegardeAutomatiqueEnAttente = true;
+        return;
+    }
+    sauvegardeAutomatiqueEnCours = true;
+    try{
+        let permission = await dossierSauvegardeStock.queryPermission({mode:"readwrite"});
+        if(permission !== "granted"){
+            actualiserEtatSauvegardeStock("Accès au dossier à autoriser : clique sur « Choisir le dossier ».");
+            return;
+        }
+        const donnees = localStorage.getItem("ideeGourmandeDB");
+        if(!donnees) return;
+        const date = new Date();
+        const tampon = function(n){ return String(n).padStart(2,"0"); };
+        const nomFichier = "sauvegarde-stock-idee-gourmande-" +
+            date.getFullYear() + "-" + tampon(date.getMonth()+1) + "-" + tampon(date.getDate()) +
+            "-" + tampon(date.getHours()) + "-" + tampon(date.getMinutes()) + "-" + tampon(date.getSeconds()) + ".json";
+        const fichier = await dossierSauvegardeStock.getFileHandle(nomFichier, {create:true});
+        const ecrivain = await fichier.createWritable();
+        await ecrivain.write(donnees);
+        await ecrivain.close();
+        actualiserEtatSauvegardeStock("Dernière sauvegarde automatique : " + date.toLocaleString("fr-CH"));
+    }catch(erreur){
+        console.error("Échec de la sauvegarde automatique du stock.", erreur);
+        actualiserEtatSauvegardeStock("Échec de la sauvegarde automatique. Vérifie le dossier et ses autorisations.");
+    }finally{
+        sauvegardeAutomatiqueEnCours = false;
+        if(sauvegardeAutomatiqueEnAttente){
+            sauvegardeAutomatiqueEnAttente = false;
+            sauvegarderFichierAutomatiqueStock();
+        }
+    }
+}
+
+// Intercepte les sauvegardes du site sur la page Stock.
+if(typeof sauvegarderDB === "function"){
+    const sauvegarderDBOriginaleStock = sauvegarderDB;
+    sauvegarderDB = function(){
+        const resultat = sauvegarderDBOriginaleStock.apply(this, arguments);
+        if(resultat) sauvegarderFichierAutomatiqueStock();
+        return resultat;
+    };
 }
