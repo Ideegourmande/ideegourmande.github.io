@@ -833,11 +833,17 @@ function importerSauvegardeStock(fichier){
         if(!confirm(resume)) return;
 
         try {
+            // Garder une copie locale de l'état remplacé, afin de pouvoir revenir en arrière.
+            const donneesActuelles = localStorage.getItem("ideeGourmandeDB");
+            if(donneesActuelles){
+                localStorage.setItem("ideeGourmandeDB_avant_import", donneesActuelles);
+                localStorage.setItem("ideeGourmandeDB_avant_import_date", new Date().toISOString());
+            }
             localStorage.setItem("ideeGourmandeDB", JSON.stringify(donnees));
-            alert("Sauvegarde importée. La page va se recharger.");
+            alert("Sauvegarde importée. Une copie de l'ancien état a été conservée sur cet appareil. La page va se recharger.");
             window.location.reload();
         } catch(erreur) {
-            alert("Impossible d'enregistrer la sauvegarde dans ce navigateur. Aucune importation confirmée.");
+            alert("Impossible d'enregistrer la sauvegarde ou la copie de sécurité dans ce navigateur. Aucune importation confirmée.");
             console.error("Erreur d'importation de sauvegarde", erreur);
         }
     };
@@ -880,6 +886,28 @@ document.addEventListener(
             alert("Sur iPhone, vérifie d’abord que le dossier Stock du PC est synchronisé avec OneDrive. Dans le sélecteur de fichiers, ouvre OneDrive puis le dossier Stock et choisis le fichier sauvegarde-stock-idee-gourmande le plus récent.");
             const fichierImport = document.getElementById("fichierSauvegardeStock");
             if(fichierImport) fichierImport.click();
+        });
+    }
+
+    const boutonRestaurer = document.getElementById("btnRestaurerAvantImport");
+    if(boutonRestaurer){
+        const dateCopie = localStorage.getItem("ideeGourmandeDB_avant_import_date");
+        boutonRestaurer.hidden = !localStorage.getItem("ideeGourmandeDB_avant_import");
+        if(dateCopie) boutonRestaurer.title = "Copie créée le " + new Date(dateCopie).toLocaleString("fr-CH");
+        boutonRestaurer.addEventListener("click", function(){
+            const copie = localStorage.getItem("ideeGourmandeDB_avant_import");
+            if(!copie) return;
+            if(!confirm("Restaurer la copie locale conservée avant le dernier import ? Les données actuelles seront remplacées.")) return;
+            try{
+                JSON.parse(copie);
+                const actuelles = localStorage.getItem("ideeGourmandeDB");
+                if(actuelles) localStorage.setItem("ideeGourmandeDB_avant_restauration", actuelles);
+                localStorage.setItem("ideeGourmandeDB", copie);
+                alert("Copie restaurée. La page va se recharger.");
+                window.location.reload();
+            }catch(erreur){
+                alert("La copie locale est illisible. Aucune donnée n'a été modifiée.");
+            }
         });
     }
 
