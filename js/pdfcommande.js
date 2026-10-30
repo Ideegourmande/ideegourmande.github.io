@@ -522,100 +522,108 @@
     return separateur >= 0 ? uri.substring(separateur + 1) : uri;
   }
 
-  function envoyerCommandeGoogle(payload) {
+  function lireStatutEnvoiGoogle(idEnvoi) {
     return new Promise((resolve, reject) => {
-      let iframe = null;
-      let formulaire = null;
+      const nomCallback = "__igStatut_" + Date.now() + "_" + Math.random().toString(36).slice(2);
+      const script = document.createElement("script");
       let termine = false;
       let temporisateur = null;
-
       function nettoyage() {
         if (temporisateur) window.clearTimeout(temporisateur);
-        if (formulaire && formulaire.parentNode) formulaire.parentNode.removeChild(formulaire);
-        if (iframe && iframe.parentNode) iframe.parentNode.removeChild(iframe);
+        if (script.parentNode) script.parentNode.removeChild(script);
+        try { delete window[nomCallback]; } catch (_) { window[nomCallback] = undefined; }
       }
-
-      function terminer(erreur) {
+      window[nomCallback] = function (donnees) {
         if (termine) return;
-        termine = true;
-        nettoyage();
-
-        if (erreur) {
-          reject(erreur);
-        } else {
-          resolve({
-            ok: true,
-            transmis: true,
-            livraisonVerifiee: false,
-            message: "La réponse du serveur a été reçue. La livraison effective des e-mails doit être vérifiée séparément."
-          });
-        }
-      }
-
-      try {
-        const identifiant = "ig-mail-" + Date.now() + "-" + Math.random().toString(36).slice(2);
-
-        iframe = document.createElement("iframe");
-        iframe.name = identifiant;
-        iframe.style.position = "absolute";
-        iframe.style.width = "1px";
-        iframe.style.height = "1px";
-        iframe.style.left = "-9999px";
-        iframe.setAttribute("aria-hidden", "true");
-
-        formulaire = document.createElement("form");
-        formulaire.method = "POST";
-        formulaire.action = URL_SCRIPT_GOOGLE;
-        formulaire.target = identifiant;
-        formulaire.acceptCharset = "UTF-8";
-        formulaire.style.position = "absolute";
-        formulaire.style.left = "-9999px";
-
-        const champ = document.createElement("input");
-        champ.type = "hidden";
-        champ.name = "payload";
-        champ.value = JSON.stringify(payload);
-
-        formulaire.appendChild(champ);
-        document.body.appendChild(iframe);
-        document.body.appendChild(formulaire);
-
-        console.info("[Idée Gourmande] Envoi POST préparé", {
-          plateforme: /iPad|iPhone|iPod/.test(navigator.userAgent) ? "iOS" : "autre",
-          taillePayload: champ.value.length,
-          cibleIframe: identifiant
-        });
-
-        iframe.addEventListener("load", function () {
-          console.info("[Idée Gourmande] Réponse/navigation iframe reçue après POST.");
-          window.setTimeout(() => terminer(), 800);
-        }, { once: true });
-
-        iframe.addEventListener("error", function () {
-          console.error("[Idée Gourmande] Erreur de chargement de l'iframe de réponse.");
-          terminer(new Error(
-            "La réponse de Google Apps Script n'a pas pu être chargée. La commande n'est pas confirmée ; le panier a été conservé."
-          ));
-        }, { once: true });
-
-        temporisateur = window.setTimeout(() => {
-          console.error("[Idée Gourmande] Délai dépassé : aucune réponse iframe observée.");
-          terminer(new Error(
-            "Aucune réponse de confirmation n'a été reçue de Google Apps Script après 20 secondes. La commande n'est pas confirmée ; le panier a été conservé. Vérifie Apps Script → Exécutions avant de réessayer."
-          ));
-        }, 20000);
-
-        console.info("[Idée Gourmande] Soumission du formulaire POST.");
-        formulaire.submit();
-      } catch (erreur) {
-        console.error("[Idée Gourmande] Échec local de préparation/soumission du POST :", erreur);
-        nettoyage();
-        reject(new Error(
-          "L'iPhone n'a pas pu soumettre la demande à Google Apps Script : " +
-          (erreur && erreur.message ? erreur.message : String(erreur))
-        ));
-      }
+        termine = true; nettoyage(); resolve(donnees);
+      };
+      script.onerror = function () {
+        if (termine) return;
+        termine = true; nettoyage(); reject(new Error("Lecture du statut impossible."));
+      };
+      temporisateur = window.setTimeout(function () {
+        if (termine) return;
+        termine = true; nettoyage(); reject(new Error("Délai de lecture du statut dépassé."));
+      }, 10000);
+      script.src = URL_SCRIPT_GOOGLE + "?action=mailStatus&requestId=" +
+        encodeURIComponent(idEnvoi) + "&callback=" + encodeURIComponent(nomCallback) + "&_=" + Date.now();
+      (document.head || document.body).appendChild(script);
     });
+  }
+
+  async function attendreStatutEnvoiGoogle(idEnvoi) {
+    const debut = Date.now();
+    let derniereErreur = "";
+    while (Date.now() - debut < 90000) {
+      try {
+        const statut = await lireStatutEnvoiGoogle(idEnvoi);
+        if (statut && statut.found &&
+            (statut.status === "termine" || statut.status === "echec" || statut.status === "indetermine")) {
+          return statut;
+        }
+      } catch (erreur) {
+        derniereErreur = erreur && erreur.message ? erreur.message : String(erreur);
+      }
+      await new Promise((attendre) => window.setTimeout(attendre, 2000));
+    }
+    return { found: false, status: "inconnu", error: derniereErreur || "Aucun statut retrouvé après 90 secondes." };
+  }
+
+  async function envoyerCommandeGoogle(payload) {
+    try {
+      if (!payload || typeof payload !== "object") throw new Error("Les données de la commande sont absentes.");
+      const aleatoire = window.crypto && typeof window.crypto.randomUUID === "function"
+        ? window.crypto.randomUUID()
+        : Date.now().toString(36) + "-" + Math.random().toString(36).slice(2);
+      const idEnvoi = "IGM-" + aleatoire.replace(/[^a-zA-Z0-9-]/g, "");
+      payload.idEnvoi = idEnvoi;
+
+      const formulaire = new URLSearchParams();
+      formulaire.set("payload", JSON.stringify(payload));
+      console.info("[Idée Gourmande] Envoi suivi initialisé.", {
+        plateforme: /iPad|iPhone|iPod/.test(navigator.userAgent) ? "iOS" : "autre",
+        taillePayload: formulaire.toString().length,
+        idEnvoi: idEnvoi
+      });
+
+      if (typeof window.fetch !== "function") throw new Error("Ce navigateur ne prend pas en charge l'envoi requis.");
+      // La réponse no-cors est opaque : le statut JSONP confirme le traitement serveur.
+      window.fetch(URL_SCRIPT_GOOGLE, {
+        method: "POST", mode: "no-cors", credentials: "omit", body: formulaire
+      }).catch(function (erreur) {
+        console.warn("[Idée Gourmande] Réponse POST opaque ou réseau interrompu ; vérification du statut en cours.", erreur);
+      });
+
+      const statut = await attendreStatutEnvoiGoogle(idEnvoi);
+      if (statut && statut.found && statut.status === "termine" &&
+          statut.entreprise === "envoye" && statut.client === "envoye") {
+        return {
+          ok: true, transmis: true, envoiConfirme: true, livraisonVerifiee: false,
+          idEnvoi: idEnvoi,
+          message: "Apps Script confirme que les deux e-mails ont été envoyés."
+        };
+      }
+
+      let message = "L'envoi des deux e-mails n'a pas pu être confirmé.";
+      if (statut && statut.entreprise === "envoye" && statut.client !== "envoye") {
+        message = "L'e-mail destiné à Idée Gourmande a été envoyé, mais celui du client n'est pas confirmé. Ne relance pas la commande ; vérifie Apps Script et Gmail. " + (statut.error || "");
+      } else if (statut && statut.status === "echec") {
+        message = "Apps Script a signalé un échec avant la fin des deux envois. Ne relance pas automatiquement la commande ; vérifie les statuts et les e-mails. " + (statut.error || "");
+      } else if (statut && statut.status === "indetermine") {
+        message = "Le résultat d'au moins un envoi est incertain. Aucun nouvel envoi automatique n'a été effectué pour éviter un doublon. Vérifie Gmail et les exécutions Apps Script. " + (statut.error || "");
+      } else if (statut && statut.status === "inconnu") {
+        message = "Aucun statut vérifiable n'a été reçu dans les 90 secondes. La commande peut avoir été reçue : ne la renvoie pas avant vérification dans Apps Script et Gmail.";
+      }
+      return {
+        ok: false, transmis: true, envoiConfirme: false, livraisonVerifiee: false,
+        idEnvoi: idEnvoi, message: message
+      };
+    } catch (erreur) {
+      return {
+        ok: false, transmis: false, envoiConfirme: false, livraisonVerifiee: false,
+        message: erreur && erreur.message ? erreur.message : String(erreur)
+      };
+    }
   }
 
   async function genererPDFCommande(commande, options = {}) {
@@ -699,6 +707,7 @@
 
     const payload = {
       typeEmail: optionsFinales.typeEmail,
+      idCommande: String(commande.id || commande.idCommande || ""),
       to: resultat.client.email,
       emailEntreprise: EMAIL_ENTREPRISE,
       numeroCommande: resultat.numero,
