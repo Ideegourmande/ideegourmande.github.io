@@ -934,20 +934,26 @@ async function envoyerCommande(e) {
             : String(erreur);
     }
 
-    // La commande est déjà enregistrée : vider le panier.
-    panierCommande.length = 0;
-    window.panierCommande = panierCommande;
-    afficherPanier();
-
     if (envoiOK) {
+        // Vider le panier uniquement si la requête a été transmise.
+        panierCommande.length = 0;
+        window.panierCommande = panierCommande;
+        afficherPanier();
+
         alert(
             "Commande enregistrée. La demande d'envoi du PDF " +
-            "par e-mail a été transmise. Vérifiez la réception."
+            "a été transmise. Vérifiez la réception de l'e-mail."
         );
     } else {
+        // Conserver les articles pour ne pas les faire perdre au client.
+        // La commande est toutefois déjà enregistrée : éviter un nouvel envoi
+        // du formulaire sans vérifier d'abord si elle a été reçue.
         alert(
             "Commande enregistrée, mais la demande d'envoi " +
-            "de l'e-mail a échoué.\n\n" +
+            "de l'e-mail n'a pas été confirmée.\n\n" +
+            "Votre panier est conservé. Attention : la commande " +
+            "est déjà enregistrée. Ne la renvoyez pas une seconde fois " +
+            "avant d'avoir vérifié sa réception.\n\n" +
             (
                 erreurEnvoi ||
                 "Vérifiez la configuration du service d'e-mail."
