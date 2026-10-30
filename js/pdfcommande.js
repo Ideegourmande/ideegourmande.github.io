@@ -587,7 +587,7 @@
           terminer(new Error(
             "Le délai d'attente est dépassé. Vérifie Google Apps Script et la réception des e-mails avant de recommencer."
           ));
-        }, 8000);
+        }, 30000);
       } catch (erreur) {
         nettoyage();
         reject(erreur);
