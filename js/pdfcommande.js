@@ -553,9 +553,14 @@
 
   async function attendreStatutEnvoiGoogle(idEnvoi) {
     const debut = Date.now();
+    const dureeMaximale = 5 * 60 * 1000;
     let derniereErreur = "";
     let dernierStatut = null;
-    while (Date.now() - debut < 90000) {
+
+    // Safari iOS peut suspendre les temporisateurs lorsque l'onglet PDF
+    // passe au premier plan. On conserve donc une fenêtre de vérification
+    // plus longue et on refait une lecture dès que la page redevient visible.
+    while (Date.now() - debut < dureeMaximale) {
       try {
         const statut = await lireStatutEnvoiGoogle(idEnvoi);
         if (statut && statut.found) {
@@ -567,13 +572,46 @@
       } catch (erreur) {
         derniereErreur = erreur && erreur.message ? erreur.message : String(erreur);
       }
-      await new Promise((attendre) => window.setTimeout(attendre, 2000));
+
+      if (document.visibilityState === "hidden") {
+        await new Promise((resolve) => {
+          let termine = false;
+          const nettoyage = () => {
+            if (termine) return;
+            termine = true;
+            document.removeEventListener("visibilitychange", auRetour);
+            resolve();
+          };
+          const auRetour = () => {
+            if (document.visibilityState === "visible") nettoyage();
+          };
+          document.addEventListener("visibilitychange", auRetour);
+          window.setTimeout(nettoyage, 5000);
+        });
+      } else {
+        await new Promise((attendre) => window.setTimeout(attendre, 2000));
+      }
     }
+
+    // Après une suspension iOS, la limite peut être dépassée avant la
+    // prochaine lecture. Cette dernière tentative évite un faux avertissement
+    // si Apps Script a terminé l'envoi pendant que le PDF était affiché.
+    try {
+      const statutFinal = await lireStatutEnvoiGoogle(idEnvoi);
+      if (statutFinal && statutFinal.found) return statutFinal;
+    } catch (erreur) {
+      derniereErreur = erreur && erreur.message ? erreur.message : String(erreur);
+    }
+
     if (dernierStatut) {
       dernierStatut.timeout = true;
       return dernierStatut;
     }
-    return { found: false, status: "inconnu", error: derniereErreur || "Aucun statut retrouvé après 90 secondes." };
+    return {
+      found: false,
+      status: "inconnu",
+      error: derniereErreur || "Aucun statut retrouvé après cinq minutes."
+    };
   }
 
   async function envoyerCommandeGoogle(payload) {
