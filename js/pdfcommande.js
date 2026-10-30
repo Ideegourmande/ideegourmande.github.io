@@ -594,12 +594,30 @@
       });
 
       if (typeof window.fetch !== "function") throw new Error("Ce navigateur ne prend pas en charge l'envoi requis.");
-      // La réponse no-cors est opaque : le statut JSONP confirme le traitement serveur.
-      window.fetch(URL_SCRIPT_GOOGLE, {
-        method: "POST", mode: "no-cors", credentials: "omit", body: formulaire
-      }).catch(function (erreur) {
-        console.warn("[Idée Gourmande] Réponse POST opaque ou réseau interrompu ; vérification du statut en cours.", erreur);
-      });
+      // Sur Safari iOS, une navigation/ouverture du PDF peut interrompre un fetch
+      // en arrière-plan. sendBeacon place le POST dans la file réseau du navigateur
+      // afin qu'il puisse continuer même si la page perd le focus ou est déchargée.
+      // URLSearchParams conserve le champ "payload" attendu par Apps Script.
+      let demandeMiseEnFile = false;
+      if (navigator.sendBeacon) {
+        try {
+          demandeMiseEnFile = navigator.sendBeacon(URL_SCRIPT_GOOGLE, formulaire);
+        } catch (erreurBeacon) {
+          console.warn("[Idée Gourmande] sendBeacon indisponible ; essai avec fetch.", erreurBeacon);
+        }
+      }
+
+      // Repli si le navigateur refuse de mettre le message en file (taille/limite).
+      if (!demandeMiseEnFile) {
+        window.fetch(URL_SCRIPT_GOOGLE, {
+          method: "POST", mode: "no-cors", credentials: "omit", body: formulaire,
+          keepalive: true
+        }).catch(function (erreur) {
+          console.warn("[Idée Gourmande] POST réseau interrompu ; vérification du statut en cours.", erreur);
+        });
+      } else {
+        console.info("[Idée Gourmande] Demande POST mise en file par sendBeacon.");
+      }
 
       const statut = await attendreStatutEnvoiGoogle(idEnvoi);
       if (statut && statut.found && statut.status === "termine" &&
