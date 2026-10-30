@@ -747,7 +747,7 @@ function obtenirNumeroCommande(nomClient, annee) {
 // ENVOYER LA COMMANDE
 // ======================================
 
-async function envoyerCommande(e) {
+async function envoyerCommandeInterne(e) {
     e.preventDefault();
 
     if (panierCommande.length === 0) {
@@ -960,6 +960,23 @@ async function envoyerCommande(e) {
                 "Vérifiez la configuration du service d'e-mail."
             )
         );
+    }
+}
+
+// Empêche les doubles clics pendant l'enregistrement et le suivi de l'envoi.
+let commandeEnCours = false;
+
+async function envoyerCommande(e) {
+    if (commandeEnCours) {
+        if (e && typeof e.preventDefault === "function") e.preventDefault();
+        return;
+    }
+
+    commandeEnCours = true;
+    try {
+        await envoyerCommandeInterne(e);
+    } finally {
+        commandeEnCours = false;
     }
 }
 
