@@ -528,11 +528,9 @@
       let formulaire = null;
       let termine = false;
       let temporisateur = null;
-      let temporisateurSecours = null;
 
       function nettoyage() {
         if (temporisateur) window.clearTimeout(temporisateur);
-        if (temporisateurSecours) window.clearTimeout(temporisateurSecours);
         if (formulaire && formulaire.parentNode) formulaire.parentNode.removeChild(formulaire);
         if (iframe && iframe.parentNode) iframe.parentNode.removeChild(iframe);
       }
@@ -549,7 +547,7 @@
             ok: true,
             transmis: true,
             livraisonVerifiee: false,
-            message: "La requête a été transmise. La livraison effective des e-mails doit être vérifiée séparément."
+            message: "La réponse du serveur a été reçue. La livraison effective des e-mails doit être vérifiée séparément."
           });
         }
       }
@@ -559,14 +557,19 @@
 
         iframe = document.createElement("iframe");
         iframe.name = identifiant;
-        iframe.style.display = "none";
+        iframe.style.position = "absolute";
+        iframe.style.width = "1px";
+        iframe.style.height = "1px";
+        iframe.style.left = "-9999px";
         iframe.setAttribute("aria-hidden", "true");
 
         formulaire = document.createElement("form");
         formulaire.method = "POST";
         formulaire.action = URL_SCRIPT_GOOGLE;
         formulaire.target = identifiant;
-        formulaire.style.display = "none";
+        formulaire.acceptCharset = "UTF-8";
+        formulaire.style.position = "absolute";
+        formulaire.style.left = "-9999px";
 
         const champ = document.createElement("input");
         champ.type = "hidden";
@@ -577,23 +580,40 @@
         document.body.appendChild(iframe);
         document.body.appendChild(formulaire);
 
+        console.info("[Idée Gourmande] Envoi POST préparé", {
+          plateforme: /iPad|iPhone|iPod/.test(navigator.userAgent) ? "iOS" : "autre",
+          taillePayload: champ.value.length,
+          cibleIframe: identifiant
+        });
+
         iframe.addEventListener("load", function () {
-          temporisateur = window.setTimeout(() => terminer(), 1200);
+          console.info("[Idée Gourmande] Réponse/navigation iframe reçue après POST.");
+          window.setTimeout(() => terminer(), 800);
         }, { once: true });
 
-        formulaire.submit();
+        iframe.addEventListener("error", function () {
+          console.error("[Idée Gourmande] Erreur de chargement de l'iframe de réponse.");
+          terminer(new Error(
+            "La réponse de Google Apps Script n'a pas pu être chargée. La commande n'est pas confirmée ; le panier a été conservé."
+          ));
+        }, { once: true });
 
-        // Sur Safari iOS (notamment depuis l'écran d'accueil), le chargement
-        // de la réponse dans l'iframe peut ne jamais déclencher l'événement "load",
-        // même lorsque Google Apps Script a bien traité le POST.
-        // Après le délai de secours, on indique donc que la demande a été soumise,
-        // sans prétendre que la livraison des e-mails est vérifiée.
-        temporisateurSecours = window.setTimeout(() => {
-          terminer();
-        }, 10000);
+        temporisateur = window.setTimeout(() => {
+          console.error("[Idée Gourmande] Délai dépassé : aucune réponse iframe observée.");
+          terminer(new Error(
+            "Aucune réponse de confirmation n'a été reçue de Google Apps Script après 20 secondes. La commande n'est pas confirmée ; le panier a été conservé. Vérifie Apps Script → Exécutions avant de réessayer."
+          ));
+        }, 20000);
+
+        console.info("[Idée Gourmande] Soumission du formulaire POST.");
+        formulaire.submit();
       } catch (erreur) {
+        console.error("[Idée Gourmande] Échec local de préparation/soumission du POST :", erreur);
         nettoyage();
-        reject(erreur);
+        reject(new Error(
+          "L'iPhone n'a pas pu soumettre la demande à Google Apps Script : " +
+          (erreur && erreur.message ? erreur.message : String(erreur))
+        ));
       }
     });
   }
