@@ -916,7 +916,8 @@ async function envoyerCommande(e) {
         envoiOK = Boolean(
             resultatEmail &&
             resultatEmail.ok &&
-            resultatEmail.transmis
+            resultatEmail.transmis &&
+            resultatEmail.envoiConfirme === true
         );
 
         if (!envoiOK) {
@@ -941,8 +942,8 @@ async function envoyerCommande(e) {
         afficherPanier();
 
         alert(
-            "Commande enregistrée. La demande d'envoi du PDF " +
-            "a été transmise. Vérifiez la réception de l'e-mail."
+            "Commande enregistrée. Apps Script confirme que les deux e-mails " +
+            "ont été envoyés (entreprise et client)."
         );
     } else {
         // Conserver les articles pour ne pas les faire perdre au client.
