@@ -747,7 +747,7 @@ function obtenirNumeroCommande(nomClient, annee) {
 // ENVOYER LA COMMANDE
 // ======================================
 
-async function envoyerCommande(e) {
+async function envoyerCommandeInterne(e) {
     e.preventDefault();
 
     if (panierCommande.length === 0) {
@@ -916,7 +916,8 @@ async function envoyerCommande(e) {
         envoiOK = Boolean(
             resultatEmail &&
             resultatEmail.ok &&
-            resultatEmail.transmis
+            resultatEmail.transmis &&
+            resultatEmail.envoiConfirme === true
         );
 
         if (!envoiOK) {
@@ -941,8 +942,8 @@ async function envoyerCommande(e) {
         afficherPanier();
 
         alert(
-            "Commande enregistrée. La demande d'envoi du PDF " +
-            "a été transmise. Vérifiez la réception de l'e-mail."
+            "Commande enregistrée. Apps Script confirme que les deux e-mails " +
+            "ont été envoyés (entreprise et client)."
         );
     } else {
         // Conserver les articles pour ne pas les faire perdre au client.
@@ -959,6 +960,23 @@ async function envoyerCommande(e) {
                 "Vérifiez la configuration du service d'e-mail."
             )
         );
+    }
+}
+
+// Empêche les doubles clics pendant l'enregistrement et le suivi de l'envoi.
+let commandeEnCours = false;
+
+async function envoyerCommande(e) {
+    if (commandeEnCours) {
+        if (e && typeof e.preventDefault === "function") e.preventDefault();
+        return;
+    }
+
+    commandeEnCours = true;
+    try {
+        await envoyerCommandeInterne(e);
+    } finally {
+        commandeEnCours = false;
     }
 }
 
