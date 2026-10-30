@@ -554,17 +554,24 @@
   async function attendreStatutEnvoiGoogle(idEnvoi) {
     const debut = Date.now();
     let derniereErreur = "";
+    let dernierStatut = null;
     while (Date.now() - debut < 90000) {
       try {
         const statut = await lireStatutEnvoiGoogle(idEnvoi);
-        if (statut && statut.found &&
-            (statut.status === "termine" || statut.status === "echec" || statut.status === "indetermine")) {
-          return statut;
+        if (statut && statut.found) {
+          dernierStatut = statut;
+          if (statut.status === "termine" || statut.status === "echec" || statut.status === "indetermine") {
+            return statut;
+          }
         }
       } catch (erreur) {
         derniereErreur = erreur && erreur.message ? erreur.message : String(erreur);
       }
       await new Promise((attendre) => window.setTimeout(attendre, 2000));
+    }
+    if (dernierStatut) {
+      dernierStatut.timeout = true;
+      return dernierStatut;
     }
     return { found: false, status: "inconnu", error: derniereErreur || "Aucun statut retrouvé après 90 secondes." };
   }
@@ -611,6 +618,8 @@
         message = "Apps Script a signalé un échec avant la fin des deux envois. Ne relance pas automatiquement la commande ; vérifie les statuts et les e-mails. " + (statut.error || "");
       } else if (statut && statut.status === "indetermine") {
         message = "Le résultat d'au moins un envoi est incertain. Aucun nouvel envoi automatique n'a été effectué pour éviter un doublon. Vérifie Gmail et les exécutions Apps Script. " + (statut.error || "");
+      } else if (statut && statut.status === "en_cours") {
+        message = "Apps Script a reçu la demande, mais le traitement est toujours en cours après 90 secondes. Les deux e-mails ne sont pas encore confirmés : ne renvoie pas la commande et vérifie les exécutions Apps Script.";
       } else if (statut && statut.status === "inconnu") {
         message = "Aucun statut vérifiable n'a été reçu dans les 90 secondes. La commande peut avoir été reçue : ne la renvoie pas avant vérification dans Apps Script et Gmail.";
       }
