@@ -1139,3 +1139,72 @@ function doGet(e) {
       } finally {
         verrou.releaseLock();
       }
+} catch (erreur) {
+      resultat = { ok: false, error: String(erreur.message || erreur) };
+    }
+
+    return ContentService
+      .createTextOutput(callback + '(' + JSON.stringify(resultat) + ');')
+      .setMimeType(ContentService.MimeType.JAVASCRIPT);
+  }
+
+  // Lecture publique des prix enregistrés dans les propriétés du script.
+  if (params.action === 'getPrices') {
+    const callback = String(params.callback || '');
+
+    if (!/^[A-Za-z_$][A-Za-z0-9_$]*$/.test(callback)) {
+      return ContentService
+        .createTextOutput('Callback JSONP invalide.')
+        .setMimeType(ContentService.MimeType.TEXT);
+    }
+
+    let resultat;
+
+    try {
+      const proprietes = PropertiesService.getScriptProperties();
+      const contenu = proprietes.getProperty('PRIX_PRODUITS');
+
+      if (!contenu) {
+        throw new Error('Les prix ne sont pas configurés.');
+      }
+
+      const prix = JSON.parse(contenu);
+      const references = [
+        'foie-gras',
+        'magret',
+        'viande-sechee',
+        'lard-sec',
+        'saumon-fume'
+      ];
+
+      const prixValides = {};
+
+      references.forEach(function(reference) {
+        const valeur = prix[reference];
+
+        if (typeof valeur !== 'number' ||
+            !Number.isFinite(valeur) ||
+            valeur < 0) {
+          throw new Error('Prix invalide pour : ' + reference);
+        }
+
+        prixValides[reference] = valeur;
+      });
+
+      resultat = { ok: true, prices: prixValides };
+    } catch (erreur) {
+      resultat = {
+        ok: false,
+        error: String(erreur.message || erreur)
+      };
+    }
+
+    return ContentService
+      .createTextOutput(callback + '(' + JSON.stringify(resultat) + ');')
+      .setMimeType(ContentService.MimeType.JAVASCRIPT);
+  }
+
+  return ContentService
+    .createTextOutput('Idée Gourmande - service e-mail actif')
+    .setMimeType(ContentService.MimeType.TEXT);
+}
