@@ -649,23 +649,9 @@
 
     const resultat = creerPDF(commande, optionsFinales);
 
-    if (optionsFinales.afficher) {
-      try {
-        const urlPDF = resultat.doc.output("bloburl");
-        const fenetrePDF = window.open(urlPDF, "_blank");
-        if (!fenetrePDF) {
-          console.warn("Le navigateur a bloqué l’ouverture automatique du PDF.");
-        }
-      } catch (erreurPDF) {
-        console.warn("Impossible d’ouvrir le PDF automatiquement :", erreurPDF);
-      }
-    }
-
     const nomFichier = "commande-" +
       String(resultat.numero).replace(/[^a-zA-Z0-9_-]/g, "") +
       (resultat.confirmationFinale ? "-prix-final.pdf" : ".pdf");
-
-    if (optionsFinales.telecharger) resultat.doc.save(nomFichier);
 
     if (!optionsFinales.envoyerEmail) {
       return {
@@ -732,7 +718,26 @@
       subject: sujet
     };
 
-    return envoyerCommandeGoogle(payload);
+    // Démarrer la requête Google avant toute ouverture/téléchargement du PDF.
+    // Sur Safari iOS, l'ouverture d'un blob dans un nouvel onglet peut suspendre
+    // la page et empêcher une requête réseau lancée ensuite de partir.
+    const envoiEnCours = envoyerCommandeGoogle(payload);
+
+    if (optionsFinales.afficher) {
+      try {
+        const urlPDF = resultat.doc.output("bloburl");
+        const fenetrePDF = window.open(urlPDF, "_blank");
+        if (!fenetrePDF) {
+          console.warn("Le navigateur a bloqué l’ouverture automatique du PDF.");
+        }
+      } catch (erreurPDF) {
+        console.warn("Impossible d’ouvrir le PDF automatiquement :", erreurPDF);
+      }
+    }
+
+    if (optionsFinales.telecharger) resultat.doc.save(nomFichier);
+
+    return envoiEnCours;
   }
 
   async function envoyerEmailConfirmationPrix(commande) {
