@@ -583,11 +583,14 @@
 
         formulaire.submit();
 
+        // Sur Safari iOS (notamment depuis l'écran d'accueil), le chargement
+        // de la réponse dans l'iframe peut ne jamais déclencher l'événement "load",
+        // même lorsque Google Apps Script a bien traité le POST.
+        // Après le délai de secours, on indique donc que la demande a été soumise,
+        // sans prétendre que la livraison des e-mails est vérifiée.
         temporisateurSecours = window.setTimeout(() => {
-          terminer(new Error(
-            "Le délai d'attente est dépassé. Vérifie Google Apps Script et la réception des e-mails avant de recommencer."
-          ));
-        }, 30000);
+          terminer();
+        }, 10000);
       } catch (erreur) {
         nettoyage();
         reject(erreur);
