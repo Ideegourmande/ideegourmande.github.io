@@ -14,13 +14,14 @@
       "updatedAt", "dateModification", "modifiedAt", "modified_at",
       "dateConfirmationPrix", "dateArchivage"
     ];
+    let plusRecente = 0;
     for (const champ of champs) {
       const valeur = cmd[champ];
       if (typeof valeur !== "string" && typeof valeur !== "number") continue;
       const temps = typeof valeur === "number" ? valeur : Date.parse(valeur);
-      if (Number.isFinite(temps) && temps > 0) return temps;
+      if (Number.isFinite(temps) && temps > plusRecente) plusRecente = temps;
     }
-    return 0;
+    return plusRecente;
   }
 
   function identifiant(cmd) {
