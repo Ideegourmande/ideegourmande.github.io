@@ -856,6 +856,11 @@ async function confirmerPrixCommande(index) {
       );
     }
 
+    // Marquer la confirmation du prix comme modification à synchroniser entre appareils.
+    actualisee.dateModification = new Date().toISOString();
+    cmd.dateModification = actualisee.dateModification;
+    enregistrerDBAdmin();
+
     const totalFinal = obtenirTotalCommandeAdmin(actualisee);
 
     if (!(totalFinal >= 0)) {
