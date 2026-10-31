@@ -226,6 +226,36 @@ if(localStorage.getItem("adminConnecte") !== "oui"){
 
 
 <!-- =========================
+     SYNCHRONISATION DES COMMANDES
+========================= -->
+<section class="panier-section">
+    <div class="panier-card" style="text-align:center;border:2px solid #d6e8dc">
+        <h2>🔄 Synchronisation des commandes</h2>
+        <p>Transférer les commandes et leurs statuts entre le PC et l’iPhone grâce à OneDrive.</p>
+        <button type="button" class="btn" onclick="document.getElementById('actionsSynchronisationCommandes').style.display = document.getElementById('actionsSynchronisationCommandes').style.display === 'none' ? 'block' : 'none'">
+            🔄 Effectuer une synchronisation
+        </button>
+        <div id="actionsSynchronisationCommandes" style="display:none;margin-top:16px">
+            <p><strong>1. Sur cet appareil :</strong> créer un fichier et le déposer dans OneDrive.</p>
+            <button type="button" class="btn" onclick="exporterCommandesSynchronisation()">
+                📤 Envoyer mes commandes vers OneDrive
+            </button>
+            <p style="margin-top:18px"><strong>2. Sur l’autre appareil :</strong> choisir le fichier enregistré dans OneDrive.</p>
+            <button type="button" class="btn" onclick="ouvrirImportSynchronisation()">
+                📥 Récupérer les commandes depuis OneDrive
+            </button>
+            <p style="font-size:0.9em;color:#666;margin-top:14px">
+                La fusion conserve les autres données du site. Les suppressions ne sont pas synchronisées.
+                Après chaque modification, pense à exporter puis importer le fichier sur l’autre appareil.
+            </p>
+        </div>
+        <input type="file" id="fichierSynchronisationCommandes" accept=".json,application/json"
+               style="display:none" onchange="importerCommandesSynchronisation(this.files && this.files[0])">
+    </div>
+</section>
+
+
+<!-- =========================
      STATISTIQUES PRINCIPALES
 ========================= -->
 
@@ -785,6 +815,8 @@ if(localStorage.getItem("adminConnecte") !== "oui"){
 <script src="js/pdfcommande.js?v=16"></script>
 
 <script src="js/admin.js?v=12"></script>
+
+<script src="js/synchronisation-commandes.js?v=1"></script>
 
 
 
