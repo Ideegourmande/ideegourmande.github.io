@@ -31,38 +31,47 @@
     return valeur == null ? "" : String(valeur).trim();
   }
 
-  function fusionnerCommandes(locales, importees) {
-    const resultat = [];
+  function fusionnerEnregistrements(commandesLocales, archivesLocales, commandesImportees, archivesImportees) {
     const positions = new Map();
+    const resultat = [];
 
-    function ajouterOuFusionner(cmd, origine) {
+    function ajouter(cmd, estArchive, prioritaire) {
       if (!cmd || typeof cmd !== "object" || Array.isArray(cmd)) return;
       const id = identifiant(cmd);
       if (!id) {
         const signature = JSON.stringify(cmd);
-        if (!resultat.some(x => JSON.stringify(x) === signature)) resultat.push(cmd);
+        if (!resultat.some(x => JSON.stringify(x.commande) === signature)) {
+          resultat.push({ commande: cmd, archive: estArchive });
+        }
         return;
       }
 
       if (!positions.has(id)) {
         positions.set(id, resultat.length);
-        resultat.push(cmd);
+        resultat.push({ commande: cmd, archive: estArchive });
         return;
       }
 
       const index = positions.get(id);
-      const existante = resultat[index];
-      const dateExistante = dateModificationCommande(existante);
+      const existant = resultat[index];
+      const dateExistante = dateModificationCommande(existant.commande);
       const dateEntrante = dateModificationCommande(cmd);
 
-      // Sans date fiable, ne jamais écraser silencieusement la version déjà présente.
-      if (dateEntrante > dateExistante) resultat[index] = cmd;
+      // En cas d'égalité ou d'absence de date, on garde la version déjà présente.
+      if (dateEntrante > dateExistante) {
+        resultat[index] = { commande: cmd, archive: estArchive };
+      }
     }
 
-    (Array.isArray(locales) ? locales : []).forEach(x => ajouterOuFusionner(x, "local"));
-    (Array.isArray(importees) ? importees : []).forEach(x => ajouterOuFusionner(x, "import"));
+    (Array.isArray(commandesLocales) ? commandesLocales : []).forEach(x => ajouter(x, false, true));
+    (Array.isArray(archivesLocales) ? archivesLocales : []).forEach(x => ajouter(x, true, true));
+    (Array.isArray(commandesImportees) ? commandesImportees : []).forEach(x => ajouter(x, false, false));
+    (Array.isArray(archivesImportees) ? archivesImportees : []).forEach(x => ajouter(x, true, false));
 
-    return resultat;
+    return {
+      commandes: resultat.filter(x => !x.archive).map(x => x.commande),
+      archives: resultat.filter(x => x.archive).map(x => x.commande)
+    };
   }
 
   function telechargerFichier(nom, contenu) {
@@ -142,21 +151,16 @@
         return;
       }
 
-      const commandesFusionnees = fusionnerCommandes(
+      // Comparer ensemble commandes et archives : une version active plus récente
+      // ne doit pas être écrasée par une ancienne copie archivée (et inversement).
+      const fusion = fusionnerEnregistrements(
         base.commandes,
-        importee.commandes
-      );
-      const archivesFusionnees = fusionnerCommandes(
         base.archives,
+        importee.commandes,
         importee.archives
       );
-
-      // Une commande archivée doit rester dans les archives, pas réapparaître en cours.
-      const idsArchives = new Set(archivesFusionnees.map(identifiant).filter(Boolean));
-      const commandesFinales = commandesFusionnees.filter(cmd => !idsArchives.has(identifiant(cmd)));
-
-      const ajoutsActifs = commandesFinales.length -
-        (Array.isArray(base.commandes) ? base.commandes.length : 0);
+      const commandesFinales = fusion.commandes;
+      const archivesFusionnees = fusion.archives;
       const confirmation =
         "La fusion va réunir les commandes et les archives sans remplacer les autres données.\n\n" +
         "Commandes actives après fusion : " + commandesFinales.length + "\n" +
