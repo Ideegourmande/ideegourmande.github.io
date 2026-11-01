@@ -1,0 +1,15 @@
+<!doctype html>
+<html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Idée Gourmande — Administration centralisée</title>
+<style>
+body{font:16px system-ui,sans-serif;margin:0;background:#f6f5f1;color:#252525}main{max-width:1100px;margin:auto;padding:24px}h1{font-size:1.6rem}.bar{display:flex;gap:12px;align-items:center;flex-wrap:wrap;margin:18px 0}button{padding:10px 16px;border:0;border-radius:8px;background:#333;color:white;cursor:pointer}.muted{color:#666}.error{color:#a22}table{border-collapse:collapse;width:100%;background:white}th,td{padding:10px;border-bottom:1px solid #ddd;text-align:left;vertical-align:top}th{background:#eee}#status{margin:12px 0}.scroll{overflow:auto}
+</style></head><body><main>
+<h1>Idée Gourmande — Administration centralisée</h1>
+<p class="muted">Espace privé connecté au classeur Google Sheets. Cette première version permet uniquement de consulter les commandes.</p>
+<div class="bar"><button onclick="charger()">Actualiser les commandes</button><span id="status">Connexion…</span></div>
+<div class="scroll"><table><thead><tr><th>N° commande</th><th>Réception</th><th>Client</th><th>Livraison</th><th>Total</th><th>Statut</th><th>Articles</th></tr></thead><tbody id="rows"></tbody></table></div>
+</main><script>
+function erreur(e){document.getElementById('status').textContent=e&&e.message?e.message:String(e);document.getElementById('status').className='error';}
+function charger(){document.getElementById('status').textContent='Chargement…';google.script.run.withSuccessHandler(r=>{const body=document.getElementById('rows');body.innerHTML='';(r.commandes||[]).forEach(c=>{const tr=document.createElement('tr');const client=c.client||{};const nom=[client.prenom,client.nom].filter(Boolean).join(' ')||client.nom||c['E-mail client']||'';const produits=Array.isArray(c.produits)?c.produits.map(p=>{if(typeof p==='string')return p;return (p.nom||p.article||p.name||'Article')+(p.quantite?' × '+p.quantite:'');}).join(', '):'';[c['N° commande'],c['Date réception'],nom,c['Mode de livraison'],c['Total'],c['Statut de gestion'],produits].forEach(v=>{const td=document.createElement('td');td.textContent=v==null?'':String(v);tr.appendChild(td);});body.appendChild(tr);});document.getElementById('status').textContent=(r.commandes||[]).length+' commande(s) chargée(s).';}).withFailureHandler(erreur).obtenirTableauAdmin();}
+charger();
+</script></body></html>
