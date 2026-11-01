@@ -17,7 +17,7 @@ const IG_CONFIG = Object.freeze({
 });
 
 const IG_HEADERS = {
-  "Détails commandes": ["ID commande", "N° commande", "Article", "Quantité", "Unité", "Poids réel (g)", "Prix unitaire", "Total ligne", "Données article (JSON)"],
+  "Détails commandes": ["ID commande", "N° commande", "Article", "Quantité", "Unité", "Poids (g)", "Prix indiqué", "Prix confirmé", "Prix final", "N° ligne", "Données article (JSON)"],
   "Données techniques": ["ID commande", "Date sauvegarde", "Données reçues (JSON)"],
   "Archives": ["ID commande", "N° commande", "Date archivage", "Statut", "Données commande (JSON)"],
   "Stock": ["ID article", "Article", "Catégorie", "Unité", "Quantité en stock", "Stock minimum", "Emplacement", "Dernière mise à jour"],
@@ -265,7 +265,7 @@ function transfererDetailsCommandes() {
   let commandesTraitees = 0;
   values.forEach(row => {
     const id = String(row[idx["ID commande"]] || "").trim();
-    if (!id || idsDetails.has(id) || idsTech.has(id)) return;
+    if (!id || (idsDetails.has(id) && idsTech.has(id))) return;
     let produits;
     try {
       produits = typeof row[idx["Produits (JSON)"]] === "string"
@@ -274,7 +274,7 @@ function transfererDetailsCommandes() {
     } catch (e) { throw new Error("JSON produits illisible pour " + id + ". Aucun transfert effectué."); }
     if (!Array.isArray(produits)) throw new Error("Produits invalides pour " + id + ". Aucun transfert effectué.");
     const numero = valeurColonne_(row, idx, "N° commande");
-    produits.forEach((p, i) => {
+    if (!idsDetails.has(id)) produits.forEach((p, i) => {
       if (!p || typeof p !== "object" || Array.isArray(p)) {
         throw new Error("Article invalide pour " + id + ", ligne " + (i+1) + ". Aucun transfert effectué.");
       }
@@ -295,7 +295,7 @@ function transfererDetailsCommandes() {
       const v = row[i];
       objetBrut[h] = v instanceof Date ? v.toISOString() : v;
     });
-    techRows.push([id, new Date(), JSON.stringify(objetBrut)]);
+    if (!idsTech.has(id)) techRows.push([id, new Date(), JSON.stringify(objetBrut)]);
     commandesTraitees++;
   });
   // Valider toutes les lignes avant toute écriture, puis écrire les deux lots.
