@@ -72,6 +72,27 @@ function obtenirTableauAdmin() {
     try { o.client = JSON.parse(o["Client (JSON)"] || "{}"); } catch (_) { o.client = {}; }
     return o;
   });
+  // Ajoute les lignes détaillées par ID sans modifier les données du classeur.
+  const details = ss.getSheetByName(IG_CONFIG.SHEETS.ITEMS);
+  const parCommande = {};
+  if (details && details.getLastRow() >= 2) {
+    const dv = details.getDataRange().getValues();
+    const dh = dv.shift().map(String);
+    const idCol = dh.indexOf("ID commande");
+    if (idCol >= 0) {
+      dv.forEach(function(r) {
+        const id = String(r[idCol] || "").trim();
+        if (!id) return;
+        const item = {};
+        dh.forEach((h,i) => item[h] = r[i] instanceof Date ? r[i].toISOString() : r[i]);
+        if (!parCommande[id]) parCommande[id] = [];
+        parCommande[id].push(item);
+      });
+    }
+  }
+  commandes.forEach(function(o) {
+    o.details = parCommande[String(o["ID commande"] || "").trim()] || [];
+  });
   commandes.reverse();
   return {commandes:commandes, onglets:ss.getSheets().map(s=>s.getName())};
 }
