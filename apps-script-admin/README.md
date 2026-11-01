@@ -3,8 +3,8 @@
 Ce dossier est un **projet Apps Script séparé** du script public qui reçoit les commandes et envoie les e-mails.
 
 ## Fichiers
-- `Code.gs` : vérification de l'utilisateur Google, initialisation non destructive des onglets et lecture des commandes.
-- `Index.html` : interface de consultation en lecture seule.
+- `Code.gs` : vérification de l'utilisateur Google, lecture des commandes et rattachement des lignes de `Détails commandes` par identifiant.
+- `Index.html` : tableau de consultation avec recherche, filtre par statut et affichage des articles. Aucune modification des commandes.
 
 ## Installation manuelle dans Google Apps Script
 1. Avec le compte Google autorisé, crée un **nouveau projet Apps Script autonome**.
