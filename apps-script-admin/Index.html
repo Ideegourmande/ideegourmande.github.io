@@ -1,15 +1,87 @@
 <!doctype html>
-<html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<html lang="fr">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Idée Gourmande — Administration centralisée</title>
 <style>
-body{font:16px system-ui,sans-serif;margin:0;background:#f6f5f1;color:#252525}main{max-width:1100px;margin:auto;padding:24px}h1{font-size:1.6rem}.bar{display:flex;gap:12px;align-items:center;flex-wrap:wrap;margin:18px 0}button{padding:10px 16px;border:0;border-radius:8px;background:#333;color:white;cursor:pointer}.muted{color:#666}.error{color:#a22}table{border-collapse:collapse;width:100%;background:white}th,td{padding:10px;border-bottom:1px solid #ddd;text-align:left;vertical-align:top}th{background:#eee}#status{margin:12px 0}.scroll{overflow:auto}
-</style></head><body><main>
-<h1>Idée Gourmande — Administration centralisée</h1>
-<p class="muted">Espace privé connecté au classeur Google Sheets. Cette première version permet uniquement de consulter les commandes.</p>
-<div class="bar"><button onclick="charger()">Actualiser les commandes</button><span id="status">Connexion…</span></div>
-<div class="scroll"><table><thead><tr><th>N° commande</th><th>Réception</th><th>Client</th><th>Livraison</th><th>Total</th><th>Statut</th><th>Articles</th></tr></thead><tbody id="rows"></tbody></table></div>
-</main><script>
-function erreur(e){document.getElementById('status').textContent=e&&e.message?e.message:String(e);document.getElementById('status').className='error';}
-function charger(){document.getElementById('status').textContent='Chargement…';google.script.run.withSuccessHandler(r=>{const body=document.getElementById('rows');body.innerHTML='';(r.commandes||[]).forEach(c=>{const tr=document.createElement('tr');const client=c.client||{};const nom=[client.prenom,client.nom].filter(Boolean).join(' ')||client.nom||c['E-mail client']||'';const produits=Array.isArray(c.produits)?c.produits.map(p=>{if(typeof p==='string')return p;return (p.nom||p.article||p.name||'Article')+(p.quantite?' × '+p.quantite:'');}).join(', '):'';[c['N° commande'],c['Date réception'],nom,c['Mode de livraison'],c['Total'],c['Statut de gestion'],produits].forEach(v=>{const td=document.createElement('td');td.textContent=v==null?'':String(v);tr.appendChild(td);});body.appendChild(tr);});document.getElementById('status').textContent=(r.commandes||[]).length+' commande(s) chargée(s).';}).withFailureHandler(erreur).obtenirTableauAdmin();}
-charger();
+:root{color-scheme:light}*{box-sizing:border-box}
+body{font:15px system-ui,-apple-system,sans-serif;margin:0;background:#f5f4f0;color:#292929}
+main{max-width:1200px;margin:auto;padding:24px}
+h1{font-size:1.65rem;margin:0 0 6px}.intro,.muted{color:#686868}
+.toolbar{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin:22px 0 12px}
+input,select,button{font:inherit;padding:10px 12px;border:1px solid #ccc;border-radius:8px;background:white}
+input{flex:1;min-width:220px}button{background:#303030;color:white;border-color:#303030;cursor:pointer}
+button:disabled{opacity:.55;cursor:wait}
+#status{margin:12px 0 18px;color:#555}.error{color:#a21f1f!important}
+.summary{display:flex;gap:10px;flex-wrap:wrap;margin:12px 0 18px}
+.pill{background:#fff;border:1px solid #e2e0da;border-radius:10px;padding:10px 14px}
+.tablewrap{overflow:auto;background:#fff;border:1px solid #e2e0da;border-radius:12px}
+table{border-collapse:collapse;width:100%;min-width:900px}
+th,td{padding:12px;border-bottom:1px solid #eceae5;text-align:left;vertical-align:top}
+th{background:#eeede8;font-size:.84rem;white-space:nowrap}
+tr:last-child td{border-bottom:0}.order-no{font-weight:650}.sub{display:block;color:#777;font-size:.82rem;margin-top:3px}
+.status{display:inline-block;padding:4px 8px;border-radius:20px;background:#efeee9;font-size:.82rem}
+details{margin-top:7px}summary{cursor:pointer;color:#454545;font-size:.88rem}
+.items{margin:8px 0 2px;padding-left:18px}.items li{margin:5px 0}
+.empty{text-align:center;padding:28px;color:#777}
+@media(max-width:650px){main{padding:16px}h1{font-size:1.35rem}}
+</style>
+</head>
+<body><main>
+<h1>Idée Gourmande — Administration</h1>
+<p class="intro">Consultation centralisée des commandes enregistrées dans Google Sheets. Cette version est en lecture seule.</p>
+<div class="summary"><div class="pill"><strong id="count">—</strong><span class="sub">Commandes affichées</span></div><div class="pill"><strong>Lecture seule</strong><span class="sub">Aucune action sur le stock ou les e-mails</span></div></div>
+<div class="toolbar">
+<input id="search" type="search" placeholder="Rechercher un numéro, un client ou un e-mail…" aria-label="Rechercher une commande">
+<select id="filter" aria-label="Filtrer par statut"><option value="">Tous les statuts</option></select>
+<button id="refresh" type="button" onclick="charger()">Actualiser</button>
+</div>
+<div id="status" role="status">Connexion…</div>
+<div class="tablewrap"><table><thead><tr><th>Commande</th><th>Réception</th><th>Client</th><th>Livraison</th><th>Total</th><th>Statut</th><th>Articles</th></tr></thead><tbody id="rows"><tr><td colspan="7" class="empty">Chargement…</td></tr></tbody></table></div>
+</main>
+<script>
+let toutesLesCommandes=[];
+const $=id=>document.getElementById(id);
+function erreur(e){$('status').textContent=e&&e.message?e.message:String(e);$('status').className='error';$('refresh').disabled=false;}
+function valeur(v){return v==null?'':String(v);}
+function ajouterCellule(tr,v,classe){const td=document.createElement('td');td.textContent=valeur(v);if(classe)td.className=classe;tr.appendChild(td);return td;}
+function nomClient(c){const client=c.client||{};return [client.prenom,client.nom].filter(Boolean).join(' ')||client.nom||c['E-mail client']||'';}
+function libelleArticle(p){if(typeof p==='string')return p;return (p.nom||p.nomProduit||p.article||'Article')+(p.quantite?' × '+p.quantite:'')+(p.poidsReel?' — '+p.poidsReel+' g':(p.poids?' — '+p.poids+' g':''));}
+function afficher(){
+ const q=$('search').value.trim().toLocaleLowerCase('fr');
+ const statut=$('filter').value;
+ const liste=toutesLesCommandes.filter(c=>{
+  const texte=[c['N° commande'],c['ID commande'],nomClient(c),c['E-mail client'],c['Mode de livraison']].join(' ').toLocaleLowerCase('fr');
+  return (!q||texte.includes(q))&&(!statut||valeur(c['Statut de gestion'])===statut);
+ });
+ $('count').textContent=liste.length+' / '+toutesLesCommandes.length;
+ const body=$('rows');body.replaceChildren();
+ if(!liste.length){const tr=document.createElement('tr');const td=ajouterCellule(tr,'Aucune commande ne correspond à la recherche.');td.colSpan=7;td.className='empty';body.appendChild(tr);return;}
+ liste.forEach(c=>{
+  const tr=document.createElement('tr');
+  ajouterCellule(tr,c['N° commande']||c['ID commande'],'order-no');
+  ajouterCellule(tr,c['Date réception']);
+  ajouterCellule(tr,nomClient(c));
+  ajouterCellule(tr,c['Mode de livraison']);
+  ajouterCellule(tr,c['Total']);
+  const st=ajouterCellule(tr,c['Statut de gestion']);const badge=document.createElement('span');badge.className='status';badge.textContent=st.textContent;st.replaceChildren(badge);
+  const td=tr.insertCell();const listeArticles=document.createElement('ul');listeArticles.className='items';
+  const details=Array.isArray(c.details)&&c.details.length?c.details:null;
+  const produits=Array.isArray(c.produits)?c.produits:[];
+  (details||produits).forEach(p=>{const li=document.createElement('li');li.textContent=details?libelleArticle({nom:p['Article'],quantite:p['Quantité'],poidsReel:p['Poids (g)']}):libelleArticle(p);listeArticles.appendChild(li);});
+  if((details||produits).length){const d=document.createElement('details');const s=document.createElement('summary');s.textContent=(details||produits).length+' article(s)';d.append(s,listeArticles);td.appendChild(d);}else td.textContent='—';
+  body.appendChild(tr);
+ });
+}
+function charger(){
+ $('refresh').disabled=true;$('status').textContent='Chargement des commandes…';$('status').className='';
+ google.script.run.withSuccessHandler(r=>{
+  toutesLesCommandes=r.commandes||[];
+  const statuts=[...new Set(toutesLesCommandes.map(c=>valeur(c['Statut de gestion'])).filter(Boolean))].sort((a,b)=>a.localeCompare(b,'fr'));
+  const select=$('filter');const ancienne=select.value;select.replaceChildren(new Option('Tous les statuts',''));
+  statuts.forEach(s=>select.add(new Option(s,s)));if(statuts.includes(ancienne))select.value=ancienne;
+  afficher();$('status').textContent='Données actualisées depuis Google Sheets.';$('refresh').disabled=false;
+ }).withFailureHandler(erreur).obtenirTableauAdmin();
+}
+$('search').addEventListener('input',afficher);$('filter').addEventListener('change',afficher);charger();
 </script></body></html>
