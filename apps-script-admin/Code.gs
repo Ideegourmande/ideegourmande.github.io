@@ -156,7 +156,7 @@ function diagnostiquerFormatProduits() {
 function simulerCorrespondanceSaumonFictif() {
   function normaliser_(v) {
     return String(v || "").toLowerCase().normalize("NFD")
-      .replace(/[\\u0300-\\u036f]/g, "").trim();
+      .replace(/[\u0300-\u036f]/g, "").trim();
   }
   function simulerLigne_(ligne) {
     const recette = normaliser_(ligne.recette);
@@ -191,4 +191,134 @@ function simulerCorrespondanceSaumonFictif() {
     resultats: resultats,
     tousValides: resultats.every(r => r.resultat === "OK")
   };
+}
+
+/**
+ * Construit un aperçu du transfert depuis Commandes vers les onglets
+ * secondaires. Lecture seule : aucune cellule n'est modifiée.
+ */
+function preparerApercuTransfertDetails() {
+  const ss = classeur_();
+  const sh = ss.getSheetByName(IG_CONFIG.SHEETS.ORDERS);
+  if (!sh || sh.getLastRow() < 2) {
+    return {commandes:0, lignesArticles:0, erreurs:[], dejaTransferees:0};
+  }
+  const values = sh.getDataRange().getValues();
+  const headers = values.shift().map(String);
+  const idx = {};
+  headers.forEach((h,i) => idx[h] = i);
+  ["ID commande", "N° commande", "Produits (JSON)"].forEach(h => {
+    if (idx[h] == null) throw new Error("Colonne obligatoire absente : " + h);
+  });
+  const details = ss.getSheetByName(IG_CONFIG.SHEETS.ITEMS);
+  const tech = ss.getSheetByName(IG_CONFIG.SHEETS.TECH);
+  if (!details || !tech) throw new Error("Exécute d'abord initialiserStructureAdmin().");
+  const idsDetails = lireIdsDejaTransferes_(details, 1);
+  const idsTech = lireIdsDejaTransferes_(tech, 1);
+  let commandes = 0, lignesArticles = 0, dejaTransferees = 0;
+  const erreurs = [];
+  values.forEach((row, n) => {
+    const id = String(row[idx["ID commande"]] || "").trim();
+    if (!id) { erreurs.push("Ligne " + (n+2) + " : ID commande vide"); return; }
+    let produits;
+    try {
+      produits = typeof row[idx["Produits (JSON)"]] === "string"
+        ? JSON.parse(row[idx["Produits (JSON)"]] || "[]")
+        : row[idx["Produits (JSON)"]];
+    } catch (e) {
+      erreurs.push(id + " : JSON produits illisible"); return;
+    }
+    if (!Array.isArray(produits)) {
+      erreurs.push(id + " : les produits ne sont pas une liste"); return;
+    }
+    commandes++;
+    if (idsDetails.has(id) || idsTech.has(id)) dejaTransferees++;
+    else lignesArticles += produits.length;
+  });
+  return {commandes:commandes, lignesArticles:lignesArticles,
+    erreurs:erreurs, dejaTransferees:dejaTransferees,
+    mode:"aperçu en lecture seule"};
+}
+
+/**
+ * Transfert manuel et idempotent vers les onglets secondaires uniquement.
+ * N'altère pas Commandes, ne touche pas au stock et n'envoie aucun e-mail.
+ * À lancer seulement après validation de preparerApercuTransfertDetails().
+ */
+function transfererDetailsCommandes() {
+  const ss = classeur_();
+  const sh = ss.getSheetByName(IG_CONFIG.SHEETS.ORDERS);
+  const details = ss.getSheetByName(IG_CONFIG.SHEETS.ITEMS);
+  const tech = ss.getSheetByName(IG_CONFIG.SHEETS.TECH);
+  if (!sh || !details || !tech) throw new Error("Onglets requis manquants. Exécute initialiserStructureAdmin().");
+  const values = sh.getDataRange().getValues();
+  if (values.length < 2) return {commandesTraitees:0, lignesAjoutees:0};
+  const headers = values.shift().map(String);
+  const idx = {};
+  headers.forEach((h,i) => idx[h] = i);
+  ["ID commande", "N° commande", "Produits (JSON)"].forEach(h => {
+    if (idx[h] == null) throw new Error("Colonne obligatoire absente : " + h);
+  });
+  const idsDetails = lireIdsDejaTransferes_(details, 1);
+  const idsTech = lireIdsDejaTransferes_(tech, 1);
+  const detailRows = [], techRows = [];
+  let commandesTraitees = 0;
+  values.forEach(row => {
+    const id = String(row[idx["ID commande"]] || "").trim();
+    if (!id || idsDetails.has(id) || idsTech.has(id)) return;
+    let produits;
+    try {
+      produits = typeof row[idx["Produits (JSON)"]] === "string"
+        ? JSON.parse(row[idx["Produits (JSON)"]] || "[]")
+        : row[idx["Produits (JSON)"]];
+    } catch (e) { throw new Error("JSON produits illisible pour " + id + ". Aucun transfert effectué."); }
+    if (!Array.isArray(produits)) throw new Error("Produits invalides pour " + id + ". Aucun transfert effectué.");
+    const numero = valeurColonne_(row, idx, "N° commande");
+    produits.forEach((p, i) => {
+      if (!p || typeof p !== "object" || Array.isArray(p)) {
+        throw new Error("Article invalide pour " + id + ", ligne " + (i+1) + ". Aucun transfert effectué.");
+      }
+      const nom = p.nom || p.nomProduit || p.article || "";
+      const quantite = p.quantite == null ? "" : p.quantite;
+      const unite = p.unite || p.unité || "";
+      const poids = p.poidsReel != null ? p.poidsReel : (p.poids != null ? p.poids : "");
+      detailRows.push([
+        id, numero, nom, quantite, unite, poids,
+        p.prix == null ? "" : p.prix,
+        p.prixConfirme == null ? "" : p.prixConfirme,
+        p.prixFinal == null ? "" : p.prixFinal,
+        i + 1, JSON.stringify(p)
+      ]);
+    });
+    const objetBrut = {};
+    headers.forEach((h,i) => {
+      const v = row[i];
+      objetBrut[h] = v instanceof Date ? v.toISOString() : v;
+    });
+    techRows.push([id, new Date(), JSON.stringify(objetBrut)]);
+    commandesTraitees++;
+  });
+  // Valider toutes les lignes avant toute écriture, puis écrire les deux lots.
+  if (detailRows.length) {
+    details.getRange(details.getLastRow()+1, 1, detailRows.length, detailRows[0].length).setValues(detailRows);
+  }
+  if (techRows.length) {
+    tech.getRange(tech.getLastRow()+1, 1, techRows.length, techRows[0].length).setValues(techRows);
+  }
+  return {commandesTraitees:commandesTraitees, lignesAjoutees:detailRows.length,
+    sauvegardesTechniques:techRows.length, stockModifie:false, emailsEnvoyes:false};
+}
+
+function lireIdsDejaTransferes_(sheet, colonneId) {
+  const set = new Set();
+  if (sheet.getLastRow() < 2) return set;
+  sheet.getRange(2, colonneId, sheet.getLastRow()-1, 1).getValues().forEach(r => {
+    const id = String(r[0] || "").trim();
+    if (id) set.add(id);
+  });
+  return set;
+}
+
+function valeurColonne_(row, index, nom) {
+  return index[nom] == null ? "" : row[index[nom]];
 }
