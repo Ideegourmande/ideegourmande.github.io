@@ -75,3 +75,74 @@ function obtenirTableauAdmin() {
   commandes.reverse();
   return {commandes:commandes, onglets:ss.getSheets().map(s=>s.getName())};
 }
+
+
+/**
+ * Diagnostic sans données personnelles : indique uniquement la forme des
+ * lignes produits réellement enregistrées dans la feuille Commandes.
+ * À exécuter depuis l'éditeur Apps Script après autorisation.
+ */
+function diagnostiquerFormatProduits() {
+  const ss = classeur_();
+  const sh = ss.getSheetByName(IG_CONFIG.SHEETS.ORDERS);
+  if (!sh || sh.getLastRow() < 2) {
+    return { commandesAnalysees: 0, message: "Aucune commande à analyser." };
+  }
+  const values = sh.getDataRange().getValues();
+  const headers = values.shift().map(String);
+  const idxProduits = headers.indexOf("Produits (JSON)");
+  const idxId = headers.indexOf("ID commande");
+  if (idxProduits < 0) {
+    throw new Error("Colonne Produits (JSON) introuvable.");
+  }
+  let nbCommandes = 0;
+  let nbLignesProduits = 0;
+  let erreursJSON = 0;
+  const formes = {};
+  const exemples = [];
+  values.forEach(function(row) {
+    const raw = row[idxProduits];
+    if (!raw) return;
+    nbCommandes++;
+    let produits;
+    try {
+      produits = typeof raw === "string" ? JSON.parse(raw) : raw;
+    } catch (e) {
+      erreursJSON++;
+      return;
+    }
+    if (!Array.isArray(produits)) {
+      formes["racine_non_tableau"] = (formes["racine_non_tableau"] || 0) + 1;
+      return;
+    }
+    nbLignesProduits += produits.length;
+    produits.forEach(function(p) {
+      const type = p === null ? "null" : Array.isArray(p) ? "array" : typeof p;
+      const keys = p && typeof p === "object" && !Array.isArray(p)
+        ? Object.keys(p).sort().join(", ")
+        : type;
+      formes[keys] = (formes[keys] || 0) + 1;
+      if (exemples.length < 5) {
+        exemples.push({
+          type: type,
+          champs: p && typeof p === "object" && !Array.isArray(p) ? Object.keys(p).sort() : [],
+          nom: p && (p.nom || p.nomProduit || p.article) ? String(p.nom || p.nomProduit || p.article) : "",
+          reference: p && p.reference ? String(p.reference) : "",
+          recette: p && p.recette ? String(p.recette) : "",
+          unite: p && (p.unite || p.unité) ? String(p.unite || p.unité) : "",
+          quantiteType: p && p.quantite != null ? typeof p.quantite : "absent",
+          poidsType: p && p.poids != null ? typeof p.poids : "absent",
+          poidsReelType: p && p.poidsReel != null ? typeof p.poidsReel : "absent",
+          prixType: p && p.prix != null ? typeof p.prix : "absent"
+        });
+      }
+    });
+  });
+  return {
+    commandesAnalysees: nbCommandes,
+    lignesProduitsAnalysees: nbLignesProduits,
+    erreursJSON: erreursJSON,
+    formesDeLignes: formes,
+    exemplesSansDonneesClient: exemples
+  };
+}
