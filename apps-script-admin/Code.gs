@@ -146,3 +146,49 @@ function diagnostiquerFormatProduits() {
     exemplesSansDonneesClient: exemples
   };
 }
+
+/**
+ * Simulation pure de deux lignes fictives de saumon.
+ * Aucun accès à SpreadsheetApp, aucune écriture, aucun e-mail et aucune
+ * modification de stock. Vérifie les règles de correspondance connues
+ * du catalogue local ; ce n'est pas encore une validation du stock réel.
+ */
+function simulerCorrespondanceSaumonFictif() {
+  function normaliser_(v) {
+    return String(v || "").toLowerCase().normalize("NFD")
+      .replace(/[\\u0300-\\u036f]/g, "").trim();
+  }
+  function simulerLigne_(ligne) {
+    const recette = normaliser_(ligne.recette);
+    let articleStock = "";
+    if (["aneth", "a l'aneth"].indexOf(recette) >= 0) {
+      articleStock = "saumon à l'aneth";
+    } else if (["piment", "piments", "aux piment", "aux piments", "aux pimets"].indexOf(recette) >= 0) {
+      articleStock = "saumon aux piments";
+    }
+    const poids = Number(String(ligne.poids).replace(",", "."));
+    const valide = ligne.reference === "saumon-fume" &&
+      articleStock !== "" && Number.isFinite(poids) && poids > 0;
+    return {
+      recetteSaisie: ligne.recette,
+      articleStockAttendu: articleStock || null,
+      poidsSaisi: ligne.poids,
+      consommationSimulee: valide ? poids : null,
+      uniteConsommation: "g",
+      resultat: valide ? "OK" : "À vérifier"
+    };
+  }
+
+  const cas = [
+    { reference: "saumon-fume", recette: "aneth", poids: "125", quantite: 1 },
+    { reference: "saumon-fume", recette: "piments", poids: "180", quantite: 1 }
+  ];
+  const resultats = cas.map(simulerLigne_);
+  return {
+    mode: "simulation sans écriture",
+    source: "règles de correspondance saumon du catalogue local",
+    aucuneModification: true,
+    resultats: resultats,
+    tousValides: resultats.every(r => r.resultat === "OK")
+  };
+}
