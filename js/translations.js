@@ -92,7 +92,7 @@ const translations = {
             "Herbes de Provence",
 
         duck_breast_recipe2:
-            "Piment d'Espelette",
+            "Ail",
 
         charcuterie_category:
             "🥩 Charcuteries artisanales",
@@ -237,7 +237,7 @@ const translations = {
             "Kräuter der Provence",
 
         duck_breast_recipe2:
-            "Piment d'Espelette",
+            "Knoblauch",
 
         charcuterie_category:
             "🥩 Handwerkliche Wurstwaren",
@@ -382,7 +382,7 @@ const translations = {
             "Erbe di Provenza",
 
         duck_breast_recipe2:
-            "Piment d'Espelette",
+            "Aglio",
 
         charcuterie_category:
             "🥩 Salumi artigianali",
