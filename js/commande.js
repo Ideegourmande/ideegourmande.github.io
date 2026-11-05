@@ -917,6 +917,12 @@ async function envoyerCommandeInterne(e) {
     // Le PDF et les e-mails ne démarrent qu'après confirmation de cet enregistrement.
     try {
         await enregistrerCommandeDansSheets(commande);
+
+        // La commande est désormais confirmée dans Sheets : vider le panier
+        // immédiatement pour empêcher une nouvelle soumission accidentelle.
+        panierCommande.length = 0;
+        window.panierCommande = panierCommande;
+        afficherPanier();
     } catch (erreur) {
         console.error("Erreur d'enregistrement Google Sheets TEST :", erreur);
         alert(
@@ -974,24 +980,17 @@ async function envoyerCommandeInterne(e) {
     }
 
     if (envoiOK) {
-        // Vider le panier uniquement si la requête a été transmise.
-        panierCommande.length = 0;
-        window.panierCommande = panierCommande;
-        afficherPanier();
-
         alert(
             "Commande enregistrée. Apps Script confirme que les deux e-mails " +
             "ont été envoyés (entreprise et client)."
         );
     } else {
-        // Conserver les articles pour ne pas les faire perdre au client.
-        // La commande est toutefois déjà enregistrée : éviter un nouvel envoi
-        // du formulaire sans vérifier d'abord si elle a été reçue.
+        // La commande est déjà enregistrée dans Sheets et le panier a été vidé.
+        // Ne jamais la renvoyer pour tenter de relancer les e-mails.
         alert(
             "Commande enregistrée, mais la demande d'envoi " +
             "de l'e-mail n'a pas été confirmée.\n\n" +
-            "Votre panier est conservé. Attention : la commande " +
-            "est déjà enregistrée. Ne la renvoyez pas une seconde fois " +
+            "La commande est déjà enregistrée dans Sheets. Ne la renvoyez pas une seconde fois " +
             "avant d'avoir vérifié sa réception.\n\n" +
             (
                 erreurEnvoi ||
