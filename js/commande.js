@@ -31,6 +31,10 @@ const produits = {
     }
 };
 
+// URL du récepteur Apps Script relié au classeur TEST.
+// À renseigner après le déploiement du récepteur TEST.
+const URL_RECEIVER_TEST = "";
+
 const URL_PRIX =
     "https://script.google.com/macros/s/AKfycby5o5V0dRb9fPpnhmUYCeWB1LxXjGRXfQK0kQ2Tzw2gHK58GQn8VmxlDI1DFWzogAhI/exec";
 
@@ -744,6 +748,105 @@ function obtenirNumeroCommande(nomClient, annee) {
 }
 
 // ======================================
+// ======================================
+// ENREGISTREMENT CENTRAL DANS GOOGLE SHEETS (TEST)
+// ======================================
+
+function lireStatutCommandeSheets(idCommande) {
+    return new Promise((resolve, reject) => {
+        const callback = "igCommandeSheets_" + Date.now() + "_" +
+            Math.floor(Math.random() * 100000);
+        const script = document.createElement("script");
+        let termine = false;
+
+        const nettoyer = () => {
+            if (termine) return;
+            termine = true;
+            clearTimeout(timeout);
+            delete window[callback];
+            if (script.parentNode) script.parentNode.removeChild(script);
+        };
+
+        const timeout = setTimeout(() => {
+            nettoyer();
+            reject(new Error("Délai dépassé pendant la vérification de la commande dans Sheets."));
+        }, 10000);
+
+        window[callback] = donnees => {
+            nettoyer();
+            if (!donnees || donnees.ok !== true) {
+                reject(new Error(donnees && donnees.message || "Réponse invalide du récepteur TEST."));
+                return;
+            }
+            resolve(donnees);
+        };
+
+        script.onerror = () => {
+            nettoyer();
+            reject(new Error("Le statut de la commande dans Sheets est inaccessible."));
+        };
+
+        const params = new URLSearchParams({
+            action: "status",
+            id: idCommande,
+            callback,
+            _: String(Date.now())
+        });
+        script.src = URL_RECEIVER_TEST + "?" + params.toString();
+        document.head.appendChild(script);
+    });
+}
+
+async function enregistrerCommandeDansSheets(commande) {
+    if (!URL_RECEIVER_TEST) {
+        throw new Error("L'URL du récepteur Google Sheets TEST doit être configurée avant le test.");
+    }
+
+    const statutInitial = await lireStatutCommandeSheets(commande.id);
+    if (statutInitial.enregistree === true) return true;
+
+    const formulaire = new URLSearchParams();
+    formulaire.set("payload", JSON.stringify(commande));
+
+    let misEnFile = false;
+    if (navigator.sendBeacon) {
+        try {
+            misEnFile = navigator.sendBeacon(URL_RECEIVER_TEST, formulaire);
+        } catch (erreur) {
+            console.warn("sendBeacon indisponible pour le récepteur TEST.", erreur);
+        }
+    }
+    if (!misEnFile) {
+        fetch(URL_RECEIVER_TEST, {
+            method: "POST",
+            mode: "no-cors",
+            credentials: "omit",
+            body: formulaire,
+            keepalive: true
+        }).catch(erreur => console.warn("POST TEST interrompu ; vérification du statut.", erreur));
+    }
+
+    const debut = Date.now();
+    const dureeMax = 90000;
+    let derniereErreur = "";
+
+    while (Date.now() - debut < dureeMax) {
+        await new Promise(resolve => setTimeout(resolve, 2000));
+        try {
+            const statut = await lireStatutCommandeSheets(commande.id);
+            if (statut.enregistree === true) return true;
+        } catch (erreur) {
+            derniereErreur = erreur && erreur.message ? erreur.message : String(erreur);
+        }
+    }
+
+    throw new Error(
+        "L'enregistrement dans les deux onglets TEST n'a pas pu être confirmé. " +
+        "Ne renvoyez pas la commande avant vérification dans Sheets. " +
+        (derniereErreur || "")
+    );
+}
+
 // ENVOYER LA COMMANDE
 // ======================================
 
@@ -810,81 +913,16 @@ async function envoyerCommandeInterne(e) {
 
     console.log("COMMANDE PRÉPARÉE :", commande);
 
-    // Vérifier la base de données.
-    if (typeof ajouterCommande !== "function") {
-        console.error(
-            "ajouterCommande() est introuvable. " +
-            "Vérifiez js/database.js."
-        );
-
-        alert(
-            "Impossible d'enregistrer la commande. " +
-            "La base de données n'est pas disponible."
-        );
-        return;
-    }
-
-    const commandeEnregistree = {
-        id: commande.id,
-        numeroCommande: commande.numeroCommande,
-        date: new Date().toLocaleDateString("fr-FR"),
-
-        client:
-            commande.client.prenom + " " +
-            commande.client.nom,
-
-        telephone: commande.client.telephone,
-        email: commande.client.email,
-        adresse: commande.client.adresse,
-        commentaire: commande.client.commentaire,
-        modeLivraison: commande.client.modeLivraison,
-        clientDetails: { ...commande.client },
-
-        produits: commande.produits.map(article => {
-            let description = article.nom;
-
-            if (article.reference === "saumon-fume") {
-                description += " (" + article.poids + " g)";
-            } else if (
-                article.reference === "viande-sechee" ||
-                article.reference === "lard-sec"
-            ) {
-                description +=
-                    " (" + article.poidsMin +
-                    "–" + article.poidsMax + " g)";
-            } else if (article.quantite > 1) {
-                description += " x" + article.quantite;
-            }
-
-            return description;
-        }).join("\n"),
-
-        produitsListe: commande.produits,
-        total: commande.total,
-        statut: "Nouvelle",
-        stockTraite: false,
-        stockErreur: false
-    };
-
-    let resultat;
-
+    // Enregistrer d'abord la commande dans les deux onglets du classeur TEST.
+    // Le PDF et les e-mails ne démarrent qu'après confirmation de cet enregistrement.
     try {
-        resultat = ajouterCommande(commandeEnregistree);
+        await enregistrerCommandeDansSheets(commande);
     } catch (erreur) {
-        console.error(
-            "Erreur lors de l'enregistrement :",
-            erreur
-        );
-
+        console.error("Erreur d'enregistrement Google Sheets TEST :", erreur);
         alert(
-            "Une erreur est survenue pendant " +
-            "l'enregistrement de la commande."
+            (erreur && erreur.message ? erreur.message : String(erreur)) +
+            "\n\nAucun PDF ni e-mail n'a été déclenché. Vérifie Sheets avant toute nouvelle tentative."
         );
-        return;
-    }
-
-    if (!resultat) {
-        alert("La commande n'a pas pu être enregistrée.");
         return;
     }
 
