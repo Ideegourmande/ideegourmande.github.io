@@ -35,8 +35,7 @@ const produits = {
 // À renseigner après le déploiement du récepteur TEST.
 const URL_RECEIVER_TEST = "https://script.google.com/macros/s/AKfycby71HAzr3Hxiwt6kHemdpJ01Zry1Ud3IcfRU13ycrDOu_p-3-eNM-iTaCH2SseZ1LYH/exec";
 
-const URL_PRIX =
-    "https://script.google.com/macros/s/AKfycby5o5V0dRb9fPpnhmUYCeWB1LxXjGRXfQK0kQ2Tzw2gHK58GQn8VmxlDI1DFWzogAhI/exec";
+const URL_PRIX = URL_RECEIVER_TEST;
 
 // ======================================
 // CHARGEMENT DES PRIX DEPUIS APPS SCRIPT
@@ -676,7 +675,7 @@ function viderPanier() {
 // COMPTEUR CENTRAL DES COMMANDES
 // ======================================
 
-const URL_COMPTEUR_COMMANDES = URL_PRIX;
+const URL_COMPTEUR_COMMANDES = URL_RECEIVER_TEST;
 
 function obtenirNumeroCommande(nomClient, annee) {
     return new Promise((resolve, reject) => {
