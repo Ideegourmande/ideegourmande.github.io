@@ -33,7 +33,7 @@ const produits = {
 
 // URL du récepteur Apps Script relié au classeur TEST.
 // À renseigner après le déploiement du récepteur TEST.
-const URL_RECEIVER_TEST = "https://script.google.com/macros/s/AKfycby71HAzr3Hxiwt6kHemdpJ01Zry1Ud3IcfRU13ycrDOu_p-3-eNM-iTaCH2SseZ1LYH/exec";
+const URL_RECEIVER_TEST = "https://script.google.com/macros/s/AKfcyby71HAzr3Hxiwt6kHemdpJ01Zry1Ud3IcfRU13ycrDOu_p-3-eNM-iTaCH2SseZ1LYH/exec";
 
 const URL_PRIX = URL_RECEIVER_TEST;
 
