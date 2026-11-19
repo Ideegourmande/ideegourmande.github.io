@@ -894,7 +894,7 @@ async function envoyerCommandeInterne(e) {
 
     let envoiOK = false;
     let erreurEnvoi = "";
-let enregistrementSheetsConfirme = false;
+    let enregistrementSheetsConfirme = false;
     try {
         if (
             typeof window.genererPDFCommande !== "function"
