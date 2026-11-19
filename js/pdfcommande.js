@@ -390,10 +390,14 @@
       lignesEmail.length,
       1
     );
-    const yReception = y + 17 + nombreLignesCoordonnees * 4 + 4;
-    const hauteurBlocClient = yReception - y + 8;
+    let yReception = y + 17 + nombreLignesCoordonnees * 4 + 4;
+    let hauteurBlocClient = yReception - y + 8;
 
-    if (y - 3 + hauteurBlocClient > 270) nouvellePage();
+    if (y - 3 + hauteurBlocClient > 270) {
+      nouvellePage();
+      yReception = y + 17 + nombreLignesCoordonnees * 4 + 4;
+      hauteurBlocClient = yReception - y + 8;
+    }
 
     doc.setFillColor(255, 255, 255);
     doc.setDrawColor(231, 227, 216);
