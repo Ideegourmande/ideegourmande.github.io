@@ -8,7 +8,7 @@
   "use strict";
 
   const URL_SCRIPT_GOOGLE =
-    "https://script.google.com/macros/s/AKfcyby71HAzr3Hxiwt6kHemdpJ01Zry1Ud3IcfRU13ycrDOu_p-3-eNM-iTaCH2SseZ1LYH/exec";
+    "https://script.google.com/macros/s/AKfycbzRb5bUYlCvUfySD-YQYNmZX72sihwqCfZ87cXMv31GkBewaks7lzIgUglulilR_ivVHg/exec";
 
   const NOM_ENTREPRISE = "Idée Gourmande";
   const EMAIL_ENTREPRISE = "ideesgourmandesge@gmail.com";
