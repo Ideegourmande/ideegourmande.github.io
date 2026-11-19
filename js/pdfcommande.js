@@ -906,6 +906,7 @@ const statut = await attendreStatutEnvoiGoogle(idEnvoi);
       } catch (erreurPDF) {
         console.warn("Impossible d’ouvrir le PDF automatiquement :", erreurPDF);
       }
+       
     }
 
     if (optionsFinales.telecharger) resultat.doc.save(nomFichier);
