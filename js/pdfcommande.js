@@ -738,14 +738,45 @@ async function attendreStatutCommandeSheets(idCommande) {
         console.info("[Idée Gourmande] Demande POST mise en file par sendBeacon.");
       }
 
-      const statut = await attendreStatutEnvoiGoogle(idEnvoi);
+      
+const statutSheets = await attendreStatutCommandeSheets(
+  String(payload.idCommande || "").trim()
+);
+
+if (
+  !statutSheets ||
+  statutSheets.ok !== true ||
+  statutSheets.enregistree !== true
+) {
+  return {
+    ok: false,
+    transmis: true,
+    enregistrementConfirme: false,
+    envoiConfirme: false,
+    idEnvoi: idEnvoi,
+    message:
+      "L'enregistrement de la commande dans Google Sheets n'a pas pu être confirmé. Ne renvoyez pas la commande avant vérification."
+  };
+}
+
+console.info(
+  "[Idée Gourmande] Enregistrement Google Sheets confirmé.",
+  statutSheets
+);
+
+const statut = await attendreStatutEnvoiGoogle(idEnvoi);
+
       if (statut && statut.found && statut.status === "termine" &&
           statut.entreprise === "envoye" && statut.client === "envoye") {
         return {
-          ok: true, transmis: true, envoiConfirme: true, livraisonVerifiee: false,
-          idEnvoi: idEnvoi,
-          message: "Apps Script confirme que les deux e-mails ont été envoyés."
-        };
+  ok: true,
+  transmis: true,
+  enregistrementConfirme: true,
+  envoiConfirme: true,
+  livraisonVerifiee: false,
+  idEnvoi: idEnvoi,
+  message: "Commande enregistrée dans Google Sheets. Les deux e-mails ont été envoyés."
+};
       }
 
       let message = "L'envoi des deux e-mails n'a pas pu être confirmé.";
@@ -761,9 +792,14 @@ async function attendreStatutCommandeSheets(idCommande) {
         message = "Aucun statut vérifiable n'a été reçu dans les 90 secondes. La commande peut avoir été reçue : ne la renvoie pas avant vérification dans Apps Script et Gmail.";
       }
       return {
-        ok: false, transmis: true, envoiConfirme: false, livraisonVerifiee: false,
-        idEnvoi: idEnvoi, message: message
-      };
+  ok: false,
+  transmis: true,
+  enregistrementConfirme: true,
+  envoiConfirme: false,
+  livraisonVerifiee: false,
+  idEnvoi: idEnvoi,
+  message: message
+};
     } catch (erreur) {
       return {
         ok: false, transmis: false, envoiConfirme: false, livraisonVerifiee: false,
