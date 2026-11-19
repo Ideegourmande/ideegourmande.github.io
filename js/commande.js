@@ -35,7 +35,7 @@ const produits = {
 // À renseigner après le déploiement du récepteur TEST.
 const URL_RECEIVER_PRODUCTION = "https://script.google.com/macros/s/AKfycby5o5V0dRb9fPpnhmUYCeWB1LxXjGRXfQK0kQ2Tzw2gHK58GQn8VmxlDI1DFWzogAhI/exec";
 
-const URL_PRIX = URL_RECEIVER_TEST;
+const URL_PRIX = URL_RECEIVER_PRODUCTION;
 
 // ======================================
 // CHARGEMENT DES PRIX DEPUIS APPS SCRIPT
@@ -675,7 +675,7 @@ function viderPanier() {
 // COMPTEUR CENTRAL DES COMMANDES
 // ======================================
 
-const URL_COMPTEUR_COMMANDES = URL_RECEIVER_TEST;
+const URL_COMPTEUR_COMMANDES = URL_RECEIVER_PRODUCTION;
 
 function obtenirNumeroCommande(nomClient, annee) {
     return new Promise((resolve, reject) => {
@@ -791,13 +791,13 @@ function lireStatutCommandeSheets(idCommande) {
             callback,
             _: String(Date.now())
         });
-        script.src = URL_RECEIVER_TEST + "?" + params.toString();
+        script.src = URL_RECEIVER_PRODUCTION + "?" + params.toString();
         document.head.appendChild(script);
     });
 }
 
 async function enregistrerCommandeDansSheets(commande) {
-    if (!URL_RECEIVER_TEST) {
+    if (!URL_RECEIVER_PRODUCTION) {
         throw new Error("L'URL du récepteur Google Sheets TEST doit être configurée avant le test.");
     }
 
@@ -810,13 +810,13 @@ async function enregistrerCommandeDansSheets(commande) {
     let misEnFile = false;
     if (navigator.sendBeacon) {
         try {
-            misEnFile = navigator.sendBeacon(URL_RECEIVER_TEST, formulaire);
+            misEnFile = navigator.sendBeacon(URL_RECEIVER_PRODUCTION, formulaire);
         } catch (erreur) {
             console.warn("sendBeacon indisponible pour le récepteur TEST.", erreur);
         }
     }
     if (!misEnFile) {
-        fetch(URL_RECEIVER_TEST, {
+        fetch(URL_RECEIVER_PRODUCTION, {
             method: "POST",
             mode: "no-cors",
             credentials: "omit",
