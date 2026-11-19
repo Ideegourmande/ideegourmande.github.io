@@ -374,9 +374,38 @@
 
     const colonneGauche = marge + 3;
     const colonneDroite = marge + largeurInterieure / 2 + 2;
+    const largeurColonne = largeurInterieure / 2 - 8;
+    doc.setFont("helvetica", "normal");
+    doc.setFontSize(8);
+    const lignesAdresse = doc.splitTextToSize(
+      "Adresse : " + (client.adresse || "—"),
+      largeurColonne
+    );
+    const lignesEmail = doc.splitTextToSize(
+      "E-mail : " + (client.email || "—"),
+      largeurColonne
+    );
+    const nombreLignesCoordonnees = Math.max(
+      lignesAdresse.length,
+      lignesEmail.length,
+      1
+    );
+    const yReception = y + 17 + nombreLignesCoordonnees * 4 + 4;
+    const hauteurBlocClient = yReception - y + 8;
+
+    if (y - 3 + hauteurBlocClient > 270) nouvellePage();
+
     doc.setFillColor(255, 255, 255);
     doc.setDrawColor(231, 227, 216);
-    doc.roundedRect(marge, y - 3, largeurInterieure, 33, 2, 2, "FD");
+    doc.roundedRect(
+      marge,
+      y - 3,
+      largeurInterieure,
+      hauteurBlocClient,
+      2,
+      2,
+      "FD"
+    );
     doc.setFontSize(9);
     doc.setFont("helvetica", "bold");
     doc.setTextColor(...vert);
@@ -387,13 +416,18 @@
     doc.text((client.prenom + " " + client.nom).trim() || "—", colonneGauche, y + 10);
     doc.setFontSize(8);
     doc.setTextColor(...gris);
-    doc.text(doc.splitTextToSize("Adresse : " + (client.adresse || "—"), largeurInterieure / 2 - 8), colonneGauche, y + 17);
+    doc.text(lignesAdresse, colonneGauche, y + 17);
     doc.setTextColor(45, 48, 45);
     doc.text("Tél. : " + (client.telephone || "—"), colonneDroite, y + 10);
-    doc.text(doc.splitTextToSize("E-mail : " + (client.email || "—"), largeurInterieure / 2 - 8), colonneDroite, y + 17);
     doc.setTextColor(...gris);
-    doc.text("Réception : " + valeur(client.modeLivraison, "À convenir"), colonneGauche, y + 26);
-    y += 39;
+    doc.text(lignesEmail, colonneDroite, y + 17);
+    doc.setTextColor(...gris);
+    doc.text(
+      "Réception : " + valeur(client.modeLivraison, "À convenir"),
+      colonneGauche,
+      yReception
+    );
+    y += hauteurBlocClient + 6;
 
     titreSection("Articles commandés");
 
