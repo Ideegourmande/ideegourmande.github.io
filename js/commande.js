@@ -32,7 +32,7 @@ const produits = {
 };
 
 const URL_PRIX =
-    "https://script.google.com/macros/s/AKfycby5o5V0dRb9fPpnhmUYCeWB1LxXjGRXfQK0kQ2Tzw2gHK58GQn8VmxlDI1DFWzogAhI/exec";
+    "https://script.google.com/macros/s/AKfcyby71HAzr3Hxiwt6kHemdpJ01Zry1Ud3IcfRU13ycrDOu_p-3-eNM-iTaCH2SseZ1LYH/exec";
 
 // ======================================
 // CHARGEMENT DES PRIX DEPUIS APPS SCRIPT
