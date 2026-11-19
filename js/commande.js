@@ -894,7 +894,7 @@ async function envoyerCommandeInterne(e) {
 
     let envoiOK = false;
     let erreurEnvoi = "";
-
+let enregistrementSheetsConfirme = false;
     try {
         if (
             typeof window.genererPDFCommande !== "function"
@@ -912,7 +912,9 @@ async function envoyerCommandeInterne(e) {
                 telecharger: true,
                 afficher: true
             });
-
+enregistrementSheetsConfirme =
+    resultatEmail &&
+    resultatEmail.enregistrementConfirme === true;
         envoiOK = Boolean(
             resultatEmail &&
             resultatEmail.ok &&
@@ -945,22 +947,29 @@ async function envoyerCommandeInterne(e) {
             "Commande enregistrée. Apps Script confirme que les deux e-mails " +
             "ont été envoyés (entreprise et client)."
         );
-    } else {
-        // Conserver les articles pour ne pas les faire perdre au client.
-        // La commande est toutefois déjà enregistrée : éviter un nouvel envoi
-        // du formulaire sans vérifier d'abord si elle a été reçue.
-        alert(
-            "Commande enregistrée, mais la demande d'envoi " +
-            "de l'e-mail n'a pas été confirmée.\n\n" +
-            "Votre panier est conservé. Attention : la commande " +
-            "est déjà enregistrée. Ne la renvoyez pas une seconde fois " +
-            "avant d'avoir vérifié sa réception.\n\n" +
-            (
-                erreurEnvoi ||
-                "Vérifiez la configuration du service d'e-mail."
-            )
-        );
-    }
+    
+} else {
+    // Conserver les articles dans le panier.
+    // Ne jamais affirmer que la commande est enregistrée sans confirmation Sheets.
+    alert(
+        (
+            enregistrementSheetsConfirme
+                ? "Commande enregistrée dans Google Sheets, mais les e-mails ne sont pas confirmés.\n\n"
+                : "Attention : l'enregistrement dans Google Sheets n'est pas confirmé.\n\n"
+        ) +
+        "Votre panier est conservé.\n\n" +
+        (
+            enregistrementSheetsConfirme
+                ? "Ne renvoyez pas la commande une seconde fois avant d'avoir vérifié sa réception.\n\n"
+                : "Ne considérez pas la commande comme enregistrée. Vérifiez son statut avant toute nouvelle tentative.\n\n"
+        ) +
+        (
+            erreurEnvoi ||
+            "Vérifiez la configuration du service d'e-mail."
+        )
+    );
+}
+
 }
 
 // Empêche les doubles clics pendant l'enregistrement et le suivi de l'envoi.
