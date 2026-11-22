@@ -149,71 +149,83 @@
       document.body.appendChild(script);
     }
 
-    async function enregistrerPrix() {
-      const status = document.getElementById("status");
-      const bouton = document.getElementById("enregistrer");
-      const motDePasse = document.getElementById("motDePasse").value;
+    
+async function enregistrerPrix() {
+  const status = document.getElementById("status");
+  const bouton = document.getElementById("enregistrer");
+  const motDePasse = document.getElementById("motDePasse").value;
 
-      if (!prixCharges) {
-        status.textContent = "Charge d’abord les prix.";
-        return;
-      }
+  if (!prixCharges) {
+    status.textContent = "Charge d’abord les prix.";
+    return;
+  }
 
-      if (!motDePasse) {
-        status.textContent = "Saisis le mot de passe d’administration.";
-        return;
-      }
+  if (!motDePasse) {
+    status.textContent = "Saisis le mot de passe d’administration.";
+    return;
+  }
 
-      const prix = {};
+  const prix = {};
 
-      for (const reference of Object.keys(PRODUITS)) {
-        const champ = document.querySelector(
-          'input[data-reference="' + reference + '"]'
-        );
-        const valeur = Number(champ.value);
+  for (const reference of Object.keys(PRODUITS)) {
+    const champ = document.querySelector(
+      'input[data-reference="' + reference + '"]'
+    );
+    const valeur = Number(champ.value);
 
-        if (champ.value.trim() === "" ||
-            !Number.isFinite(valeur) || valeur < 0 ||
-            valeur > 100000) {
-          status.textContent =
-            "Vérifie le prix de " + PRODUITS[reference] + ".";
-          champ.focus();
-          return;
-        }
-
-        prix[reference] = Math.round(valeur * 100) / 100;
-      }
-
-      bouton.disabled = true;
-      status.textContent = "Envoi de la demande d’enregistrement…";
-
-      try {
-        const donnees = new URLSearchParams();
-        donnees.set("action", "savePrices");
-        donnees.set("token", motDePasse);
-        donnees.set("prices", JSON.stringify(prix));
-
-        /*
-         * Envoi sans lecture de la réponse : Apps Script peut rediriger
-         * la requête et le navigateur peut bloquer la lecture CORS.
-         * L’envoi seul ne prouve donc pas que la sauvegarde a réussi.
-         */
-        await fetch(URL_API, {
-          method: "POST",
-          mode: "no-cors",
-          body: donnees
-        });
-
-                status.textContent =
-          "Demande envoyée. Recharge les prix et vérifie si les montants ont changé.";
-        document.getElementById("motDePasse").value = "";
-      } catch (erreur) {
-        status.textContent =
-          "Échec de l’envoi. Vérifie ta connexion et réessaie.";
-      } finally {
-        bouton.disabled = false;
-      }
+    if (
+      champ.value.trim() === "" ||
+      !Number.isFinite(valeur) ||
+      valeur <= 0 ||
+      valeur > 100000
+    ) {
+      status.textContent =
+        "Vérifie le prix de " + PRODUITS[reference] + ".";
+      champ.focus();
+      return;
     }
+
+    prix[reference] = Math.round(valeur * 100) / 100;
+  }
+
+  bouton.disabled = true;
+  status.textContent = "Enregistrement en cours…";
+
+  try {
+    const donnees = new URLSearchParams();
+    donnees.set("action", "savePrices");
+    donnees.set("token", motDePasse);
+    donnees.set("prices", JSON.stringify(prix));
+
+    const reponse = await fetch(URL_API, {
+      method: "POST",
+      body: donnees
+    });
+
+    const resultat = await reponse.json();
+
+    if (!resultat || !resultat.ok) {
+      throw new Error(
+        resultat && resultat.error
+          ? resultat.error
+          : "Le serveur n’a pas confirmé l’enregistrement."
+      );
+    }
+
+    afficherPrix(resultat.prices);
+    status.textContent =
+      "Enregistrement confirmé : les cinq tarifs sont sauvegardés.";
+
+    document.getElementById("motDePasse").value = "";
+
+  } catch (erreur) {
+    status.textContent =
+      "La sauvegarde n’a pas pu être confirmée : " + erreur.message;
+  } finally {
+    bouton.disabled = false;
+  }
+}
+
 
     document.getElementById("recharger")
       .addEventListener("click", chargerPrix);
