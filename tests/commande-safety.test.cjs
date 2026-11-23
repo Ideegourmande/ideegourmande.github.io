@@ -133,3 +133,29 @@ test("le suivi d'envoi utilise un identifiant stable et exige les deux statuts e
   assert.match(pdfSource, /navigator\.sendBeacon/);
   assert.match(pdfSource, /window\.fetch\(URL_SCRIPT_GOOGLE/);
 });
+
+test("une commande en attente reste détectable même si le panier a été modifié", () => {
+  const { context } = chargerCommande();
+  const initiale = { client: { email: "a@example.invalid" }, produits: [{ reference: "magret" }], total: 25 };
+  const modifiee = { client: { email: "b@example.invalid" }, produits: [{ reference: "foie-gras" }], total: 35 };
+  const empreinte = context.empreinteCommande(initiale);
+  const attente = {
+    empreinte,
+    idCommande: "IG-EN-ATTENTE",
+    numeroCommande: "2026-010"
+  };
+
+  context.sauvegarderCommandeEnAttente(attente);
+
+  assert.equal(context.lireTouteCommandeEnAttente().idCommande, "IG-EN-ATTENTE");
+  assert.equal(context.lireCommandeEnAttente(context.empreinteCommande(modifiee)), null);
+  assert.match(commandeSource, /commandeEnAttenteExistante\\.empreinte !== empreinte/);
+  assert.match(commandeSource, /aucune nouvelle commande n'a été créée/i);
+});
+
+test("le contrôle d'une commande en attente précède l'attribution d'un nouvel identifiant", () => {
+  const positionControle = commandeSource.indexOf("const commandeEnAttenteExistante = lireTouteCommandeEnAttente()");
+  const positionNouvelId = commandeSource.indexOf('"IG-" + Date.now().toString(36).toUpperCase()', positionControle);
+  assert.ok(positionControle >= 0);
+  assert.ok(positionNouvelId > positionControle);
+});
