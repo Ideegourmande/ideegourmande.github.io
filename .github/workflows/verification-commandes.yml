@@ -1,0 +1,32 @@
+name: Vérifications JavaScript — commandes
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - "js/commande.js"
+      - "js/pdfcommande.js"
+      - ".github/workflows/verification-commandes.yml"
+  push:
+    branches:
+      - audit-centralisation-commandes-2026-11-23
+    paths:
+      - "js/commande.js"
+      - "js/pdfcommande.js"
+      - ".github/workflows/verification-commandes.yml"
+
+jobs:
+  syntaxe:
+    name: Vérifier la syntaxe JavaScript
+    runs-on: ubuntu-latest
+    steps:
+      - name: Récupérer la branche
+        uses: actions/checkout@v4
+      - name: Installer Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - name: Vérifier commande.js
+        run: node --check js/commande.js
+      - name: Vérifier pdfcommande.js
+        run: node --check js/pdfcommande.js
