@@ -748,6 +748,7 @@ function obtenirNumeroCommande(nomClient, annee) {
 // ======================================
 
 const CLE_COMMANDE_EN_ATTENTE = "ig_commande_en_attente_v1";
+let commandeEnAttenteMemoire = null;
 
 function empreinteCommande(commande) {
     // Inclure les coordonnées, les produits et les montants : toute modification
@@ -762,8 +763,9 @@ function empreinteCommande(commande) {
 function lireCommandeEnAttente(empreinte) {
     try {
         const brut = localStorage.getItem(CLE_COMMANDE_EN_ATTENTE);
-        if (!brut) return null;
-        const attente = JSON.parse(brut);
+        const attente = brut
+            ? JSON.parse(brut)
+            : commandeEnAttenteMemoire;
         return attente &&
             attente.empreinte === empreinte &&
             typeof attente.idCommande === "string" &&
@@ -777,6 +779,7 @@ function lireCommandeEnAttente(empreinte) {
 }
 
 function sauvegarderCommandeEnAttente(attente) {
+    commandeEnAttenteMemoire = attente;
     try {
         localStorage.setItem(
             CLE_COMMANDE_EN_ATTENTE,
@@ -790,6 +793,12 @@ function sauvegarderCommandeEnAttente(attente) {
 }
 
 function effacerCommandeEnAttente(idCommande) {
+    if (
+        commandeEnAttenteMemoire &&
+        commandeEnAttenteMemoire.idCommande === idCommande
+    ) {
+        commandeEnAttenteMemoire = null;
+    }
     try {
         const attente = JSON.parse(
             localStorage.getItem(CLE_COMMANDE_EN_ATTENTE) || "null"
