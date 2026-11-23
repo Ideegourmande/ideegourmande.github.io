@@ -760,25 +760,36 @@ function empreinteCommande(commande) {
     });
 }
 
-function lireCommandeEnAttente(empreinte) {
+function lireTouteCommandeEnAttente() {
     try {
         const brut = localStorage.getItem(CLE_COMMANDE_EN_ATTENTE);
         const attente = brut
             ? JSON.parse(brut)
             : commandeEnAttenteMemoire;
+
         return attente &&
-            attente.empreinte === empreinte &&
+            typeof attente.empreinte === "string" &&
             typeof attente.idCommande === "string" &&
             typeof attente.numeroCommande === "string"
                 ? attente
                 : null;
     } catch (erreur) {
         console.warn("Lecture de la commande en attente impossible :", erreur);
-        return commandeEnAttenteMemoire &&
-            commandeEnAttenteMemoire.empreinte === empreinte
-                ? commandeEnAttenteMemoire
+        const attente = commandeEnAttenteMemoire;
+        return attente &&
+            typeof attente.empreinte === "string" &&
+            typeof attente.idCommande === "string" &&
+            typeof attente.numeroCommande === "string"
+                ? attente
                 : null;
     }
+}
+
+function lireCommandeEnAttente(empreinte) {
+    const attente = lireTouteCommandeEnAttente();
+    return attente && attente.empreinte === empreinte
+        ? attente
+        : null;
 }
 
 function sauvegarderCommandeEnAttente(attente) {
@@ -855,7 +866,25 @@ async function envoyerCommandeInterne(e) {
     // Cela permet au récepteur de reconnaître une retransmission après une
     // interruption réseau, un rechargement ou une fermeture de Safari.
     const empreinte = empreinteCommande(commande);
-    const commandeEnAttente = lireCommandeEnAttente(empreinte);
+    const commandeEnAttenteExistante = lireTouteCommandeEnAttente();
+
+    // Une commande précédente non confirmée doit être réconciliée avant
+    // toute modification du panier ou des coordonnées. Créer un nouvel ID
+    // ici pourrait enregistrer une seconde commande alors que la première
+    // a déjà atteint Sheets ou déclenché un e-mail.
+    if (
+        commandeEnAttenteExistante &&
+        commandeEnAttenteExistante.empreinte !== empreinte
+    ) {
+        alert(
+            "Une commande précédente est toujours en attente de vérification. " +
+            "Pour éviter un doublon, aucune nouvelle commande n'a été créée. " +
+            "Vérifiez d'abord la réception de la commande précédente."
+        );
+        return;
+    }
+
+    const commandeEnAttente = commandeEnAttenteExistante;
 
     if (commandeEnAttente) {
         commande.id = commandeEnAttente.idCommande;
