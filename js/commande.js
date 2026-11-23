@@ -1001,6 +1001,12 @@ enregistrementSheetsConfirme =
         window.panierCommande = panierCommande;
         afficherPanier();
 
+        // Réinitialiser les champs du formulaire client.
+    const formulaire = document.getElementById("formCommande");
+    if (formulaire) {
+        formulaire.reset();
+    }
+        
         alert(
             "Commande enregistrée. Apps Script confirme que les deux e-mails " +
             "ont été envoyés (entreprise et client)."
