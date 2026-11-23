@@ -248,11 +248,11 @@ async function enregistrerPrix() {
 
 
     document.getElementById("recharger")
-      .addEventListener("click", chargerPrix);
+      .addEventListener("click", function() { chargerPrix().catch(function() {}); });
     document.getElementById("enregistrer")
       .addEventListener("click", enregistrerPrix);
 
-    chargerPrix();
+    chargerPrix().catch(function() {});
   </script>
 </body>
 </html>
