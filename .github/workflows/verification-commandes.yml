@@ -6,6 +6,7 @@ on:
     paths:
       - "js/commande.js"
       - "js/pdfcommande.js"
+      - "tests/commande-safety.test.cjs"
       - ".github/workflows/verification-commandes.yml"
   push:
     branches:
