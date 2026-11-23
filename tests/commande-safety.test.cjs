@@ -166,3 +166,13 @@ test("la page publique de commande ne charge plus la base locale et renouvelle l
   assert.ok(commandeHtml.includes("js/pdfcommande.js?v=23"));
   assert.ok(commandeHtml.includes("js/commande.js?v=14"));
 });;
+
+test("les deux types d'opération émis par le site sont explicites et distincts", () => {
+  assert.match(pdfSource, /typeEmail:\s*optionsFinales\.typeEmail/);
+  assert.match(pdfSource, /typeEmail:\s*"confirmation-prix"/);
+  assert.match(pdfSource, /typeEmail:\s*options\.typeEmail\s*\|\|\s*"nouvelle-commande"/);
+  assert.match(pdfSource, /const confirmationFinale = typeEmail === "confirmation-prix"/);
+  assert.match(pdfSource, /const typeSuivi = String\(payload\.typeEmail \|\| "nouvelle-commande"\)/);
+  assert.match(pdfSource, /"-" \+ typeSuivi/);
+  assert.match(commandeSource, /typeEmail:\s*"nouvelle-commande"/);
+});
