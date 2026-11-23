@@ -698,10 +698,20 @@ async function attendreStatutCommandeSheets(idCommande) {
   async function envoyerCommandeGoogle(payload) {
     try {
       if (!payload || typeof payload !== "object") throw new Error("Les données de la commande sont absentes.");
-      const aleatoire = window.crypto && typeof window.crypto.randomUUID === "function"
-        ? window.crypto.randomUUID()
-        : Date.now().toString(36) + "-" + Math.random().toString(36).slice(2);
-      const idEnvoi = "IGM-" + aleatoire.replace(/[^a-zA-Z0-9-]/g, "");
+      // Identifiant déterministe : une retransmission de la même commande
+      // et du même type d'e-mail retrouve le même suivi côté Apps Script.
+      // Une confirmation de prix reste distincte d'un e-mail de nouvelle commande.
+      const idCommandeSuivi = String(payload.idCommande || "").trim();
+      if (!idCommandeSuivi) {
+        throw new Error("Identifiant de commande absent pour le suivi de l'envoi.");
+      }
+      const typeSuivi = String(payload.typeEmail || "nouvelle-commande")
+        .replace(/[^a-zA-Z0-9_-]/g, "")
+        .slice(0, 30) || "nouvelle-commande";
+      const idEnvoi = (
+        "IGM-" + idCommandeSuivi.replace(/[^a-zA-Z0-9_-]/g, "") +
+        "-" + typeSuivi
+      ).slice(0, 100);
       payload.idEnvoi = idEnvoi;
 
       const formulaire = new URLSearchParams();
