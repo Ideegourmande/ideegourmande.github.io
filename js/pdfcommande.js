@@ -67,7 +67,8 @@
       telephone: valeur(client.telephone, commande.telephone || commande.phone || ""),
       adresse: valeur(client.adresse, commande.adresse || ""),
       commentaire: valeur(client.commentaire, commande.commentaire || ""),
-      modeLivraison: valeur(client.modeLivraison, commande.modeLivraison || "")
+      modeLivraison: valeur(client.modeLivraison, commande.modeLivraison || ""),
+      nomExpediteurTwint: valeur(client.nomExpediteurTwint, commande.nomExpediteurTwint || "")
     };
   }
 
