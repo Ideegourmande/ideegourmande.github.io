@@ -221,7 +221,7 @@ test("le contrôle d'une commande en attente précède l'attribution d'un nouvel
 test("la page publique de commande ne charge plus la base locale et renouvelle les caches JS", () => {
   assert.equal(commandeHtml.includes("js/database.js"), false);
   assert.ok(commandeHtml.includes("js/pdfcommande.js?v=23"));
-  assert.ok(commandeHtml.includes("js/commande.js?v=14"));
+  assert.ok(commandeHtml.includes("js/commande.js?v=15"));
 });;
 
 test("les deux types d'opération émis par le site sont explicites et distincts", () => {
