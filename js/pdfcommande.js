@@ -741,13 +741,15 @@ async function attendreStatutCommandeSheets(idCommande) {
 
       // Repli si le navigateur refuse de mettre le message en file (taille/limite).
       if (!demandeMiseEnFile) {
-        // Le navigateur a accepté le lancement du POST, mais no-cors ne
-        // permet pas de confirmer sa réception par Apps Script.
-        demandeTransmiseAuNavigateur = true;
-        window.fetch(URL_SCRIPT_GOOGLE, {
+        // no-cors ne permet pas de confirmer la réception par Apps Script.
+        // On ne marque la demande remise au navigateur qu'après le lancement
+        // effectif de fetch (un échec synchrone ne doit pas être présenté comme transmis).
+        const requetePOST = window.fetch(URL_SCRIPT_GOOGLE, {
           method: "POST", mode: "no-cors", credentials: "omit", body: formulaire,
           keepalive: true
-        }).catch(function (erreur) {
+        });
+        demandeTransmiseAuNavigateur = true;
+        requetePOST.catch(function (erreur) {
           console.warn("[Idée Gourmande] POST réseau interrompu ; vérification du statut en cours.", erreur);
         });
       } else {
