@@ -149,7 +149,7 @@ test("une commande en attente reste détectable même si le panier a été modif
 
   assert.equal(context.lireTouteCommandeEnAttente().idCommande, "IG-EN-ATTENTE");
   assert.equal(context.lireCommandeEnAttente(context.empreinteCommande(modifiee)), null);
-  assert.match(commandeSource, /commandeEnAttenteExistante\\.empreinte !== empreinte/);
+  assert.match(commandeSource, /commandeEnAttenteExistante\.empreinte !== empreinte/);
   assert.match(commandeSource, /aucune nouvelle commande n'a été créée/i);
 });
 
