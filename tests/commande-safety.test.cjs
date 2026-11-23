@@ -109,6 +109,61 @@ test("la transmission est bloquée si la commande en attente ne peut pas être s
   assert.match(commandeSource, /conserver son identifiant de reprise/);
 });
 
+test("une soumission réelle ne lance aucun envoi si le stockage de reprise échoue", async () => {
+  const valeurs = {
+    prenom: "Test",
+    nom: "Client",
+    telephone: "000000000",
+    email: "test@example.invalid",
+    adresse: "Adresse fictive",
+    commentaire: "",
+    modeLivraison: "retrait",
+    nomExpediteurTwint: ""
+  };
+  const storage = {
+    getItem() { throw new Error("stockage indisponible"); },
+    setItem() { throw new Error("quota dépassé"); },
+    removeItem() {}
+  };
+  const alertes = [];
+  let appelsPDF = 0;
+  const window = {
+    genererPDFCommande() {
+      appelsPDF++;
+      return Promise.resolve({ ok: true, transmis: true, envoiConfirme: true });
+    }
+  };
+  const document = {
+    addEventListener() {},
+    getElementById(id) { return valeurs[id] ? { value: valeurs[id] } : null; },
+    querySelector() { return null; },
+    querySelectorAll() { return []; },
+    head: { appendChild() {} }
+  };
+  const context = {
+    window,
+    document,
+    localStorage: storage,
+    console: { log() {}, info() {}, warn() {}, error() {} },
+    alert(message) { alertes.push(message); },
+    URLSearchParams,
+    Date,
+    Math,
+    setTimeout,
+    clearTimeout,
+    Promise
+  };
+  vm.createContext(context);
+  vm.runInContext(commandeSource, context, { filename: "commande.js" });
+  vm.runInContext('panierCommande.push({ reference: "magret", nom: "Magret", quantite: 1, prix: 25 });', context);
+  vm.runInContext('obtenirNumeroCommande = async () => "2026-999";', context);
+
+  await window.envoyerCommande({ preventDefault() {} });
+
+  assert.equal(appelsPDF, 0);
+  assert.ok(alertes.some(message => message.includes("Aucun envoi")));
+});
+
 test("le site public ne modifie pas directement la base locale des commandes", () => {
   assert.equal(commandeSource.includes("ajouterCommande("), false);
   assert.match(commandeSource, /envoiConfirme\s*===\s*true/);
