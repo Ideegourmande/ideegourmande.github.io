@@ -112,43 +112,61 @@
       const ancienne = document.getElementById("appelPrix");
       if (ancienne) ancienne.remove();
 
-      const callback = "prixCallback_" + Date.now();
+      return new Promise(function(resolve, reject) {
+        const callback = "prixCallback_" + Date.now();
+        const script = document.createElement("script");
+        let termine = false;
 
-      window[callback] = function(reponse) {
-        try {
-          if (!reponse || !reponse.ok || !reponse.prices) {
-            throw new Error(
-              reponse && reponse.error
-                ? reponse.error
-                : "Réponse de prix invalide."
-            );
-          }
-
-          afficherPrix(reponse.prices);
-          status.textContent = "Prix chargés. Tu peux les modifier.";
-        } catch (erreur) {
-          status.textContent = "Erreur : " + erreur.message;
-        } finally {
+        function terminer(erreur, prix) {
+          if (termine) return;
+          termine = true;
+          clearTimeout(timeout);
           delete window[callback];
-          const script = document.getElementById("appelPrix");
-          if (script) script.remove();
+          if (script.parentNode) script.remove();
+          if (erreur) reject(erreur);
+          else resolve(prix);
         }
-      };
 
-      const script = document.createElement("script");
-      script.id = "appelPrix";
-      script.src = URL_API + "?action=getPrices&callback=" +
-                   encodeURIComponent(callback);
-      script.onerror = function() {
-        delete window[callback];
-        prixCharges = false;
-        status.textContent = "Impossible de charger les prix. Réessaie.";
-        script.remove();
-      };
+        window[callback] = function(reponse) {
+          try {
+            if (!reponse || reponse.ok !== true || !reponse.prices) {
+              throw new Error(
+                reponse && reponse.error
+                  ? reponse.error
+                  : "Réponse de prix invalide."
+              );
+            }
 
-      document.body.appendChild(script);
+            afficherPrix(reponse.prices);
+            status.textContent = "Prix chargés. Tu peux les modifier.";
+            terminer(null, reponse.prices);
+          } catch (erreur) {
+            prixCharges = false;
+            status.textContent = "Erreur : " + erreur.message;
+            terminer(erreur);
+          }
+        };
+
+        const timeout = setTimeout(function() {
+          prixCharges = false;
+          const erreur = new Error("Délai dépassé lors du chargement des prix.");
+          status.textContent = erreur.message;
+          terminer(erreur);
+        }, 15000);
+
+        script.id = "appelPrix";
+        script.src = URL_API + "?action=getPrices&callback=" +
+                     encodeURIComponent(callback);
+        script.onerror = function() {
+          prixCharges = false;
+          const erreur = new Error("Impossible de charger les prix. Réessaie.");
+          status.textContent = erreur.message;
+          terminer(erreur);
+        };
+
+        document.body.appendChild(script);
+      });
     }
-
     
 async function enregistrerPrix() {
   const status = document.getElementById("status");
@@ -212,9 +230,11 @@ async function enregistrerPrix() {
       );
     }
 
-    afficherPrix(resultat.prices);
+    // Le serveur confirme l'écriture, puis on relit la source officielle.
+    // Ne pas attendre "resultat.prices" : savePrices ne renvoie que {ok:true}.
+    await chargerPrix();
     status.textContent =
-      "Enregistrement confirmé : les cinq tarifs sont sauvegardés.";
+      "Enregistrement confirmé : les tarifs ont été relus depuis le serveur.";
 
     document.getElementById("motDePasse").value = "";
 
@@ -228,11 +248,11 @@ async function enregistrerPrix() {
 
 
     document.getElementById("recharger")
-      .addEventListener("click", chargerPrix);
+      .addEventListener("click", function() { chargerPrix().catch(function() {}); });
     document.getElementById("enregistrer")
       .addEventListener("click", enregistrerPrix);
 
-    chargerPrix();
+    chargerPrix().catch(function() {});
   </script>
 </body>
 </html>
