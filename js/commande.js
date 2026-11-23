@@ -810,84 +810,11 @@ async function envoyerCommandeInterne(e) {
 
     console.log("COMMANDE PRÉPARÉE :", commande);
 
-    // Vérifier la base de données.
-    if (typeof ajouterCommande !== "function") {
-        console.error(
-            "ajouterCommande() est introuvable. " +
-            "Vérifiez js/database.js."
-        );
-
-        alert(
-            "Impossible d'enregistrer la commande. " +
-            "La base de données n'est pas disponible."
-        );
-        return;
-    }
-
-    const commandeEnregistree = {
-        id: commande.id,
-        numeroCommande: commande.numeroCommande,
-        date: new Date().toLocaleDateString("fr-FR"),
-
-        client:
-            commande.client.prenom + " " +
-            commande.client.nom,
-
-        telephone: commande.client.telephone,
-        email: commande.client.email,
-        adresse: commande.client.adresse,
-        commentaire: commande.client.commentaire,
-        modeLivraison: commande.client.modeLivraison,
-        clientDetails: { ...commande.client },
-
-        produits: commande.produits.map(article => {
-            let description = article.nom;
-
-            if (article.reference === "saumon-fume") {
-                description += " (" + article.poids + " g)";
-            } else if (
-                article.reference === "viande-sechee" ||
-                article.reference === "lard-sec"
-            ) {
-                description +=
-                    " (" + article.poidsMin +
-                    "–" + article.poidsMax + " g)";
-            } else if (article.quantite > 1) {
-                description += " x" + article.quantite;
-            }
-
-            return description;
-        }).join("\n"),
-
-        produitsListe: commande.produits,
-        total: commande.total,
-        statut: "Nouvelle",
-        stockTraite: false,
-        stockErreur: false
-    };
-
-    let resultat;
-
-    try {
-        resultat = ajouterCommande(commandeEnregistree);
-    } catch (erreur) {
-        console.error(
-            "Erreur lors de l'enregistrement :",
-            erreur
-        );
-
-        alert(
-            "Une erreur est survenue pendant " +
-            "l'enregistrement de la commande."
-        );
-        return;
-    }
-
-    if (!resultat) {
-        alert("La commande n'a pas pu être enregistrée.");
-        return;
-    }
-
+    // Le site public ne modifie jamais la base locale de l'appareil.
+    // Les commandes, le stock et la production sont gérés par le module central.
+    // La confirmation d'acceptation repose sur le statut Google Sheets vérifié
+    // dans genererPDFCommande(). En cas d'échec ou de statut incertain, le
+    // panier reste intact et aucune déduction de stock locale n'est effectuée.
     // ==================================
     // PDF ET DEMANDE D'ENVOI PAR E-MAIL
     // ==================================
