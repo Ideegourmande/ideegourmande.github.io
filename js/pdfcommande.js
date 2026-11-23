@@ -697,6 +697,7 @@ async function attendreStatutCommandeSheets(idCommande) {
   }
 
   async function envoyerCommandeGoogle(payload) {
+    let demandeTransmiseAuNavigateur = false;
     try {
       if (!payload || typeof payload !== "object") throw new Error("Les données de la commande sont absentes.");
       // Identifiant déterministe : une retransmission de la même commande
@@ -732,6 +733,7 @@ async function attendreStatutCommandeSheets(idCommande) {
       if (navigator.sendBeacon) {
         try {
           demandeMiseEnFile = navigator.sendBeacon(URL_SCRIPT_GOOGLE, formulaire);
+          demandeTransmiseAuNavigateur = demandeMiseEnFile;
         } catch (erreurBeacon) {
           console.warn("[Idée Gourmande] sendBeacon indisponible ; essai avec fetch.", erreurBeacon);
         }
@@ -739,6 +741,9 @@ async function attendreStatutCommandeSheets(idCommande) {
 
       // Repli si le navigateur refuse de mettre le message en file (taille/limite).
       if (!demandeMiseEnFile) {
+        // Le navigateur a accepté le lancement du POST, mais no-cors ne
+        // permet pas de confirmer sa réception par Apps Script.
+        demandeTransmiseAuNavigateur = true;
         window.fetch(URL_SCRIPT_GOOGLE, {
           method: "POST", mode: "no-cors", credentials: "omit", body: formulaire,
           keepalive: true
@@ -813,8 +818,16 @@ const statut = await attendreStatutEnvoiGoogle(idEnvoi);
 };
     } catch (erreur) {
       return {
-        ok: false, transmis: false, envoiConfirme: false, livraisonVerifiee: false,
-        message: erreur && erreur.message ? erreur.message : String(erreur)
+        ok: false,
+        transmis: demandeTransmiseAuNavigateur,
+        transmissionIncertaine: demandeTransmiseAuNavigateur,
+        enregistrementConfirme: false,
+        envoiConfirme: false,
+        livraisonVerifiee: false,
+        message: demandeTransmiseAuNavigateur
+          ? "La demande a été remise au navigateur, mais sa réception par Apps Script et son enregistrement dans Google Sheets ne sont pas confirmés. Ne renvoyez pas la commande avant vérification. " +
+            (erreur && erreur.message ? erreur.message : String(erreur))
+          : (erreur && erreur.message ? erreur.message : String(erreur))
       };
     }
   }
