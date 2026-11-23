@@ -793,16 +793,20 @@ function lireCommandeEnAttente(empreinte) {
 }
 
 function sauvegarderCommandeEnAttente(attente) {
-    commandeEnAttenteMemoire = attente;
+    const valeur = JSON.stringify(attente);
     try {
-        localStorage.setItem(
-            CLE_COMMANDE_EN_ATTENTE,
-            JSON.stringify(attente)
-        );
+        localStorage.setItem(CLE_COMMANDE_EN_ATTENTE, valeur);
+        if (localStorage.getItem(CLE_COMMANDE_EN_ATTENTE) !== valeur) {
+            throw new Error("La commande en attente n'a pas pu être vérifiée dans le stockage local.");
+        }
+        commandeEnAttenteMemoire = attente;
+        return true;
     } catch (erreur) {
-        // Le fonctionnement continue, mais la reprise après fermeture du
-        // navigateur ne pourra pas être garantie si le stockage est bloqué.
-        console.warn("Sauvegarde de la commande en attente impossible :", erreur);
+        // Ne jamais transmettre une commande si son identifiant de reprise
+        // ne survivra pas à un rechargement ou à la fermeture du navigateur.
+        commandeEnAttenteMemoire = null;
+        console.warn("Sauvegarde durable de la commande en attente impossible :", erreur);
+        return false;
     }
 }
 
@@ -918,11 +922,20 @@ async function envoyerCommandeInterne(e) {
             return;
         }
 
-        sauvegarderCommandeEnAttente({
+        const sauvegardeDurable = sauvegarderCommandeEnAttente({
             empreinte: empreinte,
             idCommande: commande.id,
             numeroCommande: String(commande.numeroCommande)
         });
+        if (!sauvegardeDurable) {
+            alert(
+                "La commande n'a pas été envoyée : le navigateur ne peut pas " +
+                "conserver son identifiant de reprise. Libérez de l'espace ou " +
+                "autorisez le stockage du site, puis réessayez. Aucun envoi " +
+                "n'a été lancé."
+            );
+            return;
+        }
     }
 
     console.log("COMMANDE PRÉPARÉE :", commande);
