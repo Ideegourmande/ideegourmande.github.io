@@ -92,7 +92,7 @@ test("le nettoyage ne supprime pas une autre commande en attente", () => {
   assert.equal(context.lireCommandeEnAttente("empreinte-test"), null);
 });
 
-test("le repli mémoire fonctionne si localStorage est indisponible", () => {
+test("la transmission est bloquée si la commande en attente ne peut pas être sauvegardée durablement", () => {
   const storage = new Map();
   storage.throwOnRead = true;
   storage.throwOnWrite = true;
@@ -103,8 +103,10 @@ test("le repli mémoire fonctionne si localStorage est indisponible", () => {
     numeroCommande: "2026-004"
   };
 
-  context.sauvegarderCommandeEnAttente(attente);
-  assert.equal(context.lireCommandeEnAttente("empreinte-memoire").idCommande, "IG-MEMOIRE");
+  assert.equal(context.sauvegarderCommandeEnAttente(attente), false);
+  assert.equal(context.lireCommandeEnAttente("empreinte-memoire"), null);
+  assert.match(commandeSource, /if\s*\(!sauvegardeDurable\)/);
+  assert.match(commandeSource, /Aucun envoi n'a été lancé/);
 });
 
 test("le site public ne modifie pas directement la base locale des commandes", () => {
