@@ -106,7 +106,7 @@ test("la transmission est bloquée si la commande en attente ne peut pas être s
   assert.equal(context.sauvegarderCommandeEnAttente(attente), false);
   assert.equal(context.lireCommandeEnAttente("empreinte-memoire"), null);
   assert.match(commandeSource, /if\s*\(!sauvegardeDurable\)/);
-  assert.match(commandeSource, /Aucun envoi n'a été lancé/);
+  assert.match(commandeSource, /conserver son identifiant de reprise/);
 });
 
 test("le site public ne modifie pas directement la base locale des commandes", () => {
