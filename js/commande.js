@@ -744,6 +744,65 @@ function obtenirNumeroCommande(nomClient, annee) {
 }
 
 // ======================================
+// IDENTIFIANT STABLE POUR LES NOUVELLES TENTATIVES
+// ======================================
+
+const CLE_COMMANDE_EN_ATTENTE = "ig_commande_en_attente_v1";
+
+function empreinteCommande(commande) {
+    // Inclure les coordonnées, les produits et les montants : toute modification
+    // réelle du contenu crée une nouvelle tentative distincte.
+    return JSON.stringify({
+        client: commande.client,
+        produits: commande.produits,
+        total: commande.total
+    });
+}
+
+function lireCommandeEnAttente(empreinte) {
+    try {
+        const brut = localStorage.getItem(CLE_COMMANDE_EN_ATTENTE);
+        if (!brut) return null;
+        const attente = JSON.parse(brut);
+        return attente &&
+            attente.empreinte === empreinte &&
+            typeof attente.idCommande === "string" &&
+            typeof attente.numeroCommande === "string"
+                ? attente
+                : null;
+    } catch (erreur) {
+        console.warn("Lecture de la commande en attente impossible :", erreur);
+        return null;
+    }
+}
+
+function sauvegarderCommandeEnAttente(attente) {
+    try {
+        localStorage.setItem(
+            CLE_COMMANDE_EN_ATTENTE,
+            JSON.stringify(attente)
+        );
+    } catch (erreur) {
+        // Le fonctionnement continue, mais la reprise après fermeture du
+        // navigateur ne pourra pas être garantie si le stockage est bloqué.
+        console.warn("Sauvegarde de la commande en attente impossible :", erreur);
+    }
+}
+
+function effacerCommandeEnAttente(idCommande) {
+    try {
+        const attente = JSON.parse(
+            localStorage.getItem(CLE_COMMANDE_EN_ATTENTE) || "null"
+        );
+        if (attente && attente.idCommande === idCommande) {
+            localStorage.removeItem(CLE_COMMANDE_EN_ATTENTE);
+        }
+    } catch (erreur) {
+        console.warn("Nettoyage de la commande en attente impossible :", erreur);
+    }
+}
+
+// ======================================
 // ENVOYER LA COMMANDE
 // ======================================
 
@@ -780,32 +839,49 @@ async function envoyerCommandeInterne(e) {
         )
     };
 
-    // ID technique interne conservé.
-    commande.id =
-        "IG-" + Date.now().toString(36).toUpperCase();
+    // Réutiliser l'identifiant ET le numéro si le même contenu est renvoyé.
+    // Cela permet au récepteur de reconnaître une retransmission après une
+    // interruption réseau, un rechargement ou une fermeture de Safari.
+    const empreinte = empreinteCommande(commande);
+    const commandeEnAttente = lireCommandeEnAttente(empreinte);
 
-    // Numéro lisible et séquentiel.
-    try {
-        commande.numeroCommande =
-            await obtenirNumeroCommande(
-                (
-                    commande.client.prenom + " " +
-                    commande.client.nom
-                ).trim() || "Commande",
-                new Date().getFullYear()
+    if (commandeEnAttente) {
+        commande.id = commandeEnAttente.idCommande;
+        commande.numeroCommande = commandeEnAttente.numeroCommande;
+        console.info("Reprise de la même commande :", commande.id);
+    } else {
+        commande.id =
+            "IG-" + Date.now().toString(36).toUpperCase();
+
+        // Numéro lisible et séquentiel : attribué une seule fois par commande.
+        try {
+            commande.numeroCommande =
+                await obtenirNumeroCommande(
+                    (
+                        commande.client.prenom + " " +
+                        commande.client.nom
+                    ).trim() || "Commande",
+                    new Date().getFullYear()
+                );
+        } catch (erreurNumero) {
+            console.error(
+                "Impossible d'obtenir le numéro de commande :",
+                erreurNumero
             );
-    } catch (erreurNumero) {
-        console.error(
-            "Impossible d'obtenir le numéro de commande :",
-            erreurNumero
-        );
 
-        alert(
-            "Le numéro de commande n'a pas pu être attribué. " +
-            "Aucune commande n'a été enregistrée. " +
-            "Réessaie dans quelques instants."
-        );
-        return;
+            alert(
+                "Le numéro de commande n'a pas pu être attribué. " +
+                "Aucune commande n'a été enregistrée. " +
+                "Réessaie dans quelques instants."
+            );
+            return;
+        }
+
+        sauvegarderCommandeEnAttente({
+            empreinte: empreinte,
+            idCommande: commande.id,
+            numeroCommande: String(commande.numeroCommande)
+        });
     }
 
     console.log("COMMANDE PRÉPARÉE :", commande);
@@ -866,6 +942,7 @@ enregistrementSheetsConfirme =
 
     if (envoiOK) {
         // Vider le panier uniquement si la requête a été transmise.
+        effacerCommandeEnAttente(commande.id);
         panierCommande.length = 0;
         window.panierCommande = panierCommande;
         afficherPanier();
