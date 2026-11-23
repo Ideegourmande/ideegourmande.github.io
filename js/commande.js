@@ -744,6 +744,92 @@ function obtenirNumeroCommande(nomClient, annee) {
 }
 
 // ======================================
+// IDENTIFIANT STABLE POUR LES NOUVELLES TENTATIVES
+// ======================================
+
+const CLE_COMMANDE_EN_ATTENTE = "ig_commande_en_attente_v1";
+let commandeEnAttenteMemoire = null;
+
+function empreinteCommande(commande) {
+    // Inclure les coordonnées, les produits et les montants : toute modification
+    // réelle du contenu crée une nouvelle tentative distincte.
+    return JSON.stringify({
+        client: commande.client,
+        produits: commande.produits,
+        total: commande.total
+    });
+}
+
+function lireTouteCommandeEnAttente() {
+    try {
+        const brut = localStorage.getItem(CLE_COMMANDE_EN_ATTENTE);
+        const attente = brut
+            ? JSON.parse(brut)
+            : commandeEnAttenteMemoire;
+
+        return attente &&
+            typeof attente.empreinte === "string" &&
+            typeof attente.idCommande === "string" &&
+            typeof attente.numeroCommande === "string"
+                ? attente
+                : null;
+    } catch (erreur) {
+        console.warn("Lecture de la commande en attente impossible :", erreur);
+        const attente = commandeEnAttenteMemoire;
+        return attente &&
+            typeof attente.empreinte === "string" &&
+            typeof attente.idCommande === "string" &&
+            typeof attente.numeroCommande === "string"
+                ? attente
+                : null;
+    }
+}
+
+function lireCommandeEnAttente(empreinte) {
+    const attente = lireTouteCommandeEnAttente();
+    return attente && attente.empreinte === empreinte
+        ? attente
+        : null;
+}
+
+function sauvegarderCommandeEnAttente(attente) {
+    const valeur = JSON.stringify(attente);
+    try {
+        localStorage.setItem(CLE_COMMANDE_EN_ATTENTE, valeur);
+        if (localStorage.getItem(CLE_COMMANDE_EN_ATTENTE) !== valeur) {
+            throw new Error("La commande en attente n'a pas pu être vérifiée dans le stockage local.");
+        }
+        commandeEnAttenteMemoire = attente;
+        return true;
+    } catch (erreur) {
+        // Ne jamais transmettre une commande si son identifiant de reprise
+        // ne survivra pas à un rechargement ou à la fermeture du navigateur.
+        commandeEnAttenteMemoire = null;
+        console.warn("Sauvegarde durable de la commande en attente impossible :", erreur);
+        return false;
+    }
+}
+
+function effacerCommandeEnAttente(idCommande) {
+    if (
+        commandeEnAttenteMemoire &&
+        commandeEnAttenteMemoire.idCommande === idCommande
+    ) {
+        commandeEnAttenteMemoire = null;
+    }
+    try {
+        const attente = JSON.parse(
+            localStorage.getItem(CLE_COMMANDE_EN_ATTENTE) || "null"
+        );
+        if (attente && attente.idCommande === idCommande) {
+            localStorage.removeItem(CLE_COMMANDE_EN_ATTENTE);
+        }
+    } catch (erreur) {
+        console.warn("Nettoyage de la commande en attente impossible :", erreur);
+    }
+}
+
+// ======================================
 // ENVOYER LA COMMANDE
 // ======================================
 
@@ -780,114 +866,85 @@ async function envoyerCommandeInterne(e) {
         )
     };
 
-    // ID technique interne conservé.
-    commande.id =
-        "IG-" + Date.now().toString(36).toUpperCase();
+    // Réutiliser l'identifiant ET le numéro si le même contenu est renvoyé.
+    // Cela permet au récepteur de reconnaître une retransmission après une
+    // interruption réseau, un rechargement ou une fermeture de Safari.
+    const empreinte = empreinteCommande(commande);
+    const commandeEnAttenteExistante = lireTouteCommandeEnAttente();
 
-    // Numéro lisible et séquentiel.
-    try {
-        commande.numeroCommande =
-            await obtenirNumeroCommande(
-                (
-                    commande.client.prenom + " " +
-                    commande.client.nom
-                ).trim() || "Commande",
-                new Date().getFullYear()
-            );
-    } catch (erreurNumero) {
-        console.error(
-            "Impossible d'obtenir le numéro de commande :",
-            erreurNumero
-        );
-
+    // Une commande précédente non confirmée doit être réconciliée avant
+    // toute modification du panier ou des coordonnées. Créer un nouvel ID
+    // ici pourrait enregistrer une seconde commande alors que la première
+    // a déjà atteint Sheets ou déclenché un e-mail.
+    if (
+        commandeEnAttenteExistante &&
+        commandeEnAttenteExistante.empreinte !== empreinte
+    ) {
         alert(
-            "Le numéro de commande n'a pas pu être attribué. " +
-            "Aucune commande n'a été enregistrée. " +
-            "Réessaie dans quelques instants."
+            "Une commande précédente est toujours en attente de vérification. " +
+            "Pour éviter un doublon, aucune nouvelle commande n'a été créée. " +
+            "Vérifiez d'abord la réception de la commande précédente."
         );
         return;
+    }
+
+    const commandeEnAttente = commandeEnAttenteExistante;
+
+    if (commandeEnAttente) {
+        commande.id = commandeEnAttente.idCommande;
+        commande.numeroCommande = commandeEnAttente.numeroCommande;
+        console.info("Reprise de la même commande :", commande.id);
+    } else {
+        commande.id =
+            "IG-" + Date.now().toString(36).toUpperCase();
+
+        // Numéro lisible et séquentiel : attribué une seule fois par commande.
+        try {
+            commande.numeroCommande =
+                await obtenirNumeroCommande(
+                    (
+                        commande.client.prenom + " " +
+                        commande.client.nom
+                    ).trim() || "Commande",
+                    new Date().getFullYear()
+                );
+        } catch (erreurNumero) {
+            console.error(
+                "Impossible d'obtenir le numéro de commande :",
+                erreurNumero
+            );
+
+            alert(
+                "Le numéro de commande n'a pas pu être attribué. " +
+                "Aucune commande n'a été enregistrée. " +
+                "Réessaie dans quelques instants."
+            );
+            return;
+        }
+
+        const sauvegardeDurable = sauvegarderCommandeEnAttente({
+            empreinte: empreinte,
+            idCommande: commande.id,
+            numeroCommande: String(commande.numeroCommande)
+        });
+        if (!sauvegardeDurable) {
+            alert(
+                "La commande n'a pas été envoyée : le navigateur ne peut pas " +
+                "conserver son identifiant de reprise. Libérez de l'espace ou " +
+                "autorisez le stockage du site, puis réessayez. Aucun envoi " +
+                "n'a été lancé."
+            );
+            return;
+        }
     }
 
     console.log("COMMANDE PRÉPARÉE :", commande);
 
-    // Vérifier la base de données.
-    if (typeof ajouterCommande !== "function") {
-        console.error(
-            "ajouterCommande() est introuvable. " +
-            "Vérifiez js/database.js."
-        );
-
-        alert(
-            "Impossible d'enregistrer la commande. " +
-            "La base de données n'est pas disponible."
-        );
-        return;
-    }
-
-    const commandeEnregistree = {
-        id: commande.id,
-        numeroCommande: commande.numeroCommande,
-        date: new Date().toLocaleDateString("fr-FR"),
-
-        client:
-            commande.client.prenom + " " +
-            commande.client.nom,
-
-        telephone: commande.client.telephone,
-        email: commande.client.email,
-        adresse: commande.client.adresse,
-        commentaire: commande.client.commentaire,
-        modeLivraison: commande.client.modeLivraison,
-        clientDetails: { ...commande.client },
-
-        produits: commande.produits.map(article => {
-            let description = article.nom;
-
-            if (article.reference === "saumon-fume") {
-                description += " (" + article.poids + " g)";
-            } else if (
-                article.reference === "viande-sechee" ||
-                article.reference === "lard-sec"
-            ) {
-                description +=
-                    " (" + article.poidsMin +
-                    "–" + article.poidsMax + " g)";
-            } else if (article.quantite > 1) {
-                description += " x" + article.quantite;
-            }
-
-            return description;
-        }).join("\n"),
-
-        produitsListe: commande.produits,
-        total: commande.total,
-        statut: "Nouvelle",
-        stockTraite: false,
-        stockErreur: false
-    };
-
-    let resultat;
-
-    try {
-        resultat = ajouterCommande(commandeEnregistree);
-    } catch (erreur) {
-        console.error(
-            "Erreur lors de l'enregistrement :",
-            erreur
-        );
-
-        alert(
-            "Une erreur est survenue pendant " +
-            "l'enregistrement de la commande."
-        );
-        return;
-    }
-
-    if (!resultat) {
-        alert("La commande n'a pas pu être enregistrée.");
-        return;
-    }
-
+    // Le site public ne modifie jamais la base locale de l'appareil.
+    // Les commandes, le stock et la production sont gérés par le module central.
+    // La confirmation d'acceptation repose sur le statut Google Sheets vérifié
+    // dans genererPDFCommande(). En cas d'échec ou de statut incertain, le
+    // panier reste intact et aucune déduction de stock locale n'est effectuée.
     // ==================================
     // PDF ET DEMANDE D'ENVOI PAR E-MAIL
     // ==================================
@@ -938,7 +995,8 @@ enregistrementSheetsConfirme =
     }
 
     if (envoiOK) {
-        // Vider le panier uniquement si la requête a été transmise.
+        // Vider le panier uniquement après confirmation Sheets et des deux e-mails.
+        effacerCommandeEnAttente(commande.id);
         panierCommande.length = 0;
         window.panierCommande = panierCommande;
         afficherPanier();

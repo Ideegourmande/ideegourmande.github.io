@@ -67,7 +67,8 @@
       telephone: valeur(client.telephone, commande.telephone || commande.phone || ""),
       adresse: valeur(client.adresse, commande.adresse || ""),
       commentaire: valeur(client.commentaire, commande.commentaire || ""),
-      modeLivraison: valeur(client.modeLivraison, commande.modeLivraison || "")
+      modeLivraison: valeur(client.modeLivraison, commande.modeLivraison || ""),
+      nomExpediteurTwint: valeur(client.nomExpediteurTwint, commande.nomExpediteurTwint || "")
     };
   }
 
@@ -696,12 +697,23 @@ async function attendreStatutCommandeSheets(idCommande) {
   }
 
   async function envoyerCommandeGoogle(payload) {
+    let demandeTransmiseAuNavigateur = false;
     try {
       if (!payload || typeof payload !== "object") throw new Error("Les données de la commande sont absentes.");
-      const aleatoire = window.crypto && typeof window.crypto.randomUUID === "function"
-        ? window.crypto.randomUUID()
-        : Date.now().toString(36) + "-" + Math.random().toString(36).slice(2);
-      const idEnvoi = "IGM-" + aleatoire.replace(/[^a-zA-Z0-9-]/g, "");
+      // Identifiant déterministe : une retransmission de la même commande
+      // et du même type d'e-mail retrouve le même suivi côté Apps Script.
+      // Une confirmation de prix reste distincte d'un e-mail de nouvelle commande.
+      const idCommandeSuivi = String(payload.idCommande || "").trim();
+      if (!idCommandeSuivi) {
+        throw new Error("Identifiant de commande absent pour le suivi de l'envoi.");
+      }
+      const typeSuivi = String(payload.typeEmail || "nouvelle-commande")
+        .replace(/[^a-zA-Z0-9_-]/g, "")
+        .slice(0, 30) || "nouvelle-commande";
+      const idEnvoi = (
+        "IGM-" + idCommandeSuivi.replace(/[^a-zA-Z0-9_-]/g, "") +
+        "-" + typeSuivi
+      ).slice(0, 100);
       payload.idEnvoi = idEnvoi;
 
       const formulaire = new URLSearchParams();
@@ -721,6 +733,7 @@ async function attendreStatutCommandeSheets(idCommande) {
       if (navigator.sendBeacon) {
         try {
           demandeMiseEnFile = navigator.sendBeacon(URL_SCRIPT_GOOGLE, formulaire);
+          demandeTransmiseAuNavigateur = demandeMiseEnFile;
         } catch (erreurBeacon) {
           console.warn("[Idée Gourmande] sendBeacon indisponible ; essai avec fetch.", erreurBeacon);
         }
@@ -728,10 +741,15 @@ async function attendreStatutCommandeSheets(idCommande) {
 
       // Repli si le navigateur refuse de mettre le message en file (taille/limite).
       if (!demandeMiseEnFile) {
-        window.fetch(URL_SCRIPT_GOOGLE, {
+        // no-cors ne permet pas de confirmer la réception par Apps Script.
+        // On ne marque la demande remise au navigateur qu'après le lancement
+        // effectif de fetch (un échec synchrone ne doit pas être présenté comme transmis).
+        const requetePOST = window.fetch(URL_SCRIPT_GOOGLE, {
           method: "POST", mode: "no-cors", credentials: "omit", body: formulaire,
           keepalive: true
-        }).catch(function (erreur) {
+        });
+        demandeTransmiseAuNavigateur = true;
+        requetePOST.catch(function (erreur) {
           console.warn("[Idée Gourmande] POST réseau interrompu ; vérification du statut en cours.", erreur);
         });
       } else {
@@ -802,8 +820,16 @@ const statut = await attendreStatutEnvoiGoogle(idEnvoi);
 };
     } catch (erreur) {
       return {
-        ok: false, transmis: false, envoiConfirme: false, livraisonVerifiee: false,
-        message: erreur && erreur.message ? erreur.message : String(erreur)
+        ok: false,
+        transmis: demandeTransmiseAuNavigateur,
+        transmissionIncertaine: demandeTransmiseAuNavigateur,
+        enregistrementConfirme: false,
+        envoiConfirme: false,
+        livraisonVerifiee: false,
+        message: demandeTransmiseAuNavigateur
+          ? "La demande a été remise au navigateur, mais sa réception par Apps Script et son enregistrement dans Google Sheets ne sont pas confirmés. Ne renvoyez pas la commande avant vérification. " +
+            (erreur && erreur.message ? erreur.message : String(erreur))
+          : (erreur && erreur.message ? erreur.message : String(erreur))
       };
     }
   }
