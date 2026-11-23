@@ -774,7 +774,10 @@ function lireCommandeEnAttente(empreinte) {
                 : null;
     } catch (erreur) {
         console.warn("Lecture de la commande en attente impossible :", erreur);
-        return null;
+        return commandeEnAttenteMemoire &&
+            commandeEnAttenteMemoire.empreinte === empreinte
+                ? commandeEnAttenteMemoire
+                : null;
     }
 }
 
