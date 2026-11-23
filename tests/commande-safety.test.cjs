@@ -162,7 +162,7 @@ test("le contrôle d'une commande en attente précède l'attribution d'un nouvel
 });
 
 test("la page publique de commande ne charge plus la base locale et renouvelle les caches JS", () => {
-  assert.doesNotMatch(commandeHtml, /js\\/database\\.js/);
-  assert.match(commandeHtml, /js\\/pdfcommande\\.js\\?v=23/);
-  assert.match(commandeHtml, /js\\/commande\\.js\\?v=14/);
-});
+  assert.equal(commandeHtml.includes("js/database.js"), false);
+  assert.ok(commandeHtml.includes("js/pdfcommande.js?v=23"));
+  assert.ok(commandeHtml.includes("js/commande.js?v=14"));
+});;
