@@ -374,9 +374,42 @@
 
     const colonneGauche = marge + 3;
     const colonneDroite = marge + largeurInterieure / 2 + 2;
+    const largeurColonne = largeurInterieure / 2 - 8;
+    doc.setFont("helvetica", "normal");
+    doc.setFontSize(8);
+    const lignesAdresse = doc.splitTextToSize(
+      "Adresse : " + (client.adresse || "—"),
+      largeurColonne
+    );
+    const lignesEmail = doc.splitTextToSize(
+      "E-mail : " + (client.email || "—"),
+      largeurColonne
+    );
+    const nombreLignesCoordonnees = Math.max(
+      lignesAdresse.length,
+      lignesEmail.length,
+      1
+    );
+    let yReception = y + 17 + nombreLignesCoordonnees * 4 + 4;
+    let hauteurBlocClient = yReception - y + 8;
+
+    if (y - 3 + hauteurBlocClient > 270) {
+      nouvellePage();
+      yReception = y + 17 + nombreLignesCoordonnees * 4 + 4;
+      hauteurBlocClient = yReception - y + 8;
+    }
+
     doc.setFillColor(255, 255, 255);
     doc.setDrawColor(231, 227, 216);
-    doc.roundedRect(marge, y - 3, largeurInterieure, 33, 2, 2, "FD");
+    doc.roundedRect(
+      marge,
+      y - 3,
+      largeurInterieure,
+      hauteurBlocClient,
+      2,
+      2,
+      "FD"
+    );
     doc.setFontSize(9);
     doc.setFont("helvetica", "bold");
     doc.setTextColor(...vert);
@@ -387,13 +420,18 @@
     doc.text((client.prenom + " " + client.nom).trim() || "—", colonneGauche, y + 10);
     doc.setFontSize(8);
     doc.setTextColor(...gris);
-    doc.text(doc.splitTextToSize("Adresse : " + (client.adresse || "—"), largeurInterieure / 2 - 8), colonneGauche, y + 17);
+    doc.text(lignesAdresse, colonneGauche, y + 17);
     doc.setTextColor(45, 48, 45);
     doc.text("Tél. : " + (client.telephone || "—"), colonneDroite, y + 10);
-    doc.text(doc.splitTextToSize("E-mail : " + (client.email || "—"), largeurInterieure / 2 - 8), colonneDroite, y + 17);
     doc.setTextColor(...gris);
-    doc.text("Réception : " + valeur(client.modeLivraison, "À convenir"), colonneGauche, y + 26);
-    y += 39;
+    doc.text(lignesEmail, colonneDroite, y + 17);
+    doc.setTextColor(...gris);
+    doc.text(
+      "Réception : " + valeur(client.modeLivraison, "À convenir"),
+      colonneGauche,
+      yReception
+    );
+    y += hauteurBlocClient + 6;
 
     titreSection("Articles commandés");
 
@@ -764,41 +802,20 @@ console.info(
   statutSheets
 );
 
-const statut = await attendreStatutEnvoiGoogle(idEnvoi);
+// Le suivi des e-mails continue en arrière-plan : l'interface
+// n'attend plus plusieurs minutes pour confirmer l'enregistrement.
+const suiviEmails = attendreStatutEnvoiGoogle(idEnvoi);
 
-      if (statut && statut.found && statut.status === "termine" &&
-          statut.entreprise === "envoye" && statut.client === "envoye") {
-        return {
+return {
   ok: true,
   transmis: true,
   enregistrementConfirme: true,
-  envoiConfirme: true,
-  livraisonVerifiee: false,
-  idEnvoi: idEnvoi,
-  message: "Commande enregistrée dans Google Sheets. Les deux e-mails ont été envoyés."
-};
-      }
-
-      let message = "L'envoi des deux e-mails n'a pas pu être confirmé.";
-      if (statut && statut.entreprise === "envoye" && statut.client !== "envoye") {
-        message = "L'e-mail destiné à Idée Gourmande a été envoyé, mais celui du client n'est pas confirmé. Ne relance pas la commande ; vérifie Apps Script et Gmail. " + (statut.error || "");
-      } else if (statut && statut.status === "echec") {
-        message = "Apps Script a signalé un échec avant la fin des deux envois. Ne relance pas automatiquement la commande ; vérifie les statuts et les e-mails. " + (statut.error || "");
-      } else if (statut && statut.status === "indetermine") {
-        message = "Le résultat d'au moins un envoi est incertain. Aucun nouvel envoi automatique n'a été effectué pour éviter un doublon. Vérifie Gmail et les exécutions Apps Script. " + (statut.error || "");
-      } else if (statut && statut.status === "en_cours") {
-        message = "Apps Script a reçu la demande, mais le traitement est toujours en cours après 90 secondes. Les deux e-mails ne sont pas encore confirmés : ne renvoie pas la commande et vérifie les exécutions Apps Script.";
-      } else if (statut && statut.status === "inconnu") {
-        message = "Aucun statut vérifiable n'a été reçu dans les 90 secondes. La commande peut avoir été reçue : ne la renvoie pas avant vérification dans Apps Script et Gmail.";
-      }
-      return {
-  ok: false,
-  transmis: true,
-  enregistrementConfirme: true,
   envoiConfirme: false,
+  envoiEnCours: true,
   livraisonVerifiee: false,
   idEnvoi: idEnvoi,
-  message: message
+  suiviEmails: suiviEmails,
+  message: "Commande enregistrée dans Google Sheets. Confirmation des e-mails en cours."
 };
     } catch (erreur) {
       return {
@@ -899,14 +916,19 @@ const statut = await attendreStatutEnvoiGoogle(idEnvoi);
     if (optionsFinales.afficher) {
       try {
         const urlPDF = resultat.doc.output("bloburl");
-        const fenetrePDF = window.open(urlPDF, "_blank");
-        if (!fenetrePDF) {
-          console.warn("Le navigateur a bloqué l’ouverture automatique du PDF.");
+        const fenetrePreparee = options.fenetrePDF;
+
+        if (fenetrePreparee && !fenetrePreparee.closed) {
+          fenetrePreparee.location.href = urlPDF;
+        } else {
+          const fenetrePDF = window.open(urlPDF, "_blank");
+          if (!fenetrePDF) {
+            console.warn("Le navigateur a bloqué l’ouverture automatique du PDF.");
+          }
         }
       } catch (erreurPDF) {
         console.warn("Impossible d’ouvrir le PDF automatiquement :", erreurPDF);
       }
-       
     }
 
     if (optionsFinales.telecharger) resultat.doc.save(nomFichier);

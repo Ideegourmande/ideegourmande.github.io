@@ -172,7 +172,21 @@ document.addEventListener("DOMContentLoaded", async () => {
         document.getElementById("btnViderPanier");
 
     if (boutonVider) {
-        boutonVider.addEventListener("click", viderPanier);
+        boutonVider.addEventListener("click", () => {
+            if (boutonVider.disabled) return;
+
+            viderPanier();
+            const libelleInitial = boutonVider.textContent;
+            boutonVider.disabled = true;
+            boutonVider.textContent = "Panier vidé ✓";
+            boutonVider.classList.add("is-confirmed");
+
+            window.setTimeout(() => {
+                boutonVider.disabled = false;
+                boutonVider.textContent = libelleInitial;
+                boutonVider.classList.remove("is-confirmed");
+            }, 1100);
+        });
     }
 
     const formulaire =
@@ -197,7 +211,23 @@ function initialiserBoutonsPanier() {
 
     boutons.forEach(bouton => {
         bouton.addEventListener("click", () => {
+            if (bouton.disabled) return;
+
+            const libelleInitial = bouton.textContent;
+            const nombreAvant = panierCommande.length;
             ajouterAuPanier(bouton.dataset.produit);
+
+            if (panierCommande.length > nombreAvant) {
+                bouton.disabled = true;
+                bouton.textContent = "Ajouté ✓";
+                bouton.classList.add("is-confirmed");
+
+                window.setTimeout(() => {
+                    bouton.disabled = false;
+                    bouton.textContent = libelleInitial;
+                    bouton.classList.remove("is-confirmed");
+                }, 1100);
+            }
         });
     });
 }
@@ -747,7 +777,7 @@ function obtenirNumeroCommande(nomClient, annee) {
 // ENVOYER LA COMMANDE
 // ======================================
 
-async function envoyerCommandeInterne(e) {
+async function envoyerCommandeInterne(e, fenetrePDF) {
     e.preventDefault();
 
     if (panierCommande.length === 0) {
@@ -892,88 +922,156 @@ async function envoyerCommandeInterne(e) {
     // PDF ET DEMANDE D'ENVOI PAR E-MAIL
     // ==================================
 
-    let envoiOK = false;
-    let erreurEnvoi = "";
     let enregistrementSheetsConfirme = false;
+    let erreurEnvoi = "";
+    let resultatEmail = null;
+
     try {
-        if (
-            typeof window.genererPDFCommande !== "function"
-        ) {
+        if (typeof window.genererPDFCommande !== "function") {
             throw new Error(
                 "Le module PDF n'est pas chargé. " +
                 "Vérifiez js/pdfcommande.js."
             );
         }
 
-        const resultatEmail =
-            await window.genererPDFCommande(commande, {
-                envoyerEmail: true,
-                typeEmail: "nouvelle-commande",
-                telecharger: true,
-                afficher: true
-            });
-enregistrementSheetsConfirme =
-    resultatEmail &&
-    resultatEmail.enregistrementConfirme === true;
-        envoiOK = Boolean(
-            resultatEmail &&
-            resultatEmail.ok &&
-            resultatEmail.transmis &&
-            resultatEmail.envoiConfirme === true
-        );
+        resultatEmail = await window.genererPDFCommande(commande, {
+            envoyerEmail: true,
+            typeEmail: "nouvelle-commande",
+            telecharger: true,
+            afficher: true,
+            fenetrePDF: fenetrePDF
+        });
 
-        if (!envoiOK) {
+        enregistrementSheetsConfirme =
+            resultatEmail &&
+            resultatEmail.enregistrementConfirme === true;
+
+        if (!enregistrementSheetsConfirme) {
             erreurEnvoi =
                 resultatEmail && resultatEmail.message
                     ? resultatEmail.message
-                    : "La transmission de la demande d'e-mail " +
-                      "n'a pas été confirmée.";
+                    : "L'enregistrement dans Google Sheets n'a pas été confirmé.";
         }
     } catch (erreur) {
         console.error("Erreur PDF / e-mail :", erreur);
-
         erreurEnvoi = erreur && erreur.message
             ? erreur.message
             : String(erreur);
     }
 
-    if (envoiOK) {
-        // Vider le panier uniquement si la requête a été transmise.
+    if (enregistrementSheetsConfirme) {
+        // La commande est bien enregistrée : on évite toute nouvelle soumission.
         panierCommande.length = 0;
         window.panierCommande = panierCommande;
         afficherPanier();
 
-        alert(
-            "Commande enregistrée. Apps Script confirme que les deux e-mails " +
-            "ont été envoyés (entreprise et client)."
-        );
-    
-} else {
-    // Conserver les articles dans le panier.
-    // Ne jamais affirmer que la commande est enregistrée sans confirmation Sheets.
-    alert(
-        (
-            enregistrementSheetsConfirme
-                ? "Commande enregistrée dans Google Sheets, mais les e-mails ne sont pas confirmés.\n\n"
-                : "Attention : l'enregistrement dans Google Sheets n'est pas confirmé.\n\n"
-        ) +
-        "Votre panier est conservé.\n\n" +
-        (
-            enregistrementSheetsConfirme
-                ? "Ne renvoyez pas la commande une seconde fois avant d'avoir vérifié sa réception.\n\n"
-                : "Ne considérez pas la commande comme enregistrée. Vérifiez son statut avant toute nouvelle tentative.\n\n"
-        ) +
-        (
-            erreurEnvoi ||
-            "Vérifiez la configuration du service d'e-mail."
-        )
-    );
-}
+        // Effacer les coordonnées du client uniquement après confirmation Sheets.
+        [
+            "prenom",
+            "nom",
+            "telephone",
+            "email",
+            "adresse",
+            "commentaire",
+            "modeLivraison"
+        ].forEach(id => {
+            const champ = document.getElementById(id);
+            if (champ) champ.value = "";
+        });
 
+        afficherEtatEnvoiCommande(
+            "Commande enregistrée dans Google Sheets. Le PDF a été préparé. " +
+            "Confirmation des e-mails en cours : ne renvoyez pas cette commande.",
+            "en-cours"
+        );
+
+        if (
+            resultatEmail &&
+            resultatEmail.suiviEmails &&
+            typeof resultatEmail.suiviEmails.then === "function"
+        ) {
+            resultatEmail.suiviEmails.then(statut => {
+                if (
+                    statut &&
+                    statut.found &&
+                    statut.status === "termine" &&
+                    statut.entreprise === "envoye" &&
+                    statut.client === "envoye"
+                ) {
+                    afficherEtatEnvoiCommande(
+                        "Commande enregistrée. Les deux e-mails ont été envoyés.",
+                        "succes"
+                    );
+                } else {
+                    const detail = statut && statut.error
+                        ? " " + statut.error
+                        : "";
+
+                    afficherEtatEnvoiCommande(
+                        "Commande enregistrée dans Google Sheets, mais l'envoi des deux e-mails " +
+                        "n'est pas entièrement confirmé. Ne renvoyez pas la commande ; vérifiez " +
+                        "les e-mails et le suivi Apps Script." + detail,
+                        "attention"
+                    );
+                }
+            }).catch(erreurSuivi => {
+                afficherEtatEnvoiCommande(
+                    "Commande enregistrée dans Google Sheets. Le suivi des e-mails est indisponible. " +
+                    "Ne renvoyez pas la commande avant vérification. " +
+                    (erreurSuivi && erreurSuivi.message ? erreurSuivi.message : ""),
+                    "attention"
+                );
+            });
+        } else if (resultatEmail && resultatEmail.envoiConfirme === true) {
+            afficherEtatEnvoiCommande(
+                "Commande enregistrée. Les deux e-mails ont été envoyés.",
+                "succes"
+            );
+        }
+
+        return;
+    }
+
+    afficherEtatEnvoiCommande(
+        "L'enregistrement dans Google Sheets n'est pas confirmé. " +
+        "Votre panier et vos coordonnées sont conservés. Ne renvoyez pas la commande " +
+        "avant d'avoir vérifié son statut. " + (erreurEnvoi || ""),
+        "attention"
+    );
+
+    alert(
+        "Attention : l'enregistrement dans Google Sheets n'est pas confirmé.\n\n" +
+        "Votre panier et vos coordonnées sont conservés.\n\n" +
+        "Ne renvoyez pas la commande avant vérification.\n\n" +
+        (erreurEnvoi || "Vérifiez la configuration du service d'envoi.")
+    );
 }
 
 // Empêche les doubles clics pendant l'enregistrement et le suivi de l'envoi.
 let commandeEnCours = false;
+
+function afficherEtatEnvoiCommande(message, type) {
+    const formulaire = document.getElementById("formCommande");
+    if (!formulaire) return;
+
+    let zone = document.getElementById("etatEnvoiCommande");
+    if (!zone) {
+        zone = document.createElement("p");
+        zone.id = "etatEnvoiCommande";
+        zone.setAttribute("role", "status");
+        zone.setAttribute("aria-live", "polite");
+
+        const bouton = formulaire.querySelector('button[type="submit"]');
+        if (bouton) {
+            bouton.insertAdjacentElement("afterend", zone);
+        } else {
+            formulaire.appendChild(zone);
+        }
+    }
+
+    zone.className = "etat-envoi-commande " + (type || "");
+    zone.textContent = message;
+}
 
 async function envoyerCommande(e) {
     if (commandeEnCours) {
@@ -982,10 +1080,49 @@ async function envoyerCommande(e) {
     }
 
     commandeEnCours = true;
+
+    const bouton = document.querySelector(
+        '#formCommande button[type="submit"]'
+    );
+    const libelleInitial = bouton ? bouton.textContent : "";
+
+    // Ouvrir une fenêtre pendant le clic utilisateur évite le blocage
+    // du PDF après les appels asynchrones de numérotation.
+    const fenetrePDF = panierCommande.length > 0
+        ? window.open("about:blank", "_blank")
+        : null;
+
+    if (bouton) {
+        bouton.disabled = true;
+        bouton.textContent = "Traitement de la commande…";
+        bouton.classList.add("is-loading");
+    }
+
+    if (panierCommande.length > 0) {
+        afficherEtatEnvoiCommande(
+            "Votre commande est en cours de traitement. Ne cliquez pas une seconde fois.",
+            "en-cours"
+        );
+    }
+
     try {
-        await envoyerCommandeInterne(e);
+        await envoyerCommandeInterne(e, fenetrePDF);
     } finally {
         commandeEnCours = false;
+
+        if (fenetrePDF && !fenetrePDF.closed) {
+            try {
+                if (fenetrePDF.location.href === "about:blank") {
+                    fenetrePDF.close();
+                }
+            } catch (_) {}
+        }
+
+        if (bouton) {
+            bouton.disabled = false;
+            bouton.textContent = libelleInitial;
+            bouton.classList.remove("is-loading");
+        }
     }
 }
 
