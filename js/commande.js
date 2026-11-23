@@ -953,7 +953,7 @@ enregistrementSheetsConfirme =
     }
 
     if (envoiOK) {
-        // Vider le panier uniquement si la requête a été transmise.
+        // Vider le panier uniquement après confirmation Sheets et des deux e-mails.
         effacerCommandeEnAttente(commande.id);
         panierCommande.length = 0;
         window.panierCommande = panierCommande;
