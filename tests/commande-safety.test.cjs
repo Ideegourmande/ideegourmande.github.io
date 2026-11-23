@@ -5,6 +5,7 @@ const vm = require("node:vm");
 
 const commandeSource = fs.readFileSync("js/commande.js", "utf8");
 const pdfSource = fs.readFileSync("js/pdfcommande.js", "utf8");
+const commandeHtml = fs.readFileSync("commande.html", "utf8");
 
 function chargerCommande(storage = new Map()) {
   const localStorage = {
@@ -158,4 +159,10 @@ test("le contrôle d'une commande en attente précède l'attribution d'un nouvel
   const positionNouvelId = commandeSource.indexOf('"IG-" + Date.now().toString(36).toUpperCase()', positionControle);
   assert.ok(positionControle >= 0);
   assert.ok(positionNouvelId > positionControle);
+});
+
+test("la page publique de commande ne charge plus la base locale et renouvelle les caches JS", () => {
+  assert.doesNotMatch(commandeHtml, /js\\/database\\.js/);
+  assert.match(commandeHtml, /js\\/pdfcommande\\.js\\?v=23/);
+  assert.match(commandeHtml, /js\\/commande\\.js\\?v=14/);
 });
