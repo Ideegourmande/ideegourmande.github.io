@@ -1108,7 +1108,12 @@ nomExpediteurTwint:
 
 
     // Identifiant technique pour la base de données.
-    commande.id = Date.now();
+commande.id = Date.now();
+
+// Identifiant unique attendu par Google Apps Script.
+commande.idCommande =
+    "IG-" + Date.now() + "-" +
+    Math.floor(Math.random() * 1000000);
 
     // Numéro de commande séquentiel, attribué par Google Apps Script.
     const nomCommande = (commande.client.prenom + " " + commande.client.nom).trim()
