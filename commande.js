@@ -1317,23 +1317,25 @@ console.log(
             }
         );
 
-    // ==================================
-    // NETTOYAGE PANIER
-    // ==================================
+   // ==================================
+// NETTOYAGE PANIER APRÈS CONFIRMATION
+// ==================================
+
+if (envoiOK) {
 
     panierCommande.length = 0;
     window.panierCommande = panierCommande;
     afficherPanier();
 
-    if (envoiOK) {
-        alert(
-            "Commande enregistrée. Le PDF a été envoyé automatiquement au client par e-mail."
-        );
-    } else {
-        alert(
-            "Commande enregistrée et PDF généré, mais l'envoi automatique du mail a échoué."
-        );
-    }
+    alert(
+        "Commande enregistrée. Les e-mails ont été envoyés et confirmés par le serveur."
+    );
+
+} else {
+
+    alert(
+        "La commande est enregistrée, mais l'envoi des e-mails n'a pas pu être confirmé. Conservez votre panier et contactez-nous avant de recommencer."
+    );
 
 }
 
