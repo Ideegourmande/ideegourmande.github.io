@@ -1364,83 +1364,199 @@ async function blobToBase64(blob) {
     return btoa(binary);
 }
 
-async function envoyerCommandeAutomatiquement(commande, resultatPDF) {
-    const destinataire =
-        String(commande?.client?.email || "").trim();
 
-    if (!destinataire) {
-        console.error("Adresse e-mail client absente.");
-        return false;
+async function envoyerCommandeAutomatiquement(commande, resultatPDF) {
+  const destinataire = String(
+    commande?.client?.email || ""
+  ).trim();
+
+  if (!destinataire) {
+    console.error("Adresse e-mail du client manquante.");
+    return false;
+  }
+
+  if (!commande?.idCommande) {
+    console.error("Identifiant idCommande manquant.");
+    return false;
+  }
+
+  try {
+    const pdfBase64 = await blobToBase64(resultatPDF.blob);
+
+    if (!pdfBase64 || pdfBase64.length < 100) {
+      throw new Error("Le PDF est vide ou invalide.");
     }
 
-    try {
-        const pdfBase64 =
-            await blobToBase64(resultatPDF.blob);
+    const numeroCommande = String(
+      commande.numeroCommande || ""
+    ).trim();
 
-        if (!pdfBase64 || pdfBase64.length < 100) {
-            throw new Error("Le contenu PDF est vide ou invalide.");
+    if (!numeroCommande) {
+      throw new Error("Numéro de commande manquant.");
+    }
+
+    // Identifiant unique pour le suivi de cet envoi.
+    const idEnvoi =
+      "IGMAIL_" +
+      Date.now() +
+      "_" +
+      Math.floor(Math.random() * 1000000000);
+
+    const payload = {
+      idCommande: commande.idCommande,
+      idEnvoi: idEnvoi,
+      typeEmail: "nouvelle-commande",
+
+      to: destinataire,
+      subject: `Commande Idée Gourmande n°${numeroCommande}`,
+
+      client: commande.client,
+      produits: commande.produits || [],
+      total: commande.total || 0,
+      numeroCommande: numeroCommande,
+
+      pdfBase64: pdfBase64,
+      pdfFilename:
+        resultatPDF.filename ||
+        `Commande_${numeroCommande}.pdf`
+    };
+
+    const formulaire = new URLSearchParams();
+    formulaire.set("payload", JSON.stringify(payload));
+
+    // Transmission à Apps Script.
+    await fetch(EMAIL_API_URL, {
+      method: "POST",
+      mode: "no-cors",
+      headers: {
+        "Content-Type":
+          "application/x-www-form-urlencoded;charset=UTF-8"
+      },
+      body: formulaire.toString()
+    });
+
+    console.log(
+      "Demande transmise. Vérification du suivi :",
+      idEnvoi
+    );
+
+    // Attendre la confirmation du traitement serveur.
+    return await attendreConfirmationEmail(idEnvoi);
+
+  } catch (erreur) {
+    console.error(
+      "Erreur lors de l'envoi automatique :",
+      erreur
+    );
+    return false;
+  }
+}
+
+
+// Lecture du statut d'un envoi via JSONP.
+function lireStatutEmail(idEnvoi) {
+  return new Promise(function(resolve, reject) {
+    const callbackName =
+      "igMailStatus_" +
+      Date.now() +
+      "_" +
+      Math.floor(Math.random() * 1000000);
+
+    const separateur =
+      EMAIL_API_URL.includes("?") ? "&" : "?";
+
+    const script = document.createElement("script");
+
+    let termine = false;
+
+    function nettoyer() {
+      if (termine) return;
+
+      termine = true;
+
+      clearTimeout(delai);
+
+      delete window[callbackName];
+
+      if (script.parentNode) {
+        script.parentNode.removeChild(script);
+      }
+    }
+
+    const delai = setTimeout(function() {
+      nettoyer();
+      reject(new Error("Délai de lecture du statut dépassé."));
+    }, 10000);
+
+    window[callbackName] = function(reponse) {
+      nettoyer();
+      resolve(reponse);
+    };
+
+    script.onerror = function() {
+      nettoyer();
+      reject(new Error("Impossible de lire le statut de l'envoi."));
+    };
+
+    script.src =
+      EMAIL_API_URL +
+      separateur +
+      "action=mailStatus" +
+      "&requestId=" + encodeURIComponent(idEnvoi) +
+      "&callback=" + encodeURIComponent(callbackName);
+
+    document.head.appendChild(script);
+  });
+}
+
+
+// Attente de la confirmation finale d'Apps Script.
+async function attendreConfirmationEmail(idEnvoi) {
+  const delaiMaximum = 120000;
+  const intervalle = 2500;
+  const debut = Date.now();
+
+  while (Date.now() - debut < delaiMaximum) {
+    try {
+      const resultat = await lireStatutEmail(idEnvoi);
+
+      if (resultat && resultat.found === true) {
+        if (resultat.status === "termine") {
+          console.log("Traitement des e-mails terminé.");
+          return true;
         }
 
-        const numeroCommande =
-            commande.numeroCommande || commande.id || Date.now();
-
-        const payload = {
-            to: destinataire,
-            subject: `Commande Idée Gourmande n°${numeroCommande}`,
-            client: commande.client || {},
-            produits: commande.produits || [],
-            total: commande.total || 0,
-            numeroCommande,
-            pdfBase64,
-            pdfFilename:
-                resultatPDF.filename ||
-                `Commande_${numeroCommande}.pdf`
-        };
-
-        /*
-         * IMPORTANT :
-         * application/x-www-form-urlencoded est une requête CORS
-         * "simple". Le payload complet est placé dans le paramètre
-         * "payload", que Google Apps Script lit via e.parameter.
-         * Cela évite les problèmes de redirection/CORS rencontrés
-         * avec les POST JSON vers Apps Script.
-         */
-        const formulaire = new URLSearchParams();
-        formulaire.set("payload", JSON.stringify(payload));
-
-        const reponse = await fetch(
-            EMAIL_API_URL,
-            {
-                method: "POST",
-                mode: "no-cors",
-                headers: {
-                    "Content-Type":
-                        "application/x-www-form-urlencoded;charset=UTF-8"
-                },
-                body: formulaire.toString()
-            }
-        );
-
-        /*
-         * En mode no-cors, le navigateur ne permet pas de lire
-         * la réponse. Le serveur reçoit néanmoins le payload.
-         */
-        console.log(
-            "Demande d'envoi transmise à Google Apps Script.",
-            "Taille PDF base64 :",
-            pdfBase64.length
-        );
-
-        return true;
+        if (
+          resultat.status === "echec" ||
+          resultat.status === "indetermine"
+        ) {
+          console.error(
+            "Le traitement des e-mails a échoué ou reste incertain :",
+            resultat.status
+          );
+          return false;
+        }
+      }
 
     } catch (erreur) {
-        console.error(
-            "Erreur envoi automatique :",
-            erreur
-        );
-        return false;
+      console.warn(
+        "Statut temporairement indisponible :",
+        erreur.message
+      );
     }
+
+    await new Promise(function(resolve) {
+      setTimeout(resolve, intervalle);
+    });
+  }
+
+  console.error(
+    "Délai dépassé : aucune confirmation finale reçue."
+  );
+
+  return false;
 }
+
 
 // ======================================
 // EXPORT GLOBAL
