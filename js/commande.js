@@ -38,6 +38,7 @@ const URL_PRIX =
 // CHARGEMENT DES PRIX DEPUIS APPS SCRIPT
 // ======================================
 
+
 function chargerPrixCommande() {
     return new Promise((resolve) => {
         const callback =
@@ -46,39 +47,50 @@ function chargerPrixCommande() {
 
         const script = document.createElement("script");
         let termine = false;
+        let scriptCharge = false;
+
+        window.igDiagnosticPrix = "";
 
         const timeout = setTimeout(() => {
-            finir(false);
+            finir(
+                false,
+                scriptCharge
+                    ? "Le script a été chargé, mais le callback n'a pas été exécuté."
+                    : "Aucune réponse reçue dans les 15 secondes."
+            );
         }, 15000);
 
-        function finir(succes) {
+        function finir(succes, diagnostic) {
             if (termine) return;
 
             termine = true;
             clearTimeout(timeout);
+            window.igDiagnosticPrix = diagnostic || "";
             delete window[callback];
 
             if (script.parentNode) {
                 script.parentNode.removeChild(script);
             }
 
+            console.log("DIAGNOSTIC PRIX :", window.igDiagnosticPrix);
             resolve(succes);
         }
 
         window[callback] = function(reponse) {
+            console.log("RÉPONSE PRIX REÇUE :", reponse);
+
             if (
                 !reponse ||
                 reponse.ok !== true ||
                 !reponse.prices
             ) {
-                console.error("Réponse des prix invalide :", reponse);
-                finir(false);
+                finir(false, "Réponse reçue, mais invalide : " +
+                    JSON.stringify(reponse));
                 return;
             }
 
             const references = Object.keys(produits);
 
-            // Vérifier tous les prix avant de les appliquer.
             for (const reference of references) {
                 const prix = reponse.prices[reference];
 
@@ -87,16 +99,11 @@ function chargerPrixCommande() {
                     !Number.isFinite(prix) ||
                     prix < 0
                 ) {
-                    console.error(
-                        "Prix invalide pour " + reference,
-                        prix
-                    );
-                    finir(false);
+                    finir(false, "Prix invalide pour : " + reference);
                     return;
                 }
             }
 
-            // Actualiser les prix utilisés pour les calculs.
             references.forEach(reference => {
                 const prix = reponse.prices[reference];
                 produits[reference].prix = prix;
@@ -109,8 +116,6 @@ function chargerPrixCommande() {
                 if (!carte) return;
 
                 carte.dataset.prix = String(prix);
-
-                // Actualiser le prix affiché sur la carte.
                 const prixTexte = carte.querySelector("p strong");
 
                 if (prixTexte) {
@@ -131,13 +136,19 @@ function chargerPrixCommande() {
                 }
             });
 
-            console.log("Prix chargés :", reponse.prices);
-            finir(true);
+            finir(true, "Les cinq prix ont été chargés correctement.");
+        };
+
+        script.onload = function() {
+            scriptCharge = true;
+            console.log("SCRIPT PRIX CHARGÉ :", script.src);
         };
 
         script.onerror = function() {
-            console.error("Impossible de charger les prix.");
-            finir(false);
+            finir(
+                false,
+                "Safari a signalé une erreur de chargement du script distant."
+            );
         };
 
         const params = new URLSearchParams({
@@ -146,9 +157,13 @@ function chargerPrixCommande() {
         });
 
         script.src = URL_PRIX + "?" + params.toString();
+
+        console.log("URL DE CHARGEMENT DES PRIX :", script.src);
+
         document.head.appendChild(script);
     });
 }
+
 
 // ======================================
 // INITIALISATION
