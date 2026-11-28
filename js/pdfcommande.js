@@ -699,14 +699,14 @@ const statut = await attendreStatutEnvoiGoogle(idEnvoi);
       } else if (statut && statut.status === "indetermine") {
         message = "Le résultat d'au moins un envoi est incertain. Aucun nouvel envoi automatique n'a été effectué pour éviter un doublon. Vérifie Gmail et les exécutions Apps Script. " + (statut.error || "");
       } else if (statut && statut.status === "en_cours") {
-        message = "Apps Script a reçu la demande, mais le traitement est toujours en cours après 90 secondes. Les deux e-mails ne sont pas encore confirmés : ne renvoie pas la commande et vérifie les exécutions Apps Script.";
+        message = "Apps Script a reçu la demande, mais le traitement est toujours en cours après cinq minutes. Les deux e-mails ne sont pas encore confirmés : ne renvoie pas la commande et vérifie les exécutions Apps Script.";
       } else if (statut && statut.status === "inconnu") {
-        message = "Aucun statut vérifiable n'a été reçu dans les 90 secondes. La commande peut avoir été reçue : ne la renvoie pas avant vérification dans Apps Script et Gmail.";
+        message = "Aucun statut vérifiable n'a été reçu après cinq minutes. La demande peut avoir été reçue : ne la renvoie pas avant vérification dans Apps Script et Gmail.";
       }
       return {
   ok: false,
   transmis: true,
-  receptionConfirmee: true,
+  receptionConfirmee: Boolean(statut && statut.found),
   envoiConfirme: false,
   livraisonVerifiee: false,
   idEnvoi: idEnvoi,
