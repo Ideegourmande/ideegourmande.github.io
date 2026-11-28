@@ -552,88 +552,7 @@
     });
   }
 
-function lireStatutCommandeSheets(idCommande) {
-  return new Promise((resolve, reject) => {
-    const nomCallback = "__igCommande_" + Date.now() + "_" +
-      Math.random().toString(36).slice(2);
-
-    const script = document.createElement("script");
-    let termine = false;
-    let temporisateur = null;
-
-    function nettoyage() {
-      if (temporisateur) window.clearTimeout(temporisateur);
-      if (script.parentNode) script.parentNode.removeChild(script);
-      try {
-        delete window[nomCallback];
-      } catch (_) {
-        window[nomCallback] = undefined;
-      }
-    }
-
-    window[nomCallback] = function(donnees) {
-      if (termine) return;
-      termine = true;
-      nettoyage();
-      resolve(donnees);
-    };
-
-    script.onerror = function() {
-      if (termine) return;
-      termine = true;
-      nettoyage();
-      reject(new Error("Lecture du statut Google Sheets impossible."));
-    };
-
-    temporisateur = window.setTimeout(function() {
-      if (termine) return;
-      termine = true;
-      nettoyage();
-      reject(new Error("Délai de lecture Google Sheets dépassé."));
-    }, 10000);
-
-    script.src = URL_SCRIPT_GOOGLE +
-      "?action=status&id=" + encodeURIComponent(idCommande) +
-      "&callback=" + encodeURIComponent(nomCallback) +
-      "&_=" + Date.now();
-
-    (document.head || document.body).appendChild(script);
-  });
-}
-
-async function attendreStatutCommandeSheets(idCommande) {
-  const debut = Date.now();
-  const dureeMaximale = 90000;
-  let derniereErreur = "";
-
-  while (Date.now() - debut < dureeMaximale) {
-    try {
-      const statut = await lireStatutCommandeSheets(idCommande);
-
-      if (statut && statut.ok === true && statut.enregistree === true) {
-        return statut;
-      }
-
-      if (statut && statut.ok === false) {
-        derniereErreur = statut.message || "Erreur de vérification Google Sheets.";
-      }
-    } catch (erreur) {
-      derniereErreur = erreur && erreur.message
-        ? erreur.message
-        : String(erreur);
-    }
-
-    await new Promise(resolve => window.setTimeout(resolve, 2000));
-  }
-
-  return {
-    ok: false,
-    enregistree: false,
-    message: derniereErreur || "Enregistrement Google Sheets non confirmé après 90 secondes."
-  };
-}
-
-  async function attendreStatutEnvoiGoogle(idEnvoi) {
+async function attendreStatutEnvoiGoogle(idEnvoi) {
     const debut = Date.now();
     const dureeMaximale = 5 * 60 * 1000;
     let derniereErreur = "";
@@ -757,31 +676,6 @@ async function attendreStatutCommandeSheets(idCommande) {
       }
 
       
-const statutSheets = await attendreStatutCommandeSheets(
-  String(payload.idCommande || "").trim()
-);
-
-if (
-  !statutSheets ||
-  statutSheets.ok !== true ||
-  statutSheets.enregistree !== true
-) {
-  return {
-    ok: false,
-    transmis: true,
-    enregistrementConfirme: false,
-    envoiConfirme: false,
-    idEnvoi: idEnvoi,
-    message:
-      "L'enregistrement de la commande dans Google Sheets n'a pas pu être confirmé. Ne renvoyez pas la commande avant vérification."
-  };
-}
-
-console.info(
-  "[Idée Gourmande] Enregistrement Google Sheets confirmé.",
-  statutSheets
-);
-
 const statut = await attendreStatutEnvoiGoogle(idEnvoi);
 
       if (statut && statut.found && statut.status === "termine" &&
@@ -789,11 +683,11 @@ const statut = await attendreStatutEnvoiGoogle(idEnvoi);
         return {
   ok: true,
   transmis: true,
-  enregistrementConfirme: true,
+  receptionConfirmee: true,
   envoiConfirme: true,
   livraisonVerifiee: false,
   idEnvoi: idEnvoi,
-  message: "Commande enregistrée dans Google Sheets. Les deux e-mails ont été envoyés."
+  message: "La demande a été reçue par Apps Script. Les deux e-mails ont été envoyés."
 };
       }
 
@@ -812,7 +706,7 @@ const statut = await attendreStatutEnvoiGoogle(idEnvoi);
       return {
   ok: false,
   transmis: true,
-  enregistrementConfirme: true,
+  receptionConfirmee: true,
   envoiConfirme: false,
   livraisonVerifiee: false,
   idEnvoi: idEnvoi,
@@ -823,11 +717,11 @@ const statut = await attendreStatutEnvoiGoogle(idEnvoi);
         ok: false,
         transmis: demandeTransmiseAuNavigateur,
         transmissionIncertaine: demandeTransmiseAuNavigateur,
-        enregistrementConfirme: false,
+        receptionConfirmee: false,
         envoiConfirme: false,
         livraisonVerifiee: false,
         message: demandeTransmiseAuNavigateur
-          ? "La demande a été remise au navigateur, mais sa réception par Apps Script et son enregistrement dans Google Sheets ne sont pas confirmés. Ne renvoyez pas la commande avant vérification. " +
+          ? "La demande a été remise au navigateur, mais sa réception par Apps Script n'est pas confirmée. Ne renvoyez pas la commande avant vérification. " +
             (erreur && erreur.message ? erreur.message : String(erreur))
           : (erreur && erreur.message ? erreur.message : String(erreur))
       };
