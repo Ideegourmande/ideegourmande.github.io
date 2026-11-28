@@ -942,7 +942,7 @@ async function envoyerCommandeInterne(e) {
 
     // Le site public ne modifie jamais la base locale de l'appareil.
     // Les commandes, le stock et la production sont gérés par le module central.
-    // La confirmation d'acceptation repose sur le statut Google Sheets vérifié
+    // La confirmation de réception repose sur le suivi Apps Script
     // dans genererPDFCommande(). En cas d'échec ou de statut incertain, le
     // panier reste intact et aucune déduction de stock locale n'est effectuée.
     // ==================================
@@ -951,7 +951,7 @@ async function envoyerCommandeInterne(e) {
 
     let envoiOK = false;
     let erreurEnvoi = "";
-    let enregistrementSheetsConfirme = false;
+    let receptionConfirmee = false;
     try {
         if (
             typeof window.genererPDFCommande !== "function"
@@ -962,16 +962,20 @@ async function envoyerCommandeInterne(e) {
             );
         }
 
+        const estIOS =
+            /iPad|iPhone|iPod/.test(navigator.userAgent) ||
+            (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
+
         const resultatEmail =
             await window.genererPDFCommande(commande, {
                 envoyerEmail: true,
                 typeEmail: "nouvelle-commande",
-                telecharger: true,
-                afficher: true
+                telecharger: !estIOS,
+                afficher: !estIOS
             });
-enregistrementSheetsConfirme =
-    resultatEmail &&
-    resultatEmail.enregistrementConfirme === true;
+        receptionConfirmee =
+            resultatEmail &&
+            resultatEmail.receptionConfirmee === true;
         envoiOK = Boolean(
             resultatEmail &&
             resultatEmail.ok &&
@@ -995,7 +999,7 @@ enregistrementSheetsConfirme =
     }
 
     if (envoiOK) {
-        // Vider le panier uniquement après confirmation Sheets et des deux e-mails.
+        // Vider le panier uniquement après confirmation des deux e-mails.
         effacerCommandeEnAttente(commande.id);
         panierCommande.length = 0;
         window.panierCommande = panierCommande;
@@ -1014,18 +1018,18 @@ enregistrementSheetsConfirme =
     
 } else {
     // Conserver les articles dans le panier.
-    // Ne jamais affirmer que la commande est enregistrée sans confirmation Sheets.
+    // Ne jamais affirmer que la commande est enregistrée sans statut Apps Script.
     alert(
         (
-            enregistrementSheetsConfirme
-                ? "Commande enregistrée dans Google Sheets, mais les e-mails ne sont pas confirmés.\n\n"
-                : "Attention : l'enregistrement dans Google Sheets n'est pas confirmé.\n\n"
+            receptionConfirmee
+                ? "Votre demande a été reçue, mais les deux e-mails ne sont pas encore confirmés.\n\n"
+                : "Attention : la réception de votre demande n'est pas confirmée.\n\n"
         ) +
         "Votre panier est conservé.\n\n" +
         (
-            enregistrementSheetsConfirme
-                ? "Ne renvoyez pas la commande une seconde fois avant d'avoir vérifié sa réception.\n\n"
-                : "Ne considérez pas la commande comme enregistrée. Vérifiez son statut avant toute nouvelle tentative.\n\n"
+            receptionConfirmee
+                ? "Ne renvoyez pas la commande une seconde fois avant d'avoir vérifié les e-mails.\n\n"
+                : "Ne renvoyez pas la commande avant d'avoir vérifié son statut dans Apps Script et Gmail.\n\n"
         ) +
         (
             erreurEnvoi ||
