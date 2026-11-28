@@ -174,9 +174,9 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     if (!prixCharges) {
         alert(
-            "Impossible de charger les prix actuels. " +
-            "Rechargez la page avant de passer commande."
-        );
+    "Impossible de charger les prix actuels.\n\n" +
+    (window.igDiagnosticPrix || "Cause inconnue.")
+);
         return;
     }
 
